@@ -28,8 +28,7 @@ ARCHITECTURE behavior OF testbench IS
 		ce : IN std_logic;    
 		data : INOUT std_logic_vector(15 downto 0);
 		addr : INOUT std_logic_vector(7 downto 0);      
-		tinc : OUT std_logic;
-		tclrtest: out std_logic; 
+		tinc : OUT std_logic; 
 		tclr : OUT std_logic
 		);
 	END COMPONENT;
@@ -54,6 +53,9 @@ BEGIN
 	reset <= '0' after 100 ns; 
 
 	clk <= not clk after 25 ns; 
+	data <= (others => 'L');
+	addr <= (others => 'L');
+	 
 
 
 
@@ -70,7 +72,6 @@ BEGIN
 		tsel => tsel,
 		tinc => tinc,
 		tclr => tclr,
-		tclrtest => tclrtest,
 		data => data,
 		addr => addr,
 		event => event,
@@ -104,20 +105,20 @@ BEGIN
 			event <= '1' after 10 ns;
 		end if; 
 		case longcount is
-			when 6101 =>
+			when 10101 =>
 				addr <= "11111111" after 10 ns;
 				data <= "1000000000000000" after 10 ns;
 			when 10102 =>
 				addr <= "11111111" after 10 ns;
 				data <= "0000000000000000" after 10 ns;
-			when 6103 =>
+			when 10103 =>
 				event <= '1' after 10 ns;
 				addr <= "11111111" after 10 ns;
 				data <= "0000000000000000" after 10 ns;
-			when 6104 =>
+			when 10104 =>
 				addr <= "11111111" after 10 ns;
 				data <= "0000000000000000" after 10 ns;
-			when 6105 =>
+			when 10105 =>
 				addr <= "11111111" after 10 ns;
 				data <= "0000000000000000" after 10 ns;
 			when others =>

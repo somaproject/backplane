@@ -49,6 +49,7 @@ architecture Behavioral of timer is
 	    Port ( CLK : in std_logic;
 	           EVENT : in std_logic;
 	           CE : in std_logic;
+				  RESET : in std_logic;
 	           DATA : in std_logic_vector(15 downto 0);
 	           ADDR : in std_logic_vector(7 downto 0);
 				  CMD : out std_logic_vector(15 downto 0);
@@ -84,6 +85,7 @@ begin
 			eventid => "100100")
 		port map (
 			CLK => CLK,
+			RESET => RESET,
 			EVENT => EVENT,
 			CE => CE,
 			DATA => DATA,
@@ -116,7 +118,7 @@ begin
 					  tclrext when tsel = '1';
 		TCLR <= tclrmux;
 
-		tclrtest <= newevent; 
+	--	tclrtest <= newevent; 
 	-- code for the event receiver to reset
 	   treset <= '1' when (newevent = '1' and cmd = "1000000000000000") else
 					 '0';
