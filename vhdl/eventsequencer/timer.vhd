@@ -16,7 +16,6 @@ entity timer is
            TSEL : in std_logic;
            TINC : out std_logic;
            TCLR : out std_logic;
-			  TCLRTEST: out std_logic; 
            DATA : inout std_logic_vector(15 downto 0);
            ADDR : inout std_logic_vector(7 downto 0);
 			  EVENT : in std_logic;
