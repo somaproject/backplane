@@ -2,7 +2,7 @@
 Version=1.0
 HierarchyMode=3
 ChannelRoomNamingStyle=0
-OutputPath=
+OutputPath=outputs
 ChannelDesignatorFormatString=$Component_$RoomName
 ChannelRoomLevelSeperator=_
 OpenOutputs=1
@@ -26,6 +26,61 @@ AnnotateStartValue=1
 AnnotateSuffix=
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
+[Document3]
+DocumentPath=outputs.OUTJOB
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotateSuffix=
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+[GeneratedDocument1]
+DocumentPath=Project Outputs for adio\adio.DRL
+[GeneratedDocument2]
+DocumentPath=outputs\adio.DRL
+[GeneratedDocument3]
+DocumentPath=Project Outputs for adio\adio.DRR
+[GeneratedDocument4]
+DocumentPath=outputs\adio.DRR
+[GeneratedDocument5]
+DocumentPath=Project Outputs for adio\adio.GBL
+[GeneratedDocument6]
+DocumentPath=outputs\adio.GBL
+[GeneratedDocument7]
+DocumentPath=Project Outputs for adio\adio.GBS
+[GeneratedDocument8]
+DocumentPath=outputs\adio.GBS
+[GeneratedDocument9]
+DocumentPath=Project Outputs for adio\adio.GM5
+[GeneratedDocument10]
+DocumentPath=outputs\adio.GM5
+[GeneratedDocument11]
+DocumentPath=Project Outputs for adio\adio.GTL
+[GeneratedDocument12]
+DocumentPath=outputs\adio.GTL
+[GeneratedDocument13]
+DocumentPath=Project Outputs for adio\adio.GTO
+[GeneratedDocument14]
+DocumentPath=outputs\adio.GTO
+[GeneratedDocument15]
+DocumentPath=Project Outputs for adio\adio.GTS
+[GeneratedDocument16]
+DocumentPath=outputs\adio.GTS
+[GeneratedDocument17]
+DocumentPath=Project Outputs for adio\adio.LDP
+[GeneratedDocument18]
+DocumentPath=outputs\adio.LDP
+[GeneratedDocument19]
+DocumentPath=Project Outputs for adio\adio.REP
+[GeneratedDocument20]
+DocumentPath=outputs\adio.REP
+[GeneratedDocument21]
+DocumentPath=Project Outputs for adio\adio.RUL
+[GeneratedDocument22]
+DocumentPath=outputs\adio.RUL
+[GeneratedDocument23]
+DocumentPath=Project Outputs for adio\adio.TXT
+[GeneratedDocument24]
+DocumentPath=outputs\adio.TXT
 [OutputGroup1]
 Name=Netlist Outputs
 Description=
@@ -349,6 +404,7 @@ L16=WWWWNWWNWWWNWWWNW
 L17=WNNNNNNNWNNNWWWWN
 [Annotate]
 SortOrder=3
+MatchParameter1=Comment
 [HighlightMethod]
 Zoom=1
 Select=0
