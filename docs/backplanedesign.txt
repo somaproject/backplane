@@ -1,7 +1,8 @@
 Notes on backplane design:
 
+------------------------------------------------------------------------------
 Power concerns:
-
+------------------------------------------------------------------------------
 All the SFX PSUs output ~16 A max on the 3.3V rail, which should be more than enough for the 16 DSP boards. However:
 1. The combined power from the 3.3 and 5V rails leaves us with only around 1A at 5V, not enough to power the rest of the 3.3V subsystem with LDOs. 
 2. The bulk of the extra power in higher-power units is delivered to the 12V rail, and the only way we're going to tap into this without turning the box into a furnace is to use a switching regulator. 
@@ -14,4 +15,80 @@ Mosfet : ZXM64N02X (ZXM64N02XCT-ND $2.39)
 Output Cap: TPSD107M010R0100 100uF, 10V, 100 mOhm (478-1779-1-ND, $2.35)
 Input Bulk Cap: EEVFK1C152Q, 1500uF (PCE3459CT-ND, $1.416)
 Input Bypass Cap: C3225X5R1C106M (445-1400-1-ND, $2.20)
+
+------------------------------------------------------------------------------
+Network FPGA
+------------------------------------------------------------------------------
+
+Simple large FPGA, ram interface, but with interfaces to both the event bus and the data bus. 
+
+We can't just use the on-board BlockSelect+ Ram, as we need more to implement our application-level UDP retransmission protocol. 
+
+Pin counts : 
+Data bus	18
+Event Bus	20
+Network		36
+Ram		32+ 4 + 17 == 55
+--------------------
+                127
+
+Network operation and functions:
+Must aggreagate data from the data bus, turn it into packets, and save those packets. Thus, we're really really going to end up having to multiplex our memory access scheme. Inputs aren't as big of an issue, because the class which we'll be receiving are generally small, and the input buffer on the NIC can, again in genreal, handle them anyway. 
+
+Consider an exokernel approach; this will work well. 
+
+We're running the ram at 60 MHz, but it'll be driven by the FPGA, so we can change this later. We've also got the 32-bit wide interface, allowing for essentially DDR if we want. 
+
+20 MHz Sysclock. Whee. We can synthesisze as long as we don't care about maintaining phase relationships, but we don't really anway; yay for easy async interfaces. 
+
+
+-----------------------------------------------------------------------------
+CLOCKS
+-----------------------------------------------------------------------------
+A single 20 MHz clock oscillator will drive the board; it will be physically located at the bottom of the backplane, and we'll use a series of clock distribution ICs. 
+
+
+
+-----------------------------------------------------------------------------
+System FPGA
+-----------------------------------------------------------------------------
+
+Responsible for boot control, timing control, and general system status. 
+
+Now, the unique FPGAs on the board... are:
+
+16 DSPboards
+Network
+Gigabit
+Bus control
+NEP
+Audio
+USB
+Boot
+
+8 x (4) == 32 pins total
+
+Event Bus: 16+8+4 = 28 pins
+Boot interface input = 6 pins
+Sequencer control = 2 pins
+
+
+(What's left)
+
+(that's 70 total)
+
+More than enough for a good mating to an 8051
+
+Holy crap, someone has a full LGPL'd and documented 8051. And even better, there's a full, very well documented PIC implementation by silicore. As VHDL. Rock on. 
+
+So really, though, there's no real excuse for an external 8051 clone. Whee! 
+
+Now, this will also need the LCD interface, we should look at that...
+
+-----------------------------------------------------------------------------
+DISPLAY
+-----------------------------------------------------------------------------
+Recommended part: BXA-12565-6M ($25 from digikey) takes in 12V, needs a 10k pot, perhaps use a digital one? We sadly have no way of knowing voltage range. 
+
+The LCDs are fickle beasts, need an LCD drive voltage of 26.6 V, or something like that. Will want to experiment ahead of time. 
 

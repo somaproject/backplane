@@ -5,9 +5,9 @@ ChannelRoomNamingStyle=0
 OutputPath=outputs
 ChannelDesignatorFormatString=$Component_$RoomName
 ChannelRoomLevelSeperator=_
-OpenOutputs=1
+OpenOutputs=0
 ArchiveProject=0
-TimestampOutput=1
+TimestampOutput=0
 SeparateFolders=0
 AllowPortNetNames=0
 AllowSheetEntryNetNames=1
@@ -27,42 +27,42 @@ AnnotateSuffix=
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 [Document3]
-DocumentPath=fiber.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-[Document4]
-DocumentPath=boot.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-[Document5]
 DocumentPath=DACs.SCHDOC
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
-[Document6]
+[Document4]
 DocumentPath=ADCs.SCHDOC
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
-[Document7]
+[Document5]
+DocumentPath=boot.SCHDOC
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotateSuffix=
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+[Document6]
 DocumentPath=USB.SCHDOC
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
-[Document8]
+[Document7]
 DocumentPath=power.SCHDOC
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotateSuffix=
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+[Document8]
+DocumentPath=fiber.SCHDOC
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
@@ -90,21 +90,39 @@ AnnotateSuffix=
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 [GeneratedDocument1]
-DocumentPath=outputs 8-28-2004 5-22-30 PM\peripheral.DRL
+DocumentPath=outputs\peripheral.DRL
 [GeneratedDocument2]
-DocumentPath=outputs 8-28-2004 5-25-35 PM\peripheral.DRL
+DocumentPath=outputs\peripheral.DRR
 [GeneratedDocument3]
-DocumentPath=outputs 8-28-2004 5-22-30 PM\peripheral.DRR
+DocumentPath=outputs\peripheral.G1
 [GeneratedDocument4]
-DocumentPath=outputs 8-28-2004 5-25-35 PM\peripheral.DRR
+DocumentPath=outputs\peripheral.G2
 [GeneratedDocument5]
-DocumentPath=outputs 8-28-2004 5-22-30 PM\peripheral.LDP
+DocumentPath=outputs\peripheral.GBL
 [GeneratedDocument6]
-DocumentPath=outputs 8-28-2004 5-25-35 PM\peripheral.LDP
+DocumentPath=outputs\peripheral.GBO
 [GeneratedDocument7]
-DocumentPath=outputs 8-28-2004 5-22-30 PM\peripheral.TXT
+DocumentPath=outputs\peripheral.GBS
 [GeneratedDocument8]
-DocumentPath=outputs 8-28-2004 5-25-35 PM\peripheral.TXT
+DocumentPath=outputs\peripheral.GM5
+[GeneratedDocument9]
+DocumentPath=outputs\peripheral.GP1
+[GeneratedDocument10]
+DocumentPath=outputs\peripheral.GP2
+[GeneratedDocument11]
+DocumentPath=outputs\peripheral.GTL
+[GeneratedDocument12]
+DocumentPath=outputs\peripheral.GTO
+[GeneratedDocument13]
+DocumentPath=outputs\peripheral.GTS
+[GeneratedDocument14]
+DocumentPath=outputs\peripheral.LDP
+[GeneratedDocument15]
+DocumentPath=outputs\peripheral.REP
+[GeneratedDocument16]
+DocumentPath=outputs\peripheral.RUL
+[GeneratedDocument17]
+DocumentPath=outputs\peripheral.TXT
 [OutputGroup1]
 Name=Netlist Outputs
 Description=
