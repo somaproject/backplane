@@ -12,12 +12,12 @@ DEVSPEED -6
 DEVSPEEDTIME 0
 FLOW XST VHDL
 FLOWTIME 1051915448
-STIMULUS iphdrchk_test.tbw Normal
-MODULE iphdrchk.vhd
-MODSTYLE iphdrchk Normal
+STIMULUS ipchecksum_test.tbw Normal
+MODULE IPchecksum.vhd
+MODSTYLE ipchecksum Normal
 MODULE receive.vhd
 MODSTYLE receive Normal
 [STATUS-ALL]
-iphdrchk.postParVHDLSimModel=WARNINGS,1051921898
+IPchecksum.vhd.jhdFile=WARNINGS,1052489786
 [STRATEGY-LIST]
 Normal=True
