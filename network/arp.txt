@@ -1,0 +1,13 @@
+ARP CACHE
+
+The arp cache is the most challenging portion of the entire system. 
+
+To match entries, we configure 2^ARPSIZE sets of LUTs to match a given IP address in a content-addressable memory fashion. We store the actual MAC addresses in a chunk of BlockSelect+ RAM 8 bytes away from each other. 
+
+Thus, there are 0 to 2^ARPSIZE-1 of these matching CLB configurations. Retreiving the actual MAC address will be somewhat slow, but the match detection should be near-instantaneous. The entire system is generalized, such that we can work with IP addresses as small as we like. 
+
+The only real downside is that the interface to obtain the MAC address and look up the IP address could be -WIDE-; we solve that by having a 2-bit address line and clocking out the bytes (since these are going to be latched into internal registers anyway. 
+
+The ARP cache has a TX and an RX side; the TX side can only query and read addresses, the RX side can only write them. 
+
+On the TX side, we have: 

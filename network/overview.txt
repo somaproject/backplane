@@ -1,0 +1,27 @@
+Soma network stack design. 
+
+The soma network stack is really only IP-focused. 
+
+The central problem is how to maintain abstraction barriers while simultaneously avoiding the copying of buffers over and over, which will kill performance. The important realization is that each lower layer only needs to access the higher layer as a sequential byte stream. 
+
+For transmit: 
+
+Each higher layer provides an input to the lower layer, in some cases with an application-specific interface. All higher levels, after some initial start-up latency, -must be able- to output data at 16 bits per tick. 
+
+The interface between higher and lower layers is simple, with the highest layer actually containing the data buffer. Each higher layer must pass the length of the buffer in bytes to the lower layer, as well as a generic VHDL constant indicating the latency between when  the DEN signal goes high and the data on the data output DATA[15:0] is valid. 
+
+Each higher level triggers the START on the lower level, and waits for the DONE, i.e. you connect the OUTSTART of a level to the INDONE of a lower level and the OUTDONE of the lower level to the INDONE of the upper level. 
+ 
+The lowest level is the IP layer, which manages IP TX, IP RX, and ARP. The architecture is unique in that the IP layer is the only layer common across applications, and thus involves a bit of a multiplexing layer. 
+
+Constants:
+IPTXAPPS : number of IP TX applications, i.e. for the IP TX multiplexer
+IPRXAPPS : number of IP RX applications
+ARPSIZE : 2^ARPSIZE = number of ARP Cache entries
+IPN : size of an IP address, in bits
+MAXSIZE : max size of the buffer, in bytes. 
+MAXADDR : maximum length bits size, i.e. for a buffer of 1500 bytes, we'd need a maxaddr of 11 (2^11 = 2048)
+
+The IP multiplexer will also maintain a series of "State" bits, which will let us perform an ARP query on a to-be-transmitted frame, and set the "ARP pending" bit and move onto another packet. Whenever it gets to a frame in an ARP PENDING state, it queries the ARP cache to see if that arp entry is now present, and if so, continues on the TX process. 
+
+
