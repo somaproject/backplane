@@ -1,0 +1,23 @@
+JDF F
+// Created by Project Navigator ver 1.0
+PROJECT netstack
+DESIGN netstack Normal
+DEVFAM spartan2e
+DEVFAMTIME 1051915448
+DEVICE xc2s200e
+DEVICETIME 1051915448
+DEVPKG pq208
+DEVPKGTIME 1051915448
+DEVSPEED -6
+DEVSPEEDTIME 0
+FLOW XST VHDL
+FLOWTIME 1051915448
+STIMULUS iphdrchk_test.tbw Normal
+MODULE iphdrchk.vhd
+MODSTYLE iphdrchk Normal
+MODULE receive.vhd
+MODSTYLE receive Normal
+[STATUS-ALL]
+iphdrchk.postParVHDLSimModel=WARNINGS,1051921898
+[STRATEGY-LIST]
+Normal=True
