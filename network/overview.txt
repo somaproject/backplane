@@ -18,7 +18,7 @@ Constants:
 IPTXAPPS : number of IP TX applications, i.e. for the IP TX multiplexer
 IPRXAPPS : number of IP RX applications
 ARPSIZE : 2^ARPSIZE = number of ARP Cache entries
-IPN : size of an IP address, in bits
+IPN : size of an IP address/4, in bits, i.e. there are 4*IPN bits in each IP address. We do this as the number of bits in the LUT is a multiple of 4. 
 MAXSIZE : max size of the buffer, in bytes. 
 MAXADDR : maximum length bits size, i.e. for a buffer of 1500 bytes, we'd need a maxaddr of 11 (2^11 = 2048)
 
