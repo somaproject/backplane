@@ -18,5 +18,11 @@ MODULE event_transmit.vhd
 MODSTYLE event_transmit Normal
 MODULE event_receive.vhd
 MODSTYLE event_receive Normal
+[STATUS-ALL]
+event_receive.ngcFile=WARNINGS,1051036318
+event_receive.postMapNgaFile=WARNINGS,1051036318
+event_receive.postMapVHDLSimModel=WARNINGS,1051036318
+event_receive.postParVHDLSimModel=WARNINGS,1051036318
+event_receive.postXlateVHDLSimModel=WARNINGS,1051036318
 [STRATEGY-LIST]
 Normal=True

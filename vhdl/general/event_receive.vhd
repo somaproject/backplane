@@ -12,6 +12,7 @@ entity event_receive is
 	 Generic (eventid :std_logic_vector(5 downto 0) := "001000");
     Port ( CLK : in std_logic;
            EVENT : in std_logic;
+			  RESET : in std_logic; 
            CE : in std_logic;
            DATA : in std_logic_vector(15 downto 0);
            ADDR : in std_logic_vector(7 downto 0);
@@ -24,62 +25,125 @@ end event_receive;
 architecture Behavioral of event_receive is
 -- event_receive.vhd : reference implementation of event receiver
 
-
-	signal cnt: std_logic_vector(2 downto 0) := "000"; 
-	signal myevent, eventl,  byteeq, addrbit, addrbitl : std_logic; 
+	type states is (none, evt1, evt2, evt3, evt4, evt5);
+	signal cs, ns : states := none; 
+	signal myevent, addrce, addrl : std_logic; 
 	signal datal : std_logic_vector(79 downto 0);
+	
 
 begin
-	byteeq <= '1' when cnt = eventid(5 downto 3) else '0';
-	addrbit <= byteeq and addr(conv_integer(eventid(2 downto 0))); 
-	myevent <= addrbitl and (not eventl); 
 		
-
-	
-	main: process(CLK, cnt, byteeq, myevent, event, addrbit, addrbitl, datal) is
+	clock: process(CLK, RESET, cs, ns, addrce, myevent) is
 	begin
-		if rising_edge(CLK) then
-			eventl <= event; 
-			if EVENT = '0' then
-				cnt <= "000";
-			else
-				if cnt < "110" then
-					cnt <= cnt + 1;
+		if RESET = '1' then
+			cs <= none; 
+		else
+			if rising_edge(CLK) then
+
+	   		 cs <= ns; 
+				if addrce = '1' then
+					addrl <= ADDR(conv_integer(eventid(2 downto 0))); 
 				end if; 
-			end if; 
-			if byteeq = '1' then 
-				addrbitl <= addrbit;
-			end if; 
-	   
- 			-- latch in!
-			if cnt = "000" then
-				datal(79 downto 64) <= data;
-			end if; 
-			if cnt = "001" then
-				datal(63 downto 48) <= data;
-			end if; 
-			if cnt = "010" then
-				datal(47 downto 32) <= data;
-			end if; 
-			if cnt = "011" then
-				datal(31 downto 16) <= data;
-			end if; 
-			if cnt = "100" then
-				datal(15 downto 0) <= data;
-			end if; 
+	 			-- latch in!
+				if cs = evt1 then
+					datal(79 downto 64) <= data;
+				end if; 
+				if cs = evt2 then
+					datal(63 downto 48) <= data;
+				end if; 
+				if cs = evt3 then
+					datal(47 downto 32) <= data;
+				end if; 
+				if cs = evt4 then
+					datal(31 downto 16) <= data;
+				end if; 
+				if cs = evt5 then
+					datal(15 downto 0) <= data;
+				end if; 
 
-			if myevent = '1' then
-				cmd <= datal(79 downto 64);
-				D0 <= datal(63 downto 32);
-				D1 <= datal(31 downto 0);
-			end if; 
+				if myevent = '1' then
+					cmd <= datal(79 downto 64);
+					D0 <= datal(63 downto 32);
+					D1 <= datal(31 downto 0);
+				end if; 
 
-			newevent <= myevent; 
+				newevent <= myevent; 
 
-		end if;
+			end if;
+		end if; 
 
+	end process clock; 
 
-	end process main; 
+   fsm: process(CS, EVENT,  addrl) is
+	begin
+		case CS is 
+			when none => 
+			   addrce <= '0';
+				myevent <= '0';
+				if EVENT = '0' then
+					ns <= evt1;
+				else
+					ns <= none;
+				end if;
+			when evt1 =>
+				if eventid(5 downto 3) = "000" then
+					ADDRCE <= '1';
+				else
+					ADDRCE <= '0';
+				end if;
 
+				if addrl = '1' then
+					myevent <= '1';
+				else
+					myevent <= '0';
+				end if; 
 
+				ns <= evt2;
+			when evt2 =>
+				if  eventid(5 downto 3)  = "001" then
+					ADDRCE <= '1';
+				else
+					ADDRCE <= '0';
+				end if;
+
+				myevent <= '0';
+				ns <= evt3;
+			when evt3 =>
+				if  eventid(5 downto 3)  = "010" then
+					ADDRCE <= '1';
+				else
+					ADDRCE <= '0';
+				end if;
+
+				myevent <= '0';
+				ns <= evt4;			
+			when evt4 =>
+				if  eventid(5 downto 3)  = "011" then
+					ADDRCE <= '1';
+				else
+					ADDRCE <= '0';
+				end if;
+
+				myevent <= '0';
+				ns <= evt5;
+			when evt5 =>
+				if  eventid(5 downto 3)  = "100" then
+					ADDRCE <= '1';
+				else
+					ADDRCE <= '0';
+				end if;
+
+				myevent <= '0';
+				
+				if EVENT = '0' then
+					ns <= evt1;
+				else
+					ns <= none;
+				end if; 
+			when others =>
+				ADDRCE <= '0';
+				myevent <= '0';
+				ns <= none;
+		end case; 
+	end process fsm; 
 end Behavioral;
