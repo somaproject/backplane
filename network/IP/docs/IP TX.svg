@@ -220,9 +220,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="12.137565"
-     inkscape:cx="412.41732"
-     inkscape:cy="445.48538"
+     inkscape:zoom="3.0343913"
+     inkscape:cx="194.90026"
+     inkscape:cy="311.51368"
      inkscape:window-width="1597"
      inkscape:window-height="1155"
      showgrid="true"
@@ -235,7 +235,7 @@
      gridtolerance="2.5000000pt"
      showguides="true"
      snaptoguides="true"
-     inkscape:window-x="0"
+     inkscape:window-x="-4"
      inkscape:window-y="0"
      inkscape:grid-bbox="false"
      guidetolerance="5.0000000pt"
@@ -841,12 +841,12 @@
      x="343.19147"
      y="77.844757"
      id="text1547"
-     transform="translate(-50.32468,284.0302)"
+     transform="translate(-93.30231,284.0302)"
      sodipodi:linespacing="100%"><tspan
        sodipodi:role="line"
        id="tspan1548"
        x="343.19147"
-       y="77.844757">PLEN</tspan></text>
+       y="77.844757">PLEN[7:0]</tspan></text>
   <path
      style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
      d="M 365.62500,358.74992 L 387.50000,358.74992"
@@ -892,7 +892,7 @@
        sodipodi:role="line"
        id="tspan1558"
        x="343.19147"
-       y="77.844757">fflag/os (0x0002)</tspan></text>
+       y="77.844757">fflag/os (0x0040)</tspan></text>
   <path
      style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
      d="M 365.62500,421.24992 L 387.50000,421.24992"
@@ -955,7 +955,7 @@
        sodipodi:role="line"
        id="tspan1575"
        x="343.19147"
-       y="77.844757">TTL(0x10)</tspan></text>
+       y="77.844757">TTL(0x40)</tspan></text>
   <path
      style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
      d="M 365.62500,452.49992 L 387.50000,452.49992"
@@ -1309,16 +1309,16 @@
      id="path1725" />
   <text
      xml:space="preserve"
-     style="font-size:9.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     style="font-size:8.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
      x="343.19147"
      y="77.844757"
      id="text1727"
-     transform="translate(-68.78473,440.8681)"
+     transform="translate(-37.46881,440.1084)"
      sodipodi:linespacing="100%"><tspan
        sodipodi:role="line"
        id="tspan1728"
        x="343.19147"
-       y="77.844757">SRCIPL[15:0]</tspan></text>
+       y="77.844757">SRCIPL[31:24]</tspan></text>
   <path
      style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
      d="M 365.62500,514.58200 L 387.50000,514.58200"
@@ -1334,18 +1334,6 @@
      style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
      d="M 240.62526,546.87503 L 243.75026,549.68753 L 240.62526,552.50003"
      id="path1732" />
-  <text
-     xml:space="preserve"
-     style="font-size:9.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
-     x="343.19147"
-     y="77.844757"
-     id="text1733"
-     transform="translate(-68.78473,472.1181)"
-     sodipodi:linespacing="100%"><tspan
-       sodipodi:role="line"
-       id="tspan1734"
-       x="343.19147"
-       y="77.844757">SRCIPL[31:16]</tspan></text>
   <path
      style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
      d="M 365.62500,545.83203 L 387.50000,545.83203"
@@ -1363,24 +1351,12 @@
      id="path1758" />
   <text
      xml:space="preserve"
-     style="font-size:9.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr;"
-     x="343.19147"
-     y="77.844757"
-     id="text1759"
-     transform="translate(-39.47369,502.6528)"
-     sodipodi:linespacing="100%"><tspan
-       sodipodi:role="line"
-       id="tspan1760"
-       x="343.19147"
-       y="77.844757">DESTIPL[15:0]</tspan></text>
-  <text
-     xml:space="preserve"
      style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
      x="381.79501"
      y="80.623039"
      id="text1762"
      sodipodi:linespacing="100%"
-     transform="translate(-29.35703,501.9800)"><tspan
+     transform="translate(-23.10703,509.3770)"><tspan
        sodipodi:role="line"
        id="tspan1763"
        x="381.79501"
@@ -1418,24 +1394,12 @@
      id="path1780" />
   <text
      xml:space="preserve"
-     style="font-size:9.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr;"
-     x="343.19147"
-     y="77.844757"
-     id="text1781"
-     transform="translate(-39.47370,533.9028)"
-     sodipodi:linespacing="100%"><tspan
-       sodipodi:role="line"
-       id="tspan1782"
-       x="343.19147"
-       y="77.844757">DESTIPL[31:16]</tspan></text>
-  <text
-     xml:space="preserve"
      style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
      x="381.79501"
      y="80.623039"
      id="text1784"
      sodipodi:linespacing="100%"
-     transform="translate(-29.35700,533.2300)"><tspan
+     transform="translate(-22.02402,540.6270)"><tspan
        sodipodi:role="line"
        id="tspan1785"
        x="381.79501"
@@ -3268,7 +3232,7 @@
      transform="translate(-343.7500,7.133545e-5)" />
   <text
      xml:space="preserve"
-     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
+     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
      x="168.36479"
      y="738.32666"
      id="text13759"
@@ -3276,7 +3240,7 @@
        sodipodi:role="line"
        id="tspan13760"
        x="168.36479"
-       y="738.32666">MUXCNT &gt; 15 - latency</tspan></text>
+       y="738.32666">MUXCNT &gt; 16 - latency</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:8.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
@@ -3460,4 +3424,120 @@
        id="tspan11016"
        x="432.54144"
        y="137.06947">SRCMACL</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:9.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="343.19147"
+     y="77.844757"
+     id="text1830"
+     transform="translate(-36.81598,284.6181)"
+     sodipodi:linespacing="100%"><tspan
+       sodipodi:role="line"
+       id="tspan1831"
+       x="343.19147"
+       y="77.844757">PLEN[15:8]</tspan></text>
+  <path
+     style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
+     d="M 303.12500,352.50000 L 303.12500,365.00000"
+     id="path1833" />
+  <text
+     xml:space="preserve"
+     style="font-size:8.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="343.19147"
+     y="77.844757"
+     id="text1834"
+     transform="translate(-99.31256,440.1084)"
+     sodipodi:linespacing="100%"><tspan
+       sodipodi:role="line"
+       id="tspan1835"
+       x="343.19147"
+       y="77.844757">SRCIPL[23:16]</tspan></text>
+  <path
+     style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
+     d="M 303.12500,508.75000 L 303.12500,521.25000"
+     id="path1837" />
+  <text
+     xml:space="preserve"
+     style="font-size:8.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="343.19147"
+     y="77.844757"
+     id="text1838"
+     transform="translate(-34.34381,471.3584)"
+     sodipodi:linespacing="100%"><tspan
+       sodipodi:role="line"
+       id="tspan1839"
+       x="343.19147"
+       y="77.844757">SRCIPL[15:8]</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:8.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="343.19147"
+     y="77.844757"
+     id="text1841"
+     transform="translate(-93.71881,471.3584)"
+     sodipodi:linespacing="100%"><tspan
+       sodipodi:role="line"
+       id="tspan1842"
+       x="343.19147"
+       y="77.844757">SRCIPL[7:0]</tspan></text>
+  <path
+     style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
+     d="M 303.12500,540.00000 L 303.12500,552.50000"
+     id="path1844" />
+  <text
+     xml:space="preserve"
+     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="343.19147"
+     y="77.844757"
+     id="text1845"
+     transform="translate(-36.81256,502.6084)"
+     sodipodi:linespacing="100%"><tspan
+       sodipodi:role="line"
+       id="tspan1846"
+       x="343.19147"
+       y="77.844757">DESTIPL[31:24]</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="343.19147"
+     y="77.844757"
+     id="text1848"
+     transform="translate(-98.65631,502.6084)"
+     sodipodi:linespacing="100%"><tspan
+       sodipodi:role="line"
+       id="tspan1849"
+       x="343.19147"
+       y="77.844757">DESTIPL[23:16]</tspan></text>
+  <path
+     style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
+     d="M 303.12500,571.25000 L 303.12500,583.75000"
+     id="path1851" />
+  <text
+     xml:space="preserve"
+     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="343.19147"
+     y="77.844757"
+     id="text1852"
+     transform="translate(-36.97321,533.8584)"
+     sodipodi:linespacing="100%"><tspan
+       sodipodi:role="line"
+       id="tspan1853"
+       x="343.19147"
+       y="77.844757">DESTIPL[15:8]</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="343.19147"
+     y="77.844757"
+     id="text1855"
+     transform="translate(-98.81696,533.8584)"
+     sodipodi:linespacing="100%"><tspan
+       sodipodi:role="line"
+       id="tspan1856"
+       x="343.19147"
+       y="77.844757">DESTIPL[7:0]</tspan></text>
+  <path
+     style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;"
+     d="M 302.96435,602.50000 L 302.96435,615.00000"
+     id="path1858" />
 </svg>

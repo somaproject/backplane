@@ -13,5 +13,7 @@ control.dat  frames.dat
 
 control.dat contains the above information
 
+arppending, packet length (int), proto (int), latency (int), arp hit, mac response (48 bits),  srcmac(48b hex), subnet(32b hex), srcip(32b hex), destip(32b hex)
 
-
+The IPs are stored as 32-bit numbers; we use IPN to extract out the relevant bits . 
+cat 

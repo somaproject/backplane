@@ -1,32 +1,31 @@
 
--- VHDL Test Bench Created from source file iptx.vhd -- 22:03:15 12/14/2004
---
--- Notes: 
--- This testbench has been automatically generated using types std_logic and
--- std_logic_vector for the ports of the unit under test.  Xilinx recommends 
--- that these types always be used for the top-level I/O of a design in order 
--- to guarantee that the testbench will bind correctly to the post-implementation 
--- simulation model.
---
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.numeric_std.ALL;
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use ieee.std_logic_textio.all; 
+use  ieee.numeric_std.all; 
+use std.TextIO.ALL; 
+
 
 ENTITY iptxtest IS
+	generic ( IPN : integer := 4;
+			ARPSIZE : integer := 5); 
 END iptxtest;
 
 ARCHITECTURE behavior OF iptxtest IS 
+	
 
-	COMPONENT iptx
+	COMPONENT iptx	    Generic ( IPN : integer := 4;
+    		    ARPSIZE: integer := 5); 
+
 	PORT(
 		CLK : IN std_logic;
 		RESET : IN std_logic;
 		LEN : IN std_logic_vector(15 downto 0);
 		SRCMAC : IN std_logic_vector(47 downto 0);
 		PROTO : IN std_logic_vector(7 downto 0);
-		SUBNET : IN std_logic_vector(15 downto 0);
-		SRCIP : IN std_logic_vector(15 downto 0);
-		DESTIP : IN std_logic_vector(15 downto 0);
+		SUBNET : in std_logic_vector(31-(4*IPN) downto 0);
+          SRCIP : in std_logic_vector((4*IPN -1) downto 0);
+          DESTIP : in std_logic_vector((4*IPN -1) downto 0);
 		DATA : IN std_logic_vector(15 downto 0);
 		LATENCY : IN std_logic_vector(3 downto 0);
 		PKTPENDING : IN std_logic;
@@ -51,14 +50,14 @@ ARCHITECTURE behavior OF iptxtest IS
 	SIGNAL LEN :  std_logic_vector(15 downto 0);
 	SIGNAL SRCMAC :  std_logic_vector(47 downto 0);
 	SIGNAL PROTO :  std_logic_vector(7 downto 0);
-	SIGNAL SUBNET :  std_logic_vector(15 downto 0);
-	SIGNAL SRCIP :  std_logic_vector(15 downto 0);
-	SIGNAL DESTIP :  std_logic_vector(15 downto 0);
-	SIGNAL DATA :  std_logic_vector(15 downto 0);
+	SIGNAL SUBNET :  std_logic_vector(31-(4*IPN) downto 0);
+	SIGNAL SRCIP :  std_logic_vector((4*IPN -1) downto 0);
+	SIGNAL DESTIP :  std_logic_vector((4*IPN -1) downto 0);
+	SIGNAL DATA :  std_logic_vector(15 downto 0) := (others => '0');
 	SIGNAL DEN :  std_logic;
 	SIGNAL LATENCY :  std_logic_vector(3 downto 0);
-	SIGNAL DOUT :  std_logic_vector(15 downto 0);
-	SIGNAL DOUTEN :  std_logic;
+	SIGNAL DOUT :  std_logic_vector(15 downto 0) := (others => '0');
+	SIGNAL DOUTEN :  std_logic := '0';
 	SIGNAL PKTPENDING :  std_logic;
 	SIGNAL ARPPENDING :  std_logic;
 	SIGNAL SETARPPENDING :  std_logic;
@@ -70,10 +69,17 @@ ARCHITECTURE behavior OF iptxtest IS
 	SIGNAL ARPIP :  std_logic_vector(31 downto 0);
 	SIGNAL ARPMAC :  std_logic_vector(15 downto 0);
 	SIGNAL ARPADDR :  std_logic_vector(1 downto 0);
+	signal arpmacval : std_logic_vector(47 downto 0) := (others => '0');
+	signal dout_expected : std_logic_vector(15 downto 0)
+		:= (others => '0'); 
+
 
 BEGIN
 
-	uut: iptx PORT MAP(
+	uut: iptx GENERIC MAP (
+		IPN => IPN,
+		ARPSIZE => ARPSIZE)
+		 PORT MAP(
 		CLK => CLK,
 		RESET => RESET,
 		LEN => LEN,
@@ -103,11 +109,149 @@ BEGIN
    CLK <= not CLK after 8 ns; 
    RESET <= '0' after 15 ns; 
 
--- *** Test Bench - User Defined Section ***
-   tb : PROCESS
-   BEGIN
-      wait; -- will wait forever
-   END PROCESS;
--- *** End Test Bench - User Defined Section ***
+
+   inputs: process is
+	file cfile, dfile : text;
+	variable cL: line;
+	variable dL: line;  
+	variable arppend, arphitmiss : integer := 0;
+	variable plen, lat, protocol : integer := 0;
+	variable amac, smac : std_logic_vector(47 downto 0) := (others => '0');
+	variable snet, sip, dip : std_logic_vector(31 downto 0) 
+		:= (others => '0'); 
+	variable do : std_logic_vector(15 downto 0) := (others => '0'); 
+	variable datacnt : integer := 0; 
+
+   begin
+   	wait until falling_edge(RESET); 
+	file_open(cfile, "control.dat", read_mode); 
+
+	wait until rising_edge(CLK); 
+	while not endfile(cfile) loop
+		wait until rising_edge(CLK) and NEXTAPP = '1'; 
+		readline(cfile, cL);
+
+ 		-- arp pending 
+		read(cL, arppend); 
+		if arppend = 0 then 
+			ARPPENDING <= '0';
+			PKTPENDING <= '1'; 
+		else 
+			ARPPENDING <= '1';
+			PKTPENDING <= '0'; 
+		end if; 
+
+ 		-- packet length
+		read(cL, plen); 
+		LEN <=  std_logic_vector(to_unsigned(plen-20, 16)); 
+		
+		-- protocol
+		read(cL, protocol);
+		PROTO <= std_logic_vector(to_unsigned(protocol, 8)); 
+
+ 		-- latency
+		read(cL,  lat); 
+		lATENCY <=  std_logic_vector(to_unsigned(lat, 4)); 
+
+		
+ 		-- arphit
+		read(cL,  arphitmiss);
+		if arphitmiss = 0 then
+			ARPHIT <= '0';
+		else
+			ARPHIT <= '1';
+		end if; 
+		
+		--  macresponse, which is set in another process
+		hread(cL, amac);
+		arpmacval <= amac;  
+
+		--  source mac
+		hread(cL, smac); 
+		SRCMAC <= smac; 
+
+		-- ips
+		hread(cL, snet);
+		hread(cL, sip); 
+		hread(cL, dip); 
+
+		SUBNET <= snet(31 downto (IPN*4)); 
+		SRCIP <= sip(IPN*4 - 1 downto 0);
+		DESTIP <= dip(IPN * 4 - 1 downto 0); 
+
+		datacnt := 0 - lat; 
+
+		if arphitmiss = 1 then 
+			wait until DEN = '1'; 
+			while DEN = '1' loop
+				wait until rising_edge(CLK); 
+				datacnt := datacnt + 1;
+				DATA <= std_logic_vector(to_unsigned(datacnt, 16)) after 5 ns;
+			end loop; 
+		end if; 
+		
+				  
+
+	end loop; 
+
+	assert false 
+		report "End of Simulation"
+		severity failure; 
+		wait; 
+   end process; 
+
+
+   --arp cache ghettoness
+
+   -- data output reading
+   process is
+   	variable doutenl : std_logic := '0';
+	file dfile : text;
+	variable dL: line;  
+	variable do : std_logic_vector(15 downto 0) := (others => '0');
+
+
+   begin
+   	wait until falling_edge(RESET);    
+	file_open(dfile, "data.dat", read_mode); 
+	while not endfile(dfile) loop
+		wait until rising_edge(douten); 
+		readline(dfile, dL); 
+		hread(dL, do);	
+		dout_expected <= do;  
+		while DOUTEN = '1' loop 
+			dout_expected <= do; 		
+			wait until rising_edge(CLK);
+			if douten = '1' then
+				assert do = DOUT 
+					report "invalid DOUT"
+					severity error; 
+				
+				
+			end if; 
+ 			hread(dL, do);
+		end loop; 
+     end loop; 
+
+   end process; 
+
+   process(CLK) is
+   	variable av1, av2, av3, av4 : std_logic := '0';
+   begin
+   	if rising_edge(CLK) then
+	
+		ARPDONE <= av3;
+		av3 := av2;   
+		av2 := av1; 
+		av1 := arpverify;
+		if ARPADDR = "00" then
+			ARPMAC <= arpmacval(15 downto 0);
+		elsif ARPADDR = "01" then
+			ARPMAC <= arpmacval(31 downto 16);
+		elsif ARPADDR = "10" then
+			ARPMAC <= arpmacval(47 downto 32);
+		end if; 
+	end if;
+   end process; 
 
 END;

@@ -40,20 +40,21 @@ begin
 		   sm(15 downto 0) when muxcnt = "000100" else
 		   sm(31 downto 16) when muxcnt = "000101" else
 		   sm(47 downto 32) when muxcnt = "000110" else
-		   X"0806" when muxcnt = "000111" else
-		   X"0001" when muxcnt = "001000" else
-		   X"0800" when muxcnt = "001001" else
-		   X"0806" when muxcnt = "001010" else
-		   sm(15 downto 0) when muxcnt = "001011" else
-		   sm(31 downto 16) when muxcnt = "001100" else
-		   sm(47 downto 32) when muxcnt = "001101" else
-		   sip(15 downto 0) when muxcnt = "001110" else
+		   X"0608" when muxcnt = "000111" else
+		   X"0100" when muxcnt = "001000" else
+		   X"0008" when muxcnt = "001001" else
+		   X"0406" when muxcnt = "001010" else
+		   X"0100" when muxcnt = "001011" else
+		   sm(15 downto 0) when muxcnt = "001100" else
+		   sm(31 downto 16) when muxcnt = "001101" else
+		   sm(47 downto 32) when muxcnt = "001110" else
 		   sip(31 downto 16) when muxcnt = "001111" else
-		   X"0000" when muxcnt = "010000" else
+		   sip(15 downto 0) when muxcnt = "010000" else
 		   X"0000" when muxcnt = "010001" else
 		   X"0000" when muxcnt = "010010" else
-		   dip(15 downto 0) when muxcnt = "010011" else
+		   X"0000" when muxcnt = "010011" else
 		   dip(31 downto 16) when muxcnt = "010100" else
+		   dip(15 downto 0) when muxcnt = "010101" else
 		   X"0000" ;	
 
 	clock : process(CLK, RESET) is
@@ -107,7 +108,7 @@ begin
 					ns <= none;
 				end if; 
 			when output => 
-				if muxcnt = "100001" then
+				if muxcnt = "100010" then
 					ns <= endarp;
 				else
 					ns <= output; 

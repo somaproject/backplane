@@ -23,7 +23,7 @@ entity IPTX is
 		 DEN : out std_logic; 
            LATENCY : in std_logic_vector(3 downto 0);
            DOUT : out std_logic_vector(15 downto 0);
-           DOUTEN : out std_logic;
+           DOUTEN : out std_logic := '0';
            PKTPENDING : in std_logic;
            ARPPENDING : in std_logic;
            SETARPPENDING : out std_logic;
@@ -117,7 +117,7 @@ begin
 
 	-- mac combinational
 	bcast <= '1' when destipl(4*IPN -1 downto 0) = X"FFFF" else '0';
-
+									   
 	destmac <= X"FFFF" when bcast = '1' else ARPMAC; 
 
 	-- ip checksum
@@ -130,17 +130,17 @@ begin
 		   srcmacl(15 downto 0) when muxaddr = "00100" else 
 		   srcmacl(31 downto 16) when muxaddr = "00101" else 
 		   srcmacl(47 downto 32) when muxaddr = "00110" else 
-		   X"0800" when muxaddr = "00111" else 
+		   X"0008" when muxaddr = "00111" else 
 		   X"0045" when muxaddr = "01000" else 
-		   plen when muxaddr = "01001" else 
+		   (plen(7 downto 0) & plen(15 downto 8))  when muxaddr = "01001" else 
 		   X"0000" when muxaddr = "01010" else 
-		   X"0002" when muxaddr = "01011" else 
-		   protol & X"10" when muxaddr = "01100" else 
+		   X"0040" when muxaddr = "01011" else 
+		   protol & X"40" when muxaddr = "01100" else 
 		   hsum when muxaddr = "01101" else 
-		   srcipl(15 downto 0) when muxaddr = "01110" else 
-		   srcipl(31 downto 16) when muxaddr = "01111" else 
-		   destipl(15 downto 0) when muxaddr = "10000" else 
-		   destipl(15 downto 0) when muxaddr = "10001" else 
+		   srcipl(23 downto 16) & srcipl(31 downto 24) when muxaddr = "01110" else 
+		   srcipl(7 downto 0) & srcipl(15 downto 8) when muxaddr = "01111" else 
+		   destipl(23 downto 16) & destipl(31 downto 24) when muxaddr = "10000" else 
+		   destipl(7 downto 0) & destipl(15 downto 8) when muxaddr = "10001" else 
 		   datal; 
 			
 	 
@@ -159,6 +159,7 @@ begin
 				end if; 
 				
 				flen <= lenl + 34;
+
 				if mlen = '1' then 
 					destmacl(15 downto 0) <= destmac;
 				end if; 
@@ -191,7 +192,7 @@ begin
 
 				datal <= data;  
 					 
-				if muxcnt > "01111" - LATENCY then
+				if muxcnt > ("10000" - ('0' & LATENCY)) then
 					DEN<= '1';
 				else
 					DEN <= '0';
@@ -219,7 +220,7 @@ begin
 					suml <= (others => '0');
 				else
 					if hdrenll = '1' then
-						suml <= (X"0000" & sum) + suml;
+						suml <= sum + suml;
 					end if; 
 				end if; 
 
@@ -258,7 +259,7 @@ begin
 	
 	
 	fsm : process(cs, pktpending, arppending, bcast, ARPDONE, ARPHIT,
-				 hdrcnt) is
+				 hdrcnt, arprdone) is
 		begin
 			case cs is 
 				when napp => 
@@ -385,7 +386,7 @@ begin
 					cntsel <= '1';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '1';
 					ns <= arprwait; 
@@ -401,10 +402,10 @@ begin
 					cntsel <= '1';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
-					if arpdone = '1' then
+					if arprdone = '1' then
 						ns <= arprsetp;
 					else
 						ns <= arprwait; 
@@ -421,7 +422,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '1'; 
 					arprstart <= '0';
 					ns <= napp; 
