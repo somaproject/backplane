@@ -1,5 +1,13 @@
 Notes on backplane design:
 
+Syscontrol CONF pinouts:
+
+CONF0    DONE
+CONF1	 CCLK
+CONF2	 PROGRAM
+CONF3	 DIN
+CONF4	 INIT
+
 ------------------------------------------------------------------------------
 Power concerns:
 ------------------------------------------------------------------------------
@@ -15,6 +23,8 @@ Mosfet : ZXM64N02X (ZXM64N02XCT-ND $2.39)
 Output Cap: TPSD107M010R0100 100uF, 10V, 100 mOhm (478-1779-1-ND, $2.35)
 Input Bulk Cap: EEVFK1C152Q, 1500uF (PCE3459CT-ND, $1.416)
 Input Bypass Cap: C3225X5R1C106M (445-1400-1-ND, $2.20)
+
+
 
 ------------------------------------------------------------------------------
 Network FPGA
@@ -88,7 +98,23 @@ Now, this will also need the LCD interface, we should look at that...
 -----------------------------------------------------------------------------
 DISPLAY
 -----------------------------------------------------------------------------
-Recommended part: BXA-12565-6M ($25 from digikey) takes in 12V, needs a 10k pot, perhaps use a digital one? We sadly have no way of knowing voltage range. 
+This is the one recommended by optrex, not digikey, although digikey sells them:
 
-The LCDs are fickle beasts, need an LCD drive voltage of 26.6 V, or something like that. Will want to experiment ahead of time. 
+CXA-L10L
+http://www.tdk.co.jp/tefe02/eA434_CXAL10.pdf
+
+We connect to this in the 10 mA configuration and use a termblock. 
+
+The LCDs are fickle beasts, need an LCD drive voltage of 26.6 V, or something like that. Will want to experiment ahead of time.
+
+The flat ribbon connector (flatflex, or ffc) will apparently work with an OR642CT-ND from digikey (Omron Electronics XF2H-1415-1)
+
+For output power, we need 20 mA or so at -25V (VEE), giving a Vcc-Vee = 30 V. 
+
+We're using a charge-pump configuration . 
+This suggests an inductor of 82 uH, but we're going to use the ELJ-EA220KF, which is happily small, and has a DCR of .65 ohm, and can handle 115 mA. Potentially our saturation current is going to go to 113 mA. 
+
+We're going to drive this thing from the 3.3V supply. There are also 3.3V tolerance issues. 
+
+
 
