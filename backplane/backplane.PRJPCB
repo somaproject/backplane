@@ -123,19 +123,6 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 
 [Document9]
-DocumentPath=NEPconn.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=6
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document10]
 DocumentPath=backplane.PCBDOC
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -148,13 +135,26 @@ ClassGenCCAutoEnabled=1
 ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 
+[Document10]
+DocumentPath=NEPconn.SCHDOC
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=6
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+
 [Document11]
 DocumentPath=DSPCONN.SCHDOC
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=2
+AnnotateOrder=1
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -167,7 +167,7 @@ AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=1
+AnnotateOrder=2
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
