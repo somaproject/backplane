@@ -1,0 +1,90 @@
+We can view event command words as essentially being two-byte ID. 
+
+Thus, we partition the event space into a series of commands that everyone might want to send. 
+
+
+
+
+Scenario:
+
+1. Updated tetrode settings: 
+    To: everyone 
+    From: DSPboards
+    CMD : 
+
+2. RESET
+    To: everyone / anyone
+    from: anyone
+    CMD:
+
+3. Set your gain to foo:
+    To: DSPboards
+    from: anyone
+    CMD:
+
+
+So, we can divide our event classes into the following criteria:
+
+
+Sender: one, subset, any
+Receiver: one : all
+
+Who are the senders:
+NEP
+USB
+Ether
+DIO
+LCD/UI
+Timer
+Network
+Tetrode DSPs (32) 
+
+Sender is the same as the receiver / EVENTID
+
+Thus DSPs are lower 32, etc. 
+
+Event 0x00: null event, i..e NOP. MUST BE NO-OP FOR EVERYONE!
+
+Events 0x1-0x1F : "broadcast" events, i.e. events that can be sent by anyone
+to everyone
+
+broadcast events, sender independent:
+0x01: Change device into boot mode, if it exists. dw0[0] = boot mode
+0x02: state of reset, dw[0] = reset mode (1 == reset)
+0x03: boot memory configure. dw0 = addr of first word
+		  d1 = first 16-bit word to write
+		  d4 = last 16-bit word to write
+0x04: timing update
+		       to reset the timer.	  
+		       dw0[0] = 1 == reset the timer
+		       dw2  == high word of current time
+		       dw3  == low word of current time
+
+Broadcast events, sender dependent:
+   these are generally events where the device sending them will send them to all devices, but are specific to the device sending them. I.e. network says "my link is down". 
+
+0x20-0x2F
+0x20: systemic state change:
+       Ethernet down
+       link changed
+       device successfully booted
+0x21: application specific
+      tetrode gain change
+
+unicast events, from specific sender to specific receiver, stereotyped thoug. These are common ones. 
+0x30-0x3F :
+0x30 : Error. Event that is sent replying to a specific device saying "I just got an invalid event from you." Error events are sent to a specific individual, and are generally encoded as:
+
+
+
+
+Events 0x40-0x4F : system configuration events for a particular device
+These are events that are device specific, and where the sender 
+
+
+Events 0x80-0xFF: userspace? : )
+
+
+
+
+
