@@ -1,0 +1,73 @@
+Goals:
+
+Generic IO? 
+
+16 DACs (12 bit, 100 ksps max)
+16 ADCs?
+64 digital out
+   output patterns, 
+64 digital in
+
+fiber tranceiver
+
+Have a "generic IO" board ala network board? 
+
+Problems: cost ($150 for board)
+
+Hmmm....
+this is ass...
+
+Ideally, we have our UI board and our general IO board, well, the same PCB, except that the UI board needs to be soldered to the front of the PCB...
+wait, why? Why not have a wimpy little daughter board? 
+
+Use ADSP-21262? What do we want? 
+
+
+Digital Ouput:
+Patterns
+  write frequency multiple, bitmask 
+  write triggering event
+individual bit flipping
+time-related flipping (i.e. toggle low-high every n clock ticks)
+
+digital input: 
+  fire event foo when inputs match pattern bar
+  interrupts (low-> high, high->low)
+
+
+analog output:
+   arbitrary value, i.e. buffering the output
+   triggerable, n-sample memories
+   TLV5630 really looks like best part, but the 
+   AD5383 is pretty sweet too (32 chan 12 bit)
+
+   if you really care about analog whatever, use the fiber interface outputs....
+
+   we can have an internal 16-bit set of converters on the tiny 2-layer board... oh that rocks... we can use little SMT connectors for the BNC : ) it can be the oscope-monitoring devices...
+
+
+
+ADCs:
+   only a read-result system... 16 x 10 bit
+   AD7918BRU -- $6.00 8 x 10 bit
+
+
+UI: daughterboard is pretty much just generic IO, because the digital switch thingies (cheap)
+
+Apollodisplays.com has really good prices on optrex displays
+
+use 68HC12 and FPGA mem-mapping... something something...
+wow, you could actually have a high-level interface on the FPGA. Wow, that would be pretty cool. 
+
+
+UI ...
+
+Well, so, I'm investigating a uP core for the FPGA to handle the LCD stuff... currently the best candidate is pAVR, which is written by a BU student, which is pretty cool. It will synthesize in a Spartan-3 200, which nuhorizons finally has in quantity. 
+
+There also appear to be gcc tools targeted at the avr line of microcontrollers, and people aren't paranoid about legal issues with the open cores. 
+
+It would be neat to have this core running, talking to the FPGA which was doing some measure of hardware-accelerated graphics somethingsomething. 
+
+A lot of the existing cores either 1. suck, 2. are huge, or 3. run into IP concerns. For example, openrisc1200 is freaking huge. 
+
+
