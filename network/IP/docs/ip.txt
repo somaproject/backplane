@@ -1,0 +1,57 @@
+Our IP stack design
+
+
+-----------------------------------------------------------------------------
+IP Transmit
+-----------------------------------------------------------------------------
+
+Remember that LSBs are always transmitted on the wire first, thus we store the first bytes in the LSBytes of the 16-bit words. 
+
+proto is always 0x0800, i.e. ethernet
+Version is 4, header len is 20=5x4bytes
+TOS is 0x00
+Fragment id is of course 0, because we can't fragment.  
+
+Fragment offset is zero, and the fragment flags are set to dont-fragment
+
+The IP stack abstraction barrier:
+
+General inputs:
+
+SUBNET: input 32-IPN bits that comprise the MSBs of all IPs in the sytem
+SRCIP : the IPN lsbs of the IP address for the TX subsystem
+SRCMAC : 48 input bits of the TX mac address
+
+
+TX-specific inputs: 
+PROTO[7:0]
+LEN[15:0]
+DESTIP[IPN-1:0]
+LATENCY[3:0]
+DATA[15:0]
+DEN
+
+PKTPENDING
+ARPPENDING
+SETARPPENDING
+
+NEXTAPP
+				   
+The output of this section is determined by a giant multiplexor that selects which 16-bit-wide word of the output packet is to be transmitted at a given time. The counter governing transmit mux control, MUXCNT, increments up to 18, at which point it stays there until a reset caused by a new inbound packet.
+
+All of the inputs from the IPmux layer are registered in some capacity before the mux; that is, the inputs to the mux are either constants our registers from this submodule, to help with timing constraints (a 16x19:1 mux is going to be both huge and slow).
+
+LEN is latched to LENL on input by the assertion of NEWPKT. We then add appropriate values to derive both FLEN (the total number of bytes in the frame) and PLEN (the total number of frames in the packet).  
+
+SRCMAC, SUBNET, and SRCIP are not expectedd to change, well, at all. 
+
+
+Generic FSM overview:
+The process of transmitting a frame can be devided into four stages:
+1. ARP check (and possible ARP query TX), and write
+2. Header checksum calculation
+3. IP Header transmission
+4. Packet data transmission
+
+Note that when the bits of DESTIP are all 1s (i.e. this is a broadcast packet) then BCAST is asserted and we abort the ARP query and write all FFs to the DESTMACs. 
+				   
