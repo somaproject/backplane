@@ -5,8 +5,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 --  Uncomment the following lines to use the declarations that are
 --  provided for instantiating Xilinx primitive components.
---library UNISIM;
---use UNISIM.VComponents.all;
+library UNISIM;
+use UNISIM.VComponents.all;
 
 entity receive is
     Port ( CLK : in std_logic;
@@ -44,9 +44,8 @@ architecture Behavioral of receive is
   signal frmcnt, ipcnt, udpcnt : std_logic_vector(9 downto 0) := (others => '0'); 
   signal pktreset : std_logic := '0';
   
-  signal ipaddrl, ipaddrh : std_logic_vector(15 downto 0) := (others => '0'); 
-
-  signal iphdrchksum, udpchksum, icmpchksum: std_logic_vector(15 downto 0);
+  
+  signal iphdrchksum, udpchksum, icmpchksum, udpchkdata: std_logic_vector(15 downto 0);
 
   signal ipchken, icmpchken, udpchken : std_logic := '0';
 
@@ -100,7 +99,6 @@ architecture Behavioral of receive is
 	end component;	
 
 begin
-
 	ram_00 : RAMB4_S16_S16 port map (
 		DIA => DATA,
 		DIB => "0000000000000000",
@@ -156,13 +154,13 @@ begin
 		checksum => iphdrchksum);
 	icmp_checksum: ipchecksum port map (
 		CLK => CLK,
-		DATA => DATA,
+		DATA => data,
 		RESET => pktreset,
 		CHKEN => icmpchken,
 		checksum => icmpchksum);
 	udp_checksum: ipchecksum port map (
 		CLK => CLK,
-		DATA => DATA,
+		DATA => udpchkdata,
 		RESET => pktreset,
 		CHKEN => udpchken,
 		checksum => udpchksum);
@@ -201,7 +199,7 @@ begin
 			 PD00;
 
 
-	clock: process (rcs, rns, rframe, reset) is
+	clock: process (rcs, rns, rframe, reset, clk) is
 	begin
 	  if reset = '1' then
 	  	rcs <= none;
@@ -224,9 +222,9 @@ begin
 			end if; 
 
 			if rcs = ipdestiph then
-				ipcnt <= (others => '0');
+				udpcnt <= (others => '0');
 			else
-				ipcnt <= ipcnt + 1;
+				udpcnt <= udpcnt + 1;
 			end if; 
 
 
@@ -252,7 +250,14 @@ begin
 	end process clock;
 
 
- 	fsm: process(rcs, rns, RFRAME, frmcnt, data, ipaddrl, ipaddrh, ipproto, 
+	-- UDP length double-adding for checksum
+	udpchkdata <= (data(14 downto 0) & '0') when rcs = ludplen else
+				(  "00000000" & data(7 downto 0) ) when rcs = lipproto else
+				data; 
+
+
+
+ 	fsm: process(rcs, rns, RFRAME, frmcnt, data, ipaddr, ipaddr, ipproto, 
 		frmcnt, frmlen, ipcnt, udpcnt, udplen, iphdrchksum,  icmpchksum,  udpchksum) is
 	begin
 		case rcs is
@@ -339,11 +344,8 @@ begin
 				icmpchken <= '0';
 				udpchken <= '0'; 
 				pktreset <= '0';     
-				if data = "0000000000000000" then -- 0x0000
-					rns <= fragidchk;
-				else 
-					rns <= abort; 
-				end if; 
+				rns <= fragidchk;
+
 			when fragidchk => 
 				we <= '1';
 				validicmp <= '0';
@@ -378,7 +380,7 @@ begin
 				pktdone <= '0';
 				ipchken <= '1';
 				icmpchken <= '0';
-				udpchken <= '0'; 
+				udpchken <= '1'; 
 				pktreset <= '0';     
 				rns <= iphdrchk;
 			when iphdrchk => 
@@ -400,7 +402,7 @@ begin
 				pktdone <= '0';
 				ipchken <= '1';
 				icmpchken <= '0';
-				udpchken <= '0'; 
+				udpchken <= '1'; 
 				pktreset <= '0';     
 				rns <= ipsrciph;
 			when ipsrciph => 
@@ -411,24 +413,9 @@ begin
 				pktdone <= '0';
 				ipchken <= '1';
 				icmpchken <= '0';
-				udpchken <= '0'; 
+				udpchken <= '1'; 
 				pktreset <= '0';     
-				rns <= ipdestipl;
-			when ipdestipl => 
-				we <= '1';
-				validicmp <= '0';
-				validudp <= '0';
-				validarp <= '0';
-				pktdone <= '0';
-				ipchken <= '1';
-				icmpchken <= '0';
-				udpchken <= '0'; 
-				pktreset <= '0';     
-				if data = ipaddrl then
-					rns <= ipdestiph;
-				else 
-					rns <= abort; 
-				end if;
+				rns <= ipdestiph;
 			when ipdestiph => 
 				we <= '1';
 				validicmp <= '0';
@@ -437,12 +424,27 @@ begin
 				pktdone <= '0';
 				ipchken <= '1';
 				icmpchken <= '0';
-				udpchken <= '0'; 
+				udpchken <= '1'; 
 				pktreset <= '0';     
-				if data = ipaddrh then
-					if ipproto = "0000000000000001" then	-- 0x0001
+				if data = ipaddr(31 downto 16) then
+					rns <= ipdestipl;
+				else 
+					rns <= abort; 
+				end if;
+			when ipdestipl => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '1';
+				icmpchken <= '0';
+				udpchken <= '1'; 
+				pktreset <= '0';     
+				if data = ipaddr(15 downto 0) then
+					if ipproto(7 downto 0) = "00000001" then	-- 0x01
 						rns <= icmptype;
-					elsif ipproto = "0000000000010111" then -- 0x0017
+					elsif ipproto(7 downto 0) = "00010001" then -- 0x11
 						rns <= udpsport;
 					else 
 						rns <= abort;
@@ -475,22 +477,7 @@ begin
 				icmpchken <= '1';
 				udpchken <= '0'; 
 				pktreset <= '0';     
-				rns <= icmpmsg;
-			when icmpmsg => 
-				we <= '1';
-				validicmp <= '0';
-				validudp <= '0';
-				validarp <= '0';
-				pktdone <= '0';
-				ipchken <= '0';
-				icmpchken <= '1';
-				udpchken <= '0'; 
-				pktreset <= '0';     
-				if data = "0000000000000001" then --0x0001
-					rns <= icmpwait;
-				else 
-					rns <= abort; 
-				end if;		
+				rns <= icmpwait;
 			when icmpwait => 
 				we <= '1';
 				validicmp <= '0';
@@ -501,7 +488,7 @@ begin
 				icmpchken <= '1';
 				udpchken <= '0'; 
 				pktreset <= '0';     
-				if ipcnt >= iplen then
+				if ipcnt >= iplen(10 downto 1) then
 					rns <= icmpfrmw;
 				else 
 					rns <= icmpwait; 
@@ -516,10 +503,10 @@ begin
 				icmpchken <= '0';
 				udpchken <= '0'; 
 				pktreset <= '0';     
-				if frmcnt >= frmlen then
+				if frmcnt >= frmlen(10 downto 1) then
 					rns <= icmpvfy;
 				else 
-					rns <= icmpwait; 
+					rns <= icmpfrmw; 
 				end if;	
 			when icmpvfy => 
 				we <= '0';
@@ -548,6 +535,189 @@ begin
 				udpchken <= '0'; 
 				pktreset <= '0';     
 				rns <= none;
+ 			when udpsport => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '1'; 
+				pktreset <= '0';     
+				rns <= udpdport;
+ 			when udpdport => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '1'; 
+				pktreset <= '0';     
+				rns <= ludplen;
+ 			when ludplen => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '1'; 
+				pktreset <= '0';     
+				rns <= udpchk;			
+ 			when udpchk => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '1'; 
+				pktreset <= '0';     
+				rns <= udpwait;	
+			when udpwait => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '1'; 
+				pktreset <= '0';     
+				if udpcnt >= udplen(10 downto 1) then
+					rns <= udpfrmw;
+				else 
+					rns <= udpwait; 
+				end if;	
+ 			when udpfrmw => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '1'; 
+				pktreset <= '0';     
+				if frmcnt >= frmlen(10 downto 1) then
+					rns <= udpvfy;
+				else 
+					rns <= udpfrmw; 
+				end if;
+			when udpvfy => 
+				we <= '0';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '0'; 
+				pktreset <= '0';     
+				if iphdrchksum = "1111111111111111" and 
+					udpchksum = "1111111111111111"  then
+					rns <= udpdone;  
+				else 
+					rns <= abort; 
+				end if;
+			when udpdone => 
+				we <= '0';
+				validicmp <= '0';
+				validudp <= '1';
+				validarp <= '0';
+				pktdone <= '1';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '0'; 
+				pktreset <= '0';     
+				rns <= none;
+			when arpdestw => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '0'; 
+				pktreset <= '0';     
+				if frmcnt = 19 then
+					rns <= arpdestipl;  
+				else 
+					rns <= arpdestw; 
+				end if;
+			when arpdestipl => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '0'; 
+				pktreset <= '0';     
+				if data = ipaddr(15 downto 0) then
+					rns <= arpdestiph;  
+				else 
+					rns <= abort; 
+				end if;
+			when arpdestiph => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '0'; 
+				pktreset <= '0';     
+				if data = ipaddr(31 downto 16) then
+					rns <= arpset;  
+				else 
+					rns <= abort; 
+				end if;
+			when arpset => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '0'; 
+				pktreset <= '0';     
+				rns <= arpwait;
+ 			when arpwait => 
+				we <= '1';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '0';
+				pktdone <= '0';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '0'; 
+				pktreset <= '0';     
+				if frmcnt >= frmlen(10 downto 1) then
+					rns <= arpdone;
+				else 
+					rns <= arpwait; 
+				end if;
+			when arpdone => 
+				we <= '0';
+				validicmp <= '0';
+				validudp <= '0';
+				validarp <= '1';
+				pktdone <= '1';
+				ipchken <= '0';
+				icmpchken <= '0';
+				udpchken <= '0'; 
+				pktreset <= '0';     
+				rns <= none; 
 			when abort => 
 				we <= '0';
 				validicmp <= '0';
@@ -558,7 +728,7 @@ begin
 				icmpchken <= '0';
 				udpchken <= '0'; 
 				pktreset <= '0';     
-				if frmcnt >= frmlen	then
+				if frmcnt >= frmlen(10 downto 1)	then
 					rns <= abortdone;  
 				else 
 					rns <= abort; 
@@ -568,7 +738,7 @@ begin
 				validicmp <= '0';
 				validudp <= '0';
 				validarp <= '0';
-				pktdone <= '0';
+				pktdone <= '1';
 				ipchken <= '0';
 				icmpchken <= '0';
 				udpchken <= '0'; 

@@ -20,7 +20,7 @@ architecture Behavioral of IPchecksum is
 -- IPchecksum.vhd -- checksum calculator for all classes of
 -- protocols for IP. There's an RFC about this someplace...
 
-signal bsum : std_logic_vector(16 downto 0) := "00000000000000000";
+signal bsum : std_logic_vector(31 downto 0) := (others => '0');
 signal sum : std_logic_vector(15 downto 0) := "0000000000000000";
 
 begin 
@@ -28,16 +28,16 @@ begin
     begin
     	  if rising_edge(CLK) then
 		if RESET = '1' then
-			sum <= (others => '0');
+			bsum <= (others => '0');
 		else
 			if CHKEN = '1' then
-				bsum <= bsum + data + bsum(16);  
+				bsum <= bsum + ("0000000000000000" & data);  
 			end if;
 		end if;
 	  end if;
 	end process main; 
 
 	  	
-	CHECKSUM <= bsum(15 downto 0)+1; 
+	CHECKSUM <= bsum(15 downto 0) + bsum(31 downto 16);  
 
 end Behavioral;
