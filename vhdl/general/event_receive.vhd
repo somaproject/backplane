@@ -25,7 +25,7 @@ architecture Behavioral of event_receive is
 -- event_receive.vhd : reference implementation of event receiver
 
 
-	signal cnt: std_logic_vector(2 downto 0); 
+	signal cnt: std_logic_vector(2 downto 0) := "000"; 
 	signal myevent, eventl,  byteeq, addrbit, addrbitl : std_logic; 
 	signal datal : std_logic_vector(79 downto 0);
 
