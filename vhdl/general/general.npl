@@ -4,16 +4,21 @@ PROJECT general
 DESIGN general Normal
 DEVFAM spartan2e
 DEVFAMTIME 0
-DEVICE xc2s150e
-DEVICETIME 0
-DEVPKG pq208
-DEVPKGTIME 0
-DEVSPEED -7
-DEVSPEEDTIME 0
+DEVICE xc2s200e
+DEVICETIME 1050877978
+DEVPKG fg456
+DEVPKGTIME 1050877978
+DEVSPEED -6
+DEVSPEEDTIME 1050877978
 FLOW XST VHDL
 FLOWTIME 0
 STIMULUS event_receive_test.tbw Normal
+STIMULUS event_transmit_test.tbw Normal
+MODULE event_transmit.vhd
+MODSTYLE event_transmit Normal
 MODULE event_receive.vhd
 MODSTYLE event_receive Normal
+[STATUS-ALL]
+event_receive.ngcFile=WARNINGS,1050881691
 [STRATEGY-LIST]
 Normal=True
