@@ -34,6 +34,7 @@ DEN
 PKTPENDING
 ARPPENDING
 SETARPPENDING
+PKTDONE
 
 NEXTAPP
 				   
@@ -50,8 +51,8 @@ Generic FSM overview:
 The process of transmitting a frame can be devided into four stages:
 1. ARP check (and possible ARP query TX), and write
 2. Header checksum calculation
-3. IP Header transmission
-4. Packet data transmission
+3. Packet data transmission
 
 Note that when the bits of DESTIP are all 1s (i.e. this is a broadcast packet) then BCAST is asserted and we abort the ARP query and write all FFs to the DESTMACs. 
 				   
+
