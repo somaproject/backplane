@@ -1,1 +1,53 @@
 Notes on building and using a cross-compilation tool-chain.
+
+make sure one has:
+flex
+bison
+bzip2
+
+Download the vanilla kernel sources.  Unpack and use
+
+make ARCH=arm CROSS_COMPILE=arm-linux- menuconfig
+
+Set correct system type (PXA2XX-based)
+Under network/10 or 100 mbit, compile in MII support
+
+Unpack the crosstool, cd into dir
+
+Edit gcc-3.4.0-glibc-2.3.2.dat
+Change LINUX_DIR to kernel version
+LINUX_DIR=linux-2.6.7
+
+Edit arm.dat, 
+changing KERNELCONFIG to point to config made earlier
+change TARGET from arm-unknown-linux-gnu to arm-linux
+
+Edit all.sh
+change BUILD-DIR to `pwd`/build/$TARGET
+change prefix to prefix directory - in this case
+PREFIX=/home/fishburn/embedded/arm-module/arm-module/tools
+
+Edit getandpatch.sh
+add
+QUIET_EXTRACTIONS="yes" at start
+
+execute
+$ mkdir -p ~/embedded/arm-module/tools
+
+then run
+$ sh demo-arm.sh
+
+About forty minutes later, BAM! arm toolchain
+
+make the following script in one's home directory:
+
+$ cat ~/develarm
+#start develarm script
+export PROJECT=arm-module
+export PRJROOT=/home/fishburn/embedded/${PROJECT}
+export TARGET=arm-linux
+export PREFIX=${PRJROOT}/tools
+export TARGET_PREFIX=${PREFIX}/${TARGET}
+export PATH=${PREFIX}/bin:${PATH}
+cd $PRJROOT
+#end develarm script
