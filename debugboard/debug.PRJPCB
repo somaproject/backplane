@@ -1,8 +1,8 @@
 [Design]
 Version=1.0
-HierarchyMode=1
+HierarchyMode=0
 ChannelRoomNamingStyle=0
-OutputPath=outputs
+OutputPath=
 ChannelDesignatorFormatString=$Component_$RoomName
 ChannelRoomLevelSeperator=_
 OpenOutputs=1
@@ -19,33 +19,7 @@ DefaultPcbPcad=0
 ReorderDocumentsOnCompile=1
 
 [Document1]
-DocumentPath=network.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=7
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document2]
-DocumentPath=memory.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=5
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document3]
-DocumentPath=BusControl.SCHDOC
+DocumentPath=debug.SCHDOC
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
@@ -57,111 +31,7 @@ ClassGenCCAutoEnabled=1
 ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 
-[Document4]
-DocumentPath=system.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=10
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document5]
-DocumentPath=LCD.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=3
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document6]
-DocumentPath=peripheralconn.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=8
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document7]
-DocumentPath=power and clocks.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=9
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document8]
-DocumentPath=backplane.PCBDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document9]
-DocumentPath=NEPconn.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=6
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document10]
-DocumentPath=DSPCONN.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document11]
-DocumentPath=DSPCONN2.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=2
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document12]
+[Document2]
 DocumentPath=parts.SCHLIB
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -174,7 +44,7 @@ ClassGenCCAutoEnabled=1
 ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 
-[Document13]
+[Document3]
 DocumentPath=parts.PCBLIB
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -187,21 +57,8 @@ ClassGenCCAutoEnabled=1
 ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 
-[Document14]
-DocumentPath=fpga.SCHDOC
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=11
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-
-[Document15]
-DocumentPath=output.OUTJOB
+[Document4]
+DocumentPath=debug.PCBDOC
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
@@ -227,28 +84,28 @@ OutputName2=MultiWire
 OutputDocumentPath2=
 OutputEnabled2=1
 OutputDefault2=0
-OutputType3=PLDNetList
-OutputName3=CUPL PLD
+OutputType3=Pcad
+OutputName3=Pcad for PCB
 OutputDocumentPath3=
 OutputEnabled3=1
 OutputDefault3=0
-OutputType4=ProtelNetlist
-OutputName4=Protel
+OutputType4=PLDNetList
+OutputName4=CUPL Netlist
 OutputDocumentPath4=
 OutputEnabled4=1
 OutputDefault4=0
-OutputType5=VHDL
-OutputName5=VHDL File
+OutputType5=ProtelNetlist
+OutputName5=Protel
 OutputDocumentPath5=
 OutputEnabled5=1
 OutputDefault5=0
-OutputType6=XSpiceNetlist
-OutputName6=XSpice Netlist
+OutputType6=VHDL
+OutputName6=VHDL File
 OutputDocumentPath6=
 OutputEnabled6=1
 OutputDefault6=0
-OutputType7=Pcad
-OutputName7=Pcad for PCB
+OutputType7=XSpiceNetlist
+OutputName7=XSpice Netlist
 OutputDocumentPath7=
 OutputEnabled7=1
 OutputDefault7=0
@@ -266,29 +123,27 @@ OutputDefault1=0
 [OutputGroup3]
 Name=Documentation Outputs
 Description=
-PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=0
+PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=Composite
 OutputName1=Composite Drawing
 OutputDocumentPath1=
 OutputEnabled1=1
 OutputDefault1=0
 PageOptions1=Record=PageOptions|SelectedOnly=False|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PaperKind=A4|PrintScaleMode=1
-OutputType2=PCB Print
-OutputName2=PCB Prints
+OutputType2=Logic Analyser Print
+OutputName2=Logic Analyser Prints
 OutputDocumentPath2=
 OutputEnabled2=1
 OutputDefault2=0
 PageOptions2=Record=PageOptions|SelectedOnly=False|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PaperKind=A4|PrintScaleMode=1
-OutputType3=Schematic Print
-OutputName3=Schematic Prints
-OutputDocumentPath3=E:\desktop\backplane\backplane\network.SCHDOC
+OutputType3=PCB Print
+OutputName3=PCB Prints
+OutputDocumentPath3=
 OutputEnabled3=1
 OutputDefault3=0
 PageOptions3=Record=PageOptions|SelectedOnly=False|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PaperKind=A4|PrintScaleMode=1
-Configuration3_Name1=OutputConfigurationParameter1
-Configuration3_Item1=Record=SchPrintView|BooleanThing=False
-OutputType4=Logic Analyser Print
-OutputName4=Logic Analyser Prints
+OutputType4=Schematic Print
+OutputName4=Schematic Prints
 OutputDocumentPath4=
 OutputEnabled4=1
 OutputDefault4=0
@@ -758,6 +613,8 @@ L17=WNNNNNNNWNNNWWWWN
 SortOrder=3
 MatchParameter1=Comment
 MatchStrictly1=1
+MatchParameter2=Library Reference
+MatchStrictly2=1
 
 [PrjClassGen]
 CompClassManualEnabled=0

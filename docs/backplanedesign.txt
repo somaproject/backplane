@@ -1,12 +1,12 @@
-Notes on backplane design:
+4Notes on backplane design:
 
 Syscontrol CONF pinouts:
-
-CONF0    DONE
-CONF1	 CCLK
-CONF2	 PROGRAM
-CONF3	 DIN
-CONF4	 INIT
+			New:
+CONF0    DONE		CONF0
+CONF1	 CCLK		FPGACCLK
+CONF2	 PROGRAM	CONF1
+CONF3	 DIN		FPGADIN
+CONF4	 INTI		CONF2
 
 ------------------------------------------------------------------------------
 Power concerns:
@@ -27,20 +27,15 @@ Input Bypass Cap: C3225X5R1C106M (445-1400-1-ND, $2.20)
 
 
 ------------------------------------------------------------------------------
-Network FPGA
+FPGA Architecture
 ------------------------------------------------------------------------------
+Thanks to screaming-circuit's cheap fast BGA placement, we're going to use one of the 400+ ping XC3S1000s 
 
-Simple large FPGA, ram interface, but with interfaces to both the event bus and the data bus. 
 
-We can't just use the on-board BlockSelect+ Ram, as we need more to implement our application-level UDP retransmission protocol. 
 
-Pin counts : 
-Data bus	18
-Event Bus	20
-Network		36
-Ram		32+ 4 + 17 == 55
---------------------
-                127
+------------------------------------------------------------------------------
+Network Subsystem
+------------------------------------------------------------------------------
 
 Network operation and functions:
 Must aggreagate data from the data bus, turn it into packets, and save those packets. Thus, we're really really going to end up having to multiplex our memory access scheme. Inputs aren't as big of an issue, because the class which we'll be receiving are generally small, and the input buffer on the NIC can, again in genreal, handle them anyway. 
@@ -65,28 +60,6 @@ System FPGA
 
 Responsible for boot control, timing control, and general system status. 
 
-Now, the unique FPGAs on the board... are:
-
-16 DSPboards
-Network
-Gigabit
-Bus control
-NEP
-Audio
-USB
-Boot
-
-8 x (4) == 32 pins total
-
-Event Bus: 16+8+4 = 28 pins
-Boot interface input = 6 pins
-Sequencer control = 2 pins
-
-
-(What's left)
-
-(that's 70 total)
-
 More than enough for a good mating to an 8051
 
 Holy crap, someone has a full LGPL'd and documented 8051. And even better, there's a full, very well documented PIC implementation by silicore. As VHDL. Rock on. 
@@ -107,7 +80,9 @@ We connect to this in the 10 mA configuration and use a termblock.
 
 The LCDs are fickle beasts, need an LCD drive voltage of 26.6 V, or something like that. Will want to experiment ahead of time.
 
-The flat ribbon connector (flatflex, or ffc) will apparently work with an OR642CT-ND from digikey (Omron Electronics XF2H-1415-1)
+The flat ribbon connector (flatflex, or ffc, or FPC for flat panel connector ) uses 1.25mm pitch connectors. The best connector, apparently, is the molex 39-51-3144, which avnet has in stock. 
+
+
 
 For output power, we need 20 mA or so at -25V (VEE), giving a Vcc-Vee = 30 V. 
 
@@ -116,5 +91,37 @@ This suggests an inductor of 82 uH, but we're going to use the ELJ-EA220KF, whic
 
 We're going to drive this thing from the 3.3V supply. There are also 3.3V tolerance issues. 
 
+-----------------------------------------------------------------------
+BOOT Configuration
+-----------------------------------------------------------------------
+
+We'd like to be able to boot the backplane without the peripehral card in, for debugging purposes. At the same time, we'd like the nominal boot cycle to be via the peripheral interface.
+
+So, we're going to slightly redesign the backplane (hell, we have the time and the money) such that it will actually be the CF interface that will boot first on power-up, and then this will boot the SYSTEM FPGA, which will then read data from that interface and boot everything else. Thus everything but the CF IO can be kept ont he CF. 
+
+-----------------------------------------------------------------------
+PCB Layout
+-----------------------------------------------------------------------
+BGA
+What a pain. Against Xilinx' recommendations, in an attempt to comply with PCBpro's manufacturing guidelines, we're shrinking the size of the intra-FPGA vias (for BGA fanout) to 10 mils with 10 mil pads. All have full tenting on top. They are located exactly at the center of 4 pads. This is necessary so that we can route out the 6 mil traces. 
+
+
+-----------------------------------------------------------------------
+CHECKING
+-----------------------------------------------------------------------
+Clock subsystem:
+  CY29942: Schematic valid, package valid
+  OSC OE pin correct
+  
+
+Backplane FPGA boot config: 
+  All config pins connected to peripheral IO
+  FPGA JTAG : verified
+
+Physical configuration: 
+  Mounting holes:  check
+  DSP holes: check
+
+Pull-up on PROGRAM for backplane FPGA
 
 
