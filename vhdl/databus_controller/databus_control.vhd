@@ -13,11 +13,19 @@ entity databus_control is
            SYSDATA : in std_logic_vector(15 downto 0);
            DACK : in std_logic;
            DEN : out std_logic_vector(15 downto 0);
-           RESET : in std_logic);
+           RESET : in std_logic;
+		 WE : out std_logic;
+		 ADDR : out std_logic_vector(19 downto 0);
+		 DATA : inout std_logic_vector(15 downto 0); 
+		 CLK2X : out std_logic;
+		 RDATAR : out std_logic_vector(15 downto 0);
+		 RADDRR : in std_logic_vector(19 downto 0) 
+		 );
 end databus_control;
 
 architecture Behavioral of databus_control is
 -- databus_controller.vhd : soma data bus controller
+--
 -- This module contains the logic and the FSMs to control the data
 -- bus over which the bulk of soma data is transferred. It handles
 -- activation of the individual cards, and reads the data off
@@ -35,7 +43,7 @@ signal datal : std_logic_vector(15 downto 0) := (others => '0');
 signal dackl : std_logic;
 signal dataencnt : integer range 0 to 15; 
 signal denable : std_logic; 
-signal pktid : std_logic_vector(31 downto 0); 
+signal pktid : std_logic_vector(31 downto 0) := (others => '0'); 
 signal pktidval : std_logic_vector(15 downto 0);
 signal rdataw : std_logic_vector(15 downto 0);
 signal raddrw : std_logic_vector(19 downto 0);
@@ -44,12 +52,40 @@ signal pktcnten, pktcntsel : std_logic := '0';
 signal nextchan, pktidlh : std_logic := '0'; 
 signal fsmwe : std_logic := '1'; 
 signal dackcnt : integer range 0 to 7 := 0;  
+signal clk2x_locked: std_logic := '0';
 
 
-
+component ramcontrol is
+    Port ( CLK : in std_logic;
+           CLK2X : out std_logic;
+           RDATAR : out std_logic_vector(15 downto 0);
+           RDATAW : in std_logic_vector(15 downto 0);
+           RADDRR : in std_logic_vector(19 downto 0);
+           RADDRW : in std_logic_vector(19 downto 0);
+           RWE : in std_logic;
+           WE : out std_logic;
+		 RESET : in std_logic;
+		 CLK2X_locked : out std_logic; 
+		 DATA: inout std_logic_vector(15 downto 0);  
+           ADDR : out std_logic_vector(19 downto 0));
+end component;
 
 
 begin
+
+	RAMctl: ramcontrol port map (
+		CLK => CLK,
+		CLK2X => CLK2X,
+		RDATAR => RDATAR,
+		RDATAW => rdataw,
+		RADDRR => RADDRR,
+		RADDRW => raddrw,
+		RWE => rwe,
+		WE => WE,
+		RESET => RESET,
+		CLK2X_LOCKED => clk2x_locked, 
+		DATA => DATA,
+		ADDR => ADDR);
 
 	clock: process(CLK, RESET, DACK, SYSDATA) is
 	begin
@@ -77,7 +113,7 @@ begin
 					raddrw(9 downto 0) <= (others => '0');
 				else
 					if (pktcntsel = '1' and pktcnten = '1') or
-						(pktcntsel = '0' and dackl = '1') then
+						(pktcntsel = '0' and dackl = '0') then
 						raddrw(9 downto 0) <= raddrw(9 downto 0) + 1;
 					end if;
 				end if; 
@@ -141,7 +177,7 @@ begin
 		   fsmwe;
 	
 
-	fsm: process(bcs, dackcnt, dackl) is
+	fsm: process(bcs, dackcnt, dackl, clk2x_locked) is
 	begin
 		case bcs is 
 			when none => 
@@ -151,7 +187,11 @@ begin
 				fsmwe <= '1';
 				pktidlh <= '0';
 				nextchan <= '0';
-				bns <= nextpkt;
+				if clk2x_locked = '1' then
+					bns <= nextpkt;
+				else
+					bns <= none;
+				end if; 
 			when nextpkt => 
 				denable <= '1'; 
 				pktcntsel <= '1';
@@ -163,7 +203,7 @@ begin
 			when pktid_l => 
 				denable <= '1'; 
 				pktcntsel <= '1';
-				pktcnten <= '0';
+				pktcnten <= '1';
 				fsmwe <= '0';
 				pktidlh <= '0';
 				nextchan <= '0';
@@ -171,7 +211,7 @@ begin
 			when pktid_h => 
 				denable <= '1'; 
 				pktcntsel <= '1';
-				pktcnten <= '0';
+				pktcnten <= '1';
 				fsmwe <= '0';
 				pktidlh <= '1';
 				nextchan <= '0';
@@ -196,7 +236,7 @@ begin
 				denable <= '1'; 
 				pktcntsel <= '1';
 				pktcnten <= '0';
-				fsmwe <= '0';
+				fsmwe <= '1';
 				pktidlh <= '1';
 				nextchan <= '1';
 				bns <= chan_1;
