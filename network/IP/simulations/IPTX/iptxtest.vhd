@@ -180,20 +180,27 @@ BEGIN
 		DESTIP <= dip(IPN * 4 - 1 downto 0); 
 
 		datacnt := 0 - lat; 
+		wait until rising_edge(CLK); 
+		
+		ARPPENDING <= '0';
+		PKTPENDING <= '0';
 
 		if arphitmiss = 1 then 
 			wait until DEN = '1'; 
-			while DEN = '1' loop
+			while DEN = '1' and PKTDONE = '0'  loop 
 				wait until rising_edge(CLK); 
 				datacnt := datacnt + 1;
-				DATA <= std_logic_vector(to_unsigned(datacnt, 16)) after 5 ns;
+				if datacnt > 0 then 
+					DATA <= std_logic_vector(to_unsigned(datacnt, 16)) after 5 ns;
+				end if; 
 			end loop; 
 		end if; 
-		
+		DATA <= X"0000"; 
 				  
 
 	end loop; 
 
+	wait for 400 ns; 
 	assert false 
 		report "End of Simulation"
 		severity failure; 

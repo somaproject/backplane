@@ -68,8 +68,10 @@ architecture Behavioral of IPTX is
 		:= (others => '0');
 
 	-- ip-checksum
-	signal sum, suml : std_logic_vector (31 downto 0) 
+	signal sum : std_logic_vector (15 downto 0) 
 		:= (others => '0');
+	signal sumreset : std_logic := '0';
+
 
 	-- control signals
 	signal cntsel, frameen, frameenl, frameenll, 
@@ -101,6 +103,14 @@ architecture Behavioral of IPTX is
 	           START : in std_logic);
 	end component;
 
+	component IPsum is
+	    Port ( CLK : in std_logic;
+	           RESET : in std_logic;
+	           DIN : in std_logic_vector(15 downto 0);
+	           EN : in std_logic;
+	           SUMOUT : out std_logic_vector(15 downto 0));
+	end component;
+
 
 begin
 	
@@ -115,13 +125,20 @@ begin
 		DONE => arprdone,
 		START => arprstart); 
 
+	checksum: IPsum port map (
+		CLK => CLK,
+		RESET => sumreset,
+		DIN => dmuxl,
+		EN => hdrenll, 
+		SUMOUT => sum); 
+    	sumreset <= '1' when cs = newpkt else '0'; 
+
+
 	-- mac combinational
 	bcast <= '1' when destipl(4*IPN -1 downto 0) = X"FFFF" else '0';
 									   
 	destmac <= X"FFFF" when bcast = '1' else ARPMAC; 
 
-	-- ip checksum
-	sum <= (X"0000" & dmuxl) + suml; 
 
 	dmux <= flen when muxaddr = "00000" else 
 		   destmacl(15 downto 0) when muxaddr = "00001" else 
@@ -181,7 +198,7 @@ begin
 					hsum <= (others => '0');
 				else
 					if muxcnt = "00101" then
-						hsum <= sum(15 downto 0) + sum(31 downto 16);
+						hsum <= not sum;
 					end if;
 				end if; 
 
@@ -216,20 +233,13 @@ begin
 
 				dmuxl <= DMUX; 
 
-				if cs = newpkt then 
-					suml <= (others => '0');
-				else
-					if hdrenll = '1' then
-						suml <= sum + suml;
-					end if; 
-				end if; 
 
 				-- counters
-				if cs = arpquery then
+				if cs = calchdr then
 					framecnt <= flen; 
 				else
 					if frameen = '1' then 
-						framecnt <= framecnt - 1; 
+						framecnt <= framecnt - 2; 
 					end if; 
 				end if; 
 
@@ -259,7 +269,7 @@ begin
 	
 	
 	fsm : process(cs, pktpending, arppending, bcast, ARPDONE, ARPHIT,
-				 hdrcnt, arprdone) is
+				 hdrcnt, arprdone, framecnt) is
 		begin
 			case cs is 
 				when napp => 
@@ -309,7 +319,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
 					ns <= arpquery; 
@@ -325,7 +335,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
 					if bcast = '1' then
@@ -346,7 +356,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
 					ns <= calchdr; 
@@ -362,7 +372,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
 					if ARPDONE = '1' then
@@ -438,7 +448,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
 					ns <= wmacm; 
@@ -454,7 +464,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
 					ns <= wmach; 
@@ -470,7 +480,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
 					ns <= calchdr; 
@@ -486,7 +496,7 @@ begin
 					cntsel <= '0';
 					frameen <= '0';
 					PKTDONE <= '0';
-					cntsel <= '0';
+					cntsel <= '1';
 					setarppending <= '0';
 					arprstart <= '0';
 					if hdrcnt = "10001" then
@@ -509,7 +519,7 @@ begin
 					cntsel <= '0';
 					setarppending <= '0';
 					arprstart <= '0';
-					if framecnt = X"0000" then
+					if framecnt = X"0000" or framecnt = X"FFFF" then
 						ns <= setdone;
 					else
 						ns <= writepkt; 

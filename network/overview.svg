@@ -5,10 +5,10 @@
 <svg
    id="svg1"
    sodipodi:version="0.32"
-   inkscape:version="0.40"
+   inkscape:version="0.40cvs"
    width="612.00000pt"
    height="792.00000pt"
-   sodipodi:docbase="/home/jonas/soma/backplane/network"
+   sodipodi:docbase="/home/jonas/soma/developer/backplane/network"
    sodipodi:docname="overview.svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:cc="http://web.resource.org/cc/"
@@ -217,9 +217,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="6.0446565"
-     inkscape:cx="293.77523"
-     inkscape:cy="635.12392"
+     inkscape:zoom="4.2742176"
+     inkscape:cx="213.21967"
+     inkscape:cy="675.98880"
      inkscape:window-width="1596"
      inkscape:window-height="1159"
      showgrid="true"
@@ -760,4 +760,26 @@
        id="tspan1900"
        x="168.95087"
        y="255.05336">IP Receive</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:8.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
+     x="305.61148"
+     y="136.04254"
+     id="text1164"><tspan
+       sodipodi:role="line"
+       id="tspan1165"
+       x="305.61148"
+       y="136.04254">IP Multiplexer also handles TX</tspan><tspan
+       sodipodi:role="line"
+       id="tspan1170"
+       x="305.61148"
+       y="144.04254">timeouts, otherwise (for example)</tspan><tspan
+       sodipodi:role="line"
+       id="tspan1172"
+       x="305.61148"
+       y="152.04254">stalled ARP query will result in entire packet</tspan><tspan
+       sodipodi:role="line"
+       id="tspan1175"
+       x="305.61148"
+       y="160.04254">chain being stalled. </tspan></text>
 </svg>

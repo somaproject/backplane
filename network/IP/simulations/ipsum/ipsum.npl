@@ -1,7 +1,7 @@
 JDF G
 // Created by Project Navigator ver 1.0
-PROJECT vhdl
-DESIGN vhdl
+PROJECT ipsum
+DESIGN ipsum
 DEVFAM spartan3
 DEVFAMTIME 0
 DEVICE xc3s200
@@ -18,14 +18,7 @@ DEVSIMULATOR Modelsim
 SIMULATORTIME 0
 DEVGENERATEDSIMULATIONMODEL VHDL
 GENERATEDSIMULATIONMODELTIME 0
-SOURCE ipmatch.vhd
-SOURCE ipcam.vhd
-SOURCE LUTreserialize.vhd
-SOURCE ARP.vhd
-SOURCE dpram.vhd
-SOURCE ARPrepl.vhd
-SOURCE IPTX.vhd
-SOURCE ARPreq.vhd
-SOURCE IPsum.vhd
+SOURCE ..\..\vhdl\IPsum.vhd
+STIMULUS ipsumtest.vhd
 [STRATEGY-LIST]
 Normal=True

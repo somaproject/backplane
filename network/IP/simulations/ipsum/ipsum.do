@@ -3,15 +3,13 @@
 vlib work
 
 # actual hardware 
-vcom -93 -explicit ../../vhdl/ARPreq.vhd
 vcom -93 -explicit ../../vhdl/ipsum.vhd
-vcom -93 -explicit ../../vhdl/iptx.vhd
 
 -- simulation entities
-vcom -93 -explicit iptxtest.vhd
+vcom -93 -explicit ipsumtest.vhd
 
 
-vsim -t 1ps -L xilinxcorelib -lib work iptxtest
+vsim -t 1ps -L xilinxcorelib -lib work ipsumtest
 view wave
 add wave *
 view structure

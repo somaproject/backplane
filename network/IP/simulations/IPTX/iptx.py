@@ -135,9 +135,10 @@ class IP:
 
 
         # compute, set header hceksum
-        hsum = self.hchecksum()
-        self.header[10] = hsum % 256
-        self.header[11] = hsum >> 256
+        hsum = ~self.hchecksum()
+        print "%X, %02X %02X" % (hsum, (hsum % 256) % 256, (hsum >> 8) % 256)
+        self.header[11] = (hsum % 256) % 256
+        self.header[10] = (hsum >> 8) % 256
 
         
         outstr = "%04X " % (length + 14)
@@ -172,7 +173,7 @@ class IP:
         sum = 0
         for i in range(10):
             sum += (self.header[i*2] * 256 + self.header[i*2+1])
-
+            print "%08X %d " % (sum, sum)
         return (sum % 2**16) + (sum >> 16)
     
             
@@ -272,6 +273,34 @@ def main():
                 "18.238.1.97", True, "C0:FF:EE:11:22:33", "01:02:03:04:05:06",
                 136)
 
+    iptx.newpkt(300, 4, "18.238.0.0", "255.255.0.0", "18.238.0.5",
+                "18.238.1.23", True, "C0:FF:EE:11:22:33", "01:02:03:04:05:06",
+                72)
+
+    iptx.newpkt(1500, 4, "18.238.0.0", "255.255.0.0", "18.238.0.5",
+                "18.238.1.23", True, "C0:FF:EE:11:22:33", "01:02:03:04:05:06",
+                72)
+
+    iptx.newpkt(100, 4, "18.238.0.0", "255.255.0.0", "18.238.0.5",
+                "18.238.1.23", True, "C0:FF:EE:11:22:33", "01:02:03:04:05:06",
+                72)
+
+    iptx.newpkt(101, 4, "18.238.0.0", "255.255.0.0", "18.238.0.5",
+                "18.238.1.23", True, "C0:FF:EE:11:22:33", "01:02:03:04:05:06",
+                72)
+
+
+    # next stage of latency queries
+    iptx.newpkt(100, 1, "18.238.0.0", "255.255.0.0", "18.238.0.5",
+                "18.238.1.23", True, "C0:FF:EE:11:22:33", "01:02:03:04:05:06",
+                72)
+    
+    # next stage of latency queries
+    iptx.newpkt(800, 7, "18.238.0.0", "255.255.0.0", "18.238.0.5",
+                "18.238.1.23", True, "C0:FF:EE:11:22:33", "01:02:03:04:05:06",
+                72)
+    
+    
 
 if __name__ == "__main__":
     main()
