@@ -26,13 +26,13 @@ MODSTYLE sequencer Normal
 MODULE time_generator.vhd
 MODSTYLE time_generator Normal
 [Normal]
-p_ModelSimSimRunTime_tb=xstvhd, spartan2e, Module VHDL Test Bench.t_MSimulatePostPlace&RouteVhdlModel, 1050911967, 1000us
+p_ModelSimSimRunTime_tb=xstvhd, spartan2e, Module VHDL Test Bench.t_MSimulatePostTranslateVhdlModel, 1050911967, 1000us
+p_SimModelSelOutBehav=xstvhd, spartan2e, VHDL.t_placeAndRouteDes, 1050957855, True
+xilxNgdbldIOPads=xstvhd, spartan2e, VHDL.t_placeAndRouteDes, 1050957420, True
+xilxTriStateBuffTXMode=xstvhd, spartan2e, VHDL.t_placeAndRouteDes, 1050957420, On
 [STATUS-ALL]
-timer.ncdFile=WARNINGS,1050949309
-timer.ngcFile=WARNINGS,1050949309
-timer.postMapNgaFile=WARNINGS,1050949309
-timer.postMapVHDLSimModel=WARNINGS,1050949309
-timer.postParVHDLSimModel=WARNINGS,1050949309
-time_generator.postParVHDLSimModel=WARNINGS,1050949309
+timer.ncdFile=WARNINGS,1050958623
+timer.ngcFile=WARNINGS,1050958623
+timer.postParVHDLSimModel=WARNINGS,1050958623
 [STRATEGY-LIST]
 Normal=True

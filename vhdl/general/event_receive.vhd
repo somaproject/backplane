@@ -36,14 +36,16 @@ begin
 		
 
 	
-	main: process(CLK, cnt, byteeq, myevent) is
+	main: process(CLK, cnt, byteeq, myevent, event, addrbit, addrbitl, datal) is
 	begin
 		if rising_edge(CLK) then
 			eventl <= event; 
 			if EVENT = '0' then
 				cnt <= "000";
 			else
-				cnt <= cnt + 1;
+				if cnt < "110" then
+					cnt <= cnt + 1;
+				end if; 
 			end if; 
 			if byteeq = '1' then 
 				addrbitl <= addrbit;
@@ -51,25 +53,25 @@ begin
 	   
  			-- latch in!
 			if cnt = "000" then
-				datal(15 downto 0) <= data;
+				datal(79 downto 64) <= data;
 			end if; 
 			if cnt = "001" then
-				datal(31 downto 16) <= data;
+				datal(63 downto 48) <= data;
 			end if; 
 			if cnt = "010" then
 				datal(47 downto 32) <= data;
 			end if; 
 			if cnt = "011" then
-				datal(63 downto 48) <= data;
+				datal(31 downto 16) <= data;
 			end if; 
 			if cnt = "100" then
-				datal(79 downto 64) <= data;
+				datal(15 downto 0) <= data;
 			end if; 
 
 			if myevent = '1' then
-				cmd <= datal(15 downto 0);
-				D0 <= datal(47 downto 16);
-				D1 <= datal(79 downto 48);
+				cmd <= datal(79 downto 64);
+				D0 <= datal(63 downto 32);
+				D1 <= datal(31 downto 0);
 			end if; 
 
 			newevent <= myevent; 

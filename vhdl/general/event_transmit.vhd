@@ -5,8 +5,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 --  Uncomment the following lines to use the declarations that are
 --  provided for instantiating Xilinx primitive components.
---library UNISIM;
---use UNISIM.VComponents.all;
+library UNISIM;
+use UNISIM.VComponents.all;
 
 entity event_transmit is
     Port ( CLK : in std_logic;
@@ -100,14 +100,14 @@ begin
 				oe <= '1';
 				pending <= '1';
 				eventce <= '0';
-				dataout <= eventl(15 downto 0);		
+				dataout <= eventl(79 downto 64);		
 				addrout <= addrl(7 downto 0);
 				ns <= out2; 
 			when out2 =>
 				oe <= '1';
 				pending <= '1';
 				eventce <= '0';
-				dataout <= eventl(31 downto 16);		
+				dataout <= eventl(63 downto 48);			
 				addrout <= addrl(15 downto 8);
 				ns <= out3; 
 			when out3 =>
@@ -121,14 +121,14 @@ begin
 				oe <= '1';
 				pending <= '1';
 				eventce <= '0';
-				dataout <= eventl(63 downto 48);		
+				dataout <= eventl(31 downto 16);	
 				addrout <= addrl(31 downto 24);
 				ns <= out5; 
 			when out5 =>
 				oe <= '1';
 				pending <= '1';
 				eventce <= '0';
-				dataout <= eventl(79 downto 64);		
+				dataout <= eventl(15 downto 0);		
 				addrout <= addrl(39 downto 32);
 				ns <= none;
 			when others =>

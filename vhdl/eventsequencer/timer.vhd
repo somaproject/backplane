@@ -5,8 +5,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 --  Uncomment the following lines to use the declarations that are
 --  provided for instantiating Xilinx primitive components.
---library UNISIM;
---use UNISIM.VComponents.all;
+library UNISIM;
+use UNISIM.VComponents.all;
 
 entity timer is
     Port ( CLK : in std_logic;
@@ -16,6 +16,7 @@ entity timer is
            TSEL : in std_logic;
            TINC : out std_logic;
            TCLR : out std_logic;
+			  TCLRTEST: out std_logic; 
            DATA : inout std_logic_vector(15 downto 0);
            ADDR : inout std_logic_vector(7 downto 0);
 			  EVENT : in std_logic;
@@ -30,7 +31,7 @@ architecture Behavioral of timer is
 	signal tincint, tclrint, treset, tincmux, tclrmux : std_logic := '0';
 	signal newevent : std_logic := '0'; 
 	signal cmd : std_logic_vector(15 downto 0) := "0000000000000000";
-	signal timeval : std_logic_vector(31 downto 0) := "00000000000000000000000000000000";
+	signal timeval, timeval_l : std_logic_vector(31 downto 0) := "00000000000000000000000000000000";
 	signal send_evt, inc: std_logic := '0'; 
 	signal eventin: std_logic_vector(79 downto 0) := (others => '0');
 	type states is (none, inc_count, send_event, waiting);
@@ -80,7 +81,7 @@ begin
 
 	event_receiver: event_receive 
 		generic map (
-			eventid => "100110")
+			eventid => "100100")
 		port map (
 			CLK => CLK,
 			EVENT => EVENT,
@@ -101,9 +102,9 @@ begin
 			ADDR => addr,
 			CE => ce);
 				
-   eventin(15 downto 0) <= "1000000000000001";
-	eventin(47 downto 16) <= timeval;
-	eventin(79 downto 48) <= (others => '0');
+   eventin(79 downto 64) <= "1000000000000001";
+	eventin(63 downto 32) <= timeval;
+	eventin(31 downto 0) <= (others => '0');
 	 
 
 
@@ -115,7 +116,7 @@ begin
 					  tclrext when tsel = '1';
 		TCLR <= tclrmux;
 
-
+		tclrtest <= newevent; 
 	-- code for the event receiver to reset
 	   treset <= '1' when (newevent = '1' and cmd = "1000000000000000") else
 					 '0';
@@ -126,6 +127,7 @@ begin
 	begin
 		if RESET = '1' then
 			cs <= none;
+			timeval <= (others => '0'); 
 		else
 			if rising_edge(CLK) then
 				if inc = '1' then
@@ -135,6 +137,8 @@ begin
 						timeval <= timeval + 1;
 					end if; 
 				end if; 
+
+
 
 				cs <= ns; 
 			end if; 

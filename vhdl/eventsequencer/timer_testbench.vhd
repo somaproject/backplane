@@ -29,6 +29,7 @@ ARCHITECTURE behavior OF testbench IS
 		data : INOUT std_logic_vector(15 downto 0);
 		addr : INOUT std_logic_vector(7 downto 0);      
 		tinc : OUT std_logic;
+		tclrtest: out std_logic; 
 		tclr : OUT std_logic
 		);
 	END COMPONENT;
@@ -39,12 +40,14 @@ ARCHITECTURE behavior OF testbench IS
 	SIGNAL tclrext :  std_logic;
 	SIGNAL tsel :  std_logic := '0';
 	SIGNAL tinc :  std_logic;
-	SIGNAL tclr :  std_logic;
-	SIGNAL data :  std_logic_vector(15 downto 0) := (others => '0');
-	SIGNAL addr :  std_logic_vector(7 downto 0) := (others => '0');
-	SIGNAL event :  std_logic;
+	SIGNAL tclr, tclrtest :  std_logic := '0';
+	SIGNAL data :  std_logic_vector(15 downto 0) := (others => 'Z');
+	SIGNAL addr :  std_logic_vector(7 downto 0) := (others => 'Z');
+	SIGNAL event :  std_logic := '1';
 	SIGNAL ce :  std_logic := '1';
 
+
+	signal longcount : integer := 0; 
 BEGIN
 
 
@@ -53,16 +56,6 @@ BEGIN
 	clk <= not clk after 25 ns; 
 
 
-   -- CE faking it
-	CE <= '0' after 110000 ns, '1' after 110050 ns,
-			'0' after 210000 ns, '1' after 210050 ns,
-			'0' after 310000 ns, '1' after 310050 ns,
-			'0' after 410000 ns, '1' after 410050 ns,
-			'0' after 510000 ns, '1' after 510050 ns,
-			'0' after 610000 ns, '1' after 610050 ns,
-			'0' after 710000 ns, '1' after 710050 ns,
-			'0' after 810000 ns, '1' after 810050 ns,
-			'0' after 910000 ns, '1' after 910050 ns;
 
 	
 	--CE <= '1' after 110050 ns; 
@@ -77,6 +70,7 @@ BEGIN
 		tsel => tsel,
 		tinc => tinc,
 		tclr => tclr,
+		tclrtest => tclrtest,
 		data => data,
 		addr => addr,
 		event => event,
@@ -85,9 +79,55 @@ BEGIN
 
 
 -- *** Test Bench - User Defined Section ***
-   tb : PROCESS
+   tb : PROCESS(CLK, longcount)
+  	variable count : integer := 0; 
    BEGIN
-      wait; -- will wait forever
+		if rising_edge(CLK) then
+			if count = 1999 then
+				count := 0;
+			else
+				count := count + 1;
+			end if; 				
+			longcount <= longcount + 1; 
+
+		end if; 
+		
+		if (count mod 250) = 0 then
+			ce <= '0' after 10 ns;
+		else
+			ce <= '1' after 10 ns;
+		end if; 
+
+		if longcount mod 5 = 0 then
+			event <= '0' after 10 ns;
+		else
+			event <= '1' after 10 ns;
+		end if; 
+		case longcount is
+			when 6101 =>
+				addr <= "11111111" after 10 ns;
+				data <= "1000000000000000" after 10 ns;
+			when 10102 =>
+				addr <= "11111111" after 10 ns;
+				data <= "0000000000000000" after 10 ns;
+			when 6103 =>
+				event <= '1' after 10 ns;
+				addr <= "11111111" after 10 ns;
+				data <= "0000000000000000" after 10 ns;
+			when 6104 =>
+				addr <= "11111111" after 10 ns;
+				data <= "0000000000000000" after 10 ns;
+			when 6105 =>
+				addr <= "11111111" after 10 ns;
+				data <= "0000000000000000" after 10 ns;
+			when others =>
+				addr <= "ZZZZZZZZ" after 10 ns;
+				data <= "ZZZZZZZZZZZZZZZZ" after 10 ns;
+		end case; 
+
+
+		
+			
    END PROCESS;
 -- *** End Test Bench - User Defined Section ***
 
