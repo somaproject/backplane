@@ -24,5 +24,12 @@ SOURCE LUTreserialize.vhd
 SOURCE ARP.vhd
 SOURCE dpram.vhd
 SOURCE ARPrepl.vhd
+SOURCE IPTX.vhd
+SOURCE ARPreq.vhd
+[STATUS-ALL]
+arp.ngcFileGroup=NOT_RUN,0
+ipcam.ngcFileGroup=NOT_RUN,0
+iptx.nc1File=ERRORS,0
+iptx.ngcFile=WARNINGS,1103075022
 [STRATEGY-LIST]
 Normal=True

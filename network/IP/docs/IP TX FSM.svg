@@ -5,22 +5,22 @@
 <svg
    id="svg1"
    sodipodi:version="0.32"
-   inkscape:version="0.40"
+   inkscape:version="0.40cvs"
    width="612.00000pt"
    height="792.00000pt"
-   sodipodi:docbase="/home/jonas/soma/backplane/network/IP/docs"
+   sodipodi:docbase="/home/jonas/soma/developer/backplane/network/IP/docs"
    sodipodi:docname="IP TX FSM.svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xml="http://www.w3.org/XML/1998/namespace"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:cc="http://web.resource.org/cc/"
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
    inkscape:export-filename="/home/jonas/fsm.png"
    inkscape:export-xdpi="165.67999"
-   inkscape:export-ydpi="165.67999">
+   inkscape:export-ydpi="165.67999"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:xlink="http://www.w3.org/1999/xlink">
   <metadata
      id="metadata2934">
     <rdf:RDF
@@ -235,11 +235,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.00000000"
-     inkscape:cx="223.49268"
-     inkscape:cy="519.66626"
-     inkscape:window-width="1021"
-     inkscape:window-height="723"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="341.97940"
+     inkscape:cy="523.87645"
+     inkscape:window-width="1597"
+     inkscape:window-height="1155"
      showgrid="true"
      snaptogrid="true"
      inkscape:grid-points="true"
@@ -407,13 +407,13 @@
      transform="translate(403.1250,-4.466248e-2)" />
   <text
      xml:space="preserve"
-     style="font-size:9.0000000;stroke-width:1.0825320;font-family:Bitstream Vera Sans;text-anchor:middle"
+     style="font-size:9.0000000;stroke-width:1.0825320;font-family:Bitstream Vera Sans;text-anchor:middle;"
      x="117.53175"
      y="119.17977"
      id="text5096"
      sodipodi:linespacing="100%"
      transform="matrix(1.111111,0.000000,0.000000,1.199999,402.9639,0.109393)"><tspan
-       id="tspan5097">ARPVERIFY</tspan></text>
+       id="tspan5097">ARPQUERY</tspan></text>
   <path
      style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;marker-end:none"
      d="M 162.50000,133.75000 L 162.50000,133.75000"
@@ -531,13 +531,13 @@
      transform="translate(103.1250,174.9553)" />
   <text
      xml:space="preserve"
-     style="font-size:9.0000000;stroke-width:1.0825320;font-family:Bitstream Vera Sans;text-anchor:middle"
+     style="font-size:9.0000000;stroke-width:1.0825320;font-family:Bitstream Vera Sans;text-anchor:middle;"
      x="117.53175"
      y="119.17977"
      id="text5829"
      sodipodi:linespacing="100%"
      transform="matrix(1.111111,0.000000,0.000000,1.199999,103.1250,174.9553)"><tspan
-       id="tspan5830">ARPRSTART</tspan></text>
+       id="tspan5830">ARPRBEGIN</tspan></text>
   <path
      style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;marker-end:none"
      d="M 162.50000,133.75000 L 162.50000,133.75000"
@@ -558,30 +558,30 @@
      id="path6543" />
   <text
      xml:space="preserve"
-     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;stroke-width:1.2500000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr"
+     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;stroke-width:1.2500000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr;"
      x="178.72278"
      y="107.17072"
      id="text6544"
      sodipodi:linespacing="100%"
      transform="translate(108.2694,122.6052)"><tspan
-       id="tspan6545">VERIFYDONE=1</tspan><tspan
+       id="tspan6545">ARPDONE=1</tspan><tspan
        sodipodi:role="line"
        id="tspan6547"
        x="178.72278"
-       y="114.17072">and HIT=0</tspan></text>
+       y="114.17072">and ARPHIT=0</tspan></text>
   <text
      xml:space="preserve"
-     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;stroke-width:1.2500000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr"
+     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;stroke-width:1.2500000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr;"
      x="178.72278"
      y="107.17072"
      id="text6549"
      sodipodi:linespacing="100%"
      transform="translate(208.2694,169.4802)"><tspan
-       id="tspan6550">VERIFYDONE=1</tspan><tspan
+       id="tspan6550">ARPDONE=1</tspan><tspan
        sodipodi:role="line"
        id="tspan6552"
        x="178.72278"
-       y="114.17072">and HIT=1</tspan></text>
+       y="114.17072">and ARPHIT=1</tspan></text>
   <rect
      style="fill:#ffffff;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2499985"
      id="rect6554"
@@ -636,7 +636,7 @@
        y="210.73814">HDREN=1</tspan></text>
   <text
      xml:space="preserve"
-     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
+     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
      x="525.62543"
      y="180.73814"
      id="text6567"
@@ -644,14 +644,14 @@
        sodipodi:role="line"
        id="tspan6568"
        x="525.62543"
-       y="180.73814">MADDR=&quot;00&quot;</tspan><tspan
+       y="180.73814">ARPADDR=&quot;00&quot;</tspan><tspan
        sodipodi:role="line"
        id="tspan8064"
        x="525.62543"
        y="190.73814">HDREN=1</tspan></text>
   <text
      xml:space="preserve"
-     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
+     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
      x="525.62543"
      y="180.73814"
      id="text6577"
@@ -659,7 +659,7 @@
        sodipodi:role="line"
        id="tspan6578"
        x="525.62543"
-       y="180.73814">MADDR=01</tspan><tspan
+       y="180.73814">ARPADDR=01</tspan><tspan
        sodipodi:role="line"
        id="tspan6582"
        x="525.62543"
@@ -727,7 +727,7 @@
      transform="translate(0.000000,78.12504)" />
   <text
      xml:space="preserve"
-     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
+     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
      x="525.62543"
      y="180.73814"
      id="text6596"
@@ -735,7 +735,7 @@
        sodipodi:role="line"
        id="tspan6597"
        x="525.62543"
-       y="180.73814">MADDR=10</tspan><tspan
+       y="180.73814">ARPADDR=10</tspan><tspan
        sodipodi:role="line"
        id="tspan6601"
        x="525.62543"
@@ -746,7 +746,7 @@
        y="200.73814">HDREN=1</tspan></text>
   <text
      xml:space="preserve"
-     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
+     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;"
      x="525.62543"
      y="180.73814"
      id="text6603"
@@ -758,7 +758,7 @@
        sodipodi:role="line"
        id="tspan8073"
        x="525.62543"
-       y="190.73814">HDREN=1---</tspan></text>
+       y="190.73814">HDREN=1</tspan></text>
   <path
      style="color:#000000;fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.2500000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);visibility:visible;display:block;"
      d="M 453.43222,471.60234 L 490.62500,471.25000 C 490.62500,471.25000 500.00000,471.25000 500.00000,461.87500 C 500.00000,452.50000 500.00000,327.50000 500.00000,327.50000 C 500.00000,327.50000 500.00000,318.12500 509.37500,318.12500 C 518.75000,318.12500 525.00000,318.12500 525.00000,318.12500"
@@ -885,13 +885,13 @@
      sodipodi:nodetypes="ccccccc" />
   <text
      xml:space="preserve"
-     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;stroke-width:1.2500000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr"
+     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;stroke-width:1.2500000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr;"
      x="178.72278"
      y="107.17072"
      id="text7347"
      sodipodi:linespacing="100%"
      transform="translate(27.97839,320.2302)"><tspan
-       id="tspan7348">ARPDONE=1</tspan></text>
+       id="tspan7348">ARPRDONE=1</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
@@ -1066,4 +1066,17 @@
      d="M 559.71921,337.03108 L 559.37500,380.62500"
      id="path10934"
      sodipodi:nodetypes="cc" />
+  <text
+     xml:space="preserve"
+     style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;stroke-width:1.2500000;font-family:Bitstream Vera Sans;text-anchor:middle;writing-mode:lr;"
+     x="178.72278"
+     y="107.17072"
+     id="text4303"
+     sodipodi:linespacing="100%"
+     transform="translate(411.5228,332.7302)"><tspan
+       id="tspan4304">FRAMECNT=0</tspan><tspan
+       sodipodi:role="line"
+       id="tspan4306"
+       x="178.72278"
+       y="114.17072"></tspan></text>
 </svg>
