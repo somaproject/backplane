@@ -1,0 +1,22 @@
+UDP interface:
+
+All layers 
+
+DEN : data enable
+DATA : DATA input
+LIN : latency in (4 bit)
+LEN : length of upper layer
+CHECKSUMEN :  Enable the UDP checksum 
+UDPSRCPROTO : Source UDP port (16-bit)
+UDPDSTPROTO : destination UDP port(16 bit)
+
+
+DOUT: data output
+DOUTEN : data output enable
+LOUT : latency out (4 bit) 
+PROTO : UDP protocol number
+LENOUT : Total length of current outbout backet from this stack. 
+ 
+
+To compute the checksum we'll need the IP address as well ("meta-header stuff"). 
+
