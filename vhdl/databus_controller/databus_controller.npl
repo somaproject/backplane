@@ -1,0 +1,19 @@
+JDF F
+// Created by Project Navigator ver 1.0
+PROJECT databus_controller
+DESIGN databus_controller Normal
+DEVFAM spartan2e
+DEVFAMTIME 0
+DEVICE xc2s200e
+DEVICETIME 0
+DEVPKG pq208
+DEVPKGTIME 0
+DEVSPEED -6
+DEVSPEEDTIME 0
+FLOW XST VHDL
+FLOWTIME 0
+STIMULUS databus_control_test.tbw Normal
+MODULE databus_control.vhd
+MODSTYLE databus_control Normal
+[STRATEGY-LIST]
+Normal=True
