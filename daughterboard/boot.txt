@@ -1,0 +1,21 @@
+
+
+-------------------------------------------------------------------------------
+booting
+-------------------------------------------------------------------------------
+Separate boot fpga, talks to event bus, has general purpose GPIO pins. Designed to take a CF card of bitstreams... 
+
+0.5 MB (4 Mb) should be more than enough, and we can always do some sort of funky look-up scheme. the nice thing is we can just DD the image, we don't need to worry about any sort of filesystem or anything. 
+
+The ATA spec is really clean, and (beyond basic abstraction necessity stuff) I can't seem to think of why I would want to have separate USB and BOOT devices, esp. when there can never actually be _real_ bus contention. 
+
+Each FPGA will need it's own DONE, PROGRAM, INIT, and DIN pin, but... how to handle them?, esp. without running out of pins, or having too-high-density of connector? 
+
+Sadly, there appear to be pin issues with the VQ100 part, as it really only has 60 or so IO pins, and we need:
+Event bus: 30
+ATA : 20+
+Booting: 5 per fpga * 8 FPGAs = 40 pins or so
+
+== total of 90 pins, i.e. what you'd hope to get from the TQ144 part. 
+
+
