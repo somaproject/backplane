@@ -11,3 +11,30 @@ The only real downside is that the interface to obtain the MAC address and look 
 The ARP cache has a TX and an RX side; the TX side can only query and read addresses, the RX side can only write them. 
 
 On the TX side, we have: 
+
+IPout[IPN-1:0]
+
+MACout[15:0]
+MACoutaddr[1:0]
+
+VERIFY : start verification process
+VERIFYDONE : goes high to indicate the completed status of a cache query
+HITMISS : high if the IP address is in there. 
+
+on the input side, we always write, but the actual success of the write is application-dependent
+
+MACin[15:0]
+MACinaddr[1:0]
+MACinWE
+IPin[IPN-1:0]
+IPin[15:0]
+IPinWE
+
+The sequence of input writing is "Write the MACin, and then write the IPin."
+
+The arp cache contains a replacement module, ARPREPL, which has a REPLIN[ARPSIZE-1:0], REPLOUT[ARPSIZE-1:0], input and a REPL[ARPSIZE-1:0] output, and 2^ARPSIZE entries. This has a simple "WE" entry on it as well" -- at some point we'll implement a pseudo-LRU strategy here, but for now, we don't really care. 
+
+The MAC addresses themselves are stored in a chunk of dual-ported blockselect+ RAM, and we index into them via the LSBs. At the moment, we have two IPLUTs that we use, one for read and one for write, athough if this all gets too big we might revisit that plan. 
+
+
+
