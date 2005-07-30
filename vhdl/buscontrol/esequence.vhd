@@ -1,7 +1,7 @@
 library IEEE;
 
-use IEEE.STD_LOGIC.all;
 use IEEE.std_logic_1164.all;
+use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 
 entity eventsequencer is
@@ -41,8 +41,8 @@ begin  -- Behavioral
       -- lutaddr counter
       
       if TINC = '1' then
-        lutad <= (others => '0');
-      else:
+        lutaddr <= (others => '0');
+      else
         if ticcnt = 5 then
           if lutaddr /= "111111" then
             lutaddr <= lutaddr + 1;
@@ -56,7 +56,7 @@ begin  -- Behavioral
       else
         if ticcnt = 5 then
           ticcnt <= 0;
-        else:
+        else
           ticcnt <= ticcnt + 1;                     
         end if;
       end if;
@@ -64,40 +64,40 @@ begin  -- Behavioral
     end if;
   end process main;
 
-  ECE(0) <= CE(0) nand ticcnt = 1;
-  ECE(1) <= CE(1) nand ticcnt = 1;
-  ECE(2) <= CE(2) nand ticcnt = 1;
-  ECE(3) <= CE(3) nand ticcnt = 1;
-  ECE(4) <= CE(4) nand ticcnt = 1;
-  ECE(5) <= CE(5) nand ticcnt = 1;
-  ECE(6) <= CE(6) nand ticcnt = 1;
-  ECE(7) <= CE(7) nand ticcnt = 1;
-  ECE(8) <= CE(8) nand ticcnt = 1;
-  ECE(9) <= CE(9) nand ticcnt = 1;
-  ECE(10) <= CE(10) nand ticcnt = 1;
-  ECE(11) <= CE(11) nand ticcnt = 1;
-  ECE(12) <= CE(12) nand ticcnt = 1;
-  ECE(13) <= CE(13) nand ticcnt = 1;
-  ECE(14) <= CE(14) nand ticcnt = 1;
-  ECE(15) <= CE(15) nand ticcnt = 1;
-  ECE(16) <= CE(16) nand ticcnt = 1;
-  ECE(17) <= CE(17) nand ticcnt = 1;
-  ECE(18) <= CE(18) nand ticcnt = 1;
-  ECE(19) <= CE(19) nand ticcnt = 1;
-  ECE(20) <= CE(20) nand ticcnt = 1;
-  ECE(21) <= CE(21) nand ticcnt = 1;
-  ECE(22) <= CE(22) nand ticcnt = 1;
-  ECE(23) <= CE(23) nand ticcnt = 1;
-  ECE(24) <= CE(24) nand ticcnt = 1;
-  ECE(25) <= CE(25) nand ticcnt = 1;
-  ECE(26) <= CE(26) nand ticcnt = 1;
-  ECE(27) <= CE(27) nand ticcnt = 1;
-  ECE(28) <= CE(28) nand ticcnt = 1;
-  ECE(29) <= CE(29) nand ticcnt = 1;
-  ECE(30) <= CE(30) nand ticcnt = 1;
-  ECE(31) <= CE(31) nand ticcnt = 1;
+  ECE(0) <= '1' when CE(0) = '1'  nand ticcnt = 1 else '0';
+  ECE(1) <= '1' when CE(1) = '1' nand ticcnt = 1 else '0';
+  ECE(2) <= '1' when CE(2) = '1' nand ticcnt = 1 else '0';
+  ECE(3) <= '1' when CE(3) = '1' nand ticcnt = 1 else '0';
+  ECE(4) <= '1' when CE(4) = '1' nand ticcnt = 1 else '0';
+  ECE(5) <= '1' when CE(5) = '1' nand ticcnt = 1 else '0';
+  ECE(6) <= '1' when CE(6) = '1' nand ticcnt = 1 else '0';
+  ECE(7) <= '1' when CE(7) = '1' nand ticcnt = 1 else '0';
+  ECE(8) <= '1' when CE(8) = '1' nand ticcnt = 1 else '0';
+  ECE(9) <= '1' when CE(9) = '1' nand ticcnt = 1 else '0';
+  ECE(10) <= '1' when CE(10) = '1' nand ticcnt = 1 else '0';
+  ECE(11) <= '1' when CE(11) = '1' nand ticcnt = 1 else '0';
+  ECE(12) <= '1' when CE(12) = '1' nand ticcnt = 1 else '0';
+  ECE(13) <= '1' when CE(13) = '1' nand ticcnt = 1 else '0';
+  ECE(14) <= '1' when CE(14) = '1' nand ticcnt = 1 else '0';
+  ECE(15) <= '1' when CE(15) = '1' nand ticcnt = 1 else '0';
+  ECE(16) <= '1' when CE(16) = '1' nand ticcnt = 1 else '0';
+  ECE(17) <= '1' when CE(17) = '1' nand ticcnt = 1 else '0';
+  ECE(18) <= '1' when CE(18) = '1' nand ticcnt = 1 else '0';
+  ECE(19) <= '1' when CE(19) = '1' nand ticcnt = 1 else '0';
+  ECE(20) <= '1' when CE(20) = '1' nand ticcnt = 1 else '0';
+  ECE(21) <= '1' when CE(21) = '1' nand ticcnt = 1 else '0';
+  ECE(22) <= '1' when CE(22) = '1' nand ticcnt = 1 else '0';
+  ECE(23) <= '1' when CE(23) = '1' nand ticcnt = 1 else '0';
+  ECE(24) <= '1' when CE(24) = '1' nand ticcnt = 1 else '0';
+  ECE(25) <= '1' when CE(25) = '1' nand ticcnt = 1 else '0';
+  ECE(26) <= '1' when CE(26) = '1' nand ticcnt = 1 else '0';
+  ECE(27) <= '1' when CE(27) = '1' nand ticcnt = 1 else '0';
+  ECE(28) <= '1' when CE(28) = '1' nand ticcnt = 1 else '0';
+  ECE(29) <= '1' when CE(29) = '1' nand ticcnt = 1 else '0';
+  ECE(30) <= '1' when CE(30) = '1' nand ticcnt = 1 else '0';
+  ECE(31) <= '1' when CE(31) = '1' nand ticcnt = 1 else '0';
 
-  EVENT <= not (TICCNT = 1);
+  EVENT <= '0' when  TICCNT = 1 else '1';
   
   CE <= "00000000000000000000000000000001" when lutdata = "00000" else
         "00000000000000000000000000000010" when lutdata = "00001" else
