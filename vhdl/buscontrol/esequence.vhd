@@ -4,7 +4,7 @@ use IEEE.std_logic_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 
-entity eventsequencer is
+entity esequence is
   
   port (
     CLK   : in  std_logic;
@@ -13,16 +13,15 @@ entity eventsequencer is
     ECE   : out std_logic_vector(31 downto 0);
     EVENT : out STD_LOGIC);
 
-end eventsequencer;
+end esequence;
 
-architecture Behavioral of eventsequencer is
+architecture Behavioral of esequence is
 -- ESEQUENCE.VHD : event sequencer, tells devices on the event bus to TX
 
   signal lutaddr : std_logic_vector(5 downto 0) := (others => '0');
   signal lutdata : std_logic_vector(4 downto 0) := (others => '0');
 
   signal ce : std_logic_vector(31 downto 0) := (others => '0');
-  
   
   signal ticcnt : natural := 0;
 
