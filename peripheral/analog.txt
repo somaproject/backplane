@@ -1,9 +1,0 @@
-Our new design calls for being able to tristate the output of the DACs. Now, 0-5V at 14 bit gives an LSB of 300 uV. We're using the AD5392BST-5. 
-
-
-This is unfortunate, because the RON flatness of the ADG802 at 5V in normal temp ranges is 0.05 ohm, meaning that if the target is sinking 10 mA, we see a voltage difference of potentially 500 uV. So we're essentially losing our LSB in INL (?). 
-
-In any case, these muxes are needed because they are by far the superior solution.  
-
-The ADC needs a 2.5V reference, but the DACs have internal references. 
-
