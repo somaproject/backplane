@@ -79,3 +79,24 @@ HTH
 From the CF FAQ, it appears that 3.3V operation won't be a problem. 
 
 Tables 20, 22, 24, 28, 29, 30
+
+
+http://www.barrymichels.com/ide/
+http://www.pjrc.com/tech/8051/ide/
+
+http://www.repairfaq.org/filipg/LINK/F_IDE-tech.html
+
+
+------------------------------------------
+We'll create a CFIO.vhd module whcih will be a loose wrapper on top of the raw IDE interface, which will handle signal multiplexing, etc. 
+
+The idea here is to abstract away all of the delays necessary to interface with the (slower) bus inside of this module; since the bus's time scale is on the order of 8 MHz or so, we'd have to add lots of wait states into our primary logic, whcih we can avoid with this particular module. 
+
+STARTRD : start a read 
+STARTWR : start a write
+ADDR : input address [2:0]
+DIN[7:0]
+DOUT[7:0]
+
+DONE : goes high when the operation is done. Waits a cycle to sample STARTRD, WR, etc. so that we can push them right against each other. 
+

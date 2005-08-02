@@ -1,0 +1,18 @@
+Simulation of a CF card; takes in a file name that contains the necessary data. 
+We can't use binary data, because of limitations in vhdl simulation
+
+so instead we'll load in a list of files and base locations, and lengths; we create the RAM. But I don't know how to dynamically create those sorts of variables. I sure wish VHDL was a real language. 
+
+
+we create a sector file which consists of:
+
+1234 01 01 02 03 04... [512 bytes total
+
+otherwise the secotors read 0
+
+we create the basic task file; we also attempt to simulate the 8-bit memory interface
+
+
+
+
+
