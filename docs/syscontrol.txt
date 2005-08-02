@@ -1,0 +1,34 @@
+
+Apollodisplays.com has really good prices on optrex displays
+
+use 68HC12 and FPGA mem-mapping... something something...
+wow, you could actually have a high-level interface on the FPGA. Wow, that would be pretty cool. 
+
+
+UI ...
+
+Well, so, I'm investigating a uP core for the FPGA to handle the LCD stuff... currently the best candidate is pAVR, which is written by a BU student, which is pretty cool. It will synthesize in a Spartan-3 200, which nuhorizons finally has in quantity. 
+
+There also appear to be gcc tools targeted at the avr line of microcontrollers, and people aren't paranoid about legal issues with the open cores. 
+
+It would be neat to have this core running, talking to the FPGA which was doing some measure of hardware-accelerated graphics somethingsomething. 
+
+A lot of the existing cores either 1. suck, 2. are huge, or 3. run into IP concerns. For example, openrisc1200 is freaking huge. 
+
+But after talking with dave w and vimal, they really suggested I go with the openrisc core, and try and look at removing some of the stuff I don't need. Their thoughts were: 1. it'll give me some room to breath in terms of expandability and 2. It's really really (!) well supported. Dave called the code "beautiful" (his crypto-fpga-urop last summer used it). 
+
+
+So, if we do that, how do we handle memory for the chip, and sequencing issues? I'd like to avoid mating the silicon with an infinite supply of memory... At the same time, it's neat to think of having the machine have a 2 KB (1 block) "command window" that it can just write stuff into, and then the fpga takes controll of that buffer and _thats_ what gets generated. The ideal design is to have something where, every frame, 
+1. fpga processes cmd buffer into ram buf a
+2. fpga blts ram buf b
+
+with a and b alternating
+
+ the only challenge is that, due to the data rate of the LCD, we'll probably need to s l o w l y pull data out of the ram Actually, not ture -- optrex 4-bit interface seems to suggest that the line cycle time is 0.0556 ms, and total frame is 240x that, or... 13 ms total. That's actually quite a bit of time... but... hmm
+
+we can render to an internal buffer, and during that time pull the necessary data from the memory
+
+
+Using optrex CFL-backlit transmissive  Black & Wite LCD because these are "the best" something something. interface is tardeaux-easy. Optrex appears to make converter (BXA-24529?)
+
+
