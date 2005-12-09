@@ -1,0 +1,5 @@
+C: CLK		 :  |   |   |   |   |   |   //  |    |    |   |   |  
+S: DATAEN	 :  H   L   L   L   L   L   //  L    L    L   H   H
+S: DATAACK	 :  H   H   L   L   L   L   //  L    L    H   H   H 
+B: SYSDATA[15:0] :  Z   Z   D0  D1  D2  D3  //  Dn-2 Dn-1 Z   Z   Z
+BC:              :  1   1   1   1   1   1   1   1    1    1   1   1 

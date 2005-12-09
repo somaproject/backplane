@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<article>
+  <articleinfo>
+    <title>Event Bus</title>
+    <author>
+      <firstname >Eric</firstname>
+      <surname>Jonas</surname>
+    </author>
+  </articleinfo>
+  <section id="EventBus"><title>The Event Bus</title>
+    <para> The Event Bus lies at the heart of the low-latency capabilities of the Soma system. The bus itself interconnects all low-latency Soma peripherals along a common bus, allowing for broadcast and point-to-point communication of events. The sequencing of devices on the bus and the placement of events is controled by the Event Bus Sequencer. An event requires a device to drive the bus for six clock cycles, or one event cycle. 
+    </para>
+    <para>
+      Each device on the event bus has a unique event ID, and the bus supports a total of 48 such devices. Each event can be sent to an arbitrary subset of devices.  
+    </para>
+
+    <section id="Hardware"><title> Event Bus Pinout</title>
+      <para> The bus itself is as follows:
+      <signaldef set="EventBus">
+	<signal>
+	  <name>EDATA[15:0]</name>
+	  <info>16-bit wide tristated data bus</info>
+	</signal>
+	<signal>
+	  <name>SYSCLK</name>
+	  <info>system clock, used by the bus</info>
+	</signal>
+	<signal active="low">
+	  <name>EVENT</name>
+	  <info>Shared line, active low, telling peripherals that a new event begins on the next clock cycle.</info>
+	</signal>
+	<signal active="low">
+	  <name>ECE</name>
+	  <info>Coincident with <signal>EVENT</signal>, tells a device to drive the event bus during the next event cycle. Each device has its own ECE line; these are sequentially activated by the Event Bus Sequencer.</info>
+	</signal>
+	<signal>
+	  <name>EADDR[7:0]</name>
+	  <info>bit field addresses representing, over the course of an event cycle, the target device for the current command.
+	  </info>
+	</signal>
+      </signaldef>
+      <para>
+	
+      </para>
+    </section>
+
+
+    <section><title> Event packet description</title>
+    <para> Each event has a header, consisting of a command byte and a source byte. The second word of each event will generally contain some form of metadata, leaving the remaining four words (8 bytes) for actual data. </para>
+    
+    </section>
+    <section>
+      <title>Timing</title>
+      <para> The system clock runs at 20 MHz, thus each event takes 300 ns, and a full event cycle (polling all 48 devices) requires 14.4 us. This means each devices will be able to transmit roughly 70k events per second, or a bandwidth of 550 kB/second. 
+      </para> 
+	
+    </section>
+    
+  </section>
+</article>

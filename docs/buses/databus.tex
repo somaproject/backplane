@@ -1,0 +1,25 @@
+
+\section{The Data Bus}
+
+The Data Bus is the bulk data transfer bus on the Soma backplane, aggregating packetized data from the DSP Boards and handing it off to the network subsystem. The Data Bus is a tristated unidirectional bus -- packets only flow in one direction. 
+
+
+\begin{SignalTable}{Data Bus Pinout}
+\signaldef{\bus{SYSDATA}{15:0}}{16-bit wide tristated data bus.}
+
+\signaldef{\signal{SYSCLK}}{System clock, used by the bus}
+
+\signaldef{\signaln{DATAEN}}{Per-device Data Enable line. When low, a device should begin driving the \bus{SYSDATA}{15:0} lines on subsequent clock cycles. The \signaln{DATAEN} remains asserted (low) for the entire bus transaction.}
+
+\signaldef{\signaln{DATAACK}}{ Data acknowledged line which is asserted by a DSPboard while it is driving the \bus{SYSDATA}{15:0} bus. A device only asserts \signaln{DATAACK} when it has data to transfer; if this is not asserted within the first six cycles of \signaln{DATAEN} being asserted, the bus transaction is aborted and \signaln{DATAEN} is deasserted for that particular device. }
+
+\end{SignalTable}
+
+\begin{figure}
+\includegraphics[ext=pdf]{databus.example.timing.pdf}
+\caption{Example Data Bus Transaction.}
+\end{figure}
+
+\subsection{Timing and Sequencing}
+
+The system clock runs at 20 MHz, and there are sixteen independent DSP Boards (each with associated \signaln{DATAEN} line. A single transaction is caped at 1024 bytes, or 512 cycles with \signaln{DATAACK} asserted. Thus all thirty-two DSPs can be serviced inside of 820 $\mu sec$. 

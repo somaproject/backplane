@@ -1,0 +1,7 @@
+C: CLK		:  |   |   |   |   |   |   |   |   | 
+S: EVENT	:  H   L   H   H   H   H   H   L   H
+S: ECE		:  H   L   H   H   H   H   H   H   H 
+B: EDATA[15:0]	:  Z   Z   HDR MTA D0  D1  D2  D3  Z
+BC:             :  1   1   1   1   1   1   1   1   1
+B: EADDR[7:0]   :  Z   Z   A0  A1  A2  A3  A4  A5  Z
+BC:             :  1   1   1   1   1   1   1   1   1 
