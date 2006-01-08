@@ -1,7 +1,7 @@
 
 \section{The Event Bus}
 
-The Event Bus lies at the heart of the low-latency capabilities of the Soma system. The bus itself interconnects all low-latency Soma peripherals along a common bus, allowing for broadcast and point-to-point communication of events. The sequencing of devices on the bus and the placement of events is controled by the Event Bus Sequencer. An event requires a device to drive the bus for six clock cycles, or one event cycle. 
+The Event Bus is the heart of the low-latency capabilities of the Soma system. The bus itself interconnects all low-latency Soma peripherals along a common bus, allowing for broadcast and point-to-point communication of events. The sequencing of devices on the bus and the placement of events is controled by the Event Bus Sequencer. An event requires a device to drive the bus for six clock cycles, or one event cycle. 
 
       Each device on the event bus has a unique event ID, and the bus supports a total of 48 such devices. Each event can be sent to an arbitrary subset of devices.  
 
@@ -23,10 +23,15 @@ The Event Bus lies at the heart of the low-latency capabilities of the Soma syst
 
 Each event has a header, consisting of a command byte and a source byte. The second word of each event will generally contain some form of metadata, leaving the remaining four words (8 bytes) for actual data.
 
-\begin{figure}
-\includegraphics[ext=pdf]{eventbus.example.timing.pdf}
-\caption{Example Event Bus Transaction.}
-\end{figure}
+\begin{timing}{Example}
+C: CLK		:  |   |   |   |   |   |   |   |   | 
+S: EVENT	:  H   L   H   H   H   H   H   L   H
+S: ECE		:  H   L   H   H   H   H   H   H   H 
+B: EDATA[15:0]	:  Z   Z   HDR MTA D0  D1  D2  D3  Z
+BC:             :  1   1   1   1   1   1   1   1   1
+B: EADDR[7:0]   :  Z   Z   A0  A1  A2  A3  A4  A5  Z
+BC:             :  1   1   1   1   1   1   1   1   1 
+\end{timing}
 
 \subsection{Timing}
 The system clock runs at 20 MHz, thus each event takes 300 ns, and a full event cycle (polling all 48 devices) requires 14.4 us. This means each devices will be able to transmit roughly 70k events per second, or a bandwidth of 550 kB/second. 

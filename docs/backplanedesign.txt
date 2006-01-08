@@ -125,3 +125,48 @@ Physical configuration:
 Pull-up on PROGRAM for backplane FPGA
 
 
+
+--------------------------------------------------------------------------
+Backplane re-design
+--------------------------------------------------------------------------
+The new design depends on a single virtex-4 FPGA, some extra RAM, the LCD interface and power interface as before, etc. 
+
+We're going to try and keep these docs updated internally as we do this. 
+
+Questions to address: 
+1. signal integrity between: 
+  clock drivers and cards
+  Cards and each other
+  Timing with RAM, perhaps using some sort of DLLmagic
+  What DCI values? what sort of 
+2. Power constraints; what does the V4 require? 
+3. How the heck to hook up the MAC? 
+
+
+Actually, in an attempt to reduce the overall board pinout-count and whatnot, we're going to: 
+
+Create a Front-Board, which will contain: 
+MMC slot
+Ethernet jack
+USB jack
+Fiber Parts
+
+all along the Right side of the backplane HW. We will also try and increase the width of the enclosure just enough so that we can contain the more traditional type / size of SFX psu. 
+
+Effectively, PCB assembly is -so expensive- that we're going to throw all of our backplane eggs into a single basket, and build the MotherOfAllBackplanePCBs. 
+
+We lose a bit in the modularity department here in that it becomes harder in the future to upgrade the backplane PCB....
+
+New design: virtually identical board geometry, but with everything on one board: 
+  1. nic
+  2. CPLD for boot
+  3. JTAG interface for cpld
+  4. Analog interface
+
+Updated pin budget:
+
+Network: 16+16+14 =             46
+Memory:  16 + 16 + 3 =          35
+Event control:        
+
+
