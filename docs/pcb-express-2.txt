@@ -1,0 +1,78 @@
+ 
+Hi Eric, The reason PCBexpress is so wide open is that at one time they
+were dialed real tight, and a customer returned the boards for being 1/2
+mil outside a listed range.  So we (PCBexpress and PCBpro)learned to
+give a range we would never be outside of.
+
+PCBpro and PCBexpress uses the same construction sheet listed as number
+1 below.  PCBpro has other standard thicknesses that PCBexpress does
+not, listed numbers 2-3 below. 
+
+Let me give you the amount of prepeg we use for our PCBpro selections
+between layer 1/top and next layer down ( L2). ( #1 is PCBexpress
+choice)
+1) A .062" order has 1 sheet of 2116 and 1 sheet of 1080 that together
+measures .007"
+2) A .093" order has 3 sheets of 1080 that measure .0075"
+3) A .125" order has 1 sheet 7628 and 2 sheets 1080 that together
+measures .012"
+
+
+Some reasoning: Depending on wither your designs second layer is copper
+plane, or traces will affect the prepeg's final measurement( PCBexpress
+has the 8mil to give it an extra 1 mil for plane layers, and 4 to give
+it an extra 1 mil for signal layers). The prepegs +/-  tolerance is a
+small margin but could be a reason the measurement on a plane layer
+would be more than the given measurement.
+
+During press the materials compress and the second layers copper will be
+pushed into the Prepeg at different rates depending on that geometry.
+If the second layer is a signal trace layer the 1 oz copper height of
+the  traces ( .0012") push into the given prepeg's thickness and reduce
+the measurement below the given thickness ( no less than 4 mil).  If the
+second layer is plane, it will be close to the given and we add some (
+no more than 8 mil).  IF the second layer is both traces, and
+plane........somewhere between 4-8 mils.
+
+PCBpro can also tailor special constructions using standard on hand
+materials for its design review orders ( as thin as .005" between
+layers) when thicknesses are provided in a print. These are reviewed on
+a case by case basis, and we would still need to have a tolerance range
+to account for geometry of the layers given to us.		
+
+Hope this helps, Sincerely,
+		Robert Dorman
+		Pre Engineering Department
+		PCBpro.com
+		Messages can be left at (503) 829-9108 x 237
+		
+		
+=== PCBpro - Expect the Best. Easy. Fast. Reliable. ==============
+- Easiest site to quote & order circuit boards (no sign-up required)
+- Quote your circuit boards today:
+http://www.pcbpro.com/pcb-quote.php?src=em
+=====================================================
+Sign up for our PCBpro newsletter:
+http://www.pcbpro.com/pcb-newsletter.php
+
+
+
+-----Original Message-----
+From: Eric Jonas [mailto:jonas@mwl.mit.edu] 
+Sent: Thursday, January 12, 2006 5:51 AM
+To: tech@pcbpro.com
+Subject: Board stack thickness, variability?
+
+Hello! PCBexpress claims their layer stack-up for a 6-layer board has
+the fr-4 between copper layers 1 and 2 being between 4 and 8 mils thick.
+What is the thickness of your standard 6-layer process, and does it vary
+by that much? 
+
+My problem is that, to get my differential impedance correct, I need to
+know the ground-plane-to-trace distance pretty accurately. A factor of 2
+difference turns my 100-ohm trace pair into a 60-ohm trace pair. 
+
+I'm not too picky about the final number, just that it has a low
+variance. Thanks for all the help,
+			...Eric
+
