@@ -78,10 +78,11 @@ The suggested xilinx app note is for -5 spartan-3 devices.
 We need to show that -4 devices can do 240 Mbps. 
 
 Power
-TP786xx -- ubiquitus, many voltages, etc.  1.5A output
+TPS786xx -- ubiquitus, many voltages, etc.  1.5A output
+We're going to use the KTT (DDPAK-5) package because it appears to be more widely available and looks like it can handle more power. 
+
 
 switching supplies are a pain to design and use and mount; I'm just
 going to use the PTH05010W power supply module... in fact, I'm going
 to use three:
-
 
