@@ -19,6 +19,17 @@ the routing.
 
 The TX side is fine, we don't send that much data. 
 
+Allocation of events: 
+32 DSPs
+2 ADIO
+2 NEP
+1 NET
+1 ETHER
+1 SYS
+1 TIMER/Coordinator
+-----------------------------
+40 
+
 
 ------------------------------------------------
 Booting
@@ -85,4 +96,24 @@ We're going to use the KTT (DDPAK-5) package because it appears to be more widel
 switching supplies are a pain to design and use and mount; I'm just
 going to use the PTH05010W power supply module... in fact, I'm going
 to use three:
+
+----------------------------------------
+Bus routing, clocks, configuration
+----------------------------------------
+we have an EVENTCE signal, internally, which gates an input event. 
+
+
+We have a "router" who is responsible for multiplexing/sequencing the events properly. In the A+D cycles the router clocks the following Address and DATA bytes onto the relevant bus; this is all happening at the core 26 MHz. 
+
+Each reciver module takes in the relevant A+D bytes and then TXes them on the next clock cycle at the appropriate clock rate. A compile-time generic dictates which events something responds to. 
+
+This causes a very interesting timing problem, because the timing external to the core will be roughly an event cycle behind the internal state. 
+
+We use 4 commas in our dual-link data stream: 
+new event cycle (K28.5)
+event is for A (K28.1)
+event is for B (K28.2) 
+event is for both (K28.3) 
+
+
 
