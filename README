@@ -1,0 +1,36 @@
+This is the soma backplane. What exactly is included in here? 
+
+1. The enclosure that houses the backplane. 
+2. the backplane PCB itself
+
+3. Any non-computational PCBs (strictly passive) that are involved in
+the backplane, i.e. the front panel IO
+
+4. This should not contain any protocol documentation; as hard as it
+seems, all backplane/peripheral documentation should exist external to
+the actual backplane implementation.
+
+5. I feel like we should separate the backplane, event, etc. protocol
+docuemntation from everything else, but I'm just not sure how.
+
+6. Where do libraries go ? Like, the code for the devices' readers,
+and whatnot? The deserialization code? 
+
+
+doc/ 
+   Docs on the backplane -implementation-; no IO discussions here
+
+tests/ 
+  Hardware (synthesizeable) tests. Module tests of speed, synthesis speed, etc. 
+
+sim/ 
+  simulations, unit tests of components
+
+
+vhdl/
+  core: event/data packet routing core
+  iolib: symlink to the IO library
+  netstack: network stack
+  miscellaneous files for booting, etc. 
+
+
