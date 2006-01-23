@@ -4,7 +4,7 @@ Version=1.0
 [OutputGroup1]
 Name=output.OUTJOB
 Description=
-TargetPrinter=PDFCreator
+TargetPrinter=\\http://printers.mwl.mit.edu:631\Snare
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=EDIF
 OutputName1=EDIF for PCB
@@ -123,7 +123,9 @@ OutputDocumentPath11=
 OutputVariantName11=
 OutputEnabled11=0
 OutputDefault11=0
-PageOptions11=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PaperKind=A4|PrintScaleMode=1
+PageOptions11=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.09|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PaperKind=Tabloid|PrintScaleMode=1
+Configuration11_Name1=OutputConfigurationParameter1
+Configuration11_Item1=Record=SchPrintView|BooleanThing=False
 OutputType12=Wave Print
 OutputName12=Wave Prints
 OutputDocumentPath12=

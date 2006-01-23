@@ -1,0 +1,37 @@
+The soma backplane core handles the routing of event and data packets along the event and data buses. 
+
+The protocols involved are closely linked with the soma RX and TX protocols. In particular, event and data broadcast are handled here. 
+
+The core itself runs at TXBYTECLK, except for the portion which
+handles the data packets. 
+
+
+
+
+--------------------------------------------------------
+Event Receiver
+--------------------------------------------------------
+
+The event receiver performs event locking and partitioning every
+ECYCLE, as well as clock domain transitions between RXBYTECLK and
+TXBYTECLK.
+
+
+---------------------------------------------------------
+Data receiver
+---------------------------------------------------------
+
+The data receiver handles the passing of the data tokens between 
+client devices; 
+
+EPOS:
+0 :  beginning of event cycle 
+1 :  DGRANTA
+2 :  EADDRA[0]
+7 :  EADDRA[5]
+8 :  DGRANTA
+9 :  EADDRA[0]
+14 : EADDRA[5]
+15 : EDATA [sequential, as expected]
+
+Routing core... We try hard to avoid putting any child instances into the event core, and keeping it relatively event-device-position-agnostic. Thus for the data bus we 
