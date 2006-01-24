@@ -139,16 +139,24 @@ Any time during an event cycle a device can send an event, which in this case is
 
 A device may also send up to 300 bytes of data, if selected, in the following needlessly complex format
 
-To start a packet, send K28.1
 to begin data, send K28.2
 to end data, send K28.3
 to end a packet, send K28.4
 
 This is depressingly like token ring. 
 
-We have a number of "sender" devices at each time filling buffers; when they ahve completed we let the next devices send. 
 
-Only let a device send data over 4 events; 
+---------------------------------------------------------------------------
+Data receiver
+---------------------------------------------------------------------------
+The data receiver receives the relevant comma characters and handles
+the setting of DOEN, DDONE, etc. 
 
+A K28.2 -> sets DOEN high
+a K28.3 -> sets DOEN low
+a K28.4 -> sets DDONE high for a tick
+an ERR at any point sets DABORT high until the next ECYCLE
+
+Ecycle is registered and then used as a reset; since T_txbyteclock > T_rxbyteclock, ecycle will always trigger. 
 
 

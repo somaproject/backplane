@@ -68,7 +68,6 @@ begin  -- Behavioral
         else
           if eposcnt /= "1111" then
             eposcnt <= eposcnt +1;
-            
           end if;
         end if;
 
