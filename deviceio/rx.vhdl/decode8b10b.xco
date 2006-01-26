@@ -1,0 +1,49 @@
+# BEGIN Project Options
+SET flowvendor = Foundation_iSE
+SET vhdlsim = True
+SET verilogsim = True
+SET workingdirectory = /tmp/
+SET speedgrade = -5
+SET simulationfiles = Behavioral
+SET asysymbol = True
+SET addpads = False
+# SET outputdirectory = /home/jonas/soma/serial/rx.vhdl
+SET device = xc3s50
+SET implementationfiletype = Edif
+SET busformat = BusFormatAngleBracketNotRipped
+SET foundationsym = False
+SET package = pq208
+SET createndf = False
+SET designentry = VHDL
+SET devicefamily = Spartan3
+SET formalverification = False
+SET removerpms = False
+# END Project Options
+# BEGIN Select
+SELECT Decode_8b/10b family Xilinx,_Inc. 5.0
+# END Select
+# BEGIN Parameters
+CSET symbol_disparity_out=false
+CSET b_new_data=false
+CSET synchronous_reset=false
+CSET running_disparity_in=false
+CSET clock_enable=true
+CSET running_disparity_out=false
+CSET b_synchronous_reset=false
+CSET new_data=false
+CSET b_symbol_disparity_out=false
+CSET secondary_decoder=false
+CSET component_name=decode8b10b
+CSET synchronous_reset_value=D_0_0_pos
+CSET b_disparity_violation_out=false
+CSET implementation=LUT_Based
+CSET disparity_violation_out=true
+CSET b_clock_enable=false
+CSET b_code_violation_out=false
+CSET b_running_disparity_out=false
+CSET code_violation_out=true
+CSET b_synchronous_reset_value=B_D_0_0_pos
+CSET b_running_disparity_in=false
+# END Parameters
+GENERATE
+

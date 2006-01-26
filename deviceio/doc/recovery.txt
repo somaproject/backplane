@@ -1,0 +1,8 @@
+For starters, we're going to create a test jig composed of both
+elements for behavioral simulation. 
+
+The question is, how well does it work across timing and jitter?  we'd
+like to run it with a bunch of different test vectors as we sweep the
+clock in some set of clock frequencies.
+
+We'd also like to investigate the roll of jitter. 

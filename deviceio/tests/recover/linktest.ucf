@@ -1,0 +1,4 @@
+#NET "rxclk90" TNM_NET = "receiveclocks";
+#NET "rxclk90fb" TNM_NET = "receiveclocks";
+NET "CLKIN" TNM_NET = "CLKIN";
+TIMESPEC "TS_CLKIN" = PERIOD "CLKIN" 125.5 MHz HIGH 50 %;

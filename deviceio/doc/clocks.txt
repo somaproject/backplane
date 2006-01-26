@@ -1,0 +1,26 @@
+This is a nice explanation of our clock timing requirements. 
+
+We want 50k event cycles per second. 
+We want 40 12-byte events per second. 
+That means we effectively want at least 24.0 MB/sec
+However, we also want a TX clock that's a multiple of 50e3, because we want to be able to have identical-length frames for each event and an integral number of them per second. 
+
+We want to encode using 8b/10b. This means our TX bitrate is 1.25 times our data bitrate -- at least 240 Mbps. But we also want some header. 
+
+Our solution is to feed in a clock rate of 125 MHx; we double it to 250 MHz and use -that- as our TX bitrate. This results in: 
+
+A byte rate of 25 MB/sec
+an event cycle that is 500 bytes long
+40*12 = 480 bytes of event paylod per cycle and a 20-byte "who's who" header
+
+
+So, when it's all said and done:
+
+CLKIN: 125 MHz
+TXCLK : 250 MHz
+TXBYTECLK: 25 MHz
+RXCLK: 258.06 MHz
+RXCLK90: 258.06 MHz, shifted by 90 degrees
+RXBYTECLK: RXCLK / 10 
+
+
