@@ -1,3 +1,7 @@
+This is the set of code and docs dealing with how we communicate between the backplane and devices. 
+
+we have the serial 
+
 This describes two modules for the LVDS serial interface, the
 canonical transmitter and receiver. These are designed to be used in
 all SOMA devices to communicate. This also includes our 8b/10b code,
@@ -5,11 +9,8 @@ if/whenever that is completed.
 
 The directories are organized as follows:
 
-docs/  all docs and schematics
+docs/  all docs 
 
-rx.vhdl/ all vhdl related to the RX components
-
-tx.vhdl/ all vhdl related to the TX components
 
 tests/ hardware-synthesizable test modules for timing and testing in the physical universe
 
