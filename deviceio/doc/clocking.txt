@@ -1,0 +1,31 @@
+
+To oversample the data we adopt the method suggested by Xilinx in
+Application note 224 (Data recovery), using the rising and falling
+edges of a roughly-synchronous input clock and it's 90-degree
+phase-shifted counterpart. This results in us sampling a given bit in
+the stream 4 different times -- if the jitter and skew were low enough
+this would be tantamount to sampling at 1 GHz.
+
+We considerably simplify the xilinx design by guaranteeing that our
+recovery clock is running faster than our transmission clock in all
+cases; this guarantees that each receive clock tick will have < 1 bit
+of data, and we can use simple clock enables on the odd cycle where
+there is no avaialbe data.
+
+
+To do this, we generate the following clock signals from an input 125
+MHz clock; our goal was to use avoid using all DCMs such that devices
+would have at least one free for application-level use.
+
+Our clocks module has the following clocks:
+
+CLKIN: 125 MHz input clock
+TXCLK : 250 MHz transmission bit-rate clock
+TXBYTECLK: 25 MHz transmission byte clock
+
+RXCLK: 258 MHz (32/31 * 250 MHz) receive clock
+RXCLK90: RXCLK phase-shifted by 90 degrees using the xilinx DCM fine-phase shift
+RXBYTECLK: RXCLK / 10, ticks once per transmitted symbol 
+
+
+

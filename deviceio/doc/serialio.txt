@@ -1,0 +1,39 @@
+The serialization of Event and Data packets maps to OSI levels 3 and
+below. This document describes the physical medium used, the bit and
+byte encoding scheme, and modules written to allow for their
+interaction.
+
+This here JUST DISCUSSES THE ACTUAL SERIAL INTERFACE
+
+We use a 100-ohm differential impedance SATA connector, in both
+backplane and cable connections; each LVDS pair is unidirectional with
+an encoded bitrate of 250 Mbps.
+
+We wanted the device to easily synthesize in a Xilinx Spartan-3 FPGA,
+the FPGA of choice for Soma. Restrictions were thus placed on our
+manner of deserialiation. We choose to exploit the Spartan-3's
+abundant clock manipulation resources to allow a receiver to
+oversample the data stream.
+
+The bitstream is 8b/10b encoded because the codec is 
+
+1. no longer patented 
+
+2. guarantees clock transitions for our synchrnization efforts
+
+3. widely understood 
+
+4. has embedded punctuation to allow framing and out-of-band
+   signalling with minimal effort, including K28.5, which allows for
+   easy byte locking
+
+5. Xilinx has an easy-to-use implementation -- in time, we hope to
+   replace this with native IP for a truly Free Solution
+
+\include {Clocking}
+
+\include{Transmit } 
+
+The transmit interface is simple
+
+We just encode and then transmit! We
