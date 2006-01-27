@@ -1,0 +1,10 @@
+This is our instantiable link test. 
+
+The link test itself is simple; we simply serialize out the bits on one side of the block ram and test that those are the bytes we receive on the other (in the other clock domain). 
+
+The status LEDs are:
+
+LEDPOWER: Flashes to show system is down. uh, I mean on. 
+LEDERROR: high for any inbound packets with errors
+LEDVALID : high if the past 150 ms of events were valid
+
