@@ -3,11 +3,11 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/sample/_behavioral.var: ../../rx.vhdl/sample.vhd
-	$(VHDLC) ../../rx.vhdl/sample.vhd
+$(WORKDIR)/sample/_behavioral.var: ../../vhdl/sample.vhd
+	$(VHDLC) ../../vhdl/sample.vhd
 
-$(WORKDIR)/datamux/_behavioral.var: ../../rx.vhdl/datamux.vhd
-	$(VHDLC) ../../rx.vhdl/datamux.vhd
+$(WORKDIR)/datamux/_behavioral.var: ../../vhdl/datamux.vhd
+	$(VHDLC) ../../vhdl/datamux.vhd
 
 $(WORKDIR)/recover/_behavioral.var: ../../tests/recover/recover.vhd
 	$(VHDLC) ../../tests/recover/recover.vhd

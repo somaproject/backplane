@@ -37,7 +37,7 @@ architecture Behavioral of dlock is
 
 begin
 
-  keq <= '1' when pdata = "0101111100" else '0';
+  keq <= '1' when pdata = "0101111100" or pdata = "1010000011" else '0';
 
   rxclkmain : process(RXCLK)
   begin
@@ -70,7 +70,7 @@ begin
         end if;
 
         lockl <= lock; 
-        if lockl = '1' then
+        if lockl = '1' and lock = '0' then --- DEBUGGING
           lldoen <= '1';
         else
           if bitcnt(0) = '1' then

@@ -6,7 +6,7 @@ use IEEE.STD_LOGIC_SIGNED.all;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity recover is
+entity linktest is
   port ( CLKIN    : in  std_logic;
          RESET    : in  std_logic;
          DIN      : in  std_logic;
@@ -16,9 +16,9 @@ entity recover is
          LEDPOWER : out std_logic
          );
 
-end recover;
+end linktest;
 
-architecture Behavioral of recover is
+architecture Behavioral of linktest is
 
   -- clocks
   signal txclk     : std_logic := '0';
@@ -31,17 +31,22 @@ architecture Behavioral of recover is
   signal txdin : std_logic_vector(7 downto 0) := (others => '0');
   signal txkin : std_logic                    := '0';
 
-  signal addra : std_logic_vector(10 downto 0) := (others => '0');
+  signal addra : std_logic_vector(7 downto 0) := (others => '0');
 
   -- RX side:
-  signal addrb        : std_logic_vector(10 downto 0) := (others => '0');
-  signal dopb, rxkout : std_logic                     := '0';
-  signal dob, rxdout  : std_logic_vector(7 downto 0)  := (others => '0');
+  signal addrb : std_logic_vector(7 downto 0) := (others => '0');
 
-  signal errors, scorrect, sincorrect : std_logic := '0';
-  signal scl, scll                    : std_logic := '0';
+  signal rxkout : std_logic                    := '0';
+  signal rxdout : std_logic_vector(7 downto 0) := (others => '0');
 
-  signal cnt : std_logic_vector(21 downto 0) := (others => '0');
+  signal errors, scorrect, valids, sincorrect : std_logic := '0';
+  signal scl, scll                            : std_logic := '0';
+
+  signal symbeq : std_logic := '0';
+
+  signal rxdoen, rxerr : std_logic                     := '0';
+  signal brst          : std_logic                     := '0';
+  signal cnt           : std_logic_vector(21 downto 0) := (others => '0');
 
   component serialrx
     port ( RXCLK     : in  std_logic;
@@ -81,31 +86,6 @@ architecture Behavioral of recover is
 
 
 begin  -- Behavioral
-  bytestreamram : RAMB16_S9_S9
-    generic map (
-      INIT_A  => X"000",
-      INIT_B  => X"000",
-      SRVAL_A => X"000",
-      SRVAL_B => X"000")
-    port map (
-      DOA     => txdin,
-      DOB     => dob,
-      DOPA    => txkin,
-      DOPB    => dopb,
-      ADDRA   => addra,
-      ADDRB   => addrb,
-      CLKA    => txbyteclk,
-      CLKB    => rxbyteclk,
-      DIA     => X"00",
-      DIB     => X"00",
-      DIPA    => '0',
-      DIPB    => '0',
-      ENA     => '1',
-      ENB     => '1',
-      SSRA    => RESET,
-      SSRB    => RESET,
-      WEA     => '0',
-      WEB     => '0'  );
 
   serialrxdev : serialrx
     port map (
@@ -141,15 +121,11 @@ begin  -- Behavioral
 
 
 
-  -- combinational rx signals
-  errors     <= rxdoen and rxerr;
-  valids     <= rxdoen and not rxerr;
-  symbeq     <= '1' when rxkout = dopb and rxdout = dob;
-  scorrect   <= symbeq and valids;
-  sincorrect <= (not symbeq) and valids;
 
-
-  -- tx sequential
+  -- Transmit
+  --
+  txdin     <= X"BC" when addra = X"00" else addra;
+  txkin     <= '1'   when addra = X"00" else '0';
   txsequential : process (txbyteclk)
   begin
     if rising_edge(txbyteclk) then
@@ -158,7 +134,10 @@ begin  -- Behavioral
   end process txsequential;
 
   -- rx sequential
-  rxsequential : process (CLK, RESET)
+  brst <= '1' when rxkout = '1' and rxdout = X"BC" and rxdoen = '1' and rxerr = '0' else '0';
+
+
+  rxsequential : process (rxbyteclk, RESET)
   begin  -- process rxsequential
     if RESET = '1' then
 
@@ -166,30 +145,25 @@ begin  -- Behavioral
       if rising_edge(rxbyteclk) then
 
         LEDERROR <= errors;
-        LEDVALID <= scll;
         LEDPOWER <= cnt(0);
 
         -- ADDRB counter
-        if errors = '1' then
-          addrb   <= (others => '0');
+        if brst = '1' then
+          addrb   <= X"01";
         else
-          if scorrect = '1' then
+          if rxdoen = '1' and rxerr = '0' then
             addrb <= addrb + 1;
           end if;
         end if;
+        if RXDOEN = '1' or RXERR = '1' then
 
-        -- output
-        if cnt = "0000000000000000000000" then
-          scl   <= '0';
-          scll  <= scl;
-        else
-          if sincorrect = '1' then
-            scl <= '1';
+
+          if (brst = '1' or addrb = rxdout ) and rxerr = '0' then
+            LEDVALID <= '1';
+          else
+            LEDVALID <= '0';
           end if;
         end if;
-
-        cnt <= cnt + 1;
-
       end if;
     end if;
   end process rxsequential;

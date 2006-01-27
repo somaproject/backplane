@@ -51,8 +51,8 @@ begin
     port map (
       CLKIN    => CLKINB,
       RESET    => RESETB,
-      DIN      => dataBtoA,
-      DOUT     => dataAtoB,
+      DIN      => dataAtoB,
+      DOUT     => dataBtoA,
       LEDERROR => LEDERRORB,
       LEDVALID => LEDVALIDB,
       LEDPOWER => LEDPOWERB);
@@ -60,6 +60,9 @@ begin
 
 
   CLKINA <= not CLKINA after clkperiod / 2;
-  CLKINB <= not CLKINB after clkperiod / 2  *1.005;  -- half-percent diff
+  CLKINB <= not CLKINB after clkperiod / 2  *1.00;  -- half-percent diff
 
+RESETA <= '0' after 50 ns;
+  RESETB<= '0' after 50 ns;
+  
 end;

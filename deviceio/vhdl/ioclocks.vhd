@@ -23,8 +23,12 @@ architecture Behavioral of ioclocks is
   signal txclkint, txclkfb,
     rxclkdiv2int, rxclkdiv2,
     rxclkint, rxclkfb,
-    rxclkdiv2fb, rxbyteclkn, rxbyteclknfb, rxclk90fb, txbyteclk : std_logic := '0';
+    rxclkdiv2fb, rxbyteclkn, rxbyteclknfb, rxclk90int, rxclk90fb : std_logic := '0';
 
+  signal txclklocked, txclknotlocked : std_logic := '0';
+  
+  signal rsttick : std_logic_vector(7 downto 0) := (others => '1');
+  
 begin
 
 
@@ -42,8 +46,10 @@ begin
       PSEN             => '0',
       CLK2X            => txclkfb,
       CLKDV            => TXBYTECLK,
-      CLKFX            => rxclkdiv2int);
+      CLKFX            => rxclkdiv2int,
+      LOCKED => txclklocked);
 
+  txclknotlocked <= not txclklocked; 
   txclk_bufg : BUFG port map (
     O => txclkint,
     I => txclkfb);
@@ -52,7 +58,7 @@ begin
   
   rxclkdiv2_bufg : BUFG port map (
     O => rxclkdiv2,
-    I => rxclkdiv2in);
+    I => rxclkdiv2int);
 
   rxclkdcm : dcm generic map (
     DLL_FREQUENCY_MODE => "LOW",
@@ -64,7 +70,7 @@ begin
     ) port map (
       CLKIN            => rxclkdiv2,
       CLKFB            => rxclkint,
-      RST              => RESET,
+      RST              => rsttick(5),
       PSEN             => '0',
       CLK2x            => rxclkfb,
       CLKDV            => RXBYTECLK);
@@ -84,7 +90,7 @@ begin
     port map (
       CLKIN            => rxclkdiv2,
       CLKFB            => rxclk90int,
-      RST              => RESET,
+      RST              => rsttick(5), 
       PSEN             => '0',
       CLK2x            => rxclk90fb);
 
@@ -92,6 +98,23 @@ begin
     O => rxclk90int,
     I => rxclk90fb);
 
+  -- delay
+  process(txclkint)
+    begin
+      if rising_edge(txclkint) then
+        rsttick(7) <= rsttick(6);
+        rsttick(6) <= rsttick(5);
+        rsttick(5) <= rsttick(4);
+        rsttick(4) <= rsttick(3);
+        rsttick(3) <= rsttick(2);
+        rsttick(2) <= rsttick(1);
+        rsttick(1) <= rsttick(0);
+        rsttick(0) <= txclknotlocked;
+        
+        
+      end if;
+
+    end process; 
   RXCLK90 <= rxclk90int; 
 
 
