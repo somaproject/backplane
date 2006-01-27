@@ -11,7 +11,7 @@ entity linktest is
          RESET    : in  std_logic;
          DIN      : in  std_logic;
          DOUT     : out std_logic;
-         LEDERROR : out std_logic;
+         LEDGOOD : out std_logic;
          LEDVALID : out std_logic;
          LEDPOWER : out std_logic
          );
@@ -44,6 +44,8 @@ architecture Behavioral of linktest is
 
   signal symbeq : std_logic := '0';
 
+  signal lgood, valid : std_logic := '0';
+  
   signal rxdoen, rxerr : std_logic                     := '0';
   signal brst          : std_logic                     := '0';
   signal cnt           : std_logic_vector(21 downto 0) := (others => '0');
@@ -144,9 +146,25 @@ begin  -- Behavioral
     else
       if rising_edge(rxbyteclk) then
 
-        LEDERROR <= errors;
-        LEDPOWER <= cnt(0);
 
+        if valid = '0' then
+          lgood <= '0';
+        else
+          if cnt = "0000000000000000000000" then
+            lgood <= '1'; 
+          end if;
+        end if;
+
+        if cnt = "1111111111111111111111" then
+          cnt <= (others => '0');
+        else
+          cnt <= cnt + 1; 
+        end if;
+
+        LEDGOOD <= lgood; 
+        LEDPOWER <= cnt(21);
+        LEDVALID <= valid;
+        
         -- ADDRB counter
         if brst = '1' then
           addrb   <= X"01";
@@ -155,13 +173,12 @@ begin  -- Behavioral
             addrb <= addrb + 1;
           end if;
         end if;
+        
         if RXDOEN = '1' or RXERR = '1' then
-
-
           if (brst = '1' or addrb = rxdout ) and rxerr = '0' then
-            LEDVALID <= '1';
+            valid <= '1';
           else
-            LEDVALID <= '0';
+            valid <= '0';
           end if;
         end if;
       end if;
