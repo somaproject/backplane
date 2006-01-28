@@ -9,8 +9,10 @@ use UNISIM.VComponents.all;
 entity linktest is
   port ( CLKIN    : in  std_logic;
          RESET    : in  std_logic;
-         DIN      : in  std_logic;
-         DOUT     : out std_logic;
+         DIN_P      : in  std_logic;
+         DIN_N      : in  std_logic;         
+         DOUT_P     : out std_logic;
+         DOUT_N     : out std_logic;         
          LEDGOOD : out std_logic;
          LEDVALID : out std_logic;
          LEDPOWER : out std_logic
@@ -20,6 +22,9 @@ end linktest;
 
 architecture Behavioral of linktest is
 
+  -- io
+  signal din, dout : std_logic := '0';
+  
   -- clocks
   signal txclk     : std_logic := '0';
   signal rxclk     : std_logic := '0';
@@ -123,7 +128,25 @@ begin  -- Behavioral
 
 
 
+   DIN_obufds : OBUFDS
+   generic map (
+      IOSTANDARD => "DEFAULT")
+   port map (
+      O =>  DOUT_P,  
+      OB => DOUT_N,  
+      I => DOUT   
+   );
 
+  
+   DIN_ibufds : IBUFDS
+   generic map (
+      IOSTANDARD => "DEFAULT")
+   port map (
+      I => DIN_P,
+      IB =>DIN_N,
+      O => DIN   
+   );
+  
   -- Transmit
   --
   txdin     <= X"BC" when addra = X"00" else addra;
