@@ -12,9 +12,11 @@ architecture behavior of linktesttest is
   component linktest
     port ( CLKIN    : in  std_logic;
            RESET    : in  std_logic;
-           DIN      : in  std_logic;
-           DOUT     : out std_logic;
-           LEDERROR : out std_logic;
+           DIN_P      : in  std_logic;
+           DIN_N      : in  std_logic;           
+           DOUT_P     : out std_logic;
+           DOUT_N    : out std_logic; 
+           LEDGOOD : out std_logic;
            LEDVALID : out std_logic;
            LEDPOWER : out std_logic
            );
@@ -24,10 +26,10 @@ architecture behavior of linktesttest is
   signal CLKINA, CLKINB : std_logic := '0';
   signal RESETA, RESETB : std_logic := '1';
 
-  signal dataAtoB : std_logic := '0';
-  signal dataBtoA : std_logic := '0';
+  signal dataAtoB_P, dataAtoB_N : std_logic := '0';
+  signal dataBtoA_P, dataBtoA_N : std_logic := '0';
 
-  signal LEDERRORA, LEDERRORB : std_logic := '0';
+  signal LEDGOODA, LEDGOODB : std_logic := '0';
   signal LEDVALIDA, LEDVALIDB : std_logic := '0';
   signal LEDPOWERA, LEDPOWERB : std_logic := '0';
 
@@ -41,9 +43,11 @@ begin
     port map (
       CLKIN    => CLKINA,
       RESET    => RESETA,
-      DIN      => dataBtoA,
-      DOUT     => dataAtoB,
-      LEDERROR => LEDERRORA,
+      DIN_P      => dataBtoA_P,
+      DIN_N      => dataBtoA_N,      
+      DOUT_P     => dataAtoB_P,
+      DOUT_N     => dataAtoB_N,      
+      LEDGOOD => LEDGOODA,
       LEDVALID => LEDVALIDA,
       LEDPOWER => LEDPOWERA);
 
@@ -51,9 +55,11 @@ begin
     port map (
       CLKIN    => CLKINB,
       RESET    => RESETB,
-      DIN      => dataAtoB,
-      DOUT     => dataBtoA,
-      LEDERROR => LEDERRORB,
+      DIN_P      => dataAtoB_P,
+      DIN_N      => dataAtoB_N,      
+      DOUT_P     => dataBtoA_P,
+      DOUT_N     => dataBtoA_N,      
+      LEDGOOD => LEDGOODB,
       LEDVALID => LEDVALIDB,
       LEDPOWER => LEDPOWERB);
 
