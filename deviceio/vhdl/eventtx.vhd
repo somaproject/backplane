@@ -5,7 +5,7 @@
 -- File       : eventtx.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/01/29
+-- Last update: 2006/01/30
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Transmission of events and support packets. 
@@ -32,6 +32,8 @@ entity eventtx is
          RESET     : in  std_logic;
          EIN       : in  std_logic_vector(7 downto 0);
          WE        : in  std_logic;
+         ECYCLE : in std_logic;
+         SVALID : out std_logic; 
          TXBYTECLK : in  std_logic;
          EDOUT     : out std_logic_vector(7 downto 0);
          LASTBYTE  : out std_logic;
@@ -52,7 +54,11 @@ architecture Behavioral of eventtx is
 
   signal bcnt : integer range 0 to 17 := 0;
 
+  signal secycle, erst : std_logic := '0';
+  signal secl, secll : std_logic := '0';
 
+  signal cycpos : std_logic_vector(8 downto 0) := (others => '0');
+  
 
 begin  -- Behavioral
 
@@ -135,7 +141,7 @@ begin  -- Behavioral
       end if;
 
       if bcnt = 1 then
-        armtx <= 0;
+        armtx <= '0';
       else
         if welll = '1' then
           armtx<= '1'; 
