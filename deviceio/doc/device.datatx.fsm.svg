@@ -9,8 +9,8 @@
    xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="device.datatx.fsm.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/docs"
-   inkscape:version="0.43"
+   sodipodi:docbase="/home/jonas/soma/somabackplane/deviceio/doc"
+   inkscape:version="0.43+devel"
    sodipodi:version="0.32"
    id="svg1996"
    height="792.00000pt"
@@ -62,9 +62,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="942.09735"
-     inkscape:cx="146.37244"
-     inkscape:zoom="7.9195959"
+     inkscape:cy="840.97267"
+     inkscape:cx="357.24277"
+     inkscape:zoom="2.8"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -144,14 +144,18 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="96.875"
-       y="71.25"
+       x="93.75"
+       y="61.875"
        id="text4151"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4153"
-         x="96.875"
-         y="71.25">DDL=1</tspan></text>
+         x="93.75"
+         y="61.875">DDL=1 &amp; </tspan><tspan
+         sodipodi:role="line"
+         x="93.75"
+         y="70.625"
+         id="tspan2897">START = 0</tspan></text>
     <path
        id="path4163"
        d="M 200,68.124997 L 200,68.124997"
@@ -312,7 +316,7 @@
          sodipodi:role="line"
          x="507.61133"
          y="68.875"
-         id="tspan4229">ADDRB != ADDRALL</tspan></text>
+         id="tspan4229">ADDRB+1 != ADDRALL</tspan></text>
     <g
        id="g4231"
        transform="translate(459.375,-28.125)">
@@ -519,21 +523,21 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="56.25"
-       y="105.625"
+       x="-26.58251"
+       y="104.61485"
        id="text4329"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         x="56.25"
-         y="105.625"
+         x="-26.58251"
+         y="104.61485"
          id="tspan4331">OSEL = 3</tspan><tspan
          sodipodi:role="line"
-         x="56.25"
-         y="116.875"
-         id="tspan4333">LASTBYTE=0</tspan><tspan
+         x="-26.58251"
+         y="115.86485"
+         id="tspan4333">LASTBYTE=1</tspan><tspan
          sodipodi:role="line"
-         x="56.25"
-         y="128.125"
+         x="-26.58251"
+         y="127.11485"
          id="tspan4335">KOUT = 0</tspan></text>
     <text
        xml:space="preserve"
@@ -546,6 +550,6 @@
          sodipodi:role="line"
          x="-131.49609"
          y="406.25"
-         id="tspan4341">ADDRB = ADDRALL</tspan></text>
+         id="tspan4341">ADDRB+1 = ADDRALL</tspan></text>
   </g>
 </svg>

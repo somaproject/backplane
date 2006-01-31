@@ -27,13 +27,13 @@ use UNISIM.VComponents.all;
 entity eventtx is
   generic (
     KCHAR : std_logic_vector(7 downto 0));
-  
+
   port ( CLK       : in  std_logic;
          RESET     : in  std_logic;
          EIN       : in  std_logic_vector(7 downto 0);
          WE        : in  std_logic;
-         ECYCLE : in std_logic;
-         SVALID : out std_logic; 
+         ECYCLE    : in  std_logic;
+         SVALID    : out std_logic;
          TXBYTECLK : in  std_logic;
          EDOUT     : out std_logic_vector(7 downto 0);
          LASTBYTE  : out std_logic;
@@ -47,18 +47,20 @@ architecture Behavioral of eventtx is
 
   signal ed  : std_logic_vector(135 downto 0) := (others => '0');
   signal wel : std_logic                      := '0';
-
+  signal einl : std_logic_vector(7 downto 0) := (others => '0');
+  
+  
   signal edl         : std_logic_vector(135 downto 0);
   signal well, welll : std_logic := '0';
   signal armtx       : std_logic := '0';
 
   signal bcnt : integer range 0 to 17 := 0;
 
-  signal secycle, erst : std_logic := '0';
-  signal secl, secll : std_logic := '0';
+  signal secycle, erst, lerst : std_logic := '0';
+  signal secl, secll          : std_logic := '0';
 
-  signal cycpos : std_logic_vector(8 downto 0) := (others => '0');
-  
+  signal cycpos : integer range 0 to 600 := 0;
+
 
 begin  -- Behavioral
 
@@ -69,7 +71,8 @@ begin  -- Behavioral
 
       wel <= WE;
 
-      ed(135 downto 128) <= EIN;
+      einl <= EIN; 
+
       if wel = '1' then
 
         ed(7 downto 0)     <= ed(15 downto 8);
@@ -88,8 +91,25 @@ begin  -- Behavioral
         ed(111 downto 104) <= ed(119 downto 112);
         ed(119 downto 112) <= ed(127 downto 120);
         ed(127 downto 120) <= ed(135 downto 128);
-        ed(135 downto 128) <= ed(143 downto 136);
+        ed(135 downto 128) <= einl;        
+      end if;
 
+      if erst = '1' or wel = '1' then
+        SVALID   <= '0';
+      else
+        if ECYCLE = '1' then
+          SVALID <= '1';
+        end if;
+      end if;
+
+      erst <= lerst;
+
+      if erst = '1' then
+        secycle   <= '0';
+      else
+        if ECYCLE = '1' then
+          secycle <= '1';
+        end if;
       end if;
     end if;
 
@@ -120,36 +140,54 @@ begin  -- Behavioral
   EKOUT    <= '1' when bcnt = 0  else '0';
 
 
-  outputmain : process(TXBYTECLK)
+  outputmain : process(TXBYTECLK, RESET)
   begin
-    if rising_edge(TXBYTECLK) then
+    if RESET = '1' then
+      bcnt <= 17;
+    else
+      if rising_edge(TXBYTECLK) then
 
-      if well = '0' and welll = '1' then
-      edl <= ed; 
-       
-      end if;
+        if well = '0' and welll = '1' then
+          edl <= ed;
 
-      well  <= wel;
-      welll <= well;
-
-      if START = '1' and armtx = '1' then
-        bcnt   <= 0;
-      else
-        if bcnt /= 17 then
-          bcnt <= bcnt + 1;
         end if;
-      end if;
 
-      if bcnt = 1 then
-        armtx <= '0';
-      else
-        if welll = '1' then
-          armtx<= '1'; 
+        well  <= wel;
+        welll <= well;
+
+        if START = '1' and armtx = '1' then
+          bcnt   <= 0;
+        else
+          if bcnt /= 17 then
+            bcnt <= bcnt + 1;
+          end if;
         end if;
-      end if;
 
-      
-    end if;
+        if bcnt = 1 then
+          armtx   <= '0';
+        else
+          if well = '0' and  welll = '1' then
+            armtx <= '1';
+          end if;
+        end if;
+
+        secl  <= secycle;
+        secll <= secl;
+
+        if secl = '1' and secll = '0' then
+          cycpos <= 0;
+        else
+          cycpos <= cycpos + 1;
+        end if;
+
+        if cycpos = 400 then
+          lerst <= '1';
+        else
+          lerst <= '0';
+        end if;
+        
+      end if;
+    end if; 
   end process outputmain; 
   
 end Behavioral;

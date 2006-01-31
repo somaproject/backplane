@@ -18,6 +18,11 @@ Then imagine the worst-case cycle of on cycle 418 we move to the request-to-send
 
 The easiest solution is simply have the main FSM only send event packets in the final 80 ticks. 
 
+Note that our design is such that we send a K28.5 at the beginning of each cycle for locking and latency measurement. 
+
+
+
+
 
 
 \section{Event TX} 

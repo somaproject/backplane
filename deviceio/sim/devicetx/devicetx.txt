@@ -1,0 +1,23 @@
+To test our device transmitter, we will simulate some edge cases
+deterministically and then attempt a random coverage test.
+
+To test:
+1. can we send two events in a cycle? 
+2. Can we send a full 1024-bytes in an event cycle? 
+3. What if we send an event really close to the end; does it still get here by the end? 
+
+Every event cycle we save each transmitted event in the received_eventa and received_eventb signal; then we have a separate process that on each rising_edge of ECYCLE compares receveid_eventa and received_eventb to expected_eventa and expected_eventb. 
+
+
+We start off by:
+1. We send a few test events and test for RX. 
+
+2. we start off sending events and verifying them until we try sending them so late in the cycle that we no longer get an SVALID. We verify that these are all sent within the right number of ticks on the TXoutput side. 
+
+
+3. We then try the same way but while also sending data. 
+
+
+
+1. send some number of data bytes
+2. wait to receive them within N clock cycles. 
