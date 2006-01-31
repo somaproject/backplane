@@ -147,15 +147,12 @@ architecture behavior of devicetxtest is
       wait until rising_edge(TXBYTECLK);
       if KOUT = '1' and DOUT = K28_2 then
         datamode := true;
-        report "K28_2";
-
       elsif KOUT = '1' and DOUT = K28_3 then
         datamode   := false;
       elsif datamode then
         assert dout = std_logic_vector(TO_UNSIGNED(currentpos, 8))
           report "Error with data reading" severity error;
         currentpos := currentpos + 1;
-        report "currentpos = " & integer'image(currentpos);
       elsif KOUT = '1' and DOUT = K28_4 then
         done       := true;
         assert currentpos = len report "Data packet too short"
@@ -164,7 +161,6 @@ architecture behavior of devicetxtest is
       end if;
 
     end loop;
-    report "data read done";
 
   end procedure verifyData;
 
@@ -424,7 +420,6 @@ begin
 
     wait until eventloop > 0;
     for i in 1 to 1023 loop
-      report "verify with loop";
 
       verifyData(i, TXBYTECLK, DOUT, KOUT);
 

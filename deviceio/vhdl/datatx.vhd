@@ -142,7 +142,7 @@ begin  -- Behavioral
         addrall <= addral;
         dll     <= dl;
 
-        if cs = done then
+        if cs = waitsend then
           rstl <= '1';
         else
           rstl <= '0';
