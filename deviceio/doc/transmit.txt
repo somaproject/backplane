@@ -32,8 +32,9 @@ be transmitted on the next ECYCLE. This is regulated/guaranteed by the
 Send Valid (SVALID) signal on the device event interface; only write
 an event burst while this signal is high.
 
+\section{Data TX}
+We send, at most, 32-byte bursts, with a header and footer k-char
 
-
-
-
+In the implementation, we register all output signals except for DOB
+to compensate for the one-cycle latency in the ram.
 

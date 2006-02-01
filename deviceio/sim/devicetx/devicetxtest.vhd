@@ -111,7 +111,7 @@ architecture behavior of devicetxtest is
     wait until rising_edge(CLK);
     while bytepos < len loop
       if burstpos < burstlength then
-        DIN <= std_logic_vector(TO_SIGNED(bytepos, 8));
+        DIN <= std_logic_vector(TO_SIGNED(bytepos mod 256, 8));
         DWE <= '1';
         wait until rising_edge(CLK);
         burstpos := burstpos + 1;
@@ -150,7 +150,7 @@ architecture behavior of devicetxtest is
       elsif KOUT = '1' and DOUT = K28_3 then
         datamode   := false;
       elsif datamode then
-        assert dout = std_logic_vector(TO_UNSIGNED(currentpos, 8))
+        assert dout = std_logic_vector(TO_UNSIGNED(currentpos  mod 256, 8))
           report "Error with data reading" severity error;
         currentpos := currentpos + 1;
       elsif KOUT = '1' and DOUT = K28_4 then
@@ -159,9 +159,10 @@ architecture behavior of devicetxtest is
           severity error;
 
       end if;
-
+      
     end loop;
-
+    
+    
   end procedure verifyData;
 
 begin

@@ -5,7 +5,7 @@
 -- File       : datatx.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/01/30
+-- Last update: 2006/01/31
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Transmission of events and support packets. 
@@ -52,10 +52,13 @@ architecture Behavioral of datatx is
   signal rstl    : std_logic := '0';
 
   signal addrb : std_logic_vector(10 downto 0) := (others => '0');
-  signal osel  : integer range 0 to 3          := 0;
+  signal osel, osell  : integer range 0 to 3          := 0;
 
   signal dob : std_logic_vector(7 downto 0) := (others => '0');
 
+  signal lkout : std_logic := '0';
+  signal llastbyte  : std_logic := '0';
+  
   constant K28_2 : std_logic_vector(7 downto 0) := "01011100";
   constant K28_3 : std_logic_vector(7 downto 0) := "01111100";
   constant K28_4 : std_logic_vector(7 downto 0) := "10011100";
@@ -126,9 +129,9 @@ begin  -- Behavioral
 
 
 
-  DOUT <= K28_2 when osel = 0 else
-          dob   when osel = 1 else
-          K28_3 when osel = 2 else
+  DOUT <= K28_2 when osell = 0 else
+          dob   when osell = 1 else
+          K28_3 when osell = 2 else
           K28_4;
 
   outputmain : process(TXBYTECLK, RESET)
@@ -158,6 +161,10 @@ begin  -- Behavioral
           end if;
         end if;
 
+        osell <= osel;
+        KOUT <= lkout;
+        LASTBYTE <= llastbyte; 
+
       end if;
     end if;
   end process outputmain;
@@ -168,8 +175,8 @@ begin  -- Behavioral
     case cs is
       when none =>
         osel     <= 3;
-        lastbyte <= '1';
-        kout     <= '0';
+        llastbyte <= '1';
+        lkout     <= '0';
 
         if dll = '1' and START = '0' then
           ns     <= waitsend;
@@ -179,8 +186,8 @@ begin  -- Behavioral
 
       when waitsend =>
         osel     <= 1;
-        lastbyte <= '0';
-        kout     <= '0';
+        llastbyte <= '0';
+        lkout     <= '0';
         if start = '1' then
           ns     <= header;
         else
@@ -189,14 +196,14 @@ begin  -- Behavioral
 
       when header =>
         osel     <= 0;
-        lastbyte <= '0';
-        kout     <= '1';
+        llastbyte <= '0';
+        lkout     <= '1';
         ns       <= sdata;
 
       when sdata =>
         osel     <= 1;
-        lastbyte <= '0';
-        kout     <= '0';
+        llastbyte <= '0';
+        lkout     <= '0';
 
         if addrb + 1 = addrall then
           ns   <= footer2;
@@ -210,26 +217,26 @@ begin  -- Behavioral
 
       when footer =>
         osel     <= 2;
-        lastbyte <= '1';
-        kout     <= '1';
+        llastbyte <= '1';
+        lkout     <= '1';
         ns       <= waitsend;
 
       when footer2 =>
         osel     <= 2;
-        lastbyte <= '0';
-        kout     <= '1';
+        llastbyte <= '0';
+        lkout     <= '1';
         ns       <= done;
 
       when done =>
         osel     <= 3;
-        lastbyte <= '1';
-        kout     <= '1';
+        llastbyte <= '1';
+        lkout     <= '1';
         ns       <= none;
 
       when others =>
         osel     <= 0;
-        lastbyte <= '0';
-        kout     <= '0';
+        llastbyte <= '0';
+        lkout     <= '0';
         ns       <= done;
 
     end case;
