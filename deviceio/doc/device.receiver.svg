@@ -9,8 +9,8 @@
    xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="device.receiver.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/docs"
-   inkscape:version="0.43"
+   sodipodi:docbase="/home/jonas/soma/somabackplane/deviceio/doc"
+   inkscape:version="0.43+devel"
    sodipodi:version="0.32"
    id="svg1996"
    height="792.00000pt"
@@ -52,8 +52,8 @@
   <sodipodi:namedview
      inkscape:window-y="0"
      inkscape:window-x="3"
-     inkscape:window-height="747"
-     inkscape:window-width="1020"
+     inkscape:window-height="1000"
+     inkscape:window-width="1015"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
      gridtolerance="2.5000000pt"
@@ -63,11 +63,11 @@
      gridspacingy="2.5000000pt"
      inkscape:grid-points="true"
      showgrid="true"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      inkscape:document-units="pt"
-     inkscape:cy="884.0564"
-     inkscape:cx="291.41842"
-     inkscape:zoom="2.8"
+     inkscape:cy="496.7025"
+     inkscape:cx="566.96587"
+     inkscape:zoom="0.98565479"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -91,8 +91,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="clock domains"
-     style="display:inline"
-     sodipodi:insensitive="true">
+     style="display:inline">
     <rect
        style="fill:#e6f1f3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect6136"
@@ -109,7 +108,7 @@
          sodipodi:role="line"
          id="tspan6142"
          x="612.5"
-         y="886.875">REVCLK Domain</tspan></text>
+         y="886.875">APPCLK Domain</tspan></text>
   </g>
   <g
      id="layer1"
@@ -2655,5 +2654,49 @@
        style="opacity:1;color:#000000;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 671.875,68.124969 L 684.375,68.124969"
        id="path7455" />
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="406.25"
+       y="286.875"
+       id="text1839"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan1841"
+         x="406.25"
+         y="286.875">WEA</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="409.375"
+       y="652.5"
+       id="text1843"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan1845"
+         x="409.375"
+         y="652.5">WEB</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="437.5"
+       y="199.95692"
+       id="text1847"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan1849"
+         x="437.5"
+         y="199.95692">RA</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="437.5"
+       y="602.5"
+       id="text1851"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan1853"
+         x="437.5"
+         y="602.5">RB</tspan></text>
   </g>
 </svg>
