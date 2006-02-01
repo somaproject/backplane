@@ -4,3 +4,17 @@ This is the device receiver.
 
 Our IO mechanisms
 
+Possible IO methods and desired guarantees: 
+
+1. following an event cycle, all read events are a part of that cycle
+2. the device can never stall /override the output sequence. 
+3. there aren't complex implicit timing requirements on The Device
+
+
+The only solution I can seem to arrive at is something like the previous eventbus interface, but with the filtering done ahead of time. 
+
+Event receiver buffer:
+1. based on the EA bits, writes or not-writes the event
+2. Is responsible for crossing clock domains
+3. has a RESET that is called when not in use, or if an error is detected
+

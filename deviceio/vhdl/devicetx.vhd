@@ -5,7 +5,7 @@
 -- File       : devicetx.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/01/30
+-- Last update: 2006/02/01
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Transmission of events and data
