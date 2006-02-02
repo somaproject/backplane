@@ -17,13 +17,10 @@ end sample;
 
 architecture Behavioral of sample is
 
-  signal notclk, notclk90 : std_logic                    := '0';
   signal dinl, dinll      : std_logic_vector(3 downto 0) := (others => '0');
 
 begin
 
-  notclk   <= not CLK;
-  notclk90 <= not CLK90;
 
   main1 : process (CLK)
   begin
@@ -45,17 +42,17 @@ begin
     end if;
   end process main2;
 
-  main3 : process (notclk)
+  main3 : process (clk)
   begin
-    if rising_edge(notclk) then
+    if falling_edge(clk) then
       dinl(2)  <= DIN;
       dinll(3) <= dinl(3);
     end if;
   end process main3;
 
-  main4 : process (notclk90)
+  main4 : process (clk90)
   begin
-    if rising_edge(notclk90) then
+    if falling_edge(clk90) then
       dinl(3) <= DIN; 
     end if;
   end process main4;
