@@ -11,6 +11,7 @@ PROJECT = linktest
 bitfile: $(PROJECT).bit
 
 SOURCES = *.vhd encode8b10b.edn decode8b10b.edn
+UCFTGT = B
 OPTIMIZE = high
 PART = xc3s200-pq208-4
 SPEED = 4
@@ -47,8 +48,8 @@ build/$(PROJECT).ngc: $(SOURCES) $(PROJECT).xst $(PROJECT).prj
 	xst -ifn .$<.xst
 
 #second stage : ngdbuild, produces .ngd
-build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf 
-	ngdbuild -p $(PART) -uc $(PROJECT).ucf -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
+build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).$(UCFTGT).ucf 
+	ngdbuild -p $(PART) -uc $(PROJECT).$(UCFTGT).ucf -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
 
 
 # third stage: map: produces pcf, map.ncd
@@ -61,6 +62,8 @@ build/$(PROJECT).ncd: build/$(PROJECT).pcf
 
 build/$(PROJECT).bit: build/$(PROJECT).pcf build/$(PROJECT).ncd
 	bitgen -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf
+	cp build/$(PROJECT).bit $(PROJECT).$(UCFTGT).bit
+
 build/$(PROJECT).rbt: build/$(PROJECT).pcf build/$(PROJECT).ncd
 	bitgen -b -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf
 
