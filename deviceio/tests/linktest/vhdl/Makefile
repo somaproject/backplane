@@ -6,6 +6,7 @@
 #   make entity: tries to synth the entity
 #   make parsim: post-place-and-route simulation 
 #   make synthsim: post-synthesis simulation model 
+#   make multipar : reiterative PAR 
 ######################################################################
 PROJECT = linktest
 
