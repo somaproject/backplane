@@ -9,11 +9,11 @@ use UNISIM.VComponents.all;
 entity linktest is
   port ( CLKIN    : in  std_logic;
          RESET    : in  std_logic;
---           DIN_P      : in  std_logic;
---           DIN_N      : in  std_logic;         
---           DOUT_P     : out std_logic;
---           DOUT_N     : out std_logic;         
-         LEDGOOD : out std_logic;
+-- DIN_P : in std_logic;
+-- DIN_N : in std_logic;
+-- DOUT_P : out std_logic;
+-- DOUT_N : out std_logic;
+         LEDGOOD  : out std_logic;
          LEDVALID : out std_logic;
          LEDPOWER : out std_logic
          );
@@ -24,7 +24,7 @@ architecture Behavioral of linktest is
 
   -- io
   signal din, dout : std_logic := '0';
-  
+
   -- clocks
   signal txclk     : std_logic := '0';
   signal rxclk     : std_logic := '0';
@@ -50,7 +50,7 @@ architecture Behavioral of linktest is
   signal symbeq : std_logic := '0';
 
   signal lgood, valid : std_logic := '0';
-  
+
   signal rxdoen, rxerr : std_logic                     := '0';
   signal brst          : std_logic                     := '0';
   signal cnt           : std_logic_vector(21 downto 0) := (others => '0');
@@ -128,34 +128,37 @@ begin  -- Behavioral
 
 
 
---     DIN_obufds : OBUFDS
---     generic map (
---        IOSTANDARD => "DEFAULT")
---     port map (
---        O =>  DOUT_P,  
---        OB => DOUT_N,  
---        I => DOUT   
---     );
+-- DIN_obufds : OBUFDS
+-- generic map (
+-- IOSTANDARD => "DEFAULT")
+-- port map (
+-- O => DOUT_P,
+-- OB => DOUT_N,
+-- I => DOUT
+-- );
 
-  
---     DIN_ibufds : IBUFDS
---     generic map (
---        IOSTANDARD => "DEFAULT")
---     port map (
---        I => DIN_P,
---        IB =>DIN_N,
---        O => DIN   
---     );
 
-  DIN <= DOUT; 
+-- DIN_ibufds : IBUFDS
+-- generic map (
+-- IOSTANDARD => "DEFAULT")
+-- port map (
+-- I => DIN_P,
+-- IB =>DIN_N,
+-- O => DIN
+-- );
+
+  DIN <= DOUT;
+
   -- Transmit
   --
-  txdin     <= X"BC" when addra = X"00" else addra;
-  txkin     <= '1'   when addra = X"00" else '0';
+  txdin <= X"BC" when addra = X"00" else addra;
+  txkin <= '1'   when addra = X"00" else '0';
+
   txsequential : process (txbyteclk)
   begin
     if rising_edge(txbyteclk) then
       addra <= addra + 1;
+
     end if;
   end process txsequential;
 
@@ -172,23 +175,23 @@ begin  -- Behavioral
 
 
         if valid = '0' then
-          lgood <= '0';
+          lgood   <= '0';
         else
           if cnt = "0000000000000000000000" then
-            lgood <= '1'; 
+            lgood <= '1';
           end if;
         end if;
 
         if cnt = "1111111111111111111111" then
           cnt <= (others => '0');
         else
-          cnt <= cnt + 1; 
+          cnt <= cnt + 1;
         end if;
 
-        LEDGOOD <= lgood; 
+        LEDGOOD  <= lgood;
         LEDPOWER <= cnt(21);
         LEDVALID <= valid;
-        
+
         -- ADDRB counter
         if brst = '1' then
           addrb   <= X"01";
@@ -197,7 +200,7 @@ begin  -- Behavioral
             addrb <= addrb + 1;
           end if;
         end if;
-        
+
         if RXDOEN = '1' or RXERR = '1' then
           if (brst = '1' or addrb = rxdout ) and rxerr = '0' then
             valid <= '1';
