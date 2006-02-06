@@ -1,5 +1,5 @@
 NET "CLKIN" TNM_NET = "CLKIN_GRP";
-TIMESPEC "TS_CLKIN" = PERIOD "CLKIN_GRP" 127 MHz HIGH 50 %;
+TIMESPEC "TS_CLKIN" = PERIOD "CLKIN_GRP" 125.2 MHz HIGH 50 %;
 
 #net din maxskew = 20 pS;
 
@@ -19,5 +19,5 @@ NET rxclk TNM_NET = rxclk_grp;
 NET rxclk TNM_NET = rxclk90_grp; 
 NET txclk TNM_NET = txclk_grp; 
 
-TIMESPEC TS_TXCLK_TO_RXCLK = FROM txclk_grp to rxclk_grp 20 ns; 
-TIMESPEC TS_TXCLK_TO_RXCLK90 = FROM txclk_grp to rxclk90_grp 20 ns; 
+TIMESPEC TS_TXCLK_TO_RXCLK = FROM txclk_grp to rxclk_grp 200 ns; 
+TIMESPEC TS_TXCLK_TO_RXCLK90 = FROM txclk_grp to rxclk90_grp 200 ns; 
