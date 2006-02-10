@@ -44,8 +44,8 @@ begin
   --  CLK_FEEDBACK       => "2X",
     CLKIN_PERIOD       => 8.0,
     CLKDV_DIVIDE       => 5.0,
-    CLKFX_DIVIDE       => 31,
-    CLKFX_MULTIPLY     => 32)
+    CLKFX_DIVIDE       => 30,
+    CLKFX_MULTIPLY     => 29)
     port map (
       CLKIN            => CLKIN,
       CLKFB            => txclkint,
@@ -70,8 +70,8 @@ begin
     CLKIN_PERIOD       => 8.0,
     --CLKDV_DIVIDE       => 5.0,
     CLK_FEEDBACK => "NONE", 
-    CLKFX_DIVIDE       => 32,
-    CLKFX_MULTIPLY     => 32)
+    CLKFX_DIVIDE       => 14,
+    CLKFX_MULTIPLY     => 15)
     port map (
       CLKIN            => rxclkdiv2inta,
       --CLKFB            => txclkint,
