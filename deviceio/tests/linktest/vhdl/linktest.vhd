@@ -9,12 +9,12 @@ use UNISIM.VComponents.all;
 entity linktest is
   port ( CLKIN    : in  std_logic;
          RESET    : in  std_logic;
-         DIN_P    : in  std_logic;
-         DIN_N    : in  std_logic;
-         DOUT_P   : out std_logic;
-         DOUT_N   : out std_logic;
--- DOUT : out std_logic;
--- DIN : in std_logic;
+          DIN_P    : in  std_logic;
+          DIN_N    : in  std_logic;
+          DOUT_P   : out std_logic;
+          DOUT_N   : out std_logic;
+--  DOUT : out std_logic;
+--  DIN : in std_logic;
          LEDGOOD  : out std_logic;
          LEDVALID : out std_logic;
          LEDPOWER : out std_logic;
@@ -101,7 +101,7 @@ architecture Behavioral of linktest is
 
   signal dvalid, rxdata : std_logic := '0';
 
-  signal testreg : std_logic_vector(31 downto 0) := X"55555555";
+  signal testreg : std_logic_vector(31 downto 0) := X"1F1F0F51";
 
   signal pendingword, targetword1, targetword2, targetword3, targetword4 : std_logic_vector(31 downto 0) := (others => '0');
 
@@ -133,24 +133,24 @@ begin
       DOUT => rxdata);
 
 
-  DIN_obufds : OBUFDS
-    generic map (
-      IOSTANDARD => "DEFAULT")
-    port map (
-      O          => DOUT_P,
-      OB         => DOUT_N,
-      I          => DOUT
-      );
+   DIN_obufds : OBUFDS
+     generic map (
+       IOSTANDARD => "DEFAULT")
+     port map (
+       O          => DOUT_P,
+       OB         => DOUT_N,
+       I          => DOUT
+       );
 
 
-  DIN_ibufds : IBUFDS
-    generic map (
-      IOSTANDARD => "DEFAULT")
-    port map (
-      I          => DIN_P,
-      IB         => DIN_N,
-      O          => DIN
-      );
+   DIN_ibufds : IBUFDS
+     generic map (
+       IOSTANDARD => "DEFAULT")
+     port map (
+       I          => DIN_P,
+       IB         => DIN_N,
+       O          => DIN
+       );
 
 
   -- Transmit
