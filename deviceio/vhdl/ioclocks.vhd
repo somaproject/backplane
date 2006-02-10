@@ -13,7 +13,8 @@ entity ioclocks is
          TXBYTECLK: out std_logic;
          RXCLK : out std_logic;
          RXBYTECLK : out std_logic;
-         RXCLK90: out std_logic
+         RXCLK90: out std_logic;
+         LOCKED : out std_logic
          );
 
 end ioclocks;
@@ -23,18 +24,24 @@ architecture Behavioral of ioclocks is
   signal txclkint, txclkfb,
     rxclkdiv2int, rxclkdiv2,
     rxclkint, rxclkfb,
-    rxclkdiv2fb, rxbyteclkn, rxbyteclknfb, rxclk90int, rxclk90fb : std_logic := '0';
+    rxclkdiv2fb, rxbyteclkn,
+    rxbyteclknfb, rxclk90int, rxclk90fb : std_logic := '0';
 
-  signal txclklocked, txclknotlocked : std_logic := '0';
+  signal rxclkdiv2inta : std_logic := '0';
+  
+  signal txclklocked, txclknotlocked, txclkmullocked, txclkmulnotlocked : std_logic := '0';
   
   signal rsttick : std_logic_vector(7 downto 0) := (others => '1');
+
+  signal rxclklocked, rxclk90locked : std_logic := '0';
+
   
 begin
 
 
   txclkdcm : dcm generic map (
     DLL_FREQUENCY_MODE => "LOW",
-    CLK_FEEDBACK       => "2X",
+  --  CLK_FEEDBACK       => "2X",
     CLKIN_PERIOD       => 8.0,
     CLKDV_DIVIDE       => 5.0,
     CLKFX_DIVIDE       => 31,
@@ -44,9 +51,9 @@ begin
       CLKFB            => txclkint,
       RST              => RESET,
       PSEN             => '0',
-      CLK2X            => txclkfb,
+      CLK0            => txclkfb,
       CLKDV            => TXBYTECLK,
-      CLKFX            => rxclkdiv2int,
+      CLKFX            => rxclkdiv2inta,
       LOCKED => txclklocked);
 
   txclknotlocked <= not txclklocked; 
@@ -55,6 +62,28 @@ begin
     I => txclkfb);
 
   TXCLK <= txclkint;
+
+
+  txclkmuldcm : dcm generic map (
+    DLL_FREQUENCY_MODE => "LOW",
+  --  CLK_FEEDBACK       => "2X",
+    CLKIN_PERIOD       => 8.0,
+    --CLKDV_DIVIDE       => 5.0,
+    CLK_FEEDBACK => "NONE", 
+    CLKFX_DIVIDE       => 32,
+    CLKFX_MULTIPLY     => 32)
+    port map (
+      CLKIN            => rxclkdiv2inta,
+      --CLKFB            => txclkint,
+      RST              => rsttick(5),
+      PSEN             => '0',
+      --CLK0            => ,
+      --CLKDV            => TXBYTECLK,
+      CLKFX            => rxclkdiv2int,
+      LOCKED => txclkmullocked);
+
+  txclknotlocked <= not txclklocked;
+  txclkmulnotlocked <= not txclkmullocked;
   
   rxclkdiv2_bufg : BUFG port map (
     O => rxclkdiv2,
@@ -64,16 +93,17 @@ begin
     DLL_FREQUENCY_MODE => "LOW",
     CLKIN_PERIOD       => 8.0,
     CLKOUT_PHASE_SHIFT => "NONE",
-    CLK_FEEDBACK       => "2x",
+--    CLK_FEEDBACK       => "2x",
     CLKDV_DIVIDE       => 5.0
     --PHASE_SHIFT        => 0
     ) port map (
       CLKIN            => rxclkdiv2,
       CLKFB            => rxclkint,
-      RST              => rsttick(5),
+      RST              => txclkmulnotlocked,
       PSEN             => '0',
-      CLK2x            => rxclkfb,
-      CLKDV            => RXBYTECLK);
+      CLK0            => rxclkfb,
+      CLKDV            => RXBYTECLK,
+      LOCKED => rxclklocked);
 
 
   rxclk_bufg : BUFG port map (
@@ -86,14 +116,17 @@ begin
     DLL_FREQUENCY_MODE => "LOW",
     CLKIN_PERIOD       => 8.0,
     CLKOUT_PHASE_SHIFT => "FIXED",
-    PHASE_SHIFT        => 32)
+    PHASE_SHIFT        => 64)
     port map (
       CLKIN            => rxclkdiv2,
       CLKFB            => rxclk90int,
-      RST              => rsttick(5), 
+      RST              => txclkmulnotlocked, 
       PSEN             => '0',
-      CLK2x            => rxclk90fb);
+      CLK0            => rxclk90fb,
+      LOCKED => rxclk90locked);
 
+  LOCKED <=  rxclklocked and rxclk90locked;
+  
   rxclk90_bufg : BUFG port map (
     O => rxclk90int,
     I => rxclk90fb);

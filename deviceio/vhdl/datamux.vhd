@@ -30,16 +30,17 @@ begin
   tran12 <= bll(1) xor bll(2);
   tran23 <= bll(2) xor bll(3);
 
-  spos <= "00"  when tran30 = '1' else
-           "01" when tran01 = '1' else
-           "10" when tran12 = '1' else
-           "11";
+  spos <= "00" when tran30 = '1' else
+          "01" when tran01 = '1' else
+          "10" when tran12 = '1' else
+          "11";
 
 
   lldout <= bll(0) when sposl = "11" else
             bll(1) when sposl = "00" else
             bll(2) when sposl = "01" else
             bll(3);
+
 
   main : process (CLK)
   begin
