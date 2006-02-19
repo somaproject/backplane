@@ -7,7 +7,8 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 entity linktest is
-  port ( CLKIN    : in  std_logic;
+  port ( CLKIN_P    : in  std_logic;
+         CLKIN_N : in std_logic;
          RESET    : in  std_logic;
           DIN_P    : in  std_logic;
           DIN_N    : in  std_logic;
@@ -31,7 +32,8 @@ architecture Behavioral of linktest is
 
   -- io
   signal din, dout : std_logic := '0';
-
+  signal clkin : std_logic := '0';
+  
   -- clocks
   signal txclk     : std_logic := '0';
   signal rxclk     : std_logic := '0';
@@ -150,6 +152,15 @@ begin
        I          => DIN_P,
        IB         => DIN_N,
        O          => DIN
+       );
+
+  CLKIN_ibufds : IBUFDS
+     generic map (
+       IOSTANDARD => "DEFAULT")
+     port map (
+       I          => CLKIN_P,
+       IB         => CLKIN_N,
+       O          => CLKIN
        );
 
 

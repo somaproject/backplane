@@ -15,7 +15,7 @@ bitfile: $(PROJECT).bit
 SOURCES = *.vhd encode8b10b.edn decode8b10b.edn
 UCFTGT = A
 OPTIMIZE = high
-PART = xc3s200-pq208-4
+PART = xc3s200-vq100-4
 SPEED = 4
 
 $(PROJECT): build/$(PROJECT).ncd
