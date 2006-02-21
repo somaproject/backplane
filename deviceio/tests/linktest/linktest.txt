@@ -100,4 +100,31 @@ Linktest attempt #2 witht he Soma SerialIO Proto Board
 We have it currently working using virtually the same code from before, but on the SerialIO board, using the SATA Loopback connector. 
 
 
+The SATA loopback connector (at 125 MHz) "mostly" works -- we seem to get single-bit errors every few seconds. But when I try to move to the DIN->DOUT single-ended approach, I get continual errors.
+
+Switching to the 0x55555555 test sequenece. Now, we're not reporting any validity-checking errors. 
+
+
+We can get this all to work at 125 MHz with the DIN->DOUT non-lvds loopback, but our logicanalyzer can't read the bits fast enough (!) 
+
+So we're going to come up with a little thing I'll call, for lack of a better term, tinyscope. 
+
+--------------------------------------------------------------
+With a functioning, compiled tinyscope, running at 140 MHz with an 0x55555555 pattern and the non-lvds on-pcb loopback, we get success. 
+
+0x3333333 appears to work correctly at 140 Mhz too. 
+
+Despite synthesizing correctly, 0x55556555 doesn't work at 143 Mhz, with occsional bit errors, but works fine at 137.5 Mhz. 
+
+Based on my initial analysis it appears that the bit errors are occuring when jitter coupled with (perhaps) DC offset leads to the creation of a short sequence of either 000 or 111.
+
+However, the current clock configuration has us oversampling by 3.57%; I'm reducing that to 3.22 % (via simple 32/31) in hopes that we'll see some sort of improvement due to less clock jitter. 
+
+
+Why does this work at (29/30*15/14=3.57) but not at (32/31 = 3.22%?). 
+
+The current chunk of data has an error in it from running at 132 MHz
+on an 0xF0F070F0 pattern with a 32/31 oversampling ratio from a single
+DCM. In synthesis this bitstream had a 124 ps skew. 
+
 
