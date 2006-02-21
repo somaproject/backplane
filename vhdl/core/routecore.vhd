@@ -5,7 +5,7 @@
 -- File       : routecore.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/01/23
+-- Last update: 2006/01/24
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: routing core
@@ -29,6 +29,7 @@ entity routecore is
   
   port (
     CLK : in std_logic;
+    RESET : in std_logic; 
     EPOS : out std_logic_vector(3 downto 0);
     EDATASEL : out std_logic_vector(3 downto 0);
     EDATAOUT : out std_logic_vector(7 downto 0);
@@ -39,9 +40,9 @@ entity routecore is
 end routecore;
 
 architecture Behavioral of routecore is
-  signal bytecnt : integer range 0 to 249 := 0;
-  signal eposcnt : std_logic_vector(3 downto 0);
-  signal edataselcnt : std_logic_vector(3 downto 0);
+  signal bytecnt : integer range 0 to 499 := 0;
+  signal eposcnt : std_logic_vector(3 downto 0) := (others => '0');
+  signal edataselcnt : std_logic_vector(3 downto 0) := (others => '0');
   signal dmuxsel : integer range 0 to 39 := 0;
   
 begin  -- Behavioral
@@ -56,14 +57,20 @@ begin  -- Behavioral
   main: process (CLK)
 
     begin
+      if RESET = '1'  then
+        bytecnt <= 0;
+        eposcnt <= (others => '0');
+        edataselcnt <= (others => '0');
+        dmuxsel <= 0; 
+      else
       if rising_edge(CLK) then
-        if bytecnt = 249 then
+        if bytecnt = 499 then
           bytecnt <= 0;
         else
           bytecnt <= bytecnt + 1; 
         end if;
 
-        if bytecnt = 249 then
+        if bytecnt = 499 then
           eposcnt <= "0000";
         else
           if eposcnt /= "1111" then
@@ -72,7 +79,7 @@ begin  -- Behavioral
         end if;
 
 
-        if bytecnt = 249 or  edataselcnt = "1011" then
+        if bytecnt = 499 or  edataselcnt = "1011" then
           edataselcnt <= "0000";
         else
           if eposcnt = "1111" then
@@ -80,13 +87,14 @@ begin  -- Behavioral
           end if;
         end if;
 
-        if bytecnt = 249 then
+        if bytecnt > 493 then
           dmuxsel <= 0;
         else
           if edataselcnt = "1011" then
             dmuxsel <= dmuxsel + 1;
           end if;
         end if;
+      end if;
       end if;
     end process main; 
                        

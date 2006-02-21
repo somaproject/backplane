@@ -13,19 +13,16 @@ architecture behavior of linktesttest is
     port ( CLKIN_N  : in  std_logic;
            CLKIN_P  : in  std_logic;
            RESET    : in  std_logic;
--- DIN_P : in std_logic;
--- DIN_N : in std_logic;
--- DOUT_P : out std_logic;
--- DOUT_N : out std_logic;
-           DOUT     : out std_logic;
-           DIN      : in  std_logic;
+DIN_P : in std_logic;
+DIN_N : in std_logic;
+DOUT_P : out std_logic;
+DOUT_N : out std_logic;
+--            DOUT     : out std_logic;
+--            DIN      : in  std_logic;
            LEDGOOD  : out std_logic;
            LEDVALID : out std_logic;
            LEDPOWER : out std_logic;
-           DVOUT    : out std_logic;
-           DRXOUT   : out std_logic;
-           RXCLKOUT : out std_logic;
-           SAMPLES  : out std_logic_vector(3 downto 0);
+
            VALIDOUT : out std_logic);
       
   end component;
@@ -76,36 +73,34 @@ begin
       CLKIN_N    => CLKINA_N,
       
       RESET    => RESETA,
-      DIN => DINA,
-      DOUT => DOUTA, 
---       DIN_P    => dataBtoA_P,
---       DIN_N    => dataBtoA_N,
---       DOUT_P   => dataAtoB_P,
---       DOUT_N   => dataAtoB_N,
+
+       DIN_P    => dataBtoA_P,
+       DIN_N    => dataBtoA_N,
+       DOUT_P   => dataAtoB_P,
+       DOUT_N   => dataAtoB_N,
       LEDGOOD  => LEDGOODA,
       LEDVALID => LEDVALIDA,
-      LEDPOWER => LEDPOWERA,
-      DVOUT => DVOUTA,
-      DRXOUT => DRXOUTA);
+      LEDPOWER => LEDPOWERA
+      );
 
   linktestb : linktest
     port map (
       CLKIN_P    => CLKINB_P,
       CLKIN_N  => CLKINB_N, 
       RESET    => RESETB,
---       DIN_P    => dataAtoB_P,
---       DIN_N    => dataAtoB_N,
---       DOUT_P   => dataBtoA_P,
---       DOUT_N   => dataBtoA_N,
-      DIN => DINB,
-      DOUT => DOUTB,
+       DIN_P    => dataAtoB_P,
+       DIN_N    => dataAtoB_N,
+       DOUT_P   => dataBtoA_P,
+       DOUT_N   => dataBtoA_N,
+
       LEDGOOD  => LEDGOODB,
       LEDVALID => LEDVALIDB,
-      LEDPOWER => LEDPOWERB,
-      DVOUT => DVOUTB,
-      DRXOUT => DRXOUTB
-      );
+      LEDPOWER => LEDPOWERB);
 
+
+  dataBtoA_P <= dataAtoB_P;
+  dataBtoA_N <= dataAtoB_N;
+  
 
 
   CLKINA_P <= not CLKINA_P after clkperiod / 2;
@@ -139,26 +134,26 @@ begin
 
   end process;
 
-  process (douta)
-    variable timecnt:  integer range 0 to 5 := 0;
+--   process (douta)
+--     variable timecnt:  integer range 0 to 5 := 0;
     
-    begin
-      if timecnt = 0 then
-        DINA <= douta after 0.15 ns; 
-      elsif timecnt = 1 then
-        DINA <= douta after 0.35 ns; 
-      else
-        DINA <= douta after 0.50 ns; 
-      end if; 
-      if timecnt = 5 then
-      timecnt := 0;
+--     begin
+--       if timecnt = 0 then
+--         DINA <= douta after 0.15 ns; 
+--       elsif timecnt = 1 then
+--         DINA <= douta after 0.35 ns; 
+--       else
+--         DINA <= douta after 0.50 ns; 
+--       end if; 
+--       if timecnt = 5 then
+--       timecnt := 0;
 
-       else
-         timecnt := timecnt + 1; 
-      end if;
+--        else
+--          timecnt := timecnt + 1; 
+--       end if;
 
-    end process; 
+--     end process; 
 
-    DINB <= DOUTB; 
+--     DINB <= DOUTB; 
   
 end;

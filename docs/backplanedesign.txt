@@ -160,3 +160,30 @@ an ERR at any point sets DABORT high until the next ECYCLE
 Ecycle is registered and then used as a reset; since T_txbyteclock > T_rxbyteclock, ecycle will always trigger. 
 
 
+Data buffers... 
+
+
+--------------------------------------------------------------------------
+device receiver
+--------------------------------------------------------------------------
+We still need to check the error handling here; the goal is that no
+error-full events will ever get through, and an error causes us to
+abort the rest of the event cycle.
+
+
+--------------------------------------------------------------------------
+device transmitter
+--------------------------------------------------------------------------
+
+how do we handle the -actual- transmission; it's fine and dandy to say that we're going to send an event at "some point", but when are these going to actually be received? 
+
+There are hard real-time expectations. That said, I'd just as soon
+send them whenever, with the understanding that if they are sent such
+that the last byte occurs 10 ticks prior to the end of the ECYCLE AS
+DEFINED IN THE CORE, then we'll make it.
+
+So we should just be able to clock in an event at any time. 
+
+But we're limited to one per ecycle. But we make the application deal with that. 
+At the start of an event we 
+

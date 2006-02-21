@@ -23,19 +23,19 @@ architecture Behavioral of sample is
 attribute RLOC 		: string ;
 attribute IOB 		: string ;
 
---attribute RLOC 	of ff_a0 : label is "X0Y0";
+attribute RLOC 	of ff_a0 : label is "X0Y0";
 attribute IOB 	of ff_a0 : label is "FALSE";
 
 
---attribute RLOC 	of ff_b0 : label is "X1Y0";
+attribute RLOC 	of ff_b0 : label is "X1Y0";
 attribute IOB 	of ff_b0 : label is "FALSE";
 
 
---attribute RLOC 	of ff_c0 : label is "X1Y1";
+attribute RLOC 	of ff_c0 : label is "X1Y1";
 attribute IOB 	of ff_c0 : label is "FALSE";
 
 
---attribute RLOC 	of ff_d0 : label is "X0Y1";
+attribute RLOC 	of ff_d0 : label is "X0Y1";
 attribute IOB 	of ff_d0 : label is "FALSE";
 
 

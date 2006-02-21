@@ -7,6 +7,18 @@ handles the data packets.
 
 
 
+EPOS:
+0 :  beginning of event cycle 
+1 :  DGRANTA
+2 :  EADDRA[0]
+6 :  EADDRA[4]
+7 :  DGRANTA
+8 :  EADDRA[0]
+12 : EADDRA[4]
+13 : EDATA [sequential, as expected]
+
+Routing core... We try hard to avoid putting any child instances into the event core, and keeping it relatively event-device-position-agnostic.
+
 
 --------------------------------------------------------
 Event Receiver
@@ -24,14 +36,8 @@ Data receiver
 The data receiver handles the passing of the data tokens between 
 client devices; 
 
-EPOS:
-0 :  beginning of event cycle 
-1 :  DGRANTA
-2 :  EADDRA[0]
-7 :  EADDRA[5]
-8 :  DGRANTA
-9 :  EADDRA[0]
-14 : EADDRA[5]
-15 : EDATA [sequential, as expected]
+--------------------------------------------
+DEVICE TRANSMITTER
+--------------------------------------------
 
-Routing core... We try hard to avoid putting any child instances into the event core, and keeping it relatively event-device-position-agnostic. Thus for the data bus we 
+

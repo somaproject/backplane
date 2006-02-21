@@ -145,3 +145,9 @@ We bumped up the clock rate to 143 MHz to get detectable errors.
 
 So at the moment, we had things working at 150 MHz with 1x clocking; when we move to 2x clocking, we get continual errors every word. 
 
+-----------------------------------------------------------------------------
+
+We appear to have everything working again, with no strange start-up
+bugs, at 150 MHz single-clocked (r1305), over the LVDS IO. 
+
+If I then cut the source frequency by half, and use clock-doubling, I can't even apparently boot. 

@@ -42,7 +42,7 @@ begin
 
 
   txclkdcm : dcm generic map (
-    DLL_FREQUENCY_MODE => "LOW",
+    --DLL_FREQUENCY_MODE => "LOW",
   --  CLK_FEEDBACK       => "2X",
     CLKIN_PERIOD       => 7.7,
     CLKDV_DIVIDE       => 5.0,
@@ -53,7 +53,7 @@ begin
       CLKFB            => txclkint,
       RST              => RESET,
       PSEN             => '0',
-      CLK0            => txclkfb,
+      CLK2x            => txclkfb,
       CLKDV            => TXBYTECLK,
       CLKFX            => rxclkdiv2inta,
       LOCKED => txclklocked);
@@ -66,7 +66,7 @@ begin
   TXCLK <= txclkint;
 
   txclkmuldcm : dcm generic map (
-    DLL_FREQUENCY_MODE => "LOW",
+    --DLL_FREQUENCY_MODE => "LOW",
   --  CLK_FEEDBACK       => "2X",
     CLKIN_PERIOD       => 7.7,
     --CLKDV_DIVIDE       => 7.7,
@@ -91,7 +91,7 @@ begin
     I => rxclkdiv2int);
 
   rxclkdcm : dcm generic map (
-    DLL_FREQUENCY_MODE => "LOW",
+    --DLL_FREQUENCY_MODE => "LOW",
     CLKIN_PERIOD       => 7.7,
     CLKOUT_PHASE_SHIFT => "NONE",
 --    CLK_FEEDBACK       => "2x",
@@ -102,7 +102,7 @@ begin
       CLKFB            => rxclkint,
       RST              => txclkmulnotlocked_delay(7),
       PSEN             => '0',
-      CLK0           => rxclkfb,
+      CLK2x           => rxclkfb,
       CLKDV            => RXBYTECLK,
       LOCKED => rxclklocked);
 
@@ -114,16 +114,16 @@ begin
   RXCLK <= rxclkint;
   
   rxclk90dcm : dcm generic map (
-    DLL_FREQUENCY_MODE => "LOW",
+    --DLL_FREQUENCY_MODE => "LOW",
     CLKIN_PERIOD       => 7.7,
     CLKOUT_PHASE_SHIFT => "FIXED",
-    PHASE_SHIFT        => 64)
+    PHASE_SHIFT        => 32)
     port map (
       CLKIN            => rxclkdiv2,
       CLKFB            => rxclk90int,
       RST              => txclkmulnotlocked_delay(7), 
       PSEN             => '0',
-      CLK0           => rxclk90fb,
+      CLK2x           => rxclk90fb,
       LOCKED => rxclk90locked);
 
   LOCKED <=  rxclklocked and rxclk90locked;

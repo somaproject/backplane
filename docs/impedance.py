@@ -1,8 +1,8 @@
 
 from scipy import *
 epsilon = 4.6
-w = 9 # trace width 
-s = 9 # trace separation 
+w = 12 # trace width 
+s = 24 # trace separation 
 t = 1.4 # trace thickness 
 h = 7.5 # height above ground plane
 
