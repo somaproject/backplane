@@ -72,7 +72,7 @@ multipar: build/$(PROJECT)_map.ncd
 
 
 build/$(PROJECT).bit: build/$(PROJECT).pcf build/$(PROJECT).ncd
-	bitgen -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf
+	bitgen -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf -g LCK_cycle:6
 	cp build/$(PROJECT).bit $(PROJECT).$(UCFTGT).bit
 
 build/$(PROJECT).rbt: build/$(PROJECT).pcf build/$(PROJECT).ncd

@@ -19,8 +19,25 @@ architecture Behavioral of sample is
 
   signal dinl, dinll, dinlll      : std_logic_vector(3 downto 0) := (others => '0');
 
-attribute RLOC : string;
-  --attribute RLOC of dinl : signal  is "X0Y1 X0Y0 X0Y1 X0Y0";
+
+attribute RLOC 		: string ;
+attribute IOB 		: string ;
+
+attribute RLOC 	of ff_a0 : label is "X0Y0";
+attribute IOB 	of ff_a0 : label is "FALSE";
+
+
+attribute RLOC 	of ff_b0 : label is "X1Y0";
+attribute IOB 	of ff_b0 : label is "FALSE";
+
+
+attribute RLOC 	of ff_c0 : label is "X1Y1";
+attribute IOB 	of ff_c0 : label is "FALSE";
+
+
+attribute RLOC 	of ff_d0 : label is "X0Y1";
+attribute IOB 	of ff_d0 : label is "FALSE";
+
 
   signal notclk, notclk90 : std_logic := '0';
 

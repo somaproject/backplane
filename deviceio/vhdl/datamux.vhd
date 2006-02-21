@@ -51,7 +51,7 @@ begin
       if tran30 = '1' or tran01 = '1' or tran12 = '1' or tran23 = '1' then
         sposl <= spos;
       end if;
-      if sposll = "10" and sposl = "11" then
+      if (sposll = "10" and sposl = "11") then  --or (sposll = "01" and sposl = "00") then
         DOEN  <= '0';
       else
         DOEN  <= '1';

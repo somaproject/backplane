@@ -127,4 +127,21 @@ The current chunk of data has an error in it from running at 132 MHz
 on an 0xF0F070F0 pattern with a 32/31 oversampling ratio from a single
 DCM. In synthesis this bitstream had a 124 ps skew. 
 
+----------------------------------------------------------------------------
+When we examine the extracted data, we see a case where we have a
+3-bit-wide symbol. This is totally unexpected due to our
+apparently-high rate of oversampling, and I'm not sure what is causing
+it.
+
+
+
+This results in tran30 -> tran01 -> tran30, or sposl going 0 1 0 
+
+I think we need to address this from a different perspective, because
+if these are the sorts of bits we're pulling out, we're in trouble.
+
+We bumped up the clock rate to 143 MHz to get detectable errors. 
+
+
+So at the moment, we had things working at 150 MHz with 1x clocking; when we move to 2x clocking, we get continual errors every word. 
 

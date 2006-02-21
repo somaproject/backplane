@@ -1,12 +1,7 @@
 NET "CLKIN_P" TNM_NET = "CLKIN_GRP";
-TIMESPEC "TS_CLKIN" = PERIOD "CLKIN_GRP" 150 MHz HIGH 50 %;
+TIMESPEC "TS_CLKIN" = PERIOD "CLKIN_GRP" 155 MHz HIGH 50 %;
 
-#NET "linktest_ioclocksinst_rxclk" TNM_NET = "RXCLK_GRP"; 
-#TIMESPEC "TS_RXCLK" = PERIOD "RXCLK_GRP" 150 MHz HIGH 50 %;
-
-net din maxskew = 70 pS;
-
-
+net din maxskew = 10 pS;
 
 NET "CLKIN_P" LOC = "p89" | IOSTANDARD = LVTTL;
 NET "CLKIN_N" LOC = "p90" | IOSTANDARD = LVTTL;

@@ -35,6 +35,8 @@ architecture Behavioral of ioclocks is
 
   signal rxclklocked, rxclk90locked : std_logic := '0';
 
+  signal txclkmulnotlocked_delay : std_logic_vector(7 downto 0)
+  := (others => '1');
   
 begin
 
@@ -42,10 +44,10 @@ begin
   txclkdcm : dcm generic map (
     DLL_FREQUENCY_MODE => "LOW",
   --  CLK_FEEDBACK       => "2X",
-    CLKIN_PERIOD       => 8.0,
+    CLKIN_PERIOD       => 7.7,
     CLKDV_DIVIDE       => 5.0,
-    CLKFX_DIVIDE       => 30,
-    CLKFX_MULTIPLY     => 29)
+    CLKFX_DIVIDE       => 31,
+    CLKFX_MULTIPLY     => 32)
     port map (
       CLKIN            => CLKIN,
       CLKFB            => txclkint,
@@ -63,15 +65,14 @@ begin
 
   TXCLK <= txclkint;
 
-
   txclkmuldcm : dcm generic map (
     DLL_FREQUENCY_MODE => "LOW",
   --  CLK_FEEDBACK       => "2X",
-    CLKIN_PERIOD       => 8.0,
-    --CLKDV_DIVIDE       => 5.0,
+    CLKIN_PERIOD       => 7.7,
+    --CLKDV_DIVIDE       => 7.7,
     CLK_FEEDBACK => "NONE", 
-    CLKFX_DIVIDE       => 14,
-    CLKFX_MULTIPLY     => 15)
+    CLKFX_DIVIDE       => 2,
+    CLKFX_MULTIPLY     => 2)
     port map (
       CLKIN            => rxclkdiv2inta,
       --CLKFB            => txclkint,
@@ -91,17 +92,17 @@ begin
 
   rxclkdcm : dcm generic map (
     DLL_FREQUENCY_MODE => "LOW",
-    CLKIN_PERIOD       => 8.0,
+    CLKIN_PERIOD       => 7.7,
     CLKOUT_PHASE_SHIFT => "NONE",
 --    CLK_FEEDBACK       => "2x",
-    CLKDV_DIVIDE       => 5.0
+    CLKDV_DIVIDE       => 10.0
     --PHASE_SHIFT        => 0
     ) port map (
       CLKIN            => rxclkdiv2,
       CLKFB            => rxclkint,
-      RST              => txclkmulnotlocked,
+      RST              => txclkmulnotlocked_delay(7),
       PSEN             => '0',
-      CLK0            => rxclkfb,
+      CLK0           => rxclkfb,
       CLKDV            => RXBYTECLK,
       LOCKED => rxclklocked);
 
@@ -114,15 +115,15 @@ begin
   
   rxclk90dcm : dcm generic map (
     DLL_FREQUENCY_MODE => "LOW",
-    CLKIN_PERIOD       => 8.0,
+    CLKIN_PERIOD       => 7.7,
     CLKOUT_PHASE_SHIFT => "FIXED",
     PHASE_SHIFT        => 64)
     port map (
       CLKIN            => rxclkdiv2,
       CLKFB            => rxclk90int,
-      RST              => txclkmulnotlocked, 
+      RST              => txclkmulnotlocked_delay(7), 
       PSEN             => '0',
-      CLK0            => rxclk90fb,
+      CLK0           => rxclk90fb,
       LOCKED => rxclk90locked);
 
   LOCKED <=  rxclklocked and rxclk90locked;
@@ -144,7 +145,8 @@ begin
         rsttick(1) <= rsttick(0);
         rsttick(0) <= txclknotlocked;
         
-        
+        txclkmulnotlocked_delay <= txclkmulnotlocked_delay(6 downto 0) &
+                                   txclkmulnotlocked; 
       end if;
 
     end process; 

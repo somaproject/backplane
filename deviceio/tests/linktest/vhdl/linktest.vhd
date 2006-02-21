@@ -116,7 +116,7 @@ architecture Behavioral of linktest is
 
   signal dvalid, rxdata : std_logic := '0';
 
-  signal testreg : std_logic_vector(31 downto 0) := X"F0F070F0"; -- X"1F1F0F51";
+  signal testreg : std_logic_vector(31 downto 0) := X"55555555"; -- X"1F1F0F51";
 
   signal pendingword, targetword1, targetword2, targetword3, targetword4 : std_logic_vector(31 downto 0) := (others => '0');
 
