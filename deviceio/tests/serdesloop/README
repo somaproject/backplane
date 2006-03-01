@@ -1,0 +1,15 @@
+This is a simple, under-documented test of our ability to serialize
+and deserialize a bitstream using the National/TI PHY on a device, by
+default synthesized for the SerialIO Proto Board.
+
+The serdes test is really really simple; we just shift out N bits and
+then verify that we were able to shift out the N bits. The only
+challenge here is that even at the slowest rate, we're looking at 300
+MHz-level signals, so we need to use the DDR output registers.
+
+We serialize a block of data of N bytes with the appropate clock start
+and stop bits, as well as providing a reference clock to the DES.
+
+Keep in mind that you need a SATA crossover cable to test that this
+actually works; there is tremendous device polarity.
+
