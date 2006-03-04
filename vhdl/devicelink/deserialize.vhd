@@ -9,7 +9,7 @@ entity deserialize is
   port (
     CLK     : in  std_logic;
     RESET   : in  std_logic;
-    CLKBIT  : in  std_logic;
+    BITCLK  : in  std_logic;
     DIN     : in  std_logic;
     DOUT    : out std_logic_vector(9 downto 0);
     DLYRST  : in  std_logic;
@@ -35,7 +35,7 @@ architecture Behavioral of deserialize is
       IOBDELAY_TYPE  :     string  := "DEFAULT";  --(DEFAULT,FIXED, VARIABLE)
       IOBDELAY_VALUE :     integer := 0;          --(0 to 63)
       NUM_CE         :     integer := 2;          --(1,2)
-      SERDES_MODE    :     string  := "MASTER";   --(MASTER, SLAVE)
+      SERDES_MODE    :     string  := "MASTER"   --(MASTER, SLAVE)
       );
 -- synthesis translate_on
     port (
@@ -61,7 +61,7 @@ architecture Behavioral of deserialize is
       REV            : in  std_logic;
       SHIFTIN1       : in  std_logic;
       SHIFTIN2       : in  std_logic;
-      SR             : in  std_logic;
+      SR             : in  std_logic
       );
   end component;
 
@@ -96,8 +96,10 @@ begin  -- Behavioral
       DLYINC    => DLYINC,
       DLYRST    => DLYRST,
       REV       => '0',
-      SHIFTIN1  => open,
-      SHIFTIN2  => open,
+      SHIFTIN1  => '0',
+      SHIFTIN2  => '0',
+      BITSLIP => bitslip,
+      OCLK =>  '0', 
       SR        => RESET);
   
     
@@ -132,6 +134,8 @@ begin  -- Behavioral
       REV       => '0',
       SHIFTIN1  => s1,
       SHIFTIN2  => s2,
+      BITSLIP => bitslip,
+      OCLK =>  '0', 
       SR        => RESET);
       
 
