@@ -62,8 +62,8 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="741.41427"
-     inkscape:cx="441.23734"
+     inkscape:cy="548.94533"
+     inkscape:cx="384.00721"
      inkscape:zoom="2.5122899"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -416,16 +416,16 @@
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="359.375"
-       y="83.75"
+       x="375"
+       y="99.375"
        id="text1443"><tspan
          sodipodi:role="line"
          id="tspan1445"
-         x="359.375"
-         y="83.75">send all 0s, </tspan><tspan
+         x="375"
+         y="99.375">send all 0s, </tspan><tspan
          sodipodi:role="line"
-         x="359.375"
-         y="98.75"
+         x="375"
+         y="114.375"
          id="tspan1447">no clock frames</tspan></text>
     <path
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -434,20 +434,95 @@
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="375"
-       y="193.125"
+       x="359.375"
+       y="208.75"
        id="text1451"><tspan
          sodipodi:role="line"
-         id="tspan1453"
-         x="375"
-         y="193.125">8b/10b-encoded</tspan><tspan
-         sodipodi:role="line"
-         x="375"
-         y="208.125"
-         id="tspan1455">0s with Clock Frames</tspan></text>
+         x="359.375"
+         y="208.75"
+         id="tspan1455">Send clock frames</tspan></text>
     <path
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 453.125,286.875 L 359.375,333.75"
        id="path1457" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="343.75"
+       y="286.875"
+       id="text5197"><tspan
+         sodipodi:role="line"
+         x="343.75"
+         y="286.875"
+         id="tspan5199">8b/10b-encoded 0s</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="414.36301"
+       y="344.37387"
+       id="text5201"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5203"
+         x="414.36301"
+         y="344.37387">0x346</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="265.625"
+       y="333.75"
+       id="text5205"><tspan
+         sodipodi:role="line"
+         x="265.625"
+         y="333.75"
+         id="tspan5207">Receive Sync</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="265.625"
+       y="380.625"
+       id="text5209"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5211"
+         x="265.625"
+         y="380.625">Lock to sync</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="265.625"
+       y="411.875"
+       id="text5213"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5215"
+         x="265.625"
+         y="411.875">Receive 4 valid 8b/10b</tspan><tspan
+         sodipodi:role="line"
+         x="265.625"
+         y="425.625"
+         id="tspan5217">bytes</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="265.625"
+       y="458.75"
+       id="text5219"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5221"
+         x="265.625"
+         y="458.75">Send K30.7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="265.625"
+       y="490"
+       id="text5223"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5225"
+         x="265.625"
+         y="490">Mark Link Up</tspan></text>
   </g>
 </svg>

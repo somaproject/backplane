@@ -9,40 +9,38 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 
-entity devicelink is
+entity coredevicelink is
   generic (
-    N : integer := 0);
-                                        -- number of ticks in an input bit cycle
-
+    N            :     integer := 0);   -- number of ticks in input bit cycle
   port (
-    CLK       : in  std_logic;
-    RXBITCLK  : in  std_logic;
-    TXHBITCLK : in  std_logic;
-    TXHBITCLK180 : in std_logic;
-    RESET : in std_logic; 
-    TXDIN     : in  std_logic_vector(7 downto 0);
-    TXKIN     : in  std_logic;
-    TXIO_P    : out std_logic;
-    TXIO_N    : out std_logic;
-    RXIO_P : in  std_logic;
-    RXIO_N : in  std_logic;
-    RXDOUT : out std_logic_vector(7 downto 0);
-    RXKOUT : out std_logic;
-    DROPLOCK : in std_logic;
-    LOCKED : out std_logic
+    CLK          : in  std_logic;
+    RXBITCLK     : in  std_logic;
+    TXHBITCLK    : in  std_logic;
+    TXHBITCLK180 : in  std_logic;
+    RESET        : in  std_logic;
+    TXDIN        : in  std_logic_vector(7 downto 0);
+    TXKIN        : in  std_logic;
+    TXIO_P       : out std_logic;
+    TXIO_N       : out std_logic;
+    RXIO_P       : in  std_logic;
+    RXIO_N       : in  std_logic;
+    RXDOUT       : out std_logic_vector(7 downto 0);
+    RXKOUT       : out std_logic;
+    DROPLOCK     : in  std_logic;
+    LOCKED       : out std_logic
     );
 
-end devicelink;
+end coredevicelink;
 
 
-architecture Behavioral of devicelink is
+architecture Behavioral of coredevicelink is
   component deserialize
 
     port (
       CLK     : in  std_logic;
       RESET   : in  std_logic;
       DIN     : in  std_logic;
-      BITCLK : in std_logic; 
+      BITCLK  : in  std_logic;
       DOUT    : out std_logic_vector(9 downto 0);
       DLYRST  : in  std_logic;
       DLYCE   : in  std_logic;
@@ -70,7 +68,7 @@ architecture Behavioral of devicelink is
       disp_err : out std_logic);
   end component;
 
-  signal dframe     : std_logic_vector(11 downto 0) := (others => '0');
+  signal dframe          : std_logic_vector(11 downto 0) := (others => '0');
   signal oframe, ol, oll : std_logic_vector(11 downto 0) := (others => '0');
 
   signal omux : integer range 0 to 2 := 0;
@@ -85,7 +83,7 @@ architecture Behavioral of devicelink is
   signal rxwordll : std_logic_vector(9 downto 0) := (others => '0');
 
   signal rxcodeerr : std_logic := '0';
-  
+
 
   signal dlyrst  : std_logic := '0';
   signal dlyce   : std_logic := '0';
@@ -144,17 +142,17 @@ begin  -- Behavioral
   FDDRRSE_inst : FDDRRSE
     port map (
       Q  => txio,                       -- Data output 
-      C0 => TXHBITCLK,                      -- 0 degree clock input
-      C1 => TXHBITCLK180,                   -- 180 degree clock input
+      C0 => TXHBITCLK,                  -- 0 degree clock input
+      C1 => TXHBITCLK180,               -- 180 degree clock input
       CE => '1',                        -- Clock enable input
-      D0 => sout(1),                -- Posedge data input
-      D1 => sout(0),                -- Negedge data input
+      D0 => sout(1),                    -- Posedge data input
+      D1 => sout(0),                    -- Negedge data input
       R  => '0',                        -- Synchronous reset input
       S  => '0'                         -- Synchronous preset input
       );
 
-  
- TXIO_obufds : OBUFDS
+
+  TXIO_obufds : OBUFDS
     generic map (
       IOSTANDARD => "DEFAULT")
     port map (
@@ -174,14 +172,14 @@ begin  -- Behavioral
 
   rxcodeerr <= cerr or derr;
 
-  dframe(0) <= '1';
-  dframe(11) <= '0'; 
+  dframe(0)  <= '1';
+  dframe(11) <= '0';
   main : process(CLK, RESET)
   begin
     if RESET = '1' then
-
+      cs     <= ns;
     elsif rising_edge(CLK) then
-      cs <= ns;
+      cs     <= ns;
 
       -- tx side
       oframe <= dframe;
@@ -216,29 +214,29 @@ begin  -- Behavioral
 
   end process main;
 
-  txout: process (TXHBITCLK)
-    variable bitcnt : std_logic_vector(5 downto 0) := "000001"; 
-    
-    begin
-      if rising_edge(TXHBITCLK) then
-        bitcnt := bitcnt(0) & bitcnt(5 downto 1);
+  txout             : process (TXHBITCLK)
+    variable bitcnt : std_logic_vector(5 downto 0) := "000001";
 
-        if bitcnt(0) = '1' then
-          oll <= ol;
-          sout <= oll;
-        else
-          sout <= "00" & sout(11 downto 2); 
-        end if;
+  begin
+    if rising_edge(TXHBITCLK) then
+      bitcnt := bitcnt(0) & bitcnt(5 downto 1);
+
+      if bitcnt(0) = '1' then
+        oll  <= ol;
+        sout <= oll;
+      else
+        sout <= "00" & sout(11 downto 2);
       end if;
-    end process txout; 
-  
+    end if;
+  end process txout;
+
   fsm : process (cs, dcnt, rxwordl, rxwordll, lrxkout, lrxdout, rxcodeerr, droplock)
   begin  -- process fsm
     case cs is
       when none  =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  1;
+        omux    <= 1;
         dlyrst  <= '1';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -247,7 +245,7 @@ begin  -- Behavioral
       when snull =>
         dcntrst <= '1';
         llocked <= '0';
-        omux <=  1;
+        omux    <= 1;
         dlyrst  <= '1';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -257,7 +255,7 @@ begin  -- Behavioral
       when wnull =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  1;
+        omux    <= 1;
         dlyrst  <= '1';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -271,7 +269,7 @@ begin  -- Behavioral
       when ssync =>
         dcntrst <= '1';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '1';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -281,7 +279,7 @@ begin  -- Behavioral
       when wsync =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '1';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -295,7 +293,7 @@ begin  -- Behavioral
       when bitstart =>
         dcntrst <= '1';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -305,7 +303,7 @@ begin  -- Behavioral
       when bitshift =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '1';
         dlyinc  <= '1';
@@ -323,7 +321,7 @@ begin  -- Behavioral
       when sbitcntr =>
         dcntrst <= '1';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -333,7 +331,7 @@ begin  -- Behavioral
       when wbitcntr =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '1';
         dlyinc  <= '1';
@@ -347,126 +345,136 @@ begin  -- Behavioral
       when wrdstart =>
         dcntrst <= '1';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
-        ns <= wrdinc;
-      when wrdinc =>
+        ns      <= wrdinc;
+      when wrdinc   =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '1';
-        ns <= wrdlock;
-      when wrdlock =>
+        ns      <= wrdlock;
+      when wrdlock  =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
-        ns <= wrddly; 
-      when wrddly =>
+        ns      <= wrddly;
+      when wrddly   =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
-        ns <= wrdcntr; 
+        ns      <= wrdcntr;
 
-      when wrdcntr =>
+      when wrdcntr   =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  2;
+        omux    <= 2;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
         if dcnt > 44 then
-          ns <= none;
+          ns    <= none;
         else
           if rxword = "1101000110" then
-            ns <= validchk1;
+            ns  <= validchk1;
           else
-            ns <= wrdinc; 
+            ns  <= wrdinc;
           end if;
         end if;
       when validchk1 =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  0;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
-        if lrxkout = '0' and lrxdout = X"00"  and rxcodeerr = '0' then
-          ns <= validchk2;
+        if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
+          ns    <= validchk2;
         else
-          ns <= none; 
+          ns    <= none;
         end if;
       when validchk2 =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  0;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
-        if lrxkout = '0' and lrxdout = X"00"  and rxcodeerr = '0' then
-          ns <= validchk3;
+        if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
+          ns    <= validchk3;
         else
-          ns <= none; 
+          ns    <= none;
         end if;
       when validchk3 =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  0;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
-        if lrxkout = '0' and lrxdout = X"00"  and rxcodeerr = '0' then
-          ns <= validchk4;
+        if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
+          ns    <= validchk4;
         else
-          ns <= none; 
+          ns    <= none;
         end if;
       when validchk4 =>
         dcntrst <= '0';
         llocked <= '0';
-        omux <=  0;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
-        if lrxkout = '0' and lrxdout = X"00"  and rxcodeerr = '0' then
-          ns <= lock; 
+        if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
+          ns    <= lock;
         else
-          ns <= none; 
+          ns    <= none;
         end if;
-      when lock =>
+      when lock      =>
         dcntrst <= '0';
         llocked <= '1';
-        omux <=  0;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
         bitslip <= '0';
-        if rxcodeerr = '1' or DROPLOCK = '1'  then
-          ns <= none;
+        if rxcodeerr = '1' or DROPLOCK = '1' then
+          ns    <= none;
         else
-          ns <= lock; 
+          ns    <= lock;
         end if;
-        
-      when others => null;
+
+      when others =>
+        dcntrst <= '0';
+        llocked <= '0';
+        omux    <= 0;
+        dlyrst  <= '0';
+        dlyce   <= '0';
+        dlyinc  <= '0';
+        bitslip <= '0';
+        ns      <= none;
+
+
     end case;
   end process fsm;
-  
+
 end Behavioral;
 

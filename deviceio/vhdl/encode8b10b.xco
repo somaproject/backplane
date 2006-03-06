@@ -1,25 +1,25 @@
 # BEGIN Project Options
-SET flowvendor = Foundation_iSE
+SET flowvendor = Other
 SET vhdlsim = True
 SET verilogsim = False
-SET workingdirectory = /home/jonas/soma/somabackplane/deviceio/vhdl/tmp
-SET speedgrade = -5
+SET workingdirectory = /tmp/coregen/tmp
+SET speedgrade = -10
 SET simulationfiles = Behavioral
-SET asysymbol = True
+SET asysymbol = False
 SET addpads = False
-SET device = xc3s200
+SET device = xc4vlx25
 SET implementationfiletype = Edif
 SET busformat = BusFormatAngleBracketNotRipped
 SET foundationsym = False
-SET package = pq208
+SET package = ff668
 SET createndf = False
 SET designentry = VHDL
-SET devicefamily = Spartan3
+SET devicefamily = virtex4
 SET formalverification = False
 SET removerpms = False
 # END Project Options
 # BEGIN Select
-SELECT Encode_8b/10b family Xilinx,_Inc. 4.0
+SELECT Encode_8b/10b family Xilinx,_Inc. 5.0
 # END Select
 # BEGIN Parameters
 CSET secondary_encoder=false
