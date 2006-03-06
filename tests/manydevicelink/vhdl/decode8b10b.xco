@@ -1,0 +1,48 @@
+# BEGIN Project Options
+SET flowvendor = Other
+SET vhdlsim = True
+SET verilogsim = False
+SET workingdirectory = /tmp/coregen/tmp
+SET speedgrade = -10
+SET simulationfiles = Behavioral
+SET asysymbol = False
+SET addpads = False
+SET device = xc4vlx25
+SET implementationfiletype = Edif
+SET busformat = BusFormatAngleBracketNotRipped
+SET foundationsym = False
+SET package = ff668
+SET createndf = False
+SET designentry = VHDL
+SET devicefamily = virtex4
+SET formalverification = False
+SET removerpms = False
+# END Project Options
+# BEGIN Select
+SELECT Decode_8b/10b family Xilinx,_Inc. 7.1
+# END Select
+# BEGIN Parameters
+CSET symbol_disparity_out=false
+CSET b_new_data=false
+CSET synchronous_reset=false
+CSET running_disparity_in=false
+CSET clock_enable=false
+CSET b_synchronous_reset=false
+CSET running_disparity_out=false
+CSET new_data=false
+CSET b_symbol_disparity_out=false
+CSET secondary_decoder=false
+CSET component_name=decode8b10b
+CSET synchronous_reset_value=D_0_0_pos
+CSET b_disparity_violation_out=false
+CSET implementation=LUT_Based
+CSET disparity_violation_out=true
+CSET b_clock_enable=false
+CSET b_code_violation_out=false
+CSET b_running_disparity_out=false
+CSET code_violation_out=true
+CSET b_running_disparity_in=false
+CSET b_synchronous_reset_value=B_D_0_0_pos
+# END Parameters
+GENERATE
+
