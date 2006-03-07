@@ -1,0 +1,42 @@
+
+The DeviceLink network layer describes the mapping between events and data on the event and data buses to series of symbols on the devicelink. It also incorporates the transmission of the relevant EVENT/data symbols. 
+
+
+
+The protocols involved are closely linked with the soma RX and TX protocols. In particular, event and data broadcast are handled here. 
+
+
+All DeviceLink TX activity is organized in a series of 600-symbol frames, each frame corresponding to a Soma Event Cycle. The beginning of each frame is coincident with the beginning of an event cycle, and is indicated by K28.5. 
+
+
+----------------------------------------
+Bus routing, clocks, configuration
+----------------------------------------
+we have an EVENTCE signal, internally, which gates an input event. 
+
+22 bytes of header
+40*12 bytes of 12-byte events, in order of sender ID .
+
+The header consists of:
+1. a k28.5 sync comma
+2. two 7-symbol device configuration packets:
+byte 0: device can send data during this cycle
+byte 1: lsb: the first event in the sequence is for this device
+byte 2: lsb: the 8th evenet in the sequence is for this device
+... through byte 6
+
+
+Device transmit:
+every device must respond with a K28.5 at the beginning of each event cycle
+
+Any time during an event cycle a device can send an event, which in this case is a 17-byte packet of data prefaced with a K28.4 comma character
+
+A device may also send up to 300 bytes of data, if selected, in the following needlessly complex format
+
+to begin data, send K28.2
+to end data, send K28.3
+to end a packet, send K28.4
+
+This is depressingly like token ring. 
+
+
