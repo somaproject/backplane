@@ -11,7 +11,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="core.svg"
    sodipodi:docbase="/home/jonas/soma/somabackplane/docs"
-   inkscape:version="0.43"
+   inkscape:version="0.43+devel"
    sodipodi:version="0.32"
    id="svg1996"
    height="11in"
@@ -271,15 +271,11 @@
          sodipodi:role="line"
          x="956.25"
          y="755.625"
-         id="tspan4585">Internal</tspan><tspan
+         id="tspan4593">BasicDevice</tspan><tspan
          sodipodi:role="line"
          x="956.25"
          y="770.625"
-         id="tspan4591">Device </tspan><tspan
-         sodipodi:role="line"
-         x="956.25"
-         y="785.625"
-         id="tspan4593">Event RX/TX</tspan></text>
+         id="tspan1829">Node</tspan></text>
     <g
        id="g6779"
        transform="translate(0,-18.75)">
@@ -925,7 +921,7 @@
            y="321.25"
            x="534.375"
            id="tspan4599"
-           sodipodi:role="line">Dual-link Device Transceiver</tspan></text>
+           sodipodi:role="line">DeviceLink Node</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -935,13 +931,13 @@
        id="text4691"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         id="tspan4693"
-         x="460.65655"
-         y="577.5">Dual-link</tspan><tspan
+         x="460.65656"
+         y="577.5"
+         id="tspan4695">DeviceLink</tspan><tspan
          sodipodi:role="line"
-         x="460.65655"
+         x="460.65656"
          y="597.64139"
-         id="tspan4695">LVDS Serial IO</tspan></text>
+         id="tspan1822">Serial IO</tspan></text>
     <path
        style="opacity:1;color:#000000;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 134.37497,390.00018 L 393.61243,390.00018 L 393.75,793.125 L 131.25,793.125"
@@ -2086,7 +2082,7 @@
          sodipodi:role="line"
          id="tspan5750"
          x="437.5"
-         y="530.625">250 Mbps</tspan></text>
+         y="530.625">300 Mbps</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -2096,7 +2092,7 @@
          sodipodi:role="line"
          id="tspan5754"
          x="437.5"
-         y="646.25">250 Mbps</tspan></text>
+         y="646.25">300 Mbps</tspan></text>
     <g
        id="g6691"
        transform="matrix(0.610603,0,0,0.610603,161.0721,166.3934)">

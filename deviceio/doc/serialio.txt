@@ -6,14 +6,34 @@ interaction.
 This here JUST DISCUSSES THE ACTUAL SERIAL INTERFACE
 
 We use a 100-ohm differential impedance SATA connector, in both
-backplane and cable connections; each LVDS pair is unidirectional with
-an encoded bitrate of 250 Mbps.
+backplane and cable connections; each LVDS pair is unidirectional but
+the rate of transmission is asymmetric.
+
 
 We wanted the device to easily synthesize in a Xilinx Spartan-3 FPGA,
 the FPGA of choice for Soma. Restrictions were thus placed on our
 manner of deserialiation. We choose to exploit the Spartan-3's
 abundant clock manipulation resources to allow a receiver to
 oversample the data stream.
+
+Part of the challenge came in getting a spartan-3 to perform the
+necessary clock and data recovery, to synthesize cleanly (without too
+much effort or too fragile a design), and for the DCMs to clock fast
+enough, without using up all of our clocking resources.
+
+As a result, we've settled on having all client devices use an
+off-the-shelf deserializer IC which presents a 10-bit-wide interface
+to the client, and to synchronously (DDR) transmit the necessary
+bits. We still encode the data as an 8b/10b data stream to maintain DC
+offset and use our existing control character infrastructure.
+
+The Soma Backplane Core Virtex-4 is fast enough and has the dedicated
+clocking resources necessary to recover the 8b/10b data stream . In
+addition, by driving the bulk of the device FPGA with the recovered
+clock, we essentially implement a synchronous system, with exactly the
+correct number of bits and bytes arriving at all times, thus
+eliminating difficult-to-work-with DOENs.
+
 
 The bitstream is 8b/10b encoded because the codec is 
 
@@ -30,6 +50,7 @@ The bitstream is 8b/10b encoded because the codec is
 5. Xilinx has an easy-to-use implementation -- in time, we hope to
    replace this with native IP for a truly Free Solution
 
+In fact, we've changed this to be an asymmetric bidirectional serial interface wi
 \include {Clocking}
 
 \include{Transmit } 

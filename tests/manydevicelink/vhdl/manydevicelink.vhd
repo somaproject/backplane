@@ -14,11 +14,11 @@ entity manydevicelink is
   port (
     CLKIN  : in  std_logic;
     RESET  : in  std_logic;
-    TXIO_P : out std_logic_vector(19 downto 0);
-    TXIO_N : out std_logic_vector(19 downto 0);
-    RXIO_P : in  std_logic_vector(19 downto 0);
-    RXIO_N : in  std_logic_vector(19 downto 0);
-    VALID  : out std_logic_vector(19 downto 0)
+    TXIO_P : out std_logic_vector(18 downto 0);
+    TXIO_N : out std_logic_vector(18 downto 0);
+    RXIO_P : in  std_logic_vector(18 downto 0);
+    RXIO_N : in  std_logic_vector(18 downto 0);
+    VALID  : out std_logic_vector(18 downto 0)
     );
 
 end manydevicelink;
@@ -91,7 +91,7 @@ begin  -- Behavioral
 
   -- instantiate devices
 
-  devicelinks : for i in 0 to 19 generate
+  devicelinks : for i in 0 to 18 generate
     dl        : linktester
       port map (
         CLK          => TXCLK,

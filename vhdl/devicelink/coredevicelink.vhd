@@ -101,8 +101,12 @@ architecture Behavioral of coredevicelink is
 
   signal txio : std_logic := '0';
 
+  signal din : std_logic_vector(7 downto 0) := (others => '0');
+  signal kin : std_logic := '0';
 
-  type states is (none, snull, wnull, ssync, wsync, bitstart, bitshift, sbitcntr, wbitcntr, wrdstart, wrdinc, wrdlock, wrddly, wrdcntr, validchk1, validchk2, validchk3, validchk4, lock);
+
+
+  type states is (none, snull, wnull, ssync, wsync, bitstart, bitshift, sbitcntr, wbitcntr, wrdstart, wrdinc, wrdlock, wrddly, wrdcntr, validchk1, validchk2, validchk3, validchk4, sendlock, lock);
 
   signal cs, ns : states := none;
 
@@ -124,11 +128,14 @@ begin  -- Behavioral
 
   encoder : encode8b10b
     port map (
-      DIN  => TXDIN,
-      KIN  => TXKIN,
+      DIN  => din,
+      KIN  => kin,
       DOUT => dframe(10 downto 1),
       CLK  => CLK);
 
+  din <= TXDIN when cs = sendlock else X"FE";
+  kin <= TXKIN when cs = sendlock else '1';
+  
   decoder : decode8b10b
     port map (
       CLK      => CLK,
@@ -444,10 +451,20 @@ begin  -- Behavioral
         dlyinc  <= '0';
         bitslip <= '0';
         if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
-          ns    <= lock;
+          ns    <= sendlock;
         else
           ns    <= none;
         end if;
+      when sendlock =>
+        dcntrst <= '0';
+        llocked <= '0';
+        omux    <= 0;
+        dlyrst  <= '0';
+        dlyce   <= '0';
+        dlyinc  <= '0';
+        bitslip <= '0';
+        ns <= lock; 
+
       when lock      =>
         dcntrst <= '0';
         llocked <= '1';

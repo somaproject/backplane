@@ -16,8 +16,9 @@
 PROJECT = manydevicelink
 
 bitfile: $(PROJECT).bit
+export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
 
-SOURCES = *.vhd
+SOURCES = *.vhd 
 OPTIMIZE = high
 PART = xc4vlx25-10-ff668
 SPEED = 10

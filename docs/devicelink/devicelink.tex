@@ -73,13 +73,14 @@ See 4pcb.stack.txt
 
 A good number to go with is 7-8 mil, and so we're using the following:
 epsilon = 4.6
-w = 9 # trace width 
-s = 9. # trace separation 
+w = 11 # trace width 
+s = 14. # trace separation 
 t = 1.4 # trace thickness 
 h = 7.5 # height above ground plane
 
-Z0 =  59.4565832263
-Zdiff =  100.876181706
+Z0 =  53.3
+Zdiff =  98.1
+
 
 A little high on the common-mode impedance, but this is less of an issue and the best we could do given our PCB layer stack-ups. 
 
@@ -119,7 +120,7 @@ the steps of link establishment are listed below:
 3. Here it will wait until it has established a lock on the inbound data stream. At this point, it will begin broadcasting a constant sync pattern, alternating zeros and ones. 
 
 4. the core will meanwhile be waiting a millisecond, and then  for this pattern and will use it to lock onto both bit transitions and symbol alignments
-5. once the core has acquired lock, it will transmit a comma character to the device indicating this is the case, at whic point the device will consider the link locked as well. 
+5. once the core has acquired lock, it will transmit a  K30.7 comma character to the device indicating this is the case, at whic point the device will consider the link locked as well. 
 
 FPGA Core implementation -- IO 
 

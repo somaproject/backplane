@@ -9,7 +9,7 @@
    xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="core.devicelink.fsm.svg"
-   sodipodi:docbase="/home/jonas/soma/backplane/docs/devicelink"
+   sodipodi:docbase="/home/jonas/soma/somabackplane/docs/devicelink"
    inkscape:version="0.43+devel"
    sodipodi:version="0.32"
    id="svg1996"
@@ -65,9 +65,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="425.698"
-     inkscape:cx="355.57597"
-     inkscape:zoom="1.598879"
+     inkscape:cy="384.35545"
+     inkscape:cx="570.83067"
+     inkscape:zoom="4.5223127"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -1580,7 +1580,7 @@
        id="path9506" />
     <g
        id="g9545"
-       transform="translate(0,31.25)">
+       transform="translate(53.125,31.25)">
       <rect
          ry="11.111677"
          rx="11.23795"
@@ -1612,26 +1612,27 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="565.625"
+       x="618.75"
        y="624.375"
        id="text9520"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan9522"
-         x="565.625"
+         x="618.75"
          y="624.375">DCNTRST=1</tspan><tspan
          sodipodi:role="line"
-         x="565.625"
+         x="618.75"
          y="633.375"
          id="tspan9524">LLOCKED=1</tspan><tspan
          sodipodi:role="line"
-         x="565.625"
+         x="618.75"
          y="642.375"
          id="tspan9534">OMUX=0</tspan></text>
     <path
        style="opacity:1;color:#000000;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 475,590 L 559.375,590"
-       id="path9536" />
+       d="M 475,590 L 512.5,590"
+       id="path9536"
+       sodipodi:nodetypes="cc" />
     <text
        sodipodi:linespacing="100%"
        id="text9551"
@@ -1642,7 +1643,7 @@
          id="tspan9553">else</tspan></text>
     <path
        style="opacity:1;color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 593.75,571.25 L 593.75,536.875 C 593.75,536.875 593.75,527.5 584.375,527.5 C 575,527.5 546.875,527.5 546.875,527.5"
+       d="M 646.875,571.25 L 646.875,536.875 C 646.875,536.875 646.875,527.5 637.5,527.5 C 628.125,527.5 546.875,527.5 546.875,527.5"
        id="path9555"
        sodipodi:nodetypes="ccsc" />
     <path
@@ -1652,16 +1653,16 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="596.875"
+       x="650"
        y="549.375"
        id="text9559"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
-         x="596.875"
+         x="650"
          y="549.375"
          id="tspan9563">RXCODEERR=1</tspan><tspan
          sodipodi:role="line"
-         x="596.875"
+         x="650"
          y="556.375"
          id="tspan9567">or DROPLOCK=1</tspan></text>
     <path
@@ -1703,7 +1704,7 @@
        sodipodi:nodetypes="cc" />
     <path
        style="opacity:1;color:#000000;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.625;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:1.875,1.875;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 362.5,724.375 L 490.625,724.375 C 490.625,724.375 500,724.375 500,715 C 500,705.625 503.125,593.125 503.125,593.125"
+       d="M 362.5,724.375 L 490.625,724.375 C 490.625,724.375 500,724.375 500,715 C 500,705.625 500,593.125 500,593.125"
        id="path9587"
        sodipodi:nodetypes="ccsc" />
     <path
@@ -1782,5 +1783,51 @@
        d="M 431.25,399.375 L 443.75,399.375"
        id="path3442"
        sodipodi:nodetypes="cc" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3235"
+       width="62.5"
+       height="37.5"
+       x="515.625"
+       y="569.86169"
+       rx="11.23795"
+       ry="11.111677" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3237"
+       width="68.75"
+       height="43.75"
+       x="512.5"
+       y="566.73669" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="546.47223"
+       y="591.73669"
+       id="text3239"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan3241"
+         x="546.47223"
+         y="591.73669">SENDLOCK</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="518.75"
+       y="622.98669"
+       id="text3243"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan3245"
+         x="518.75"
+         y="622.98669">DCNTRST=1</tspan><tspan
+         sodipodi:role="line"
+         x="518.75"
+         y="631.98669"
+         id="tspan3247">LLOCKED=0</tspan><tspan
+         sodipodi:role="line"
+         x="518.75"
+         y="640.98669"
+         id="tspan3249">OMUX=0</tspan></text>
   </g>
 </svg>
