@@ -1,0 +1,34 @@
+Soma backplane doc organization
+
+
+buses/
+The soma backplane as the interconnect framework
+
+The soma backplane protocols and data buses
+
+Soma Buses -- The application layer
+
+The Event Bus
+   What is an event? 
+   How is the event space partitioned? 
+   What is an event cycle? 
+
+The Data Bus
+   What is the data bus
+
+Booting
+Timing
+
+The network interface
+   What does our network IO and API look like? 
+   How did we implement our network stack? 
+   
+Soma Backplane Peripherals:
+
+   NEP -- separate volume
+   DSPboard -- separate volume
+
+   SystemIF
+   BootIF
+   adio 
+   
