@@ -1,0 +1,11 @@
+The devicemux implements layer 2-3 operation for the soma backplane to
+interface the devicelink with the soma core Event Port and Data Port. 
+
+The devicemux turns the devicelink into a dual-device link; in the
+future this could be increased to 4.
+
+We implement the indicated devicelink protocol, and serve as an
+interface between the ports and the link itself. This also detects the
+link-down situation and properly ignores all non-active link activity.
+
+
