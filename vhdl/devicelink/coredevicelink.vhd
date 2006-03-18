@@ -133,8 +133,8 @@ begin  -- Behavioral
       DOUT => dframe(10 downto 1),
       CLK  => CLK);
 
-  din <= TXDIN when cs = sendlock else X"FE";
-  kin <= TXKIN when cs = sendlock else '1';
+  din <= TXDIN when cs /= sendlock else X"FE";
+  kin <= TXKIN when cs /= sendlock else '1';
   
   decoder : decode8b10b
     port map (
@@ -170,7 +170,8 @@ begin  -- Behavioral
 
   RXIO_ibufds : IBUFDS
     generic map (
-      IOSTANDARD => "DEFAULT")
+      IOSTANDARD => "DEFAULT",
+      DIFF_TERM => True)
     port map (
       I          => RXIO_P,
       IB         => RXIO_N,

@@ -12,13 +12,15 @@ use UNISIM.VComponents.all;
 entity manydevicelink is
 
   port (
-    CLKIN  : in  std_logic;
-    RESET  : in  std_logic;
-    TXIO_P : out std_logic_vector(18 downto 0);
-    TXIO_N : out std_logic_vector(18 downto 0);
-    RXIO_P : in  std_logic_vector(18 downto 0);
-    RXIO_N : in  std_logic_vector(18 downto 0);
-    VALID  : out std_logic_vector(18 downto 0)
+    CLKIN    : in  std_logic;
+    RESET    : in  std_logic;
+    TXIO_P   : out std_logic_vector(18 downto 0);
+    TXIO_N   : out std_logic_vector(18 downto 0);
+    RXIO_P   : in  std_logic_vector(18 downto 0);
+    RXIO_N   : in  std_logic_vector(18 downto 0);
+    VALID    : out std_logic_vector(18 downto 0);
+    LEDPOWER : out std_logic;
+    LEDVALID : out std_logic
     );
 
 end manydevicelink;
@@ -46,8 +48,10 @@ architecture Behavioral of manydevicelink is
     txhbitclk, txhbitclk180               : std_logic := '0';
   signal txclk, txclkint, rxclk, rxclkint : std_logic;
 
-  signal idelayclk, idelayclkint : std_logic := '0';
-  signal dc, dcint : std_logic := '0';
+  signal idelayclk, idelayclkint : std_logic                     := '0';
+  signal dc, dcint               : std_logic                     := '0';
+  signal ledtick                 : std_logic_vector(23 downto 0) := (others => '0');
+  signal validint                : std_logic_vector(18 downto 0) := (others => '0');
 
 begin  -- Behavioral
 
@@ -81,7 +85,7 @@ begin  -- Behavioral
       CLKFB        => rxclk,
       RST          => RESET,
       PSEN         => '0',
-      CLK0        => rxclkint,
+      CLK0         => rxclkint,
       CLKFX        => rxhbitclk,
       CLKFX180     => rxhbitclk180);
 
@@ -103,7 +107,7 @@ begin  -- Behavioral
         TXIO_N       => TXIO_N(i),
         RXIO_P       => RXIO_P(i),
         RXIO_N       => RXIO_N(i),
-        VALID        => VALID(i) );
+        VALID        => validint(i) );
 
   end generate devicelinks;
 
@@ -116,7 +120,7 @@ begin  -- Behavioral
       CLKFB        => dc,
       RST          => RESET,
       PSEN         => '0',
-      CLK0        => dcint,
+      CLK0         => dcint,
       CLKFX        => idelayclkint);
 
   idelayclk_bufg : BUFG port map (
@@ -124,7 +128,7 @@ begin  -- Behavioral
     I => idelayclkint);
 
   delayclk_bufg : BUFG port map (
-    O => dc, 
+    O => dc,
     I => dcint);
 
   dlyctrl : IDELAYCTRL
@@ -133,5 +137,17 @@ begin  -- Behavioral
       REFCLK => idelayclk,
       RST    => RESET
       );
-  
+
+  ledblink : process(TXCLK)
+  begin
+    if rising_edge(TXCLK) then
+      ledtick  <= ledtick + 1;
+      LEDPOWER <= ledtick(4);
+
+    end if;
+  end process ledblink;
+
+  VALID    <= validint;
+  LEDVALID <= validint(0);
+
 end Behavioral;

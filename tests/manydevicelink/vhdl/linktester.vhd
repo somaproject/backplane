@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/03/05
+-- Last update: 2006/03/17
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -135,7 +135,7 @@ begin  -- Behavioral
         elsif kin2 = '0' and bin2 = X"FF" and
           kin1 = '1' and bin1 = X"BC" then
           VALID <= '1';
-        elsif kin2 = '0' and kin1 = '0' and bin2 -1 = bin1 then
+        elsif kin2 = '0' and kin1 = '0' and bin2 +1 = bin1 then
           VALID <= '1';
         else
           VALID <= '0';

@@ -1,6 +1,15 @@
-This is an attempt to synthesize and then test the device link of all the external devices. 
+This is an attempt to synthesize and then test the device link of all
+the external devices.
 
-Since we have limited output diagnostic information we will use the network data pins as our tests. 
+Since we have limited output diagnostic information we will use the
+network data pins as our tests.
 
-Our test bitstream will send 0-255 in 8b/10b-encoded streams, with a k28.5 header. We will attempt to RX the same stream as well; the device can simply implement a loopback if it so wishes. 
+Our test bitstream will send 0-255 in 8b/10b-encoded streams, with a
+k28.5 header. We will attempt to RX the same stream as well; the
+device can simply implement a loopback if it so wishes.
 
+The "link valid" pins are sent to DIN0-15 and DOUT0-15
+
+
+The first 16 TX devices are DSPboards 0-15, which are the only ones we
+care about at the moment.

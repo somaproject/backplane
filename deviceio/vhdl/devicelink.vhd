@@ -62,7 +62,25 @@ architecture Behavioral of devicelink is
   type states is (none, sendsync, lock, unlocked);
   signal cs, ns : states := none;
   
-                  
+  component encode8b10b
+    port (
+      din  : in  std_logic_vector(7 downto 0);
+      kin  : in  std_logic;
+      clk  : in  std_logic;
+      dout : out std_logic_vector(9 downto 0));
+  end component;
+
+
+  component decode8b10b
+    port (
+      clk      : in  std_logic;
+      din      : in  std_logic_vector(9 downto 0);
+      dout     : out std_logic_vector(7 downto 0);
+      kout     : out std_logic;
+      code_err : out std_logic;
+      disp_err : out std_logic);
+  end component; 
+                 
 
 begin  -- Behavioral
 
@@ -75,14 +93,14 @@ begin  -- Behavioral
 
   decoder : decode8b10b
     port map (
-      CLK      => CLK,
+      CLK      => txclk,
       DIN      => txdinl,
       DOUT     => ltxdout,
       KOUT     => ltxkout,
       CODE_ERR => cerr,
       DISP_ERR => derr);
 
-nottxlocked <= not TXLOCKED;
+nottxlocked <= TXLOCKED;
 rst <= not dcmlocked;
     
     RESET <= rst; 
