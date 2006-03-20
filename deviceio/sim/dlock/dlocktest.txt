@@ -1,5 +1,0 @@
-How to test our data lock capabilities: 
-
-To get data to test:
-1. generate two random bitstrings, an enable bitstring and a datasrc bitstring, with the data bitstring truly random, and the enable bitstring 1 90% more often than it's 0. 
-2. compute a "data bitstream" by selecting the relevant bits from the dataasrc bitstream. 
