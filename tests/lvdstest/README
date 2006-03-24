@@ -1,0 +1,49 @@
+This is designed to be a (very) simple high-speed serial integrity
+test, which will simply test our ability to send high-speed serial
+bits over our LVDS interface. 
+
+We simply send out a stream of N bits and then try and capture them
+and simply verify that we're reading the same N bits over and over again. 
+
+This is also designed to be somewhat of a primitive test of our
+deserialize module.
+
+
+
+
+On the core->device transmit side:
+
+1. we send a clock-frame-encoded 360 Mbps data stream consisting of a 4 10-bit repeating sequence. 
+
+On the device:
+
+The device receives the 360 Mbps data stream which it turns into a 30
+Mhz 10-bit wide stream.
+
+The device verifies: 
+   every 4 words are identitical 
+   no word is all 0s or all 1s (to prevent "all zeros") error
+
+
+
+device => core side:
+
+The device then turns around and sends a 30 MHz x 5 DDR 10bit data
+stream, consisting of 4 10-bit words. 
+
+The deserializer deserializes these bits, and the resulting 30 MHz
+data stream is
+   -- verified to have at least one 1 and one 0 per word
+   -- have the same 40 bits every cycle
+
+
+* Clocking
+
+On the core side:
+CLKIN: input 60 MHz clock
+clktx, clktxint : clk0 on txdcm
+clkbittxint, clkbittx : 360 MHz clock for bit transmit
+
+clkrx, clkrxint : clk0 on rxdcm
+clkbitrxint, clkbitrx : 300 MHz clock for bit rx
+clkwrxint, clkwrx : 30 MHz clock word receive 
