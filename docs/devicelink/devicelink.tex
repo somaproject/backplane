@@ -9,126 +9,14 @@ RX from the perspective of the Soma Core. The DeviceLink is
 source-synchronous from the core, guaranteeing one symbol per clock
 tick for both core and device.
 
+The DeviceLink allows for two device nodes and arbitrary data packets
+according to the DeviceLink Protocol.
 
-\subsection{Wire Protocol Asymmetry}
-
-High-speed point-to-point serial interfaces allow for the data rates
-common in parallel shared busses without the PCB layout or signal
-integrity issues. 
-
-While the Soma Core can easily handle serial data streams into the
-hundreds of megahertz, device FPGAs, in particular the Spartan-3, are
-unable to do so. They also cannot natively perform clock recovery from
-the encoded data stream. To solve this problem, devices implementing
-DeviceLink can take advantage of off-the-shelf deserialization ICs made
-by National Semiconductor (DS92LV1224) and Texas Instruments (TI PART
-NO).
-
-The DeviceLink consists of two serial data streams, one in each direction: 
-\begin{itemize}
-\item \textbf{TX Link} : The TX Link wraps serialized 8b/10b-encoded
-  words in two additional clock frame bits as necessitated by low-cost
-  deserializer ICs, giving a total raw bitrate of 360 Mbps. The TX
-  Link's embedded clock is recovered by the device and used as the
-  master clock for internal devices.
-\item \textbf{RX Link} : The RX Link is simple 8b/10b-encoded serial
-  data, transmitted by the device at a raw 300 Mbps. This data rate is
-  easily accomplished via the DDR IOBs on a device's Spartan-3 FPGA.
-\end{itemize}
+\section {Link Layer}
+\import{link.tex}
 
 
-8b/10b encoding was selected because: 
+\section {Protocol }
+\import{protocol.tex}
 
-1. no longer patented 
-
-2. guarantees clock transitions for our synchrnization efforts
-
-3. widely understood 
-
-4. has embedded punctuation to allow framing and out-of-band
-   signalling with minimal effort, including K28.5, which allows for
-   easy byte locking
-
-5. Xilinx has an easy-to-use implementation -- in time, we hope to
-   replace this with native IP for a truly Free Solution
-
-\subsection{Physical Layer}
-The serial streams are transmitted via low-voltage
-differential-signalling (LVDS), offering superior immunity to
-common-mode noise and reducing issues associated with grounding. 
-
-DeviceLink uses LVDS pairs with 50-ohm single-ended impedance and
-100-ohm differential. These are readily available in all Xilinx FPGA
-families.
-
-\subsubsection{PCB Layout} 
-For high-speed serial interconnect, the SATA standard recommends "differential microstrip traces (100+/- 5 ohms) over a ground plane (single ended 50+/-2.5 ohms). However, this results in a trace width and spacing that is just unmanagable. 
-
-According to PCBexpress, these processes are dependent on the exact
-geometry of the copper between the traces.
-
-See 4pcb.stack.txt
-    pcb-express1.txt
-    pcb-express-2.txt
-
-A good number to go with is 7-8 mil, and so we're using the following:
-epsilon = 4.6
-w = 11 # trace width 
-s = 14. # trace separation 
-t = 1.4 # trace thickness 
-h = 7.5 # height above ground plane
-
-Z0 =  53.3
-Zdiff =  98.1
-
-
-A little high on the common-mode impedance, but this is less of an issue and the best we could do given our PCB layer stack-ups. 
-
-
-
-\subsubsection{Device Connectors}
-
-The SATA backplane connector will be used; SATA signal pairs have a
-100-ohm impedance.
-
-In terms of actual connectors, we have a few options: 
-
-On the DSPboard side, we have: 
-  The device plug with the strattle mount: 87679-0003 (Arrow has 1k)
-  Device plug smt without jumpers -- 87703-0001 (arrow has 1k)
-
-On the backplane side, we have two of our standard-height connectors: 
-  1. 87713-1001 -- SMT mount
-
-get part numbers and pictures
-
-
-
-\subsection{The link lock sequence}
-
-
-The source-synchronous nature of the TX Link and the need for the core to recover the RX Link stream necessitate an initial synchronization step before any DeviceLink can be considered ``up''. 
-
-
-the steps of link establishment are listed below: 
-
-1. upon detecting a dropped link, the core first suspends all data transmission for 1 ms, and then begins sending a sequence of all 0s via the TX line
-
-
-2. The period of inactivity will force the device to lose lock, reset, and then enter lock initialization mode. 
-
-3. Here it will wait until it has established a lock on the inbound data stream. At this point, it will begin broadcasting a constant sync pattern, alternating zeros and ones. 
-
-4. the core will meanwhile be waiting a millisecond, and then  for this pattern and will use it to lock onto both bit transitions and symbol alignments
-5. once the core has acquired lock, it will transmit a  K30.7 comma character to the device indicating this is the case, at whic point the device will consider the link locked as well. 
-
-FPGA Core implementation -- IO 
-
-Link to somabackplane/devicelink/docs for the prototypical client implementation and API 
-
-
-
-How does the core do it's thing? 
-
-First, vary phase to detect the transitions... what if we're not sending yet? 
 
