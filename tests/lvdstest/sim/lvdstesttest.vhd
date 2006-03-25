@@ -7,7 +7,7 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 
 
 library UNISIM;
-use UNISIM.VComponents.all; 
+use UNISIM.VComponents.all;
 
 entity lvdstesttest is
 
@@ -32,7 +32,7 @@ architecture Behavioral of lvdstesttest is
 
   end component;
 
-  
+
   component lvdsclient
     port (
       CLKIN     : in  std_logic;
@@ -45,8 +45,7 @@ architecture Behavioral of lvdstesttest is
       LEDVALID  : out std_logic;
       LEDPOWER  : out std_logic;
       LOCKED    : in  std_logic;
-      LEDLOCKED : out std_logic);
-  end component;
+      LEDLOCKED : out std_logic); end component;
 
 
 
@@ -67,30 +66,31 @@ architecture Behavioral of lvdstesttest is
 
 
 
-  signal CORECLKIN : std_logic                    := '0';
-  signal DEVCLKIN  : std_logic                    := '0';
-  signal RESET     : std_logic                    := '1';
-  signal TXBITCLKOUT : std_logic := '0'; 
-  signal TX_P      : std_logic                    := '0';
-  signal TX_N      : std_logic                    := '1';
-  signal RX_P      : std_logic                    := '0';
-  signal RX_N      : std_logic                    := '1';
-  signal REFCLKOUT : std_logic                    := '0';
-  signal RXCLK     : std_logic                    := '0';
-  signal DIN       : std_logic_vector(9 downto 0) := (others => '0');
-  signal CORELEDVALID  : std_logic                    := '0';
-  signal CORELEDPOWER  : std_logic                    := '0';
+  signal CORECLKIN    : std_logic                    := '0';
+  signal DEVCLKIN     : std_logic                    := '0';
+  signal RESET        : std_logic                    := '1';
+  signal TXBITCLKOUT  : std_logic                    := '0';
+  signal TX_P         : std_logic                    := '0';
+  signal TX_N         : std_logic                    := '1';
+  signal RX_P         : std_logic                    := '0';
+  signal RX_N         : std_logic                    := '1';
+  signal REFCLKOUT    : std_logic                    := '0';
+  signal RXCLK        : std_logic                    := '0';
+  signal DIN          : std_logic_vector(9 downto 0) := (others => '0');
+  signal CORELEDVALID : std_logic                    := '0';
+  signal CORELEDPOWER : std_logic                    := '0';
   signal DEVLEDVALID  : std_logic                    := '0';
   signal DEVLEDPOWER  : std_logic                    := '0';
-  signal LOCKED    : std_logic                    := '0';
+  signal LOCKED       : std_logic                    := '0';
   signal DEVLEDLOCKED : std_logic                    := '0';
-  signal ROUT : std_logic_vector(9 downto 0) := (others => '0');
-  signal RCLK : std_logic := '0';
-  
+  signal ROUT         : std_logic_vector(9 downto 0) := (others => '0');
+  signal RCLK         : std_logic                    := '0';
+
+  signal txbitclk2 : std_logic := '0';
 
 begin  -- Behavioral
 
-  lvdstest_uut: lvdstest
+  lvdstest_uut : lvdstest
     port map (
       TX_P     => TX_P,
       TX_N     => TX_N,
@@ -114,11 +114,11 @@ begin  -- Behavioral
       LEDVALID  => DEVLEDVALID,
       LEDPOWER  => DEVLEDPOWER,
       LOCKED    => LOCKED,
-      LEDLOCKED => DEVLEDLOCKED); 
-    
+      LEDLOCKED => DEVLEDLOCKED);
 
-  
-    RESET <= '0' after 100 ns;
+
+
+  RESET <= '0' after 100 ns;
 
   CORECLKIN <= not CORECLKIN after 8.3333333333333339 ns;
 
@@ -129,15 +129,26 @@ begin  -- Behavioral
     end if;
   end process;
 
-  serdes_uut: serdes
+  serdes_uut : serdes
     port map (
       RI_P   => TX_P,
       RI_N   => TX_N,
       REFCLK => REFCLKOUT,
-      BITCLK => TXBITCLKOUT,
+      BITCLK => txbitclk2,
       LOCK   => LOCKED,
       RCLK   => RCLK,
-      ROUT   => ROUT); 
+      ROUT   => ROUT);
 
+  process
+
+  begin
+    while true loop
+      wait until rising_edge(TXBITCLKOUT) or falling_edge(TXBITCLKOUT);
+      txbitclk2 <= '1';
+      wait for 1.7 ns; 
+      txbitclk2 <= '0'; 
+    end loop;
+
+  end process;
 
 end Behavioral;

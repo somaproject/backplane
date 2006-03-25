@@ -5,7 +5,7 @@
 -- File       : lvdstest.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/03/24
+-- Last update: 2006/03/25
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Simple test of point-to-point LVDS links.
@@ -56,11 +56,12 @@ architecture Behavioral of lvdsclient is
  := (others => '0');
 
   signal txdata : std_logic_vector(39 downto 0) :=
-    "0100101101" &
-    "0110100101" &
-    "0101001111" &
-    "0111101001"; 
-    
+    "0110010100" &
+    "0110010100" &
+    "0110010100" &
+    "0110010100"; 
+  --signal txdata : std_logic_vector(39 downto 0) := (others => '0');
+  
 
 begin  -- Behavioral
 
@@ -71,7 +72,7 @@ begin  -- Behavioral
     CLKFX_MULTIPLY => 5,
     DFS_FREQUENCY_MODE => "HIGH")
     port map (
-      CLKIN        => clkin,
+      CLKIN        => rxclk,
       CLKFB        => lowtxclk,
       RST          => '0',
       PSEN         => '0',
@@ -118,7 +119,7 @@ begin  -- Behavioral
 
 
 
-  REFCLKOUT <= clkin;
+  REFCLKOUT <= CLKIN;
 
   serialize        : process (txclk)
     variable start : std_logic := '1';
