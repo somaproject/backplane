@@ -41,9 +41,14 @@ data stream is
 
 On the core side:
 CLKIN: input 60 MHz clock
-clktx, clktxint : clk0 on txdcm
-clkbittxint, clkbittx : 360 MHz clock for bit transmit
+clk, clkint, 
+clksrc, clksrcint: internal 150 MHz (5/3)
 
-clkrx, clkrxint : clk0 on rxdcm
-clkbitrxint, clkbitrx : 300 MHz clock for bit rx
-clkwrxint, clkwrx : 30 MHz clock word receive 
+
+
+clknone, clknoneint : 150 MHz mainDCM clock with feedback
+clkbittxint, clkbittx : 300 MHz clock for bit transmit (CLK2X) 
+clkbittx180int, clkbittx180 : 300 MHz clock for counter-transmit (CLK2X180)
+
+clkbitrxint, clkbitrx : 250 MHz clock for bit rx
+clkwrxint, clkwrx : 50 MHz clock word receive (div /3 )  

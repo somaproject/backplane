@@ -5,7 +5,7 @@
 -- File       : lvdstest.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/03/25
+-- Last update: 2006/03/27
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Simple test of point-to-point LVDS links.
@@ -26,7 +26,8 @@ use UNISIM.VComponents.all;
 entity lvdsclient is
 
   port (
-    CLKIN    : in std_logic; 
+    CLKIN_P    : in std_logic;
+    CLKIN_N   : in std_logic; 
     RESET     : in  std_logic;
     DOUT_P    : out std_logic;
     DOUT_N    : out std_logic;
@@ -47,7 +48,8 @@ architecture Behavioral of lvdsclient is
   signal   doutbits : std_logic_vector(1 downto 0)             := (others => '0');
 
   signal DOUT : std_logic := '0';
-
+  signal CLKIN : std_logic := '0';
+  signal notlocked : std_logic := '1';
   -- clocks
   signal lowtxclk, lowtxclkint                  : std_logic := '0';
   signal txclk, txclkint, txclk180, txclk180int : std_logic := '0';
@@ -56,14 +58,23 @@ architecture Behavioral of lvdsclient is
  := (others => '0');
 
   signal txdata : std_logic_vector(39 downto 0) :=
-    "0110010100" &
-    "0110010100" &
-    "0110010100" &
-    "0110010100"; 
+    "0111010100" &
+    "0011011100" &
+    "0001010111" &
+    "0101010110"; 
   --signal txdata : std_logic_vector(39 downto 0) := (others => '0');
   
 
 begin  -- Behavioral
+
+    CLKIN_ibufds : IBUFDS
+    generic map (
+      IOSTANDARD => "DEFAULT")
+    port map (
+      I          => CLKIN_P,
+      IB         => CLKIN_N,
+      O          => CLKIN
+      );
 
   -- create clocks
   lowtxclkdcm : dcm generic map (
@@ -74,7 +85,7 @@ begin  -- Behavioral
     port map (
       CLKIN        => rxclk,
       CLKFB        => lowtxclk,
-      RST          => '0',
+      RST          => LOCKED,
       PSEN         => '0',
       CLK0         => lowtxclkint,
       CLKFX        => txclkint,
@@ -134,7 +145,7 @@ end process serialize;
 
 
 LEDLOCKED <= not LOCKED;
-
+notlocked <= not LOCKED; 
 -- dummy led
 ledpowerproc     : process(lowtxclk)
   variable power : std_logic := '0';

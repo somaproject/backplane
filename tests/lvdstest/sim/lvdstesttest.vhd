@@ -27,7 +27,9 @@ architecture Behavioral of lvdstesttest is
       LEDPOWER : out std_logic;
       LEDVALID : out std_logic;
       RESET    : in  std_logic;
-      CLKOUT   : out std_logic
+      CLKBITTXOUT   : out std_logic;
+      CLKRXOUT : out std_logic; 
+      SHIFT   : in std_logic
       );
 
   end component;
@@ -35,7 +37,8 @@ architecture Behavioral of lvdstesttest is
 
   component lvdsclient
     port (
-      CLKIN     : in  std_logic;
+      CLKIN_P   : in  std_logic;
+      CLKIN_N   : in  std_logic;
       RESET     : in  std_logic;
       DOUT_P    : out std_logic;
       DOUT_N    : out std_logic;
@@ -45,13 +48,13 @@ architecture Behavioral of lvdstesttest is
       LEDVALID  : out std_logic;
       LEDPOWER  : out std_logic;
       LOCKED    : in  std_logic;
-      LEDLOCKED : out std_logic); end component;
+      LEDLOCKED : out std_logic);
+  end component;
 
 
 
 
   component serdes
-
     port (
       RI_P   : in  std_logic;
       RI_N   : in  std_logic;
@@ -60,16 +63,17 @@ architecture Behavioral of lvdstesttest is
       LOCK   : out std_logic;
       RCLK   : out std_logic;
       ROUT   : out std_logic_vector(9 downto 0));
-
   end component;
 
 
 
 
   signal CORECLKIN    : std_logic                    := '0';
-  signal DEVCLKIN     : std_logic                    := '0';
+  signal DEVCLKIN_P, DEVCLKIN_N     : std_logic                    := '0';
   signal RESET        : std_logic                    := '1';
-  signal TXBITCLKOUT  : std_logic                    := '0';
+  signal CLKBITTX  : std_logic                    := '0';
+  signal CLKRX  : std_logic                    := '0';
+  
   signal TX_P         : std_logic                    := '0';
   signal TX_N         : std_logic                    := '1';
   signal RX_P         : std_logic                    := '0';
@@ -100,11 +104,14 @@ begin  -- Behavioral
       LEDPOWER => CORELEDPOWER,
       LEDVALID => CORELEDVALID,
       RESET    => RESET,
-      CLKOUT   => TXBITCLKOUT);
+      CLKBITTXOUT => CLKBITTX,
+      CLKRXOUT => CLKRX, 
+      SHIFT => '0');
 
   lvdsclient_uut : lvdsclient
     port map (
-      CLKIN     => DEVCLKIN,
+      CLKIN_P     => DEVCLKIN_P,
+      CLKIN_N => DEVCLKIN_N,
       RESET     => RESET,
       DOUT_P    => RX_P,
       DOUT_N    => RX_N,
@@ -122,12 +129,8 @@ begin  -- Behavioral
 
   CORECLKIN <= not CORECLKIN after 8.3333333333333339 ns;
 
-  process(CORECLKIN)
-  begin
-    if rising_edge(CORECLKIN) then
-      DEVCLKIN <= not DEVCLKIN;         -- generate 30 MHz clock
-    end if;
-  end process;
+  DEVCLKIN_P <= CLKRX; 
+  DEVCLKIN_N <= not DEVCLKIN_P; 
 
   serdes_uut : serdes
     port map (
@@ -143,10 +146,10 @@ begin  -- Behavioral
 
   begin
     while true loop
-      wait until rising_edge(TXBITCLKOUT) or falling_edge(TXBITCLKOUT);
+      wait until rising_edge(CLKBITTX) or falling_edge(CLKBITTX);
       txbitclk2 <= '1';
-      wait for 1.7 ns; 
-      txbitclk2 <= '0'; 
+      wait for 1.0 ns;
+      txbitclk2 <= '0';
     end loop;
 
   end process;
