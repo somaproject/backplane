@@ -1,10 +1,17 @@
 
-The DeviceLink network layer describes the mapping between events and data on the event and data buses to series of symbols on the devicelink. It also incorporates the transmission of the relevant EVENT/data symbols. 
+The DeviceLink protocol describes the mapping between events and
+data on the event and data buses to series of symbols on the
+devicelink. It also incorporates the transmission of the relevant
+EVENT/data symbols.
 
-The protocols involved are closely linked with the soma RX and TX protocols. In particular, event and data broadcast are handled here. 
+The protocols involved are closely linked with the soma RX and TX
+protocols. In particular, event and data broadcast are handled here.
 
 
-All DeviceLink TX activity is organized in a series of 600-symbol frames, each frame corresponding to a Soma Event Cycle. The beginning of each frame is coincident with the beginning of an event cycle, and is indicated by K28.5. 
+All DeviceLink TX activity is organized in a series of 600-symbol
+frames, each frame corresponding to a Soma1 Event Cycle. The beginning
+of each frame is coincident with the beginning of an event cycle, and
+is indicated by K28.5.
 
 
 \subsection{TX Link} 

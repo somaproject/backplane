@@ -20,7 +20,8 @@ entity manydevicelink is
     RXIO_N   : in  std_logic_vector(18 downto 0);
     VALID    : out std_logic_vector(18 downto 0);
     LEDPOWER : out std_logic;
-    LEDVALID : out std_logic
+    LEDVALID : out std_logic;
+    DEBUGSTATES : out std_logic_vector(7 downto 0)
     );
 
 end manydevicelink;
@@ -39,108 +40,183 @@ architecture Behavioral of manydevicelink is
       TXIO_N       : out std_logic;
       RXIO_P       : in  std_logic;
       RXIO_N       : in  std_logic;
-      VALID        : out std_logic
+      VALID        : out std_logic;
+      STATES : out std_logic_vector(7 downto 0)
       );
 
   end component;
 
-  signal rxhbitclk, rxhbitclk180,
-    txhbitclk, txhbitclk180               : std_logic := '0';
-  signal txclk, txclkint, rxclk, rxclkint : std_logic;
+    signal clk, clkint : std_logic := '0';
+
+  signal clksrc, clksrcint   : std_logic := '0';
+  signal clknone, clknoneint : std_logic := '0';
+
+  signal clkbittxint, clkbittx       : std_logic := '0';
+  signal clkbittx180int, clkbittx180 : std_logic := '0';
+
+  signal clkbitrxint, clkbitrx : std_logic := '0';
+  signal clkrxint, clkrx       : std_logic := '0';
 
   signal idelayclk, idelayclkint : std_logic                     := '0';
   signal dc, dcint               : std_logic                     := '0';
   signal ledtick                 : std_logic_vector(23 downto 0) := (others => '0');
   signal validint                : std_logic_vector(18 downto 0) := (others => '0');
 
+    signal base_lock : std_logic := '0';
+  signal base_rst : std_logic := '0';
+  signal base_rst_delay : std_logic_vector(9 downto 0)  := (others => '1'); 
+
+
+  
 begin  -- Behavioral
 
-  -- create clocks
-  -- we generate clocks from a 30-MHz input clock; we go through two dlls
-  -- and multiply one by 6x and one by 5x via CLKFX
-  txclkdcm : dcm generic map (
-    CLKIN_PERIOD   => 7.7,
-    CLKFX_DIVIDE   => 1,
-    CLKFX_MULTIPLY => 6)
+  txsrc : DCM_BASE
+    generic map (
+      CLKFX_DIVIDE          => 2,       -- Can be any interger from 1 to 32
+      CLKFX_MULTIPLY        => 5,       -- Can be any integer from 2 to 32
+      CLKIN_PERIOD          => 15.0,
+      CLKOUT_PHASE_SHIFT    => "NONE",
+      CLK_FEEDBACK          => "1X",
+      DCM_AUTOCALIBRATION   => true,
+      DCM_PERFORMANCE_MODE  => "MAX_SPEED",
+      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
+      DFS_FREQUENCY_MODE    => "LOW",
+      DLL_FREQUENCY_MODE    => "LOW",
+      DUTY_CYCLE_CORRECTION => true,
+      FACTORY_JF            => X"F0F0",
+      PHASE_SHIFT           => 0,
+      STARTUP_WAIT          => false)
+    port map(
+      CLKIN                 => CLKIN,
+      CLK0                  => clkint,
+      CLKFB                 => clk,
+      CLKFX                 => clksrcint,
+      RST                   => RESET,
+      LOCKED                => base_lock
+      );
+
+  clk_bufg : BUFG
     port map (
-      CLKIN        => CLKIN,
-      CLKFB        => txclk,
-      RST          => RESET,
-      PSEN         => '0',
-      CLK0         => txclkint,
-      CLKFX        => txhbitclk,
-      CLKFX180     => txhbitclk180);
+      O => clk,
+      I => clkint);
 
-  txclk_bufg : BUFG port map (
-    O => txclk,
-    I => txclkint);
-
-
-  rxclkdcm : dcm generic map (
-    CLKIN_PERIOD   => 7.7,
-    CLKFX_DIVIDE   => 1,
-    CLKFX_MULTIPLY => 5)
+  clksrc_bufg : BUFG
     port map (
-      CLKIN        => CLKIN,
-      CLKFB        => rxclk,
-      RST          => RESET,
-      PSEN         => '0',
-      CLK0         => rxclkint,
-      CLKFX        => rxhbitclk,
-      CLKFX180     => rxhbitclk180);
+      O => clksrc,
+      I => clksrcint);
 
-  rxclk_bufg : BUFG port map (
-    O => rxclk,
-    I => rxclkint);
+
+  clkbittx_bufg : BUFG
+    port map (
+      O => clkbittx,
+      I => clkbittxint);
+
+  clkbittx180_bufg : BUFG
+    port map (
+      O => clkbittx180,
+      I => clkbittx180int);
+
+
+  process(clk)
+    begin
+      if rising_edge(clk) then
+        base_rst_delay <= base_rst_delay(8 downto 0) & (not base_lock); 
+        
+      end if;
+    end process; 
+  maindcm : DCM_BASE
+    generic map (
+      CLKDV_DIVIDE          => 3.0,
+      CLKFX_MULTIPLY        => 5,
+      CLKFX_DIVIDE          => 3,
+      CLKIN_PERIOD          => 2.5,
+      CLKOUT_PHASE_SHIFT    => "NONE",
+      CLK_FEEDBACK          => "1X",
+      DCM_AUTOCALIBRATION   => true,
+      DCM_PERFORMANCE_MODE  => "MAX_SPEED",
+      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
+      DFS_FREQUENCY_MODE    => "LOW",
+      DLL_FREQUENCY_MODE    => "LOW",
+      DUTY_CYCLE_CORRECTION => true,
+      FACTORY_JF            => X"F0F0",
+      PHASE_SHIFT           => 0,
+      STARTUP_WAIT          => false)
+    port map(
+      CLKIN                 => clksrc,
+      clk0                  => clknoneint,
+      CLKFB                 => clknone,
+
+      CLK2X    => clkbittxint,
+      CLK2X180 => clkbittx180int,
+      CLKFX    => clkbitrxint,
+      CLKDV    => clkrxint,
+      RST      => base_rst_delay(7)
+      --LOCKED   => RXDCMLOCKED
+      );
+
+
+  clknonebufg : BUFG
+    port map (
+      O => clknone,
+      I => clknoneint);
+
+
+
+  clkbitrxbufg : BUFG
+    port map (
+      O => clkbitrx,
+      I => clkbitrxint);
+
+  clkrxbuft : BUFG
+    port map (
+      O => clkrx,
+      I => clkrxint);
+
 
   -- instantiate devices
 
-  devicelinks : for i in 0 to 18 generate
+  dl0 : linktester
+      port map (
+        CLK          =>  clkrxint,
+        RXBITCLK     => clkbitrx,
+        TXHBITCLK    =>clkbittx,
+        TXHBITCLK180 => clkbittx180,
+        RESET        => RESET,
+        TXIO_P       => TXIO_P(0),
+        TXIO_N       => TXIO_N(0),
+        RXIO_P       => RXIO_P(0),
+        RXIO_N       => RXIO_N(0),
+        VALID        => validint(0),
+        STATES => DEBUGSTATES);
+    
+  devicelinks : for i in 1 to 18 generate
     dl        : linktester
       port map (
-        CLK          => TXCLK,
-        RXBITCLK     => rxhbitclk,
-        TXHBITCLK    => txhbitclk,
-        TXHBITCLK180 => txhbitclk180,
+        CLK          =>  clkrx,
+        RXBITCLK     => clkbitrx,
+        TXHBITCLK    =>clkbittx,
+        TXHBITCLK180 => clkbittx180,
         RESET        => RESET,
         TXIO_P       => TXIO_P(i),
         TXIO_N       => TXIO_N(i),
         RXIO_P       => RXIO_P(i),
         RXIO_N       => RXIO_N(i),
-        VALID        => validint(i) );
+        VALID        => validint(i),
+        STATES => open);
 
   end generate devicelinks;
 
-  idelayclkdcm : dcm generic map (
-    CLKIN_PERIOD   => 7.7,
-    CLKFX_DIVIDE   => 3,
-    CLKFX_MULTIPLY => 20)
-    port map (
-      CLKIN        => txclk,
-      CLKFB        => dc,
-      RST          => RESET,
-      PSEN         => '0',
-      CLK0         => dcint,
-      CLKFX        => idelayclkint);
-
-  idelayclk_bufg : BUFG port map (
-    O => idelayclk,
-    I => idelayclkint);
-
-  delayclk_bufg : BUFG port map (
-    O => dc,
-    I => dcint);
 
   dlyctrl : IDELAYCTRL
     port map(
       RDY    => open,
-      REFCLK => idelayclk,
+      REFCLK => clkrx,
       RST    => RESET
       );
 
-  ledblink : process(TXCLK)
+  ledblink : process(clkrx)
   begin
-    if rising_edge(TXCLK) then
+    if rising_edge(clkrx) then
       ledtick  <= ledtick + 1;
       LEDPOWER <= ledtick(4);
 

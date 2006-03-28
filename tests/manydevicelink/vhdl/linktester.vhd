@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/03/17
+-- Last update: 2006/03/27
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -37,7 +37,8 @@ entity linktester is
     TXIO_N       : out std_logic;
     RXIO_P       : in  std_logic;
     RXIO_N       : in  std_logic;
-    VALID        : out std_logic
+    VALID        : out std_logic;
+    STATES        : out std_logic_vector(7 downto 0)
     );
 
 end linktester;
@@ -74,7 +75,8 @@ architecture Behavioral of linktester is
       RXDOUT       : out std_logic_vector(7 downto 0);
       RXKOUT       : out std_logic;
       DROPLOCK     : in  std_logic;
-      LOCKED       : out std_logic
+      LOCKED       : out std_logic;
+      STATE        : out std_logic_vector(7 downto 0)
       );
 
   end component;
@@ -97,9 +99,10 @@ begin  -- Behavioral
       RXIO_P       => RXIO_P,
       RXIO_N       => RXIO_N,
       RXDOUT       => din,
-      RXKOUT         => kin,
+      RXKOUT       => kin,
       DROPLOCK     => '0',
-      LOCKED       => locked);
+      LOCKED       => locked,
+      STATE        => STATES);
 
   output : process(CLK)
   begin

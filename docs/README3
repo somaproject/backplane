@@ -1,0 +1,47 @@
+This is our third attempt to organize this design. 
+
+This is not an easy task. 
+
+Event buses and data buses: The basics
+
+What is an event
+what is data? 
+
+How we organize -- internally and externally
+
+Top-down:
+
+Event IDs, buses, etc
+
+The event port, the data port
+
+
+Then, to communicate with devices: 
+
+
+
+So, I like the idea of organizing as follows:
+
+Chapter 1: The backplane
+  Function 
+
+Chapter 2: The event bus
+  event organization 
+
+Chapter 3: The data bus
+
+Chapter 4: The deviceLink -- only protocol definition
+  section 1: Overview
+  section 2: network layer
+  section 3: link layer
+     lock protocol? 
+  section 4: Physical layer
+
+Chapter 5: The network Protocols
+
+Chapter 5.5 : Core: Routing 
+Chapter 6: Core: devicelink implementation
+
+
+Chapter 7: Device Devicelink IMplementation
+

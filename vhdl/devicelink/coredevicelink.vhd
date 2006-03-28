@@ -27,7 +27,8 @@ entity coredevicelink is
     RXDOUT       : out std_logic_vector(7 downto 0);
     RXKOUT       : out std_logic;
     DROPLOCK     : in  std_logic;
-    LOCKED       : out std_logic
+    LOCKED       : out std_logic;
+    STATE : out std_logic_vector(7 downto 0)
     );
 
 end coredevicelink;
@@ -84,7 +85,8 @@ architecture Behavioral of coredevicelink is
 
   signal rxcodeerr : std_logic := '0';
 
-
+  signal lstate : std_logic_vector(7 downto 0) := (others => '0'); 
+                                                  
   signal dlyrst  : std_logic := '0';
   signal dlyce   : std_logic := '0';
   signal dlyinc  : std_logic := '0';
@@ -189,6 +191,8 @@ begin  -- Behavioral
     elsif rising_edge(CLK) then
       cs     <= ns;
 
+      STATE <= lstate;
+      
       -- tx side
       oframe <= dframe;
       if omux = 0 then
@@ -218,6 +222,8 @@ begin  -- Behavioral
       LOCKED <= llocked;
 
 
+
+
     end if;
 
   end process main;
@@ -238,10 +244,12 @@ begin  -- Behavioral
     end if;
   end process txout;
 
+  
   fsm : process (cs, dcnt, rxwordl, rxwordll, lrxkout, lrxdout, rxcodeerr, droplock)
   begin  -- process fsm
     case cs is
       when none  =>
+        lstate <= X"00"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 1;
@@ -251,6 +259,7 @@ begin  -- Behavioral
         bitslip <= '0';
         ns      <= snull;
       when snull =>
+        lstate <= X"01"; 
         dcntrst <= '1';
         llocked <= '0';
         omux    <= 1;
@@ -261,6 +270,7 @@ begin  -- Behavioral
         ns      <= wnull;
 
       when wnull =>
+        lstate <= X"01"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 1;
@@ -275,6 +285,7 @@ begin  -- Behavioral
         end if;
 
       when ssync =>
+        lstate <= X"02"; 
         dcntrst <= '1';
         llocked <= '0';
         omux    <= 2;
@@ -285,6 +296,7 @@ begin  -- Behavioral
         ns      <= wsync;
 
       when wsync =>
+        lstate <= X"02"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 2;
@@ -299,6 +311,7 @@ begin  -- Behavioral
         end if;
 
       when bitstart =>
+        lstate <= X"04"; 
         dcntrst <= '1';
         llocked <= '0';
         omux    <= 2;
@@ -309,6 +322,7 @@ begin  -- Behavioral
         ns      <= bitshift;
 
       when bitshift =>
+        lstate <= X"04"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 2;
@@ -327,6 +341,7 @@ begin  -- Behavioral
         end if;
 
       when sbitcntr =>
+        lstate <= X"08"; 
         dcntrst <= '1';
         llocked <= '0';
         omux    <= 2;
@@ -337,6 +352,7 @@ begin  -- Behavioral
         ns      <= wbitcntr;
 
       when wbitcntr =>
+        lstate <= X"08"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 2;
@@ -351,6 +367,7 @@ begin  -- Behavioral
         end if;
 
       when wrdstart =>
+        lstate <= X"10"; 
         dcntrst <= '1';
         llocked <= '0';
         omux    <= 2;
@@ -360,6 +377,7 @@ begin  -- Behavioral
         bitslip <= '0';
         ns      <= wrdinc;
       when wrdinc   =>
+        lstate <= X"10"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 2;
@@ -369,6 +387,7 @@ begin  -- Behavioral
         bitslip <= '1';
         ns      <= wrdlock;
       when wrdlock  =>
+        lstate <= X"10"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 2;
@@ -378,6 +397,7 @@ begin  -- Behavioral
         bitslip <= '0';
         ns      <= wrddly;
       when wrddly   =>
+        lstate <= X"10"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 2;
@@ -388,6 +408,7 @@ begin  -- Behavioral
         ns      <= wrdcntr;
 
       when wrdcntr   =>
+        lstate <= X"10"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 2;
@@ -405,6 +426,7 @@ begin  -- Behavioral
           end if;
         end if;
       when validchk1 =>
+        lstate <= X"20"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 0;
@@ -418,6 +440,7 @@ begin  -- Behavioral
           ns    <= none;
         end if;
       when validchk2 =>
+        lstate <= X"20"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 0;
@@ -431,6 +454,7 @@ begin  -- Behavioral
           ns    <= none;
         end if;
       when validchk3 =>
+        lstate <= X"20"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 0;
@@ -444,6 +468,7 @@ begin  -- Behavioral
           ns    <= none;
         end if;
       when validchk4 =>
+        lstate <= X"20"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 0;
@@ -457,6 +482,7 @@ begin  -- Behavioral
           ns    <= none;
         end if;
       when sendlock =>
+        lstate <= X"20"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 0;
@@ -467,6 +493,7 @@ begin  -- Behavioral
         ns <= lock; 
 
       when lock      =>
+        lstate <= X"40"; 
         dcntrst <= '0';
         llocked <= '1';
         omux    <= 0;
@@ -481,6 +508,7 @@ begin  -- Behavioral
         end if;
 
       when others =>
+        lstate <= X"80"; 
         dcntrst <= '0';
         llocked <= '0';
         omux    <= 0;
