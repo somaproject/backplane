@@ -21,6 +21,8 @@ entity manydevicelink is
     VALID    : out std_logic_vector(18 downto 0);
     LEDPOWER : out std_logic;
     LEDVALID : out std_logic;
+    WORDCLKOUT : out std_logic;
+    TXCLKOUT : out std_logic; 
     DEBUGSTATES : out std_logic_vector(7 downto 0)
     );
 
@@ -226,4 +228,8 @@ begin  -- Behavioral
   VALID    <= validint;
   LEDVALID <= validint(0);
 
+  WORDCLKOUT <= clkrx;
+  TXCLKOUT <= clkbittx; 
+               
+  
 end Behavioral;

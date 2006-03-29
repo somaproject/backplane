@@ -29,8 +29,8 @@ hw: $(WORKDIR)/coredevicelink/_behavioral.var $(WORKDIR)/deserialize/_behavioral
 $(WORKDIR)/devicelink/_behavioral.var: ../../../deviceio/vhdl/devicelink.vhd
 	$(VHDLC) ../../../deviceio/vhdl/devicelink.vhd
 
-$(WORKDIR)/dlloop/_behavioral.var: ../../../deviceio/tests/dllooptest/dlloop.vhd
-	$(VHDLC) ../../../deviceio/tests/dllooptest/dlloop.vhd
+$(WORKDIR)/dlloop/_behavioral.var: ../../../deviceio/tests/deviceloopback/dlloop.vhd
+	$(VHDLC) ../../../deviceio/tests/deviceloopback/dlloop.vhd
 
 $(WORKDIR)/serdes/_behavioral.var: ../../../deviceio/sim/components/serdes/serdes.vhd
 	$(VHDLC) ../../../deviceio/sim/components/serdes/serdes.vhd

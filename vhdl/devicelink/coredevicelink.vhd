@@ -314,7 +314,7 @@ begin  -- Behavioral
         lstate <= X"04"; 
         dcntrst <= '1';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -325,7 +325,7 @@ begin  -- Behavioral
         lstate <= X"04"; 
         dcntrst <= '0';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '1';
         dlyinc  <= '1';
@@ -344,7 +344,7 @@ begin  -- Behavioral
         lstate <= X"08"; 
         dcntrst <= '1';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -355,7 +355,7 @@ begin  -- Behavioral
         lstate <= X"08"; 
         dcntrst <= '0';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '1';
         dlyinc  <= '1';
@@ -370,7 +370,7 @@ begin  -- Behavioral
         lstate <= X"10"; 
         dcntrst <= '1';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -380,7 +380,7 @@ begin  -- Behavioral
         lstate <= X"10"; 
         dcntrst <= '0';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -390,7 +390,7 @@ begin  -- Behavioral
         lstate <= X"10"; 
         dcntrst <= '0';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -400,7 +400,7 @@ begin  -- Behavioral
         lstate <= X"10"; 
         dcntrst <= '0';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';
@@ -411,7 +411,7 @@ begin  -- Behavioral
         lstate <= X"10"; 
         dcntrst <= '0';
         llocked <= '0';
-        omux    <= 2;
+        omux    <= 0;
         dlyrst  <= '0';
         dlyce   <= '0';
         dlyinc  <= '0';

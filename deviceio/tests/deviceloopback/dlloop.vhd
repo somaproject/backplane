@@ -5,7 +5,7 @@
 -- File       : serdesloop.vhd
 -- Author     : Eric Jonas  <jonas@soma.mit.edu>
 -- Company    : 
--- Last update: 2006/03/17
+-- Last update: 2006/03/28
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Loopback test for serdes
@@ -63,6 +63,8 @@ architecture Behavioral of dlloop is
 
   end component;
 
+  signal valid : std_logic := '0';
+  
   signal data : std_logic_vector(7 downto 0) := (others => '0');
   signal k : std_logic := '0';
   signal clk, clk2x : std_logic := '0';
@@ -107,37 +109,6 @@ begin  -- Behavioral
     end if;
   end process ledpowerproc;
 
-  LEDVALID <= '0'; 
-  LEDLOCKED <= TXLOCKED; 
-
-  input : process(clk)
-  begin
-    if rising_edge(clk) then
-      if reset = '1' then
-        VALID <= '0';
-      else
-        bin1  <= din;
-        bin2  <= bin1;
-
-        kin1 <= kin;
-        kin2 <= kin1;
-
-        if kin2 = '1' and bin2 = X"BC" and
-          kin1 = '0' and bin1 = X"00" then
-          VALID <= '1';
-        elsif kin2 = '0' and bin2 = X"FF" and
-          kin1 = '1' and bin1 = X"BC" then
-          VALID <= '1';
-        elsif kin2 = '0' and kin1 = '0' and bin2 +1 = bin1 then
-          VALID <= '1';
-        else
-          VALID <= '0';
-        end if;
-
-      end if;
-
-    end if;
-
-  end process input;
+  LEDLOCKED <= '1'; 
 
 end Behavioral;
