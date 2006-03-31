@@ -7,10 +7,10 @@ run
 -ofmt NGC
 -p xc4vlx25-10-ff668
 -top manydevicelink
--opt_mode Area
+-opt_mode Speed
 -opt_level 2
 -iuc NO
--keep_hierarchy NO
+-keep_hierarchy YES
 -glob_opt AllClockNets
 -rtlview Yes
 -read_cores YES
@@ -43,7 +43,7 @@ run
 -equivalent_register_removal YES
 -register_balancing No
 -slice_packing YES
--optimize_primitives NO
+-optimize_primitives YES
 -use_clock_enable Yes
 -use_sync_set Yes
 -use_sync_reset Yes

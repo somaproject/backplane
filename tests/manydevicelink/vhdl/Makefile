@@ -17,7 +17,7 @@ PROJECT = manydevicelink
 
 bitfile: $(PROJECT).bit
 export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
-
+export  XIL_MAP_SKIP_LOGICAL_DRC=TRUE
 SOURCES = *.vhd 
 OPTIMIZE = high
 PART = xc4vlx25-10-ff668

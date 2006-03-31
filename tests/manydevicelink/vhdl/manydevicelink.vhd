@@ -14,11 +14,11 @@ entity manydevicelink is
   port (
     CLKIN    : in  std_logic;
     RESET    : in  std_logic;
-    TXIO_P   : out std_logic_vector(18 downto 0);
-    TXIO_N   : out std_logic_vector(18 downto 0);
-    RXIO_P   : in  std_logic_vector(18 downto 0);
-    RXIO_N   : in  std_logic_vector(18 downto 0);
-    VALID    : out std_logic_vector(18 downto 0);
+    TXIO_P   : out std_logic_vector(4 downto 0);
+    TXIO_N   : out std_logic_vector(4 downto 0);
+    RXIO_P   : in  std_logic_vector(4 downto 0);
+    RXIO_N   : in  std_logic_vector(4 downto 0);
+    VALID    : out std_logic_vector(4 downto 0);
     LEDPOWER : out std_logic;
     LEDVALID : out std_logic;
     WORDCLKOUT : out std_logic;
@@ -36,7 +36,7 @@ architecture Behavioral of manydevicelink is
       CLK          : in  std_logic;
       RXBITCLK     : in  std_logic;
       TXHBITCLK    : in  std_logic;
-      TXHBITCLK180 : in  std_logic;
+      TXWORDCLK : in  std_logic;
       RESET        : in  std_logic;
       TXIO_P       : out std_logic;
       TXIO_N       : out std_logic;
@@ -59,16 +59,18 @@ architecture Behavioral of manydevicelink is
   signal clkbitrxint, clkbitrx : std_logic := '0';
   signal clkrxint, clkrx       : std_logic := '0';
 
-  signal idelayclk, idelayclkint : std_logic                     := '0';
+
   signal dc, dcint               : std_logic                     := '0';
   signal ledtick                 : std_logic_vector(23 downto 0) := (others => '0');
-  signal validint                : std_logic_vector(18 downto 0) := (others => '0');
+  signal validint                : std_logic_vector(4 downto 0) := (others => '0');
 
     signal base_lock : std_logic := '0';
   signal base_rst : std_logic := '0';
   signal base_rst_delay : std_logic_vector(9 downto 0)  := (others => '1'); 
 
-
+  signal maindcmlocked : std_logic := '0';
+  signal dcmreset : std_logic := '1';
+ 
   
 begin  -- Behavioral
 
@@ -152,10 +154,11 @@ begin  -- Behavioral
       CLK2X180 => clkbittx180int,
       CLKFX    => clkbitrxint,
       CLKDV    => clkrxint,
-      RST      => base_rst_delay(7)
-      --LOCKED   => RXDCMLOCKED
+      RST      => base_rst_delay(7),
+      LOCKED   => maindcmlocked
       );
 
+    dcmreset <= not maindcmlocked; 
 
   clknonebufg : BUFG
     port map (
@@ -181,9 +184,9 @@ begin  -- Behavioral
       port map (
         CLK          =>  clkrxint,
         RXBITCLK     => clkbitrx,
-        TXHBITCLK    =>clkbittx,
-        TXHBITCLK180 => clkbittx180,
-        RESET        => RESET,
+        TXHBITCLK    => clkbittx,
+        TXWORDCLK => clk,
+        RESET        => dcmreset,
         TXIO_P       => TXIO_P(0),
         TXIO_N       => TXIO_N(0),
         RXIO_P       => RXIO_P(0),
@@ -191,13 +194,13 @@ begin  -- Behavioral
         VALID        => validint(0),
         STATES => DEBUGSTATES);
     
-  devicelinks : for i in 1 to 18 generate
+  devicelinks : for i in 1 to 4 generate
     dl        : linktester
       port map (
         CLK          =>  clkrx,
         RXBITCLK     => clkbitrx,
         TXHBITCLK    =>clkbittx,
-        TXHBITCLK180 => clkbittx180,
+        TXWORDCLK => clk,
         RESET        => RESET,
         TXIO_P       => TXIO_P(i),
         TXIO_N       => TXIO_N(i),

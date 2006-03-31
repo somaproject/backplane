@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/03/27
+-- Last update: 2006/03/30
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -31,7 +31,7 @@ entity linktester is
     CLK          : in  std_logic;
     RXBITCLK     : in  std_logic;
     TXHBITCLK    : in  std_logic;
-    TXHBITCLK180 : in  std_logic;
+    TXWORDCLK : in  std_logic;
     RESET        : in  std_logic;
     TXIO_P       : out std_logic;
     TXIO_N       : out std_logic;
@@ -64,7 +64,7 @@ architecture Behavioral of linktester is
       CLK          : in  std_logic;
       RXBITCLK     : in  std_logic;
       TXHBITCLK    : in  std_logic;
-      TXHBITCLK180 : in  std_logic;
+      TXWORDCLK : in  std_logic;
       RESET        : in  std_logic;
       TXDIN        : in  std_logic_vector(7 downto 0);
       TXKIN        : in  std_logic;
@@ -90,7 +90,7 @@ begin  -- Behavioral
       CLK          => CLK,
       RXBITCLK     => RXBITCLK,
       TXHBITCLK    => TXHBITCLK,
-      TXHBITCLK180 => TXHBITCLK180,
+      TXWORDCLK => TXWORDCLK, 
       RESET        => RESET,
       TXDIN        => dout,
       TXKIN        => kout,

@@ -19,11 +19,11 @@ architecture Behavioral of manydevicelinktest is
     port (
       CLKIN      : in  std_logic;
       RESET      : in  std_logic;
-      TXIO_P     : out std_logic_vector(18 downto 0);
-      TXIO_N     : out std_logic_vector(18 downto 0);
-      RXIO_P     : in  std_logic_vector(18 downto 0);
-      RXIO_N     : in  std_logic_vector(18 downto 0);
-      VALID      : out std_logic_vector(18 downto 0);
+      TXIO_P     : out std_logic_vector(4 downto 0);
+      TXIO_N     : out std_logic_vector(4 downto 0);
+      RXIO_P     : in  std_logic_vector(4 downto 0);
+      RXIO_N     : in  std_logic_vector(4 downto 0);
+      VALID      : out std_logic_vector(4 downto 0);
       LEDPOWER   : out std_logic;
       LEDVALID   : out std_logic;
       WORDCLKOUT : out std_logic;
@@ -63,19 +63,19 @@ architecture Behavioral of manydevicelinktest is
 
   signal CLKIN    : std_logic                     := '0';
   signal RESET    : std_logic                     := '1';
-  signal TXIO_P   : std_logic_vector(18 downto 0) := (others => '0');
-  signal TXIO_N   : std_logic_vector(18 downto 0) := (others => '0');
-  signal RXIO_P   : std_logic_vector(18 downto 0) := (others => '0');
-  signal RXIO_N   : std_logic_vector(18 downto 0) := (others => '0');
-  signal VALID    : std_logic_vector(18 downto 0) := (others => '0');
+  signal TXIO_P   : std_logic_vector(4 downto 0) := (others => '0');
+  signal TXIO_N   : std_logic_vector(4 downto 0) := (others => '0');
+  signal RXIO_P   : std_logic_vector(4 downto 0) := (others => '0');
+  signal RXIO_N   : std_logic_vector(4 downto 0) := (others => '0');
+  signal VALID    : std_logic_vector(4 downto 0) := (others => '0');
   signal LEDPOWER : std_logic                     := '0';
   signal LEDVALID : std_logic                     := '0';
 
 
-  signal devtxclk  : std_logic_vector(18 downto 0) := (others => '0');
-  signal devlocked : std_logic_vector(18 downto 0) := (others => '0');
+  signal devtxclk  : std_logic_vector(4 downto 0) := (others => '0');
+  signal devlocked : std_logic_vector(4 downto 0) := (others => '0');
   signal devpower, devledlocked, devledvalid
-                   : std_logic_vector(18 downto 0) := (others => '0');
+                   : std_logic_vector(4 downto 0) := (others => '0');
 
   signal devdin0   : std_logic_vector(9 downto 0) := (others => '0');
   signal devbitclk : std_logic                    := '0';
@@ -86,7 +86,7 @@ architecture Behavioral of manydevicelinktest is
 
   signal REFCLKIN_P, REFCLKIN_N : std_logic := '0';
 
-  signal devrefclk : std_logic_vector(18 downto 0) := (others => '0');
+  signal devrefclk : std_logic_vector(4 downto 0) := (others => '0');
 
 begin  -- Behavioral
 
