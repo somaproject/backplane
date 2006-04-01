@@ -182,7 +182,7 @@ begin  -- Behavioral
 
   dl0 : linktester
       port map (
-        CLK          =>  clkrxint,
+        CLK          =>  clkrx,
         RXBITCLK     => clkbitrx,
         TXHBITCLK    => clkbittx,
         TXWORDCLK => clk,

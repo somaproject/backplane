@@ -104,3 +104,8 @@ NET "DEBUGSTATES<4>" LOC = "ac6" | IOSTANDARD = LVTTL;
 NET "DEBUGSTATES<5>" LOC = "ab7" | IOSTANDARD = LVTTL; 
 NET "DEBUGSTATES<6>" LOC = "ad5" | IOSTANDARD = LVTTL; 
 NET "DEBUGSTATES<7>" LOC = "ac5" | IOSTANDARD = LVTTL; 
+
+# clock-domain debugging:
+
+#NET "clk" TNM_NET = "clkA_grp";
+#NET "clkrx" TNM_NET = "clkB_grp"; 
