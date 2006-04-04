@@ -89,7 +89,7 @@ architecture Behavioral of coredevicelink is
   signal omux : integer range 0 to 1 := 0;
 
   signal   dcntrst : std_logic                  := '0';
-  constant DCNTMAX : integer                    := 20000;
+  constant DCNTMAX : integer                    := 8000;
   signal   dcnt    : integer range 0 to DCNTMAX := 0;
 
   signal rxio : std_logic := '0';

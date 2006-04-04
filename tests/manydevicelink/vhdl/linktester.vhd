@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/03/30
+-- Last update: 2006/04/03
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -28,17 +28,17 @@ use UNISIM.VComponents.all;
 entity linktester is
 
   port (
-    CLK          : in  std_logic;
-    RXBITCLK     : in  std_logic;
-    TXHBITCLK    : in  std_logic;
+    CLK       : in  std_logic;
+    RXBITCLK  : in  std_logic;
+    TXHBITCLK : in  std_logic;
     TXWORDCLK : in  std_logic;
-    RESET        : in  std_logic;
-    TXIO_P       : out std_logic;
-    TXIO_N       : out std_logic;
-    RXIO_P       : in  std_logic;
-    RXIO_N       : in  std_logic;
-    VALID        : out std_logic;
-    STATES        : out std_logic_vector(7 downto 0)
+    RESET     : in  std_logic;
+    TXIO_P    : out std_logic;
+    TXIO_N    : out std_logic;
+    RXIO_P    : in  std_logic;
+    RXIO_N    : in  std_logic;
+    VALID     : out std_logic;
+    STATES    : out std_logic_vector(7 downto 0)
     );
 
 end linktester;
@@ -59,24 +59,24 @@ architecture Behavioral of linktester is
 
 
   component coredevicelink
-    generic ( N    :     integer := 0);
+    generic ( N :     integer := 0);
     port (
-      CLK          : in  std_logic;
-      RXBITCLK     : in  std_logic;
-      TXHBITCLK    : in  std_logic;
+      CLK       : in  std_logic;
+      RXBITCLK  : in  std_logic;
+      TXHBITCLK : in  std_logic;
       TXWORDCLK : in  std_logic;
-      RESET        : in  std_logic;
-      TXDIN        : in  std_logic_vector(7 downto 0);
-      TXKIN        : in  std_logic;
-      TXIO_P       : out std_logic;
-      TXIO_N       : out std_logic;
-      RXIO_P       : in  std_logic;
-      RXIO_N       : in  std_logic;
-      RXDOUT       : out std_logic_vector(7 downto 0);
-      RXKOUT       : out std_logic;
-      DROPLOCK     : in  std_logic;
-      LOCKED       : out std_logic;
-      STATE        : out std_logic_vector(7 downto 0)
+      RESET     : in  std_logic;
+      TXDIN     : in  std_logic_vector(7 downto 0);
+      TXKIN     : in  std_logic;
+      TXIO_P    : out std_logic;
+      TXIO_N    : out std_logic;
+      RXIO_P    : in  std_logic;
+      RXIO_N    : in  std_logic;
+      RXDOUT    : out std_logic_vector(7 downto 0);
+      RXKOUT    : out std_logic;
+      DROPLOCK  : in  std_logic;
+      LOCKED    : out std_logic;
+      STATE     : out std_logic_vector(7 downto 0)
       );
 
   end component;
@@ -85,24 +85,24 @@ begin  -- Behavioral
 
   devicelink_inst : coredevicelink
     generic map (
-      N            => 10)
+      N         => 10)
     port map (
-      CLK          => CLK,
-      RXBITCLK     => RXBITCLK,
-      TXHBITCLK    => TXHBITCLK,
-      TXWORDCLK => TXWORDCLK, 
-      RESET        => RESET,
-      TXDIN        => dout,
-      TXKIN        => kout,
-      TXIO_P       => TXIO_P,
-      TXIO_N       => TXIO_N,
-      RXIO_P       => RXIO_P,
-      RXIO_N       => RXIO_N,
-      RXDOUT       => din,
-      RXKOUT       => kin,
-      DROPLOCK     => '0',
-      LOCKED       => locked,
-      STATE        => STATES);
+      CLK       => CLK,
+      RXBITCLK  => RXBITCLK,
+      TXHBITCLK => TXHBITCLK,
+      TXWORDCLK => TXWORDCLK,
+      RESET     => RESET,
+      TXDIN     => dout,
+      TXKIN     => kout,
+      TXIO_P    => TXIO_P,
+      TXIO_N    => TXIO_N,
+      RXIO_P    => RXIO_P,
+      RXIO_N    => RXIO_N,
+      RXDOUT    => din,
+      RXKOUT    => kin,
+      DROPLOCK  => '0',
+      LOCKED    => locked,
+      STATE     => STATES);
 
   output : process(CLK)
   begin
@@ -144,7 +144,9 @@ begin  -- Behavioral
           VALID <= '0';
         end if;
 
+
       end if;
+
 
     end if;
 

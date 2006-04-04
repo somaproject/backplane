@@ -29,11 +29,12 @@ architecture Behavioral of serialize is
   signal ibcnt : integer range 0 to 4          := 0;
   signal obcnt : integer range 0 to 5          := 0;
 
-  signal do    : std_logic_vector(49 downto 0) := (others => '0');
+  signal do, ldo    : std_logic_vector(49 downto 0) := (others => '0');
   signal serin, serinl : std_logic_vector(9 downto 0)  := (others => '0');
 
   signal seren : std_logic := '1';
-
+  signal stoptxl : std_logic := '0';
+  
   signal s1, s2 : std_logic := '0';
 
 begin  -- Behavioral
@@ -99,14 +100,15 @@ begin  -- Behavioral
       T4       => '0',
       SR       => RESET);
 
-  seren <= not STOPTX;
+
 
   inputclk : process(CLKA)
   begin
     if rising_edge(CLKA) then
 
       dinl <= DIN;
-
+      stoptxl <= STOPTX;
+      
       if ibcnt = 4 then
         ibcnt <= 0;
       else
@@ -147,7 +149,9 @@ begin  -- Behavioral
   outputclk : process(CLKB)
   begin
     if rising_edge(CLKB) then
-      serinl <= serin; 
+      ldo <= dwordl; 
+      serinl <= serin;
+      seren <= not stoptxl; 
       if obcnt = 5 then
         obcnt <= 0;
       else
@@ -155,7 +159,7 @@ begin  -- Behavioral
       end if;
 
       if obcnt = 5 then
-        do <= dwordl;
+        do <= ldo;
       end if;
 
     end if;

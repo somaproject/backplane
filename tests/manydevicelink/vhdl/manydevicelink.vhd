@@ -223,7 +223,7 @@ begin  -- Behavioral
   begin
     if rising_edge(clkrx) then
       ledtick  <= ledtick + 1;
-      LEDPOWER <= ledtick(4);
+      LEDPOWER <= ledtick(22);
 
     end if;
   end process ledblink;

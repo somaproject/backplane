@@ -5,7 +5,7 @@
 -- File       : serdesloop.vhd
 -- Author     : Eric Jonas  <jonas@soma.mit.edu>
 -- Company    : 
--- Last update: 2006/03/28
+-- Last update: 2006/04/03
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Loopback test for serdes
@@ -38,7 +38,9 @@ entity dlloop is
     RXIO_N   : out std_logic;
     LEDPOWER : out std_logic;
     LEDLOCKED : out std_logic;
-    LEDVALID : out std_logic
+    LEDVALID : out std_logic;
+    DEBUGSTATE : out std_logic_vector(9 downto 0);
+    DECODEERR : out std_logic
     );
 
 end dlloop;
@@ -58,7 +60,10 @@ architecture Behavioral of dlloop is
       RXDIN    : in  std_logic_vector(7 downto 0);
       RXKIN    : in  std_logic;
       RXIO_P   : out std_logic;
-      RXIO_N   : out std_logic
+      RXIO_N   : out std_logic;
+    DEBUGSTATE : out std_logic_vector(3 downto 0);
+    
+    DECODEERR : out std_logic
       );
 
   end component;
@@ -69,9 +74,10 @@ architecture Behavioral of dlloop is
   signal k : std_logic := '0';
   signal clk, clk2x : std_logic := '0';
   signal RESET : std_logic := '0';
+  signal ldebugstate : std_logic_vector(3 downto 0) := (others => '0');
 
-  signal pcnt : std_logic_vector(21 downto 0) := (others => '0');
   
+  signal pcnt : std_logic_vector(21 downto 0) := (others => '0');
 
 begin  -- Behavioral
 
@@ -89,7 +95,10 @@ begin  -- Behavioral
       RXDIN    => data,
       RXKIN    => k, 
       RXIO_P   => RXIO_P,
-      RXIO_N   => RXIO_N) ; 
+      RXIO_N   => RXIO_N,
+      DEBUGSTATE => ldebugstate,
+      DECODEERR => DECODEERR);
+  
   
   CLKIN_ibufds : IBUFDS
     generic map (
@@ -105,10 +114,15 @@ begin  -- Behavioral
   begin  -- process ledpowerproc
     if rising_edge(clk) then
       pcnt <= pcnt + 1;
-      LEDPOWER <= pcnt(21); 
+      LEDPOWER <= pcnt(21);
+
+
+      DEBUGSTATE <= TXDIN; 
+      LEDVALID <= ldebugstate(1);     
     end if;
   end process ledpowerproc;
 
-  LEDLOCKED <= '1'; 
+  LEDLOCKED <= not TXLOCKED;
 
+  
 end Behavioral;

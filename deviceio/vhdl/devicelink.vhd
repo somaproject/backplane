@@ -10,18 +10,20 @@ use UNISIM.VComponents.all;
 
 entity devicelink is
   port (
-    TXCLKIN  : in  std_logic;
-    TXLOCKED : in  std_logic;
-    TXDIN    : in  std_logic_vector(9 downto 0);
-    TXDOUT   : out std_logic_vector(7 downto 0);
-    TXKOUT   : out std_logic;
-    CLK      : out std_logic;
-    CLK2X    : out std_logic;
-    RESET    : out std_logic;
-    RXDIN    : in  std_logic_vector(7 downto 0);
-    RXKIN    : in  std_logic;
-    RXIO_P   : out std_logic;
-    RXIO_N   : out std_logic
+    TXCLKIN     : in  std_logic;
+    TXLOCKED    : in  std_logic;
+    TXDIN       : in  std_logic_vector(9 downto 0);
+    TXDOUT      : out std_logic_vector(7 downto 0);
+    TXKOUT      : out std_logic;
+    CLK         : out std_logic;
+    CLK2X       : out std_logic;
+    RESET       : out std_logic;
+    RXDIN       : in  std_logic_vector(7 downto 0);
+    RXKIN       : in  std_logic;
+    RXIO_P      : out std_logic;
+    RXIO_N      : out std_logic;
+    DEBUGSTATE : out std_logic_vector(3 downto 0);
+    DECODEERR : out std_logic
     );
 
 end devicelink;
@@ -36,7 +38,7 @@ architecture Behavioral of devicelink is
   signal rst             : std_logic := '0';
 
 
-  signal txdinl  : std_logic_vector(9 downto 0) := (others => '0');
+  signal txdinl, txdinll  : std_logic_vector(9 downto 0) := (others => '0');
   signal ltxdout : std_logic_vector(7 downto 0) := (others => '0');
 
   signal cerr    : std_logic := '0';
@@ -58,7 +60,9 @@ architecture Behavioral of devicelink is
 
   signal rxio : std_logic := '0';
 
-
+  signal outbits : std_logic_vector(1 downto 0) := (others => '0');
+  signal ldebugstate : std_logic_vector(3 downto 0)  := (others => '0');
+  
   type states is (none, sendsync, lock, unlocked);
   signal cs, ns : states := none;
 
@@ -105,19 +109,21 @@ begin  -- Behavioral
 
   RESET <= rst;
   txclkdcm : dcm generic map (
-    CLKIN_PERIOD   => 7.7,
-    CLKFX_DIVIDE   => 1,
-    CLKFX_MULTIPLY => 5)
+    CLKIN_PERIOD       => 20.0,
+    CLKFX_DIVIDE       => 1,
+    CLKFX_MULTIPLY     => 5,
+    DLL_FREQUENCY_MODE => "HIGH", 
+    DFS_FREQUENCY_MODE => "HIGH")
     port map (
-      CLKIN        => TXCLKIN,
-      CLKFB        => txclk,
-      RST          => nottxlocked,
-      PSEN         => '0',
-      CLK0         => txclkint,
-      CLK2x        => CLK2X,
-      CLKFX        => rxhbitclk,
-      CLKFX180     => rxhbitclk180,
-      LOCKED       => dcmlocked);
+      CLKIN            => TXCLKIN,
+      CLKFB            => txclk,
+      RST              => nottxlocked,
+      PSEN             => '0',
+      CLK0             => txclkint,
+      CLK2x            => CLK2X,
+      CLKFX            => rxhbitclk,
+      CLKFX180         => rxhbitclk180,
+      LOCKED           => dcmlocked);
 
   txclk_bufg : BUFG port map (
     O => txclk,
@@ -126,11 +132,13 @@ begin  -- Behavioral
   CLK <= txclk;
 
 
-  DIN <= rxdinl when dsel = '0' else X"00";
-  KIN <= rxkinl when dsel = '0' else '0';
+  DIN       <= rxdinl when dsel = '0' else X"00";
+  KIN       <= rxkinl when dsel = '0' else '0';
 
   txcodeerr <= cerr or derr;
 
+  DEBUGSTATE <= ldebugstate;
+  
   FDDRRSE_inst : FDDRRSE
     port map (
       Q  => rxio,                       -- Data output 
@@ -165,6 +173,7 @@ begin  -- Behavioral
         rxkinl <= RXKIN;
 
         txdinl <= TXDIN;
+        txdinll <= txdinl ; 
         TXDOUT <= ltxdout;
         TXKOUT <= ltxkout;
 
@@ -173,6 +182,7 @@ begin  -- Behavioral
         else
           oll <= "0000000000";
         end if;
+
       end if;
     end if;
   end process main;
@@ -188,6 +198,7 @@ begin  -- Behavioral
       else
         sout <= "00" & sout(9 downto 2);
       end if;
+      
     end if;
 
   end process rxclkproc;
@@ -198,19 +209,22 @@ begin  -- Behavioral
       when none     =>
         dsel     <= '1';
         forceerr <= '0';
+        ldebugstate <= "0001"; 
         ns       <= sendsync;
       when sendsync =>
         dsel     <= '1';
         forceerr <= '0';
+        ldebugstate <= "0010"; 
         if ltxkout = '1' and ltxdout = X"FE" and txcodeerr = '0' then
           ns     <= lock;
         else
           ns     <= sendsync;
         end if;
-
+        
       when lock     =>
         dsel     <= '0';
         forceerr <= '0';
+        ldebugstate <= "0100";         
         if txcodeerr = '1' then
           ns     <= unlocked;
         else
@@ -219,9 +233,10 @@ begin  -- Behavioral
       when unlocked =>
         dsel     <= '0';
         forceerr <= '1';
-        ns       <= unlocked;  
-      when others => null;
+        ldebugstate <= "1000"; 
+        ns       <= none;
+      when others   => null;
     end case;
 
-  end process fsm; 
+  end process fsm;
 end Behavioral;
