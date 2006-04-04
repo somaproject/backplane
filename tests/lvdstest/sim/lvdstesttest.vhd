@@ -19,17 +19,16 @@ architecture Behavioral of lvdstesttest is
   component lvdstest
 
     port (
-      TX_P     : out std_logic;
-      TX_N     : out std_logic;
-      RX_P     : in  std_logic;
-      RX_N     : in  std_logic;
+      TXIO_P     : out std_logic;
+      TXIO_N     : out std_logic;
+      RXIO_P     : in  std_logic;
+      RXIO_N     : in  std_logic;
       CLKIN    : in  std_logic;
       LEDPOWER : out std_logic;
       LEDVALID : out std_logic;
       RESET    : in  std_logic;
       CLKBITTXOUT   : out std_logic;
-      CLKRXOUT : out std_logic; 
-      SHIFT   : in std_logic
+      CLKRXOUT : out std_logic
       );
 
   end component;
@@ -74,9 +73,9 @@ architecture Behavioral of lvdstesttest is
   signal CLKBITTX  : std_logic                    := '0';
   signal CLKRX  : std_logic                    := '0';
   
-  signal TX_P         : std_logic                    := '0';
-  signal TX_N         : std_logic                    := '1';
-  signal RX_P         : std_logic                    := '0';
+  signal TXIO_P         : std_logic                    := '0';
+  signal TXIO_N         : std_logic                    := '1';
+  signal RXIO_P         : std_logic                    := '0';
   signal RX_N         : std_logic                    := '1';
   signal REFCLKOUT    : std_logic                    := '0';
   signal RXCLK        : std_logic                    := '0';
@@ -96,24 +95,23 @@ begin  -- Behavioral
 
   lvdstest_uut : lvdstest
     port map (
-      TX_P     => TX_P,
-      TX_N     => TX_N,
-      RX_P     => RX_P,
-      RX_N     => RX_N,
+      TXIO_P     => TXIO_P,
+      TXIO_N     => TXIO_N,
+      RXIO_P     => RXIO_P,
+      RXIO_N     => RX_N,
       CLKIN    => CORECLKIN,
       LEDPOWER => CORELEDPOWER,
       LEDVALID => CORELEDVALID,
       RESET    => RESET,
       CLKBITTXOUT => CLKBITTX,
-      CLKRXOUT => CLKRX, 
-      SHIFT => '0');
+      CLKRXOUT => CLKRX);
 
   lvdsclient_uut : lvdsclient
     port map (
       CLKIN_P     => DEVCLKIN_P,
       CLKIN_N => DEVCLKIN_N,
       RESET     => RESET,
-      DOUT_P    => RX_P,
+      DOUT_P    => RXIO_P,
       DOUT_N    => RX_N,
       REFCLKOUT => REFCLKOUT,
       RXCLK     => RCLK,
@@ -134,8 +132,8 @@ begin  -- Behavioral
 
   serdes_uut : serdes
     port map (
-      RI_P   => TX_P,
-      RI_N   => TX_N,
+      RI_P   => TXIO_P,
+      RI_N   => TXIO_N,
       REFCLK => REFCLKOUT,
       BITCLK => txbitclk2,
       LOCK   => LOCKED,

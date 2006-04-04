@@ -5,7 +5,7 @@
 -- File       : lvdstest.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/03/27
+-- Last update: 2006/04/04
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Simple test of point-to-point LVDS links.
@@ -26,8 +26,8 @@ use UNISIM.VComponents.all;
 entity lvdsclient is
 
   port (
-    CLKIN_P    : in std_logic;
-    CLKIN_N   : in std_logic; 
+    CLKIN_P   : in  std_logic;
+    CLKIN_N   : in  std_logic;
     RESET     : in  std_logic;
     DOUT_P    : out std_logic;
     DOUT_N    : out std_logic;
@@ -42,32 +42,52 @@ end lvdsclient;
 
 
 architecture Behavioral of lvdsclient is
+  component encode8b10b
+    port (
+      din  : in  std_logic_vector(7 downto 0);
+      kin  : in  std_logic;
+      clk  : in  std_logic;
+      dout : out std_logic_vector(9 downto 0));
+  end component;
 
-  signal wcnt     : integer range 0 to 3  := 0;
 
-  signal   doutbits : std_logic_vector(1 downto 0)             := (others => '0');
+  component decode8b10b
+    port (
+      clk      : in  std_logic;
+      din      : in  std_logic_vector(9 downto 0);
+      dout     : out std_logic_vector(7 downto 0);
+      kout     : out std_logic;
+      code_err : out std_logic;
+      disp_err : out std_logic);
+  end component;
 
-  signal DOUT : std_logic := '0';
-  signal CLKIN : std_logic := '0';
-  signal notlocked : std_logic := '1';
+
+  signal wcnt : integer range 0 to 3 := 0;
+
+  signal doutbits : std_logic_vector(9 downto 0) := (others => '0');
+
+  signal DOUT                                   : std_logic := '0';
+  signal CLKIN                                  : std_logic := '0';
+  signal notlocked                              : std_logic := '1';
   -- clocks
   signal lowtxclk, lowtxclkint                  : std_logic := '0';
   signal txclk, txclkint, txclk180, txclk180int : std_logic := '0';
 
-  signal rxdata, rxdatal, rxdatall : std_logic_vector(39 downto 0)
- := (others => '0');
+  signal dinl       : std_logic_vector(9 downto 0) := (others => '0');
+  signal cerr, derr : std_logic                    := '0';
+  signal rxdata     : std_logic_vector(7 downto 0) := (others => '0');
+  signal rxk        : std_logic                    := '0';
 
-  signal txdata : std_logic_vector(39 downto 0) :=
-    "0111010100" &
-    "0011011100" &
-    "0001010111" &
-    "0101010110"; 
-  --signal txdata : std_logic_vector(39 downto 0) := (others => '0');
-  
+  signal ledtick : std_logic_vector(22 downto 0) := (others => '0');
+
+  signal dcmlocked : std_logic := '0';
+  signal txdata : std_logic_vector(7 downto 0) := (others => '0');
+  signal txdataenc : std_logic_vector(9 downto 0) := (others => '0');
+
 
 begin  -- Behavioral
 
-    CLKIN_ibufds : IBUFDS
+  CLKIN_ibufds : IBUFDS
     generic map (
       IOSTANDARD => "DEFAULT")
     port map (
@@ -78,19 +98,19 @@ begin  -- Behavioral
 
   -- create clocks
   lowtxclkdcm : dcm generic map (
-    CLKIN_PERIOD   => 7.7,
-    CLKFX_DIVIDE   => 1,
-    CLKFX_MULTIPLY => 5,
+    CLKIN_PERIOD       => 7.7,
+    CLKFX_DIVIDE       => 1,
+    CLKFX_MULTIPLY     => 5,
     DFS_FREQUENCY_MODE => "HIGH")
     port map (
-      CLKIN        => rxclk,
-      CLKFB        => lowtxclk,
-      RST          => LOCKED,
-      PSEN         => '0',
-      CLK0         => lowtxclkint,
-      CLKFX        => txclkint,
-      CLKFX180     => txclk180int,
-      LOCKED       => LEDPOWER);
+      CLKIN            => RXCLK,
+      CLKFB            => lowtxclk,
+      RST              => LOCKED,
+      PSEN             => '0',
+      CLK0             => lowtxclkint,
+      CLKFX            => txclkint,
+      CLKFX180         => txclk180int,
+      LOCKED           => dcmlocked);
 
 
   lowtxclk_bufg : BUFG port map (
@@ -132,65 +152,76 @@ begin  -- Behavioral
 
   REFCLKOUT <= CLKIN;
 
-  serialize        : process (txclk)
-    variable start : std_logic := '1';
-  begin
+-----------------------------------------------------------------------------
+-- Transmit data
+-----------------------------------------------------------------------------
 
-  if rising_edge(txclk) then
-      txdata   <= txdata(1 downto 0) & txdata(39 downto 2);
-      doutbits <= txdata(1 downto 0);
-  end if;
+  encoder : encode8b10b
+    port map (
+      CLK => lowtxclk,
+      kin => '0',
+      din => txdata,
+      dout => txdataenc
+      ); 
+
+  txdata <= X"00";
+  
+  serialize         : process(txclk)
+    variable bitreg : std_logic_vector(4 downto 0) := "00001";
+  begin
+    if rising_edge(txclk) then
+      bitreg := bitreg(0) & bitreg(4 downto 1);
+      if bitreg(0) = '1' then
+        doutbits <= txdataenc;
+      else
+        doutbits <= "00" & doutbits(9 downto 2);
+      end if;
+    end if;
 end process serialize;
 
 
+  LEDLOCKED <= not LOCKED;
+  notlocked <= not LOCKED;
 
-LEDLOCKED <= not LOCKED;
-notlocked <= not LOCKED; 
+
 -- dummy led
-ledpowerproc     : process(lowtxclk)
-  variable power : std_logic := '0';
-begin
-  if rising_edge(lowtxclk) then
-    power                    := not power;
-    --LEDPOWER <= power;      
-  end if;
-
-end process ledpowerproc;
+  ledpowerproc : process(lowtxclk)
+  begin
+    if rising_edge(lowtxclk) then
+      ledtick  <= ledtick + 1;
+      LEDPOWER <= ledtick(22);
+    end if;
+  end process ledpowerproc;
 
 
+-------------------------------------------------------------------------------
 -- verify
-verify : process(RXCLK)
+-------------------------------------------------------------------------------
+
+  decoder : decode8b10b
+    port map (
+      CLK      => lowtxclk,
+      DIN      => dinl,
+      dout     => rxdata,
+      kout     => rxk,
+      code_err => cerr,
+      disp_err => derr);
 
 
-begin
-  if rising_edge(RXCLK) then
+  verify : process(lowtxclk)
+  begin
+    if rising_edge(lowtxclk) then
 
-    if wcnt = 3 then
-      wcnt <= 0;
+      dinl <= DIN;
 
-    else
-      wcnt <= wcnt + 1;
-      
-    end if;
-    
-    rxdata <= DIN & rxdata(39 downto 10);
-
-    if wcnt = 3 then
-      rxdatal <= rxdata;
-      rxdatall <= rxdatal; 
-    end if;
-
-    if wcnt = 2 then
-      if rxdatall = rxdatal and not (rxdatall = X"0000000000"  or rxdatall = X"FFFFFFFFFF") then 
+      if cerr = '0' and derr = '0' then
         LEDVALID <= '1';
       else
-        LEDVALID <= '0'; 
+        LEDVALID <= '0';
+        
       end if;
-    end if;
-
-  end if;
-
-end process;
+    end if; 
+  end process;
 
 
 end Behavioral;
