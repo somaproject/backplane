@@ -40,6 +40,8 @@ entity lvdstest is
     CLKBITTXOUT : out std_logic;
     CLKRXOUT    : out std_logic;
     VALIDOUT : out std_logic
+--    DCMLOCKED1 : out std_logic;
+--    DCMLOCKED2 : out std_logic
     );
 
 end lvdstest;
@@ -214,6 +216,9 @@ begin  -- Behavioral
 
   dcmreset <= not maindcmlocked;
 
+--   DCMLOCKED1 <= base_lock;
+--   DCMLOCKED2 <= maindcmlocked;
+  
   clknonebufg : BUFG
     port map (
       O => clknone,
@@ -296,7 +301,7 @@ begin  -- Behavioral
       BITCLK  => clkbitrx,
       DIN     => rxio,
       DOUt    => rxdoutenc,
-      DLYRST  => '0',
+      DLYRST  => dcmreset,
       DLYCE   => '0',
       DLYINC  => '0',
       BITSLIP => BITSLIP);
@@ -335,12 +340,12 @@ begin  -- Behavioral
     if rising_edge(clkrx) then
       ledtick <= ledtick + 1;
 
-      if bstick(24 downto 20) = "00000" then
-        LEDPOWER <= '1';
-      else
-        LEDPOWER <= '0';  
-      end if;
-
+--       if bstick(24 downto 20) = "00000" then
+--         LEDPOWER <= '1';
+--       else
+--         LEDPOWER <= '0';  
+--       end if;
+      LEDPOWER <= '1'; 
 
       bstick <= bstick + 1;
       if bstick = "0000000000000000000000000" then
@@ -356,7 +361,7 @@ begin  -- Behavioral
     port map(
       RDY    => open,
       REFCLK => clkrx,
-      RST    => RESET
+      RST    => dcmreset
       );
 
   CLKBITTXOUT <= clkbittx;
