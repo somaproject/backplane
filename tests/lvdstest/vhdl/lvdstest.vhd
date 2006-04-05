@@ -39,9 +39,10 @@ entity lvdstest is
     LEDVALID    : out std_logic;
     CLKBITTXOUT : out std_logic;
     CLKRXOUT    : out std_logic;
-    VALIDOUT : out std_logic
---    DCMLOCKED1 : out std_logic;
---    DCMLOCKED2 : out std_logic
+    VALIDOUT    : out std_logic;
+    INCDELAYIN  : in  std_logic
+-- DCMLOCKED1 : out std_logic;
+-- DCMLOCKED2 : out std_logic
     );
 
 end lvdstest;
@@ -130,9 +131,13 @@ architecture Behavioral of lvdstest is
   signal rxdout     : std_logic_vector(7 downto 0) := (others => '0');
   signal rxkout     : std_logic                    := '0';
 
-  signal bstick : std_logic_vector(24 downto 0) := (others => '0'); 
-  signal bitslip : std_logic := '0';
-  
+  signal bstick      : std_logic_vector(24 downto 0) := (others => '0');
+  signal bitslip     : std_logic                     := '0';
+  signal incdelaycnt : integer range 0 to 2000000    := 2000000;
+  signal incdelay    : std_logic                     := '0';
+
+
+
 begin  -- Behavioral
 
   txsrc : DCM_BASE
@@ -216,9 +221,9 @@ begin  -- Behavioral
 
   dcmreset <= not maindcmlocked;
 
---   DCMLOCKED1 <= base_lock;
---   DCMLOCKED2 <= maindcmlocked;
-  
+-- DCMLOCKED1 <= base_lock;
+-- DCMLOCKED2 <= maindcmlocked;
+
   clknonebufg : BUFG
     port map (
       O => clknone,
@@ -242,12 +247,12 @@ begin  -- Behavioral
   process(clkrx)
   begin
     if rising_edge(clkrx) then
---       if txdin = X"00" then
---         txdin <= X"01";
---       else
---         txdin <= X"00";
---       end if;
-      txdin <= txdin + 1; 
+-- if txdin = X"00" then
+-- txdin <= X"01";
+-- else
+-- txdin <= X"00";
+-- end if;
+      txdin <= txdin + 1;
     end if;
   end process;
 
@@ -302,8 +307,8 @@ begin  -- Behavioral
       DIN     => rxio,
       DOUt    => rxdoutenc,
       DLYRST  => dcmreset,
-      DLYCE   => '0',
-      DLYINC  => '0',
+      DLYCE   => incdelay,
+      DLYINC  => incdelay,
       BITSLIP => BITSLIP);
 
   decoder : decode8b10b
@@ -320,11 +325,11 @@ begin  -- Behavioral
     if rising_edge(clkrx) then
       if cerr = '0' and derr = '0' then
         LEDVALID <= '1';
-        VALIDOUT <= '1'; 
+        VALIDOUT <= '1';
       else
         LEDVALID <= '0';
         VALIDOUT <= '0';
-        
+
       end if;
 
 
@@ -340,19 +345,28 @@ begin  -- Behavioral
     if rising_edge(clkrx) then
       ledtick <= ledtick + 1;
 
---       if bstick(24 downto 20) = "00000" then
---         LEDPOWER <= '1';
---       else
---         LEDPOWER <= '0';  
---       end if;
-      LEDPOWER <= '1'; 
+      LEDPOWER <= '1';
 
-      bstick <= bstick + 1;
+      bstick    <= bstick + 1;
       if bstick = "0000000000000000000000000" then
         BITSLIP <= '1';
       else
         BITSLIP <= '0';
-      end if; 
+      end if;
+
+      if INCDELAYIN = '1' then
+        incdelaycnt   <= 0;
+      else
+        if incdelaycnt /= 1000000 then
+          incdelaycnt <= incdelaycnt + 1;
+        end if;
+      end if;
+
+      if incdelaycnt = 5 then
+        incdelay <= '1';
+      else
+        incdelay <= '0';
+      end if;
 
     end if;
   end process blinkenled;
