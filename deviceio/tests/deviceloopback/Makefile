@@ -27,6 +27,7 @@ $(PROJECT): build/$(PROJECT).ncd
 $(PROJECT).bit: build/$(PROJECT).bit
 	rm -rf $(PROJECT).bit
 	cp build/$(PROJECT).bit . 
+	cp build/$(PROJECT).bit ~/soma/
 
 $(PROJECT).rbt: build/$(PROJECT).rbt
 	rm -rf $(PROJECT).rbt

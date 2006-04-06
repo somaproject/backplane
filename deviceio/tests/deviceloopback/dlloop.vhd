@@ -5,7 +5,7 @@
 -- File       : serdesloop.vhd
 -- Author     : Eric Jonas  <jonas@soma.mit.edu>
 -- Company    : 
--- Last update: 2006/04/03
+-- Last update: 2006/04/05
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Loopback test for serdes
@@ -78,7 +78,7 @@ architecture Behavioral of dlloop is
 
   
   signal pcnt : std_logic_vector(21 downto 0) := (others => '0');
-
+  signal decodeerrint : std_logic := '0';
 begin  -- Behavioral
 
   
@@ -93,11 +93,11 @@ begin  -- Behavioral
       CLK2X    => clk2x,
       RESET    => RESET,
       RXDIN    => data,
-      RXKIN    => k, 
+      RXKIN    => '0', 
       RXIO_P   => RXIO_P,
       RXIO_N   => RXIO_N,
       DEBUGSTATE => ldebugstate,
-      DECODEERR => DECODEERR);
+      DECODEERR => decodeerrint);
   
   
   CLKIN_ibufds : IBUFDS
@@ -118,7 +118,8 @@ begin  -- Behavioral
 
 
       DEBUGSTATE <= TXDIN; 
-      LEDVALID <= ldebugstate(1);     
+      LEDVALID <= not decodeerrint;
+      DECODEERR <= decodeerrint;
     end if;
   end process ledpowerproc;
 

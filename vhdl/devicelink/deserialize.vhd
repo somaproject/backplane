@@ -27,47 +27,6 @@ architecture Behavioral of deserialize is
 
   signal s1, s2 : std_logic := '0';
 
---   component ISERDES
---     -- synthesis translate_off
---     generic (
---       BITSLIP_ENABLE :     string  := "FALSE";    --(TRUE, FALSE)
---       DATA_RATE      :     string  := "DDR";      --(SDR, DDR)
---       DATA_WIDTH     :     integer := 4;          --(2,3,4,5,6,7,8,10)
---       INTERFACE_TYPE :     string  := "MEMORY";   --(MEMORY, NETWORKING)
---       IOBDELAY       :     string  := "NONE";     --(NONE,IBUF,IFD,BOTH)
---       IOBDELAY_TYPE  :     string  := "DEFAULT";  --(DEFAULT,FIXED, VARIABLE)
---       IOBDELAY_VALUE :     integer := 0;          --(0 to 63)
---       NUM_CE         :     integer := 2;          --(1,2)
---       SERDES_MODE    :     string  := "MASTER"   --(MASTER, SLAVE)
---       );
--- -- synthesis translate_on
---     port (
---       O              : out std_logic;
---       Q1             : out std_logic;
---       Q2             : out std_logic;
---       Q3             : out std_logic;
---       Q4             : out std_logic;
---       Q5             : out std_logic;
---       Q6             : out std_logic;
---       SHIFTOUT1      : out std_logic;
---       SHIFTOUT2      : out std_logic;
---       BITSLIP        : in  std_logic;
---       CE1            : in  std_logic;
---       CE2            : in  std_logic;
---       CLK            : in  std_logic;
---       CLKDIV         : in  std_logic;
---       D              : in  std_logic;
---       DLYCE          : in  std_logic;
---       DLYINC         : in  std_logic;
---       DLYRST         : in  std_logic;
---       OCLK           : in  std_logic;
---       REV            : in  std_logic;
---       SHIFTIN1       : in  std_logic;
---       SHIFTIN2       : in  std_logic;
---       SR             : in  std_logic
---       );
---   end component;
-
 begin  -- Behavioral
 
   iserdes_1: ISERDES

@@ -23,7 +23,7 @@ entity manydevicelink is
     LEDVALID : out std_logic;
     WORDCLKOUT : out std_logic;
     TXCLKOUT : out std_logic; 
-    DEBUGSTATES : out std_logic_vector(7 downto 0)
+    DEBUG : out std_logic_vector(23 downto 0)
     );
 
 end manydevicelink;
@@ -43,7 +43,7 @@ architecture Behavioral of manydevicelink is
       RXIO_P       : in  std_logic;
       RXIO_N       : in  std_logic;
       VALID        : out std_logic;
-      STATES : out std_logic_vector(7 downto 0)
+      DEBUG : out std_logic_vector(23 downto 0)
       );
 
   end component;
@@ -192,7 +192,7 @@ begin  -- Behavioral
         RXIO_P       => RXIO_P(0),
         RXIO_N       => RXIO_N(0),
         VALID        => validint(0),
-        STATES => DEBUGSTATES);
+        DEBUG => DEBUG);
     
   devicelinks : for i in 1 to 4 generate
     dl        : linktester
@@ -207,7 +207,7 @@ begin  -- Behavioral
         RXIO_P       => RXIO_P(i),
         RXIO_N       => RXIO_N(i),
         VALID        => validint(i),
-        STATES => open);
+        DEBUG => open);
 
   end generate devicelinks;
 
@@ -216,7 +216,7 @@ begin  -- Behavioral
     port map(
       RDY    => open,
       REFCLK => clkrx,
-      RST    => RESET
+      RST    => dcmreset
       );
 
   ledblink : process(clkrx)

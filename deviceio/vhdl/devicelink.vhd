@@ -56,14 +56,19 @@ architecture Behavioral of devicelink is
 
   signal forceerr  : std_logic                    := '0';
   signal txcodeerr : std_logic                    := '0';
+  signal txcodeerrreg : std_logic_vector(63 downto 0) := (others => '1');
+  
   signal sout      : std_logic_vector(9 downto 0) := (others => '0');
 
   signal rxio : std_logic := '0';
 
   signal outbits : std_logic_vector(1 downto 0) := (others => '0');
   signal ldebugstate : std_logic_vector(3 downto 0)  := (others => '0');
+
+  signal dwcnt : integer range 0 to 25000000-1 := 0;
+
   
-  type states is (none, sendsync, lock, unlocked);
+  type states is (none, sendsync,  dumbwait, lock, unlocked);
   signal cs, ns : states := none;
 
   component encode8b10b
@@ -132,11 +137,14 @@ begin  -- Behavioral
   CLK <= txclk;
 
 
-  DIN       <= rxdinl when dsel = '0' else X"00";
-  KIN       <= rxkinl when dsel = '0' else '0';
-
+--DIN       <= rxdinl when dsel = '0' else X"1C";
+-- KIN       <= rxkinl when dsel = '0' else '0';
+  DIN <= X"1C";
+  KIN <= '1';
+  
   txcodeerr <= cerr or derr;
 
+  DECODEERR <= txcodeerr; 
   DEBUGSTATE <= ldebugstate;
   
   FDDRRSE_inst : FDDRRSE
@@ -163,8 +171,10 @@ begin  -- Behavioral
 
   main : process (txclk, rst)
   begin  -- process main
-    if rst = '1' then                   -- asynchronous reset (active low)
+    if rst = '1' then                   -- asynchronous reset
+      
       cs   <= none;
+      txcodeerrreg <= (others => '1');
     else
       if rising_edge(txclk) then
         cs <= ns;
@@ -183,6 +193,12 @@ begin  -- Behavioral
           oll <= "0000000000";
         end if;
 
+        txcodeerrreg <= (txcodeerrreg(62 downto 0) & txcodeerr);
+        if cs = sendsync then
+          dwcnt <= 0;
+        elsif cs = dumbwait then         
+          dwcnt <= dwcnt + 1; 
+        end if;
       end if;
     end if;
   end process main;
@@ -215,12 +231,21 @@ begin  -- Behavioral
         dsel     <= '1';
         forceerr <= '0';
         ldebugstate <= "0010"; 
-        if ltxkout = '1' and ltxdout = X"FE" and txcodeerr = '0' then
-          ns     <= lock;
+        if ltxkout = '1' and ltxdout = X"FE" and txcodeerrreg = X"0000000000000000" then
+          ns     <= dumbwait;
+
         else
           ns     <= sendsync;
         end if;
-        
+      when dumbwait=>
+        dsel     <= '1';
+        forceerr <= '0';
+        ldebugstate <= "1000";         
+        if dwcnt = 10000000 then
+          ns <= lock;
+        else
+          ns <= dumbwait; 
+        end if;
       when lock     =>
         dsel     <= '0';
         forceerr <= '0';

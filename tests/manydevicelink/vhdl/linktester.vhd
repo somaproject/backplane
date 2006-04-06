@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/04/03
+-- Last update: 2006/04/05
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -38,7 +38,7 @@ entity linktester is
     RXIO_P    : in  std_logic;
     RXIO_N    : in  std_logic;
     VALID     : out std_logic;
-    STATES    : out std_logic_vector(7 downto 0)
+    DEBUG    : out std_logic_vector(23 downto 0)
     );
 
 end linktester;
@@ -76,7 +76,7 @@ architecture Behavioral of linktester is
       RXKOUT    : out std_logic;
       DROPLOCK  : in  std_logic;
       LOCKED    : out std_logic;
-      STATE     : out std_logic_vector(7 downto 0)
+      DEBUG     : out std_logic_vector(23 downto 0)
       );
 
   end component;
@@ -85,7 +85,7 @@ begin  -- Behavioral
 
   devicelink_inst : coredevicelink
     generic map (
-      N         => 10)
+      N         => 4)
     port map (
       CLK       => CLK,
       RXBITCLK  => RXBITCLK,
@@ -102,7 +102,7 @@ begin  -- Behavioral
       RXKOUT    => kin,
       DROPLOCK  => '0',
       LOCKED    => locked,
-      STATE     => STATES);
+      DEBUG => DEBUG);
 
   output : process(CLK)
   begin
@@ -123,30 +123,7 @@ begin  -- Behavioral
   input : process(CLK)
   begin
     if rising_edge(CLK) then
-      if locked = '0' then
-        VALID <= '0';
-      else
-        bin1  <= din;
-        bin2  <= bin1;
-
-        kin1 <= kin;
-        kin2 <= kin1;
-
-        if kin2 = '1' and bin2 = X"BC" and
-          kin1 = '0' and bin1 = X"00" then
-          VALID <= '1';
-        elsif kin2 = '0' and bin2 = X"FF" and
-          kin1 = '1' and bin1 = X"BC" then
-          VALID <= '1';
-        elsif kin2 = '0' and kin1 = '0' and bin2 +1 = bin1 then
-          VALID <= '1';
-        else
-          VALID <= '0';
-        end if;
-
-
-      end if;
-
+      VALID <= locked; 
 
     end if;
 
