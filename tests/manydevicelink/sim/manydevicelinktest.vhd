@@ -27,7 +27,8 @@ architecture Behavioral of manydevicelinktest is
       LEDPOWER   : out std_logic;
       LEDVALID   : out std_logic;
       WORDCLKOUT : out std_logic;
-      TXCLKOUT   : out std_logic
+      TXCLKOUT   : out std_logic;
+      DEBUG : out std_logic_vector(23 downto 0)
       );
 
   end component;
@@ -87,7 +88,10 @@ architecture Behavioral of manydevicelinktest is
   signal REFCLKIN_P, REFCLKIN_N : std_logic := '0';
 
   signal devrefclk : std_logic_vector(4 downto 0) := (others => '0');
+  signal DEBUG : std_logic_vector(23 downto 0) := (others => '0');
 
+  signal state : std_logic_vector(7 downto 0) := (others => '0');
+  signal rxword : std_logic_vector(9 downto 0) := (others => '0');
 begin  -- Behavioral
 
 
@@ -103,7 +107,8 @@ begin  -- Behavioral
       LEDPOWER   => LEDPOWER,
       LEDVALID   => LEDVALID,
       WORDCLKOUT => WORDCLK,
-      TXCLKOUT   => TXCLK);
+      TXCLKOUT   => TXCLK,
+      DEBUG => DEBUG);
 
   devloop_inst : dlloop
     port map (
@@ -149,5 +154,6 @@ begin  -- Behavioral
 
   RESET <= '0' after 100 ns;
 
-
+  STATE <= DEBUG(7 downto 0);
+  RXWORD <= DEBUG(17 downto 8); 
 end Behavioral;

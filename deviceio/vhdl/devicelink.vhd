@@ -137,10 +137,8 @@ begin  -- Behavioral
   CLK <= txclk;
 
 
---DIN       <= rxdinl when dsel = '0' else X"1C";
--- KIN       <= rxkinl when dsel = '0' else '0';
-  DIN <= X"1C";
-  KIN <= '1';
+  DIN       <= rxdinl when dsel = '0' else X"1C";
+  KIN       <= rxkinl when dsel = '0' else '1';
   
   txcodeerr <= cerr or derr;
 
@@ -241,7 +239,7 @@ begin  -- Behavioral
         dsel     <= '1';
         forceerr <= '0';
         ldebugstate <= "1000";         
-        if dwcnt = 10000000 then
+        if dwcnt = 10000 then
           ns <= lock;
         else
           ns <= dumbwait; 

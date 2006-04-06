@@ -89,7 +89,7 @@ architecture Behavioral of coredevicelink is
   signal omux : integer range 0 to 1 := 0;
 
   signal   dcntrst : std_logic                  := '0';
-  constant DCNTMAX : integer                    := 80000;
+  constant DCNTMAX : integer                    := 8000;
   signal   dcnt    : integer range 0 to DCNTMAX := 0;
 
   signal rxio : std_logic := '0';
@@ -527,8 +527,14 @@ begin  -- Behavioral
         dlyinc  <= '0';
         bitslip <= '0';
         stoptx  <= '0';
-        bitcntrst <= '1'; 
-        ns      <= wrdcntr;
+        bitcntrst <= '0'; 
+
+        if bitcnt = 20 then
+          ns      <= wrdcntr;
+        else
+          ns <= wrddly; 
+        end if;
+
 
       when wrdcntr   =>
         lstate  <= X"11";
@@ -544,7 +550,7 @@ begin  -- Behavioral
         if dcnt > 2000 then             -- TOTAL DEBUGGING
           ns    <= none;
         else
-          if rxword = "1101000011" or rxword = "0010111100" then -- k28.0
+          if rxword = "1101000011"  then -- k28.0
             ns  <= validchk1;
           else
             ns  <= wrdinc;
@@ -561,7 +567,7 @@ begin  -- Behavioral
         bitslip <= '0';
         stoptx  <= '0';
         bitcntrst <= '1'; 
-        if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
+        if lrxkout = '1' and lrxdout = X"1C" and rxcodeerr = '0' then
           ns    <= validchk2;
         else
           ns    <= none;
@@ -577,7 +583,7 @@ begin  -- Behavioral
         bitslip <= '0';
         stoptx  <= '0';
         bitcntrst <= '1'; 
-        if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
+        if lrxkout = '1' and lrxdout = X"1C" and rxcodeerr = '0' then
           ns    <= validchk3;
         else
           ns    <= none;
@@ -593,7 +599,7 @@ begin  -- Behavioral
         bitslip <= '0';
         stoptx  <= '0';
         bitcntrst <= '1'; 
-        if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
+        if lrxkout = '1' and lrxdout = X"1C" and rxcodeerr = '0' then
           ns    <= validchk4;
         else
           ns    <= none;
@@ -609,7 +615,7 @@ begin  -- Behavioral
         bitslip <= '0';
         stoptx  <= '0';
         bitcntrst <= '1'; 
-        if lrxkout = '0' and lrxdout = X"00" and rxcodeerr = '0' then
+        if lrxkout = '1' and lrxdout = X"1C" and rxcodeerr = '0' then
           ns    <= sendlock;
         else
           ns    <= none;
