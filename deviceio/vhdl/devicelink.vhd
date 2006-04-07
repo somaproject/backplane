@@ -175,10 +175,6 @@ begin  -- Behavioral
       cs   <= none;
       txcodeerrreg <= (others => '1');
       dwcnt <= 0;
---       txdinl <= (others => '0');
---       txdinll <= (others => '0');
---       ltxdout <= (others => '0');
---       rxdinl <= (others => '0');
       
                 
     else
@@ -238,7 +234,7 @@ begin  -- Behavioral
         forceerr <= '0';
         ldebugstate <= "0001"; 
         if ltxkout = '1' and ltxdout = X"FE" and txcodeerrreg = X"0000000000000000" then
-          ns     <= dumbwait;
+          ns     <= lock;
 
         else
           ns     <= sendsync;
@@ -247,7 +243,7 @@ begin  -- Behavioral
         dsel     <= '1';
         forceerr <= '0';
         ldebugstate <= "0010";         
-        if dwcnt = 100000 then
+        if dwcnt < 2 then
           ns <= lock;
         else
           ns <= dumbwait; 
