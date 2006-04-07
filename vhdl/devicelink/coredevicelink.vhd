@@ -551,7 +551,7 @@ begin  -- Behavioral
         if dcnt > 2000 then             -- TOTAL DEBUGGING
           ns    <= none;
         else
-          if rxword = "1101000011"  or rxword = "0010111100" then -- k28.0
+          if (rxword = "1101000011")  or (rxword = "0010111100") then -- k28.0
             ns  <= validchk1;
           else
             ns  <= wrdinc;
