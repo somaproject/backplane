@@ -5,7 +5,7 @@
 -- File       : serdesloop.vhd
 -- Author     : Eric Jonas  <jonas@soma.mit.edu>
 -- Company    : 
--- Last update: 2006/04/05
+-- Last update: 2006/04/06
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Loopback test for serdes
@@ -117,13 +117,15 @@ begin  -- Behavioral
       LEDPOWER <= pcnt(21);
 
 
-      DEBUGSTATE <= TXDIN; 
+      DEBUGSTATE(3 downto 0) <= ldebugstate;
       LEDVALID <= not decodeerrint;
       DECODEERR <= decodeerrint;
     end if;
   end process ledpowerproc;
+  DEBUGSTATE(9 downto 6) <= (others => '0'); 
 
   LEDLOCKED <= not TXLOCKED;
-
+  DEBUGSTATE(4) <= TXLOCKED;
+  DEBUGSTATE(5) <= RESET; 
   
 end Behavioral;

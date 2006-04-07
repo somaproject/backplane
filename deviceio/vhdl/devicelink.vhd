@@ -174,6 +174,13 @@ begin  -- Behavioral
       
       cs   <= none;
       txcodeerrreg <= (others => '1');
+      dwcnt <= 0;
+--       txdinl <= (others => '0');
+--       txdinll <= (others => '0');
+--       ltxdout <= (others => '0');
+--       rxdinl <= (others => '0');
+      
+                
     else
       if rising_edge(txclk) then
         cs <= ns;
@@ -224,12 +231,12 @@ begin  -- Behavioral
       when none     =>
         dsel     <= '1';
         forceerr <= '0';
-        ldebugstate <= "0001"; 
+        ldebugstate <= "0000"; 
         ns       <= sendsync;
       when sendsync =>
         dsel     <= '1';
         forceerr <= '0';
-        ldebugstate <= "0010"; 
+        ldebugstate <= "0001"; 
         if ltxkout = '1' and ltxdout = X"FE" and txcodeerrreg = X"0000000000000000" then
           ns     <= dumbwait;
 
@@ -239,8 +246,8 @@ begin  -- Behavioral
       when dumbwait=>
         dsel     <= '1';
         forceerr <= '0';
-        ldebugstate <= "1000";         
-        if dwcnt = 1000000 then
+        ldebugstate <= "0010";         
+        if dwcnt = 100000 then
           ns <= lock;
         else
           ns <= dumbwait; 
@@ -248,7 +255,7 @@ begin  -- Behavioral
       when lock     =>
         dsel     <= '0';
         forceerr <= '0';
-        ldebugstate <= "0100";         
+        ldebugstate <= "0011";         
         if txcodeerr = '1' then
           ns     <= unlocked;
         else
@@ -257,7 +264,7 @@ begin  -- Behavioral
       when unlocked =>
         dsel     <= '0';
         forceerr <= '1';
-        ldebugstate <= "1000"; 
+        ldebugstate <= "0100"; 
         ns       <= none;
       when others   => null;
     end case;

@@ -89,7 +89,8 @@ architecture Behavioral of coredevicelink is
   signal omux : integer range 0 to 1 := 0;
 
   signal   dcntrst : std_logic                  := '0';
-  constant DCNTMAX : integer                    := 8000;
+  -- needs to be 100k to acquire lock because DCMs are slow
+  constant DCNTMAX : integer                    := 200000;
   signal   dcnt    : integer range 0 to DCNTMAX := 0;
 
   signal rxio : std_logic := '0';
@@ -550,7 +551,7 @@ begin  -- Behavioral
         if dcnt > 2000 then             -- TOTAL DEBUGGING
           ns    <= none;
         else
-          if rxword = "1101000011"  then -- k28.0
+          if rxword = "1101000011"  or rxword = "0010111100" then -- k28.0
             ns  <= validchk1;
           else
             ns  <= wrdinc;
