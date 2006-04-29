@@ -1,0 +1,70 @@
+We want to design a generic MMC interface capable of being implemented
+in a small CPLD for the purposes of booting the FPGA as well as to
+serve as a generic bit-store-nterface for the rest of soma.
+
+MMC cards all support a simple SPI mode, but evidently the burst-block
+mode is optional, so we're only ever going to read out a single 512-byte block at a time. 
+
+The SPI is a simple 4-pin design with the expected CS, CLK, DIN, DOUT signals. 
+
+
+CMD transmission always starts with MSB 
+
+Every data block sent to the card during a write operation is responded to with a special data response token
+
+MMC cards "wake up" in the MMC mode, and only enter SPI mode if CS is asserted during the reception of the reset cmd (CMD0)
+
+CMD17 -- read-single-block
+How to read CSD/CID? 
+
+Reset sequence -- card entles idle state, with only valid cmds being CMD1 or CMDt58.  Host may poll card by sending CMD1 until in-idle-state bit in the card response indicates, by being set to 0, that the card has completed its transmission. 
+
+(5.11 page 74 describes this is more detail)
+
+After each bus transaction, we need to send 8 ticks to let the card finish its operations
+
+CMD9: send CSD
+CMD10: send CID
+
+CMD17: read single block [31:0] being data address
+
+All data has a start token and a 16-bit stop token
+
+Valid cmd is 0x40, 0x0, 0x0, 0x0, 0x0, 0x95
+
+http://elm-chan.org/docs/mmc/mmc_e.html
+
+
+Our plan: 
+1. init
+2. wait
+3. for i in 1 to virtex4-block-len:
+  1. read block
+  2. send out block
+  3. 
+
+
+Remember, the virtex-4 wants "bit 0" first; we need to format the
+bitstream on the device such that the MSB of the first byte is 'bit
+zero'. This might require us to reserrect some of our xilinx
+formatting code and make a bit of a wrapper around dd.
+
+It actually looks as if the data tokens and whatnot have a very simple interface. 
+
+What form do we want the generic interface to take? 
+
+1. reset (or should it reset on its own?) 
+2. read block at address $foo
+3. den signals valid bits
+4. only read in 512-byte blocks
+5. We have no logic 
+
+Maximum card/device size is 128 MByte, or 262144 sectors, or 18 bits. 
+Virtex-4 configuration files are not in any sort of nice block multiple, which is frustrating but managable. 
+
+
+Plan of attack: 
+1. write basic command interface
+2. 
+
+
