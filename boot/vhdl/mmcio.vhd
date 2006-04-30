@@ -37,7 +37,7 @@ architecture Behavioral of mmcio is
                   init0, init1, initchk, initrw, initr, initdone,
                   datardy, rdcmd, rdw1, rdw2, rdaddr1, rdaddr2,
                   rdchk, rddelay1, rddelay2, rdtokw, rdtokchk, rddata,
-                  rddatadn, rddata1);
+                  rddatadl, rdchk1, rdchk2, rddatadn);
   signal cs, ns : states := none;
 
   signal bsel : integer range 0 to 7 := 0;
@@ -500,12 +500,12 @@ begin
         DVALID  <= '0';
         DDONE   <= '0';
         if bdone = '1' then          
-          ns <= rddatadn; 
+          ns <= rddatadl; 
         else
           ns <= rddata; 
         end if;
 
-      when rddatadn =>
+      when rddatadl =>
         scs     <= '0';
         bstart  <= '0';
         bcntrst <= '0';
@@ -514,20 +514,50 @@ begin
         DVALID  <= '1';
         DDONE   <= '0';
         if bcnt = 511 then
-          ns <= rddata1; 
+          ns <= rdchk1; 
         else
           ns <= rddata; 
         end if;
         
-      when rddata1 =>
+      when rdchk1 =>
         scs     <= '0';
         bstart  <= '1';
         bcntrst <= '0';
         bcnten <= '0'; 
         bsel    <= 3;
         DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rdchk2;
+        else
+          ns <= rdchk1; 
+        end if;
+
+      when rdchk2 =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '0';
+        bcnten <= '0'; 
+        bsel    <= 3;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rddatadn;
+        else
+          ns <= rdchk2; 
+        end if;
+
+      when rddatadn =>
+        scs     <= '0';
+        bstart  <= '0';
+        bcntrst <= '0';
+        bcnten <= '0'; 
+        bsel    <= 3;
+        DVALID  <= '0';
         DDONE   <= '1';
-        ns <= datardy;         
+        
+        ns <= datardy; 
+        
         
     end case;
   end process fsm;

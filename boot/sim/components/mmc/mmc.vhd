@@ -159,6 +159,7 @@ begin  -- Behavioral
             wait until rising_edge(SCLK);
           end loop;  -- i
 
+          report "read done" severity note;
           
         end if;
 
