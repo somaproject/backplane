@@ -16,8 +16,7 @@ entity byteio is
          SDOUT   : out std_logic;
          SCLK    : out std_logic;
          BSTART  : in  std_logic;
-         BDONE   : out std_logic; 
-         TCNTOUT : out std_logic_vector(7 downto 0)
+         BDONE   : out std_logic
          );
 end byteio;
 
@@ -32,8 +31,6 @@ architecture Behavioral of byteio is
   signal ireg, oreg : std_logic_vector(7 downto 0) := (others => '0');
 
   signal inen, outen, outld : std_logic := '0';
-
-  signal tcnt : std_logic_vector(7 downto 0) := (others => '0'); 
 
 
 begin
@@ -68,8 +65,7 @@ begin
           oreg(7 downto 1) <= oreg(6 downto 0);
         end if;
       end if;
-      TCNTOUT              <= tcnt; 
-         tcnt              <= tcnt + 1;
+
     end if;
   end process;
 
