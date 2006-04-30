@@ -67,7 +67,7 @@ begin
       BSTART => bstart,
       BDONE  => bdone);
 
-  pout <= X"40"            when bsel = 0 else
+  pin <= X"40"            when bsel = 0 else
           X"41"            when bsel = 1 else
           X"51"            when bsel = 2 else
           X"FF"            when bsel = 3 else
@@ -78,13 +78,16 @@ begin
 
 
 
-
+  DOUT <= pout;
+  
   main : process (CLK, RESET)
   begin
     if RESET = '1' then
       cs           <= none;
     else
       if rising_edge(CLK) then
+        cs <= ns;
+        
         if bcntrst = '1' then
           bcnt     <= 0;
         else
@@ -102,7 +105,7 @@ begin
   end process main;
 
 
-  fsm : process(cs, bstart, bdone, bcnt, dstart)
+  fsm : process(cs, bstart, bdone, bcnt, dstart, pout)
   begin
     case cs is
       when none      =>
@@ -132,7 +135,7 @@ begin
         scs     <= '1';
         bstart  <= '1';
         bcntrst <= '0';
-        bcnten <= '0'; 
+        bcnten <= '1'; 
         bsel    <= 0;
         DVALID  <= '0';
         DDONE   <= '0';
@@ -178,10 +181,10 @@ begin
         bsel    <= 4;
         DVALID  <= '0';
         DDONE   <= '0';
-        if bcnt = 4  then
-          ns <= srst2; 
+        if bcnt = 3  then
+          ns <= srstchk; 
         else
-          ns    <= srst0; 
+          ns    <= srst1; 
         end if;
 
       when srstchk =>
@@ -220,7 +223,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
-        if pin(7) = '0' and pin(0) = '1' then
+        if pout(7) = '0' and pout(0) = '1' then
           ns <= srstdone; 
         else
           ns    <= srstrwt; 
@@ -272,7 +275,7 @@ begin
         bsel    <= 4;
         DVALID  <= '0';
         DDONE   <= '0';
-        if bcnt = 4 then
+        if bcnt = 3 then
           ns <= initchk; 
         else
           ns    <= init0;  
@@ -314,7 +317,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
-        if pin(7) = '0' then
+        if pout(7) = '0' then
           ns <= initdone; 
         else
           ns    <= initrw;  
@@ -328,22 +331,205 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
-        if pin(7) = '0' and pin(1) = '0' then
+        if pout(7) = '0' and pout(0) = '0' then
           ns <= datardy;
         else
           ns <= initcmd; 
         end if;
-      when others =>
+      when datardy =>
         scs     <= '1';
         bstart  <= '0';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 1;
+        DVALID  <= '0';
+        DDONE   <= '1';
+        if DSTART = '1' then
+          ns <= rdcmd;
+        else
+          ns <= datardy;                
+        end if;
+
+      when rdcmd =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 2;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rdw1;
+        else
+          ns <= rdcmd; 
+        end if;
+
+      when rdw1 =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 4;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rdw2;
+        else
+          ns <= rdw1; 
+        end if;
+
+      when rdw2 =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 4;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rdaddr1;
+        else
+          ns <= rdw2; 
+        end if;
+
+      when rdaddr1 =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 7;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rdaddr2;
+        else
+          ns <= rdaddr1; 
+        end if;
+
+      when rdaddr2 =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 6;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rdchk;
+        else
+          ns <= rdaddr2; 
+        end if;
+
+      when rdchk =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 6;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rddelay1;
+        else
+          ns <= rdchk; 
+        end if;
+
+      when rddelay1 =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 3;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rddelay2;
+        else
+          ns <= rddelay1; 
+        end if;
+
+      when rddelay2 =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 4;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if pout(7) = '0' then
+          ns <= rdtokw;
+        else
+          ns <= rddelay1; 
+        end if;
+
+      when rdtokw =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 3;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if bdone = '1' then
+          ns <= rdtokchk;
+        else
+          ns <= rdtokw;  
+        end if;
+        
+      when rdtokchk =>
+        scs     <= '0';
+        bstart  <= '0';
+        bcntrst <= '1';
+        bcnten <= '0'; 
+        bsel    <= 3;
+        DVALID  <= '0';
+        DDONE   <= '0';
+        if pout = X"FE" then
+          
+          ns <= rddata;
+        else
+          ns <= rdtokw; 
+        end if;
+
+      when rddata =>
+        scs     <= '0';
+        bstart  <= '1';
         bcntrst <= '0';
         bcnten <= '0'; 
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        if bdone = '1' then          
+          ns <= rddatadn; 
+        else
+          ns <= rddata; 
+        end if;
+
+      when rddatadn =>
+        scs     <= '0';
+        bstart  <= '0';
+        bcntrst <= '0';
+        bcnten <= '1'; 
+        bsel    <= 3;
+        DVALID  <= '1';
+        DDONE   <= '0';
+        if bcnt = 511 then
+          ns <= rddata1; 
+        else
+          ns <= rddata; 
+        end if;
+        
+      when rddata1 =>
+        scs     <= '0';
+        bstart  <= '1';
+        bcntrst <= '0';
+        bcnten <= '0'; 
+        bsel    <= 3;
+        DVALID  <= '0';
+        DDONE   <= '1';
+        ns <= datardy;         
+        
     end case;
-
-
   end process fsm;
 
 

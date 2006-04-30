@@ -17,6 +17,10 @@ PROJECT = boot
 
 bitfile: $(PROJECT).bit
 
+# process flow for a cpld: 
+#   (.vhd,.ver)-->[XST]-->(.ngc,.ucf)-->[NGDBUILD]-->(.ngd)-->[CPLDFIT]-->(.vm6)--> -->[HPREP6]-->(.jed)-->[IMPACT]-->(.svf)
+
+
 SOURCES = *.vhd
 OPTIMIZE = high
 PART = xbr
@@ -55,25 +59,9 @@ build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf
 	ngdbuild -p $(PART) -uc $(PROJECT).ucf -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
 
 
-# third stage: map: produces pcf, map.ncd
-
-map: build/$(PROJECT)_map.ncd
-
-build/$(PROJECT)_map.ncd: build/$(PROJECT).ngd
-	map -p $(PART) -ol $(OPTIMIZE) -timing -cm speed  -xe n  -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
-
-build/$(PROJECT).pcf: build/$(PROJECT)_map.ncd
-
-
-# forth stage: par
-
-build/$(PROJECT).ncd: build/$(PROJECT).pcf
-	par -w -pl $(OPTIMIZE) -rl $(OPTIMIZE)  build/$(PROJECT)_map.ncd build/$(PROJECT).ncd build/$(PROJECT).pcf
-
-build/$(PROJECT).bit: build/$(PROJECT).pcf build/$(PROJECT).ncd
-	bitgen -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf
-build/$(PROJECT).rbt: build/$(PROJECT).pcf build/$(PROJECT).ncd
-	bitgen -b -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf
+# third CPLD stage, fit:
+build/$(PROJECT).vm6: build/$(PROJECT).ngd
+	cpldfit -p $(PART) -ofmt vhdl -optimize density -htmlrpt -loc on -slew fast -init low -inputs 32 -inreg on -blkfanin 38 -pterms 28 -unused keeper -terminate keeper -iostd LVCMOS18 build/$(PROJECT).ngd
 
 
 # multiple runs

@@ -101,7 +101,7 @@ begin
         sclk  <= '0';
         ns    <= l2;
       when l2   =>
-        inen  <= '1';
+        inen  <= '0';
         outld <= '0';
         outen <= '0';
         sclk  <= '0';

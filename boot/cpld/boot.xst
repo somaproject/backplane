@@ -8,25 +8,20 @@ run
 -p xbr
 -top boot
 -opt_mode Area
--opt_level 2
+-opt_level 1
 -iuc NO
--keep_hierarchy NO
+-keep_hierarchy YES
 -rtlview Yes
 -read_cores YES
--cross_clock_analysis NO
--hierarchy_separator _
+-hierarchy_separator /
 -bus_delimiter <>
 -case maintain
 -verilog2001 YES
--fsm_extract YES -fsm_encoding One-Hot
+-fsm_extract YES -fsm_encoding Auto
 -safe_implementation No
--fsm_style lut
 -mux_extract YES
 -resource_sharing YES
 -iobuf YES
 -equivalent_register_removal YES
--optimize_primitives NO
--use_clock_enable Yes
--use_sync_set Yes
--use_sync_reset Yes
-
+-pld_mp YES
+-pld_xp YES
