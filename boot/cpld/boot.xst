@@ -1,0 +1,32 @@
+set -tmpdir build
+set -xsthdpdir ./xst
+run
+-ifn boot.prj
+-ifmt mixed
+-ofn boot
+-ofmt NGC
+-p xbr
+-top boot
+-opt_mode Area
+-opt_level 2
+-iuc NO
+-keep_hierarchy NO
+-rtlview Yes
+-read_cores YES
+-cross_clock_analysis NO
+-hierarchy_separator _
+-bus_delimiter <>
+-case maintain
+-verilog2001 YES
+-fsm_extract YES -fsm_encoding One-Hot
+-safe_implementation No
+-fsm_style lut
+-mux_extract YES
+-resource_sharing YES
+-iobuf YES
+-equivalent_register_removal YES
+-optimize_primitives NO
+-use_clock_enable Yes
+-use_sync_set Yes
+-use_sync_reset Yes
+
