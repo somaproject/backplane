@@ -23,7 +23,7 @@ bitfile: $(PROJECT).bit
 
 SOURCES = *.vhd
 OPTIMIZE = high
-PART = xbr
+PART = XC2C64A-5-VQ44
 SPEED = 4
 
 $(PROJECT): build/$(PROJECT).ncd
@@ -61,7 +61,7 @@ build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf
 
 # third CPLD stage, fit:
 build/$(PROJECT).vm6: build/$(PROJECT).ngd
-	cpldfit -p $(PART) -ofmt vhdl -optimize density -htmlrpt -loc on -slew fast -init low -inputs 32 -inreg on -blkfanin 38 -pterms 28 -unused keeper -terminate keeper -iostd LVCMOS18 build/$(PROJECT).ngd
+	cpldfit -p $(PART) -ofmt vhdl -optimize density -loc try -slew fast -init low -inputs 32 -inreg on -blkfanin 38  -unused keeper -terminate keeper -iostd LVTTL build/$(PROJECT).ngd -exhaust
 
 
 # multiple runs

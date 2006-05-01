@@ -20,7 +20,8 @@ entity boot is
     FSCLK  : in  std_logic;
     FPROG : out std_logic;
     FCLK : out std_logic;
-    FDIN : out std_logic    );
+    FDIN : out std_logic
+    );
 
 end boot;
 
