@@ -71,10 +71,12 @@ architecture Behavioral of boot is
 
 begin  -- Behavioral 
 
-  SCS   <= bscs when FSEL = '0' else fscs;
+
   bsdin <= SDIN;
   fsdin <= SDIN;
 
+  SCS   <= bscs when FSEL = '0' else fscs;
+  
   SCLK  <= bsclk  when FSEL = '0' else fsclk;
   SDOUT <= bsdout when FSEL = '0' else fsdout;
 

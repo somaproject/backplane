@@ -15,7 +15,7 @@
 ######################################################################
 PROJECT = boot
 
-bitfile: $(PROJECT).bit
+bitfile: $(PROJECT).jed
 
 # process flow for a cpld: 
 #   (.vhd,.ver)-->[XST]-->(.ngc,.ucf)-->[NGDBUILD]-->(.ngd)-->[CPLDFIT]-->(.vm6)--> -->[HPREP6]-->(.jed)-->[IMPACT]-->(.svf)
@@ -28,9 +28,9 @@ SPEED = 4
 
 $(PROJECT): build/$(PROJECT).ncd
 
-$(PROJECT).bit: build/$(PROJECT).bit
-	rm -rf $(PROJECT).bit
-	cp build/$(PROJECT).bit . 
+#$(PROJECT).jed: build/$(PROJECT).jed
+#rm -rf $(PROJECT).jed
+#cp build/$(PROJECT).jed . 
 
 $(PROJECT).rbt: build/$(PROJECT).rbt
 	rm -rf $(PROJECT).rbt
@@ -60,10 +60,11 @@ build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf
 
 
 # third CPLD stage, fit:
-build/$(PROJECT).vm6: build/$(PROJECT).ngd
-	cpldfit -p $(PART) -ofmt vhdl -optimize density -loc try -slew fast -init low -inputs 32 -inreg on -blkfanin 38  -unused keeper -terminate keeper -iostd LVTTL build/$(PROJECT).ngd -exhaust
+$(PROJECT).vm6: build/$(PROJECT).ngd
+	cpldfit -p $(PART) -ofmt vhdl -optimize density -loc on -slew fast -init low -inputs 32 -inreg on -blkfanin 38  -unused keeper -terminate keeper -iostd LVTTL build/$(PROJECT).ngd -exhaust
 
-
+$(PROJECT).jed: $(PROJECT).vm6
+	hprep6 -s IEEE1149   -i $(PROJECT).vm6
 # multiple runs
 multipar: build/$(PROJECT)_map.ncd
 	par -w -pl $(OPTIMIZE) -rl $(OPTIMIZE) -xe n -n 0 -t 1  build/$(PROJECT)_map.ncd build/$(PROJECT).dir build/$(PROJECT).pcf
