@@ -65,10 +65,8 @@ architecture Behavioral of devicelink is
   signal outbits : std_logic_vector(1 downto 0) := (others => '0');
   signal ldebugstate : std_logic_vector(3 downto 0)  := (others => '0');
 
-  signal dwcnt : integer range 0 to 25000000-1 := 0;
-
   
-  type states is (none, sendsync,  dumbwait, lock, unlocked);
+  type states is (none, sendsync,  lock, unlocked);
   signal cs, ns : states := none;
 
   component encode8b10b
@@ -174,7 +172,7 @@ begin  -- Behavioral
       
       cs   <= none;
       txcodeerrreg <= (others => '1');
-      dwcnt <= 0;
+
       
                 
     else
@@ -196,11 +194,7 @@ begin  -- Behavioral
         end if;
 
         txcodeerrreg <= (txcodeerrreg(62 downto 0) & txcodeerr);
-        if cs = sendsync then
-          dwcnt <= 0;
-        elsif cs = dumbwait then         
-          dwcnt <= dwcnt + 1; 
-        end if;
+
       end if;
     end if;
   end process main;
@@ -238,15 +232,6 @@ begin  -- Behavioral
 
         else
           ns     <= sendsync;
-        end if;
-      when dumbwait=>
-        dsel     <= '1';
-        forceerr <= '0';
-        ldebugstate <= "0010";         
-        if dwcnt < 2 then
-          ns <= lock;
-        else
-          ns <= dumbwait; 
         end if;
       when lock     =>
         dsel     <= '0';

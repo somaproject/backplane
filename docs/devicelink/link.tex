@@ -104,22 +104,19 @@ step before any DeviceLink can be considered ``up''.
 
 the steps of link establishment are listed below: 
 
-1. upon  detecting a  dropped link, the  core first suspends  all data
-transmission for  1 ms, and then  begins sending a sequence  of all 0s
+\begin{enumerate}
+\item  Upon  detecting a  dropped link, the  core first suspends  all data
+transmission for  4 ms, and then  begins sending a sequence  of all 0s
 via the TX line
-
-2. The period of inactivity will force the device to lose lock, reset,
+\item The period of inactivity will force the device to lose lock, reset,
 and then enter lock initialization mode.
-
-3. Here it will wait until it has established a lock on the inbound
+\item Here it will wait until it has established a lock on the inbound
 data stream. At this point, it will begin broadcasting a constant sync
 pattern, alternating zeros and ones.
-
-4. the core will meanwhile be waiting a millisecond, and then for this
+\item the core will meanwhile be waiting a millisecond, and then for this
 pattern and will use it to lock onto both bit transitions and symbol
 alignments
-
-5. once the core has acquired lock, it will transmit a K30.7 comma
+\item once the core has acquired lock, it will transmit a K30.7 comma
 character to the device indicating this is the case, at whic point the
 device will consider the link locked as well.
-
+\end{enumerate}

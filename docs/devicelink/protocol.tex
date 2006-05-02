@@ -5,34 +5,32 @@ devicelink. It also incorporates the transmission of the relevant
 EVENT/data symbols.
 
 The protocols involved are closely linked with the soma RX and TX
-protocols. In particular, event and data broadcast are handled here.
+protocols. In particular, event and data broadcast are handled
+here. The devicelink interface supports four client devices.
 
-
-All DeviceLink TX activity is organized in a series of 600-symbol
-frames, each frame corresponding to a Soma1 Event Cycle. The beginning
+All DeviceLink TX activity is organized in a series of 1000-symbol
+frames, each frame corresponding to a Soma Event Cycle. The beginning
 of each frame is coincident with the beginning of an event cycle, and
 is indicated by K28.5.
+
+Event Cycles consist of broadcast messages to up to 78 different
+target devices. 
 
 
 \subsection{TX Link} 
 
-
-----------------------------------------
-Bus routing, clocks, configuration
-----------------------------------------
 we have an EVENTCE signal, internally, which gates an input event. 
-
-22 bytes of header
-40*12 bytes of 12-byte events, in order of sender ID .
 
 The header consists of:
 1. a k28.5 sync comma
-2. two 7-symbol device configuration packets:
-byte 0: device can send data during this cycle
+2. four 11-symbol device configuration packets:
+byte 0: device can send data during this cycle (DGRANT)
 byte 1: lsb: the first event in the sequence is for this device
 byte 2: lsb: the 8th evenet in the sequence is for this device
-... through byte 6
+... through byte 10
 
+The total header duration is 11*4 + 1 = 45 bytes. The events are
+subsequently sent on the 50th byte (inclusive to the k28.5)
 
 \subsection{RX Link}
 
@@ -48,6 +46,10 @@ If the device has any events, it can send them any time during the event cycle, 
 
 
 Any time during an event cycle a device can send an event, which in
-this case is a 17-byte packet of data prefaced with a K28.4 comma
-character
+this case is a 22-byte packet of data prefaced with a K28.4 comma
+character:
+  First, the 10-byte bitmask for device target selection
+  Then, the 12 bytes of the data itself
+
+
 
