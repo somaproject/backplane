@@ -1,0 +1,59 @@
+Notes and design on devicelink implementation
+
+The devicelink implementation abstracts away bit serialization and reception via the virtex-4 serdes components. 
+
+\subsection{Deserialize}
+The deserialization hardware is a fairly straight-forward implementation of the Xilinx. Note the output of the serialized bits is such that Q1 corresponds to \signal{DOUT(9)}. 
+
+\subsection{Serialize}
+Serialization is more difficult as the hardware serialization hardware
+can only handle 1:10 serialization, but to incorporate clock framing
+we need to perform 1:12 serialization. Thus our serialize module takes
+in 50 megabyte/50 MHz data and performs the necessary conversion,
+adding clock frame bits and sending the proper subset of bits out in
+each cycle at 60 MHz.
+
+
+\subsection{FSM} 
+The Core Devicelink FSM can be broken into five segments
+
+\subsubsection{Force Drop}
+Upon return to the none state, we attempt to forcibly drop the
+connection; we do this by sending only zeros for 4 ms with no clock
+frames by asserting \signal{STOPTX}.
+
+\subsubsection{Send Sync Pulse}
+We then send a series of clock-framed zeros to let the receiving
+device lock for another 4 ms.
+
+\subsection{Bit (eye) Align}
+This is the most difficult part of the interface; we use the IDELAY
+adjustable input delay in the Virtex-4 input buffer. We attempt to
+increment the delay three times without changing the received word
+(that is, keeping \signal{RXWORDL} = \signal{RXWORDLL}). Any change in
+the received word causes a reversion to the original state
+\state{BITINC1}.
+
+Assuming three successful delay increments without changing the
+received word, we transition to \state{BITBACK} and create a delay
+decrement to center ourselves on the eye of the received words.
+
+Should this process take longer than 20 microseconds, we assume the
+link is invalid and transition back to \state{NONE}.
+
+\subsection{Lock to Word}
+The FSM then bit-shifts the input word looking for either 0x343 or
+0x0bc (8b/10b k28.0) , the words being transmitted by the device
+during this phase.
+
+\subsection{Data validity check}
+
+We then attempt to read four error-free decoded bytes from the 8b/10b
+decoded data. Should this succeeed, we transition to \state{SENDLOCK}
+and send a single 0xFE (k30.7) character.
+
+\subsection{Lock}
+
+At this point we have reached the lock state. Should we receive either
+an error in our 8b/10b data or an assertion of \signal{DROPLOCK}, we
+transition back to \state{NONE}.
