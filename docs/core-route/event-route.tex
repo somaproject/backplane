@@ -10,10 +10,11 @@ such is the price of embedded hardware design.
 
 The eventbus port communicates to a target internal device via five signals:
 
-\signal{EARX[N-1:0]} Event address receive: Latched at the beginning
-of ECYCLE, this contains the list of targets for the next address
-cycle. the assertion of EARX[m] on EventBus Port N means that the
-device connected to port N transmitted an event targeted for device m. 
+\signal{EARX[N-1:0]} Event address receive: constant from the
+beginning of ECYCLE, this contains the list of targets for the next
+address cycle. the assertion of EARX[m] on EventBus Port N means that
+the device connected to port N transmitted an event targeted for
+device m.
 
 \signal{EDRX[7:0]} Event data input. 
 
@@ -26,11 +27,14 @@ eventbus port N, then the device connected to port N is the target
 
 \signal{EDTX} output event data, in a stream. This signal is common to all ports, that is, all ports send the same data at once (event target specificity is determined by EATX)
 
-
-
 On the cycle following ECYCLE, 50 ticks into the event cycle, the
 event router begins transmitting the data from the device on EventBus
 Port 0.
 
 \section{Implementation}
+
+The implementation is fairly trivial, using a cascade of counters to
+meet the apropriate multiplexing and timing requirements; note that
+outside of the above-defined timing parameters, the behavior of the
+router is undefined.
 

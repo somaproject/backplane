@@ -1,0 +1,18 @@
+\section{Data Port Interface}
+
+The data port interface is exceptionally simple. A device on a DataBus
+Port samples its DGRANT line when ECYCLE is high; this determines
+whether or not that port can send data during the next event cycle.
+
+Data is gated into the DataBus Aggregator by the DOEN line; a new data
+packet is read in during the assertion of DOEN. Further DOEN
+assertions will have no effect. Likewise, assertion of DOEn by a port
+that was not granted will also result in a no-op. 
+
+\section{Implementation}
+
+Our implementation here is somewhat complex, as we'd like the ability
+to multiplex multiple streams and handle multiple dgrants
+simultaneoulsy. Thus our implementation is a 1:N aggregator, and we
+can wire up M of them; to cover all 64 devicelink devices, we'd need 4
+1:8 muxes, etc.
