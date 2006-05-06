@@ -19,7 +19,8 @@ entity mmc is
 end mmc;
 
 architecture Behavioral of mmc is
-  signal incmd     : std_logic_vector(47 downto 0);
+  signal incmd     : std_logic_vector(47 downto 0) := (others => '1'); 
+                                                       
   signal mmcmode   : std_logic                    := '0';
   signal r1resp    : std_logic_vector(7 downto 0) := (others => '0');
   signal initdone  : std_logic                    := '0';
@@ -42,21 +43,38 @@ begin  -- Behavioral
 
     while true loop
 
-
       -- read cmd
-      wait until falling_edge(SCS);
-      
-      for bitpos in 47 downto 0 loop
-        wait until rising_edge(SCLK);
-        incmd(bitpos) <= SDIN;
-      end loop;
-      wait until falling_edge(SCLK);
+      if mmcmode = '1' then
+        wait until falling_edge(SCS);
 
-      
+        for bitpos in 47 downto 0 loop
+          wait until rising_edge(SCLK);
+          incmd(bitpos) <= SDIN;
+        end loop;
+        wait until falling_edge(SCLK);
+
+      else
+        wait until rising_edge(SCLK);
+        incmd(47) <= SDIN;
+        if SDIN = '0' then
+
+
+          for bitpos in 46 downto 0 loop
+            wait until rising_edge(SCLK);
+            incmd(bitpos) <= SDIN;
+          end loop;
+          wait until falling_edge(SCLK);
+        end if;
+
+      end if;
+
+
+
+
       -- we now have a cmd
-      
+
       if incmd = X"400000000095" then   -- SET SPI MODE
-        
+
         if SCS = '0' then
           mmcmode <= '1';
         end if;
@@ -77,7 +95,7 @@ begin  -- Behavioral
 
       elsif incmd(47 downto 40) = X"41" then
         -- start init cmd
-        
+
         if initstart = '0' then
           initstart <= '1';
           initdone  <= '1' after 4 ms;  -- shorter delay than normal
@@ -90,7 +108,7 @@ begin  -- Behavioral
 
         if initdone = '1' then
           r1resp <= X"00";
-          
+
         else
           r1resp <= X"01";
         end if;
@@ -103,7 +121,7 @@ begin  -- Behavioral
 
       elsif incmd(47 downto 40) = X"51" then
         -- read single block command
-        
+
         -- command not appropriate at this time; init not done
         for i in 1 to 3*8 loop
           -- NCR                        -- 4 bytes long
@@ -159,7 +177,7 @@ begin  -- Behavioral
 
       end if;
       SDOUT <= '1';
-    end loop;    
+    end loop;
 
   end process main;
 

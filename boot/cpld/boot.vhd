@@ -10,6 +10,7 @@ use UNISIM.VComponents.all;
 entity boot is
   port (
     CLK    : in  std_logic;
+--    RESET : in std_logic; 
     SCS    : out std_logic;
     SDIN   : in  std_logic;
     SDOUT  : out std_logic;
@@ -46,6 +47,7 @@ architecture Behavioral of boot is
   component xilinxcfg
     port (
       CLK    : in  std_logic;
+      RESET : in std_logic;
       DSTART : out std_logic;
       DIN    : in  std_logic_vector(7 downto 0);
       DDONE  : in  std_logic;
@@ -83,7 +85,7 @@ begin  -- Behavioral
   mmcio_inst : mmcio
     port map (
       CLK    => CLK,
-      RESET  => '0',
+      RESET  =>  '0',-- RESET,
       SCS    => bscs,
       SDIN   => bsdin,
       SDOUT  => bsdout,
@@ -97,6 +99,7 @@ begin  -- Behavioral
   xilinxcfg_inst : xilinxcfg
     port map (
       CLK    => CLK,
+      RESET => '0', -- RESET,
       DSTART => dstart,
       DIN    => data,
       DDONE   => ddone,

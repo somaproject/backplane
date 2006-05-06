@@ -34,7 +34,7 @@ architecture Behavioral of mmcio is
 
   type states is (none, initticks, initwait, srst0, srst1, srst2,
                   srstchk, srstrwt, srstrwtw, srstdone, initcmd,
-                  init0, init1, initchk, initrw, initr, initdone,
+                  init0, init1,  initrw, initr, initdone,
                   datardy, rdcmd, rdw1, rdw2, rdaddr1, rdaddr2,
                   rdchk, rddelay1, rddelay2, rdtokw, rdtokchk, rddata,
                   rddatadl, rdchk1, rdchk2, rddatadn);
@@ -70,7 +70,7 @@ begin
   pin <= X"40"            when bsel = 0 else
           X"41"            when bsel = 1 else
           X"51"            when bsel = 2 else
-          X"00"            when bsel = 3 else  -- DEBUGGING
+          X"FF"            when bsel = 3 else
           X"00"            when bsel = 4 else
           X"95"            when bsel = 5 else
           ADDR(7 downto 0) when bsel = 6 else
@@ -113,7 +113,7 @@ begin
         bstart  <= '0';
         bcntrst <= '1';
         bcnten <= '0'; 
-        bsel    <= 0;
+        bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
         ns      <= initticks;
@@ -122,7 +122,7 @@ begin
         bstart  <= '1';
         bcntrst <= '0';
         bcnten <= '0'; 
-        bsel    <= 0;
+        bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
         if bdone = '1' then
@@ -136,7 +136,7 @@ begin
         bstart  <= '1';
         bcntrst <= '0';
         bcnten <= '1'; 
-        bsel    <= 0;
+        bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
         if bcnt = 10  then
@@ -282,19 +282,6 @@ begin
           ns    <= init0;  
         end if;
 
-      when initchk =>
-        scs     <= '0';
-        bstart  <= '1';
-        bcntrst <= '0';
-        bcnten <= '1'; 
-        bsel    <= 5;
-        DVALID  <= '0';
-        DDONE   <= '0';
-        if bdone = '1' then
-          ns <= initrw; 
-        else
-          ns    <= initchk;  
-        end if;
 
       when initrw =>
         scs     <= '0';

@@ -5,12 +5,12 @@ run
 -ifmt mixed
 -ofn boot
 -ofmt NGC
--p xbr
+-p XC2C64A-7-VQ44
 -top boot
 -opt_mode Area
 -opt_level 2
 -iuc NO
--keep_hierarchy No
+-keep_hierarchy Yes
 -rtlview Yes
 -read_cores YES
 -hierarchy_separator /
@@ -18,7 +18,7 @@ run
 -case maintain
 -verilog2001 YES
 -fsm_extract YES -fsm_encoding Auto
--safe_implementation No
+-safe_implementation YES
 -mux_extract YES
 -resource_sharing YES
 -iobuf YES

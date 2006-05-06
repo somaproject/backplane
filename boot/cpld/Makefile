@@ -23,7 +23,7 @@ bitfile: $(PROJECT).jed
 
 SOURCES = *.vhd
 OPTIMIZE = high
-PART = XC2C64A-5-VQ44
+PART = XC2C64A-7-VQ44
 SPEED = 4
 
 $(PROJECT): build/$(PROJECT).ncd
@@ -77,9 +77,14 @@ build/$(PROJECT).twr: build/$(PROJECT).ncd build/$(PROJECT).pcf
 
 
 # simulations
-fitsim: build/$(PROJECT)_timesim.vhd
-build/$(PROJECT)_timesim.vhd: build/$(PROJECT).ngd
-	netgen -intstyle ise -rpw 100 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngd $(PROJECT)_timesim.vhd
+fitsim: build/$(PROJECT)_fitsim.vhd $(PROJECT).vm6
+build/$(PROJECT)_fitsim.vhd: $(PROJECT).vm6
+	tsim $(PROJECT).vm6 build/$(PROJECT).nga
+	netgen -intstyle ise -rpw 100 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).nga $(PROJECT)_fitsim.vhd
+
+synthsim: build/$(PROJECT).ngc
+	netgen -intstyle ise -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngc  $(PROJECT)_synthsim.vhd
+
 
 
 # cleanup
