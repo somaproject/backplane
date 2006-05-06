@@ -10,7 +10,7 @@
 #   make map : mapping
 #   make par : place-and-route
 #   make synthsim: post-synthesis model
-#   make parsim: post-place-and-route simulation 
+#   make fitsim: post-fit simulation model
 #   make multipar : multiple attemt place and route
 ######################################################################
 PROJECT = boot
@@ -65,10 +65,6 @@ $(PROJECT).vm6: build/$(PROJECT).ngd
 
 $(PROJECT).jed: $(PROJECT).vm6
 	hprep6 -s IEEE1149   -i $(PROJECT).vm6
-# multiple runs
-multipar: build/$(PROJECT)_map.ncd
-	par -w -pl $(OPTIMIZE) -rl $(OPTIMIZE) -xe n -n 0 -t 1  build/$(PROJECT)_map.ncd build/$(PROJECT).dir build/$(PROJECT).pcf
-
 
 
 # timing reports
@@ -81,15 +77,9 @@ build/$(PROJECT).twr: build/$(PROJECT).ncd build/$(PROJECT).pcf
 
 
 # simulations
-
-parsim: build/$(PROJECT).pcf build/$(PROJECT).ncd 
-	netgen -intstyle ise -s $(SPEED) -pcf build/$(PROJECT).pcf -rpw 100 -tpw 0 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ncd $(PROJECT)_timesim.vhd  
-
-synthsim: build/$(PROJECT).ngc
-	netgen -intstyle ise -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngc  $(PROJECT)_synthsim.vhd
-
-transsim: build/$(PROJECT).ngd
-	netgen -intstyle ise -rpw 100 -tpw 0 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngd $(PROJECT)_transsim.vhd
+fitsim: build/$(PROJECT)_timesim.vhd
+build/$(PROJECT)_timesim.vhd: build/$(PROJECT).ngd
+	netgen -intstyle ise -rpw 100 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngd $(PROJECT)_timesim.vhd
 
 
 # cleanup

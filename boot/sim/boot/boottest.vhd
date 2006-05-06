@@ -67,8 +67,6 @@ begin
       FCLK => FCLK,
       FDIN => FDIN);
   
-     
-
   mmc_inst : mmc
     port map (
       RESET => RESET,
@@ -77,7 +75,7 @@ begin
       SDOUT => SDOUT,
       SCS   => SCS);
 
-  CLK   <= not CLK after 10 ns;
+  CLK   <= not CLK after 20 ns;
   RESET <= '0'     after 50 ns;
 
 

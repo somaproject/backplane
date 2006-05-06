@@ -56,7 +56,6 @@ begin  -- Behavioral
       -- we now have a cmd
       
       if incmd = X"400000000095" then   -- SET SPI MODE
-        report "Set SPI mode" severity note;
         
         if SCS = '0' then
           mmcmode <= '1';
@@ -80,7 +79,6 @@ begin  -- Behavioral
         -- start init cmd
         
         if initstart = '0' then
-          report "Starting Initialization" severity note;       
           initstart <= '1';
           initdone  <= '1' after 4 ms;  -- shorter delay than normal
         end if;
@@ -92,7 +90,6 @@ begin  -- Behavioral
 
         if initdone = '1' then
           r1resp <= X"00";
-          report "Initialization complete" severity note;       
           
         else
           r1resp <= X"01";
@@ -106,7 +103,6 @@ begin  -- Behavioral
 
       elsif incmd(47 downto 40) = X"51" then
         -- read single block command
-        report "Read Request" severity note;
         
         -- command not appropriate at this time; init not done
         for i in 1 to 3*8 loop
@@ -159,8 +155,6 @@ begin  -- Behavioral
             wait until rising_edge(SCLK);
           end loop;  -- i
 
-          report "read done" severity note;
-          
         end if;
 
       end if;

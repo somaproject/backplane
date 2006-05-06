@@ -28,7 +28,6 @@ end boot;
 
 architecture Behavioral of boot is
 
-
   component mmcio
     port ( CLK    : in  std_logic;
            RESET  : in  std_logic;
@@ -73,12 +72,13 @@ begin  -- Behavioral
 
 
   bsdin <= SDIN;
-  fsdin <= SDIN;
+ --  fsdin <= SDIN;
 
-  SCS   <= bscs when FSEL = '0' else fscs;
+
+  SCS   <= bscs;-- when FSEL = '0' else fscs;
   
-  SCLK  <= bsclk  when FSEL = '0' else fsclk;
-  SDOUT <= bsdout when FSEL = '0' else fsdout;
+  SCLK  <= bsclk ;--  when FSEL = '0' else fsclk;
+  SDOUT <= bsdout; -- when FSEL = '0' else fsdout;
 
   mmcio_inst : mmcio
     port map (

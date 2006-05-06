@@ -62,7 +62,7 @@ begin
         oreg               <= PIN;
       else
         if outen = '1' then
-          oreg(7 downto 1) <= oreg(6 downto 0);
+          oreg(7 downto 1) <= oreg(6 downto 0); 
         end if;
       end if;
 

@@ -80,7 +80,7 @@ begin
   process
     begin
       wait until rising_edge(CLK) and DDONE = '1';
-      report "beginning read request" severity note;
+
 
       
 
