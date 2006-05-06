@@ -70,7 +70,7 @@ begin
   pin <= X"40"            when bsel = 0 else
           X"41"            when bsel = 1 else
           X"51"            when bsel = 2 else
-          X"FF"            when bsel = 3 else
+          X"00"            when bsel = 3 else  -- DEBUGGING
           X"00"            when bsel = 4 else
           X"95"            when bsel = 5 else
           ADDR(7 downto 0) when bsel = 6 else
@@ -237,7 +237,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
-        ns <= initcmd;
+       ns <= initcmd;                  
         
       when initcmd =>
         scs     <= '0';
@@ -258,7 +258,7 @@ begin
         bstart  <= '1';
         bcntrst <= '0';
         bcnten <= '0'; 
-        bsel    <= 4;
+        bsel    <= 5;                   -- debugging
         DVALID  <= '0';
         DDONE   <= '0';
         if bdone = '1' then
@@ -272,11 +272,12 @@ begin
         bstart  <= '0';
         bcntrst <= '0';
         bcnten <= '1'; 
-        bsel    <= 4;
+        bsel    <= 5;                   -- debugging
         DVALID  <= '0';
         DDONE   <= '0';
-        if bcnt = 3 then
-          ns <= initchk; 
+        if bcnt = 4 then
+          --ns <= initchk;                --
+          ns <= initrw;                 -- debugging
         else
           ns    <= init0;  
         end if;

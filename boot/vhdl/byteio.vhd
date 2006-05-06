@@ -9,14 +9,14 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 --use UNISIM.VComponents.all;
 
 entity byteio is
-  port ( CLK     : in  std_logic;
-         PIN     : in  std_logic_vector(7 downto 0);
-         POUT    : out std_logic_vector(7 downto 0);
-         SDIN    : in  std_logic;
-         SDOUT   : out std_logic;
-         SCLK    : out std_logic;
-         BSTART  : in  std_logic;
-         BDONE   : out std_logic
+  port ( CLK    : in  std_logic;
+         PIN    : in  std_logic_vector(7 downto 0);
+         POUT   : out std_logic_vector(7 downto 0);
+         SDIN   : in  std_logic;
+         SDOUT  : out std_logic;
+         SCLK   : out std_logic;
+         BSTART : in  std_logic;
+         BDONE  : out std_logic
          );
 end byteio;
 
@@ -37,7 +37,7 @@ begin
 
   POUT  <= ireg;
   SDOUT <= oreg(7);
-
+  oreg(7) <= PIN(7- bcnt); 
   BDONE <= '1' when cs = done else '0';
 
   process (CLK)
@@ -58,13 +58,14 @@ begin
         ireg <= ireg(6 downto 0) & SDIN;
       end if;
 
-      if outld = '1' then
-        oreg               <= PIN;
-      else
-        if outen = '1' then
-          oreg(7 downto 1) <= oreg(6 downto 0); 
-        end if;
-      end if;
+--      if outld = '1' then
+--        oreg               <= PIN;
+--      else
+--        if outen = '1' then
+--          oreg(7 downto 1) <= oreg(6 downto 0);
+  
+--        end if;
+--      end if;
 
     end if;
   end process;
@@ -108,16 +109,16 @@ begin
         if bcnt = 7 then
           ns  <= done;
         else
-          ns  <= l1; 
-        end if; 
+          ns  <= l1;
+        end if;
       when done =>
-        inen <= '0'; 
+        inen  <= '0';
         outld <= '0';
-        outen <= '1'; 
-        sclk <= '0'; 
-        ns <= none;
-    end case; 
-    
-  end process fsm; 
+        outen <= '1';
+        sclk  <= '0';
+        ns    <= none;
+    end case;
+
+  end process fsm;
 end Behavioral;
 
