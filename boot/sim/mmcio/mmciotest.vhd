@@ -23,6 +23,7 @@ architecture Behavioral of mmciotest is
            DSTART : in  std_logic;
            ADDR   : in  std_logic_vector(15 downto 0);
            DVALID : out std_logic;
+           DREADING: out std_logic; 
            DDONE  : out std_logic
            );
   end component;
@@ -47,7 +48,8 @@ architecture Behavioral of mmciotest is
   signal ADDR   : std_logic_vector(15 downto 0) := (others => '0');
   signal DVALID : std_logic                     := '0';
   signal DDONE  : std_logic                     := '0';
-
+  signal DREADING : std_logic := '0';
+  
 
 begin
   mmcio_uut : mmcio
@@ -62,6 +64,7 @@ begin
       DSTART => DSTART,
       ADDR   => ADDR,
       DVALID => DVALID,
+      DREADING => DREADING, 
       DDONE  => DDONE);
 
 
@@ -81,8 +84,6 @@ begin
     begin
       wait until rising_edge(CLK) and DDONE = '1';
 
-
-      
 
       ADDR <= X"0000";
       DSTART <= '1';

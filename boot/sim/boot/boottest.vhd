@@ -19,10 +19,9 @@ component boot
     SDIN   : in  std_logic;
     SDOUT  : out std_logic;
     SCLK   : out std_logic;
---    FSDIN  : out std_logic;
---    FSDOUT : in  std_logic;
---    FSCS   : in  std_logic; 
---    FSCLK  : in  std_logic;
+    FSDOUT : in  std_logic;
+    FSCS   : in  std_logic; 
+    FSCLK  : in  std_logic;
     FPROG : out std_logic;
     FCLK : out std_logic;
     FDIN : out std_logic    );
@@ -59,11 +58,10 @@ begin
       SDIN   => SDOUT,
       SDOUT  => SDIN,
       SCLK   => SCLK,
---      FSDIN => FSDIN,
---      FSDOUT => FSDOUT,
---      FSCS => FSCS,
+      FSDOUT => FSDOUT,
+      FSCS => FSCS,
       FPROG => FPROG,
---      FSCLK => FSCLK, 
+      FSCLK => FSCLK, 
       FCLK => FCLK,
       FDIN => FDIN);
   

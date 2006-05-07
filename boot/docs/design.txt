@@ -68,3 +68,18 @@ Plan of attack:
 2. 
 
 
+Additional design notes: to fit the design in the CPLD, we've needed
+to create an additional serial output stream of the data; when we are reading sectors, we optionally enable the READING signal. 
+This is intended as a low-resource method of clocking out the read bits. If, when READING is high, we use the MMC clock to drive the FCLK, we can successfully configure the FPGA. 
+
+To reduce complexity and ease pin routing we use the same output-only pin for FDIN and the SDOUT to the core FPGA. 
+
+
+
+
+
+##########################################################################
+Writing to the MMC IF
+##########################################################################
+
+dd if=bitstream skip=70

@@ -78,7 +78,6 @@ begin  -- Behavioral
 
 
   bsdin <= SDIN;
-  --fsdin <= SDIN;
 
 
   SCS   <= bscs when FSEL = '0' else fscs;

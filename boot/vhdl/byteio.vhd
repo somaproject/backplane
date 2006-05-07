@@ -28,16 +28,15 @@ architecture Behavioral of byteio is
   type states is (none, l1, h1, h2, l2, done);
   signal cs, ns : states := none;
 
-  signal ireg, oreg : std_logic_vector(7 downto 0) := (others => '0');
+  signal ireg : std_logic_vector(7 downto 0) := (others => '0');
 
-  signal inen, outen, outld : std_logic := '0';
+  signal inen  : std_logic := '0';
 
 
 begin
 
   POUT  <= ireg;
-  SDOUT <= oreg(7);
-  oreg(7) <= PIN(7- bcnt); 
+  SDOUT <= PIN(7- bcnt); 
   BDONE <= '1' when cs = done else '0';
 
   process (CLK)
@@ -58,14 +57,6 @@ begin
         ireg <= ireg(6 downto 0) & SDIN;
       end if;
 
---      if outld = '1' then
---        oreg               <= PIN;
---      else
---        if outen = '1' then
---          oreg(7 downto 1) <= oreg(6 downto 0);
-  
---        end if;
---      end if;
 
     end if;
   end process;
@@ -75,8 +66,6 @@ begin
     case cs is
       when none =>
         inen  <= '0';
-        outld <= '1';
-        outen <= '0';
         sclk  <= '0';
         if BSTART = '1' then
           ns  <= l1;
@@ -85,26 +74,18 @@ begin
         end if;
       when l1   =>
         inen  <= '1';
-        outld <= '0';
-        outen <= '0';
         sclk  <= '0';
         ns    <= h1;
       when h1   =>
         inen  <= '0';
-        outld <= '0';
-        outen <= '0';
         sclk  <= '1';
         ns    <= h2;
       when h2   =>
         inen  <= '0';
-        outld <= '0';
-        outen <= '1';
         sclk  <= '0';
         ns    <= l2;
       when l2   =>
         inen  <= '0';
-        outld <= '0';
-        outen <= '0';
         sclk  <= '0';
         if bcnt = 7 then
           ns  <= done;
@@ -113,8 +94,6 @@ begin
         end if;
       when done =>
         inen  <= '0';
-        outld <= '0';
-        outen <= '1';
         sclk  <= '0';
         ns    <= none;
     end case;

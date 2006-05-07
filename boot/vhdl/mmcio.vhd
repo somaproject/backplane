@@ -18,6 +18,7 @@ entity mmcio is
          DSTART : in  std_logic;
          ADDR   : in std_logic_vector(15 downto 0);
          DVALID : out std_logic;
+         DREADING : out std_logic;
          DDONE  : out std_logic
          );
 end mmcio;
@@ -73,8 +74,8 @@ begin
           X"FF"            when bsel = 3 else
           X"00"            when bsel = 4 else
           X"95"            when bsel = 5 else
-          ADDR(7 downto 0) when bsel = 6 else
-          ADDR(15 downto 8);
+          ADDR(6 downto 0) & '0' when bsel = 6 else
+          ADDR(14 downto 7);
 
 
 
@@ -116,6 +117,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0'; 
         ns      <= initticks;
       when initticks =>
         scs     <= '1';
@@ -125,6 +127,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns    <= initwait;
         else
@@ -139,6 +142,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bcnt = 10  then
           ns    <= srst0; 
         else
@@ -153,6 +157,7 @@ begin
         bsel    <= 0;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1'  then
           ns <= srst1; 
         else
@@ -167,6 +172,7 @@ begin
         bsel    <= 4;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1'  then
           ns <= srst2; 
         else
@@ -181,6 +187,7 @@ begin
         bsel    <= 4;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bcnt = 3  then
           ns <= srstchk; 
         else
@@ -195,6 +202,7 @@ begin
         bsel    <= 5;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1'  then
           ns <= srstrwt; 
         else
@@ -209,6 +217,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= srstrwtw; 
         else
@@ -223,6 +232,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if pout(7) = '0' and pout(0) = '1' then
           ns <= srstdone; 
         else
@@ -237,6 +247,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
        ns <= initcmd;                  
         
       when initcmd =>
@@ -247,6 +258,7 @@ begin
         bsel    <= 1;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= init0;
         else
@@ -258,9 +270,10 @@ begin
         bstart  <= '1';
         bcntrst <= '0';
         bcnten <= '0'; 
-        bsel    <= 5;                   -- debugging
+        bsel    <= 5;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= init1;
         else
@@ -272,12 +285,12 @@ begin
         bstart  <= '0';
         bcntrst <= '0';
         bcnten <= '1'; 
-        bsel    <= 5;                   -- debugging
+        bsel    <= 5;                
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bcnt = 4 then
-          --ns <= initchk;                --
-          ns <= initrw;                 -- debugging
+          ns <= initrw; 
         else
           ns    <= init0;  
         end if;
@@ -291,6 +304,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= initr; 
         else
@@ -305,6 +319,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if pout(7) = '0' then
           ns <= initdone; 
         else
@@ -319,6 +334,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if pout(7) = '0' and pout(0) = '0' then
           ns <= datardy;
         else
@@ -332,6 +348,7 @@ begin
         bsel    <= 1;
         DVALID  <= '0';
         DDONE   <= '1';
+        DREADING <= '0';
         if DSTART = '1' then
           ns <= rdcmd;
         else
@@ -346,6 +363,7 @@ begin
         bsel    <= 2;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= rdw1;
         else
@@ -360,8 +378,9 @@ begin
         bsel    <= 4;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
-          ns <= rdw2;
+          ns <= rdaddr1;
         else
           ns <= rdw1; 
         end if;
@@ -374,8 +393,9 @@ begin
         bsel    <= 4;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
-          ns <= rdaddr1;
+          ns <= rdchk;
         else
           ns <= rdw2; 
         end if;
@@ -388,6 +408,7 @@ begin
         bsel    <= 7;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= rdaddr2;
         else
@@ -402,8 +423,9 @@ begin
         bsel    <= 6;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
-          ns <= rdchk;
+          ns <= rdw2;
         else
           ns <= rdaddr2; 
         end if;
@@ -416,6 +438,7 @@ begin
         bsel    <= 6;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= rddelay1;
         else
@@ -430,6 +453,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= rddelay2;
         else
@@ -444,6 +468,7 @@ begin
         bsel    <= 4;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if pout(7) = '0' then
           ns <= rdtokw;
         else
@@ -458,6 +483,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= rdtokchk;
         else
@@ -472,6 +498,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if pout = X"FE" then
           
           ns <= rddata;
@@ -487,6 +514,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '1';
         if bdone = '1' then          
           ns <= rddatadl; 
         else
@@ -501,6 +529,7 @@ begin
         bsel    <= 3;
         DVALID  <= '1';
         DDONE   <= '0';
+        DREADING <= '1';
         if bcnt = 511 then
           ns <= rdchk1; 
         else
@@ -515,6 +544,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= rdchk2;
         else
@@ -529,6 +559,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '0';
+        DREADING <= '0';
         if bdone = '1' then
           ns <= rddatadn;
         else
@@ -543,6 +574,7 @@ begin
         bsel    <= 3;
         DVALID  <= '0';
         DDONE   <= '1';
+        DREADING <= '0';
         
         ns <= datardy; 
         
