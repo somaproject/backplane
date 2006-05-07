@@ -10,12 +10,11 @@ use UNISIM.VComponents.all;
 entity boot is
   port (
     CLK    : in  std_logic;
---    RESET : in std_logic; 
     SCS    : out std_logic;
     SDIN   : in  std_logic;
     SDOUT  : out std_logic;
     SCLK   : out std_logic;
-    FSDIN  : out std_logic;
+--    FSDIN  : out std_logic;
     FSDOUT : in  std_logic;
     FSCS   : in  std_logic; 
     FSCLK  : in  std_logic;
@@ -40,11 +39,14 @@ architecture Behavioral of boot is
            DSTART : in  std_logic;
            ADDR   : in  std_logic_vector(15 downto 0);
            DVALID : out std_logic;
+           DREADING : out std_logic; 
            DDONE  : out std_logic
            );
   end component;
 
   component xilinxcfg
+    generic (
+      SIMPLE : boolean);
     port (
       CLK    : in  std_logic;
       RESET : in std_logic;
@@ -70,6 +72,8 @@ architecture Behavioral of boot is
 
   signal fsel : std_logic := '0';
 
+  signal dreading : std_logic := '0';
+  
 begin  -- Behavioral 
 
 
@@ -77,15 +81,20 @@ begin  -- Behavioral
   --fsdin <= SDIN;
 
 
-  SCS   <= bscs; --when FSEL = '0' else fscs;
+  SCS   <= bscs when FSEL = '0' else fscs;
   
-  SCLK  <= bsclk;  --when FSEL = '0' else fsclk;
-  SDOUT <= bsdout; --when FSEL = '0' else fsdout;
+  SCLK  <= bsclk when FSEL = '0' else fsclk;
+  SDOUT <= bsdout when FSEL = '0' else fsdout;
 
+
+  FDIN <= SDIN;
+  FCLK <= bsclk when dreading = '1' else '0';
+
+  
   mmcio_inst : mmcio
     port map (
       CLK    => CLK,
-      RESET  =>  '0',-- RESET,
+      RESET  =>  '0',
       SCS    => bscs,
       SDIN   => bsdin,
       SDOUT  => bsdout,
@@ -94,20 +103,23 @@ begin  -- Behavioral
       DSTART => dstart,
       ADDR   => addr,
       DVALID => dvalid,
+      DREADING => dreading, 
       DDONE  => ddone);
 
   xilinxcfg_inst : xilinxcfg
+    generic map (
+      SIMPLE => true)
     port map (
       CLK    => CLK,
-      RESET => '0', -- RESET,
+      RESET => '0', 
       DSTART => dstart,
       DIN    => data,
       DDONE   => ddone,
       DVALID => dvalid,
       ADDR   => addr,
-      FCLK   => FCLK,
+      FCLK   => open,
       FPROG  => FPROG,
-      FDIN   => FDIN,
+      FDIN   => open,
       FSEL   => fsel);
 
 end Behavioral ;
