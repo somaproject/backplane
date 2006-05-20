@@ -1,0 +1,10 @@
+The timer module occupies a special privledged position on the Event Bus, being responsible for emiting the EVENT signals that condition event timing for the entire system. 
+
+It is an exceedingly simple device, emitting the system timestamp every event.
+
+The system timestamp is a 48-bit unsigned integer that is present in
+the first three words of an event, with the MSB in the first word. The
+event is always broadcast to all clients.
+
+This event is broadcast to all devices. 
+
