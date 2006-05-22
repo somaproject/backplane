@@ -123,11 +123,18 @@ begin  -- Behavioral
 
 
         wait until rising_edge(ECYCLE);
-        timecnt <= timecnt + 1; 
-          
+        timecnt <= timecnt + 1;
+
       end loop;  -- i
 
     end loop;
   end process;
 
+  process
+  begin
+    wait for 40 ms;
+    assert false report "End of Simulation" severity failure;
+
+  end process;
+  
 end Behavioral;
