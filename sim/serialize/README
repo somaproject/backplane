@@ -1,0 +1,9 @@
+Test the clock-frame serializer. Can we put in a series of data words
+and get appropriately-framed words out?
+
+We simply put in the digits 0-1023 and then try and read them out; the
+goal is to acquire a clock-frame lock inside of some small number of
+clock cycles and then read a robust 1024 words out. 
+
+
+

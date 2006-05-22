@@ -6,7 +6,10 @@ all: hw comp sim
 $(WORKDIR)/serialize/_behavioral.var: ../../vhdl/devicelink/serialize.vhd
 	$(VHDLC) ../../vhdl/devicelink/serialize.vhd
 
-hw: $(WORKDIR)/serialize/_behavioral.var 
+$(WORKDIR)/serdes/_behavioral.var: ../../deviceio/sim/components/serdes/serdes.vhd
+	$(VHDLC) ../../deviceio/sim/components/serdes/serdes.vhd
+
+hw: $(WORKDIR)/serialize/_behavioral.var $(WORKDIR)/serdes/_behavioral.var 
 
 comp: 
 

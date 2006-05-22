@@ -1,7 +1,3 @@
-
-
-
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
@@ -21,7 +17,6 @@ architecture Behavioral of serializetest is
 
 
   component serialize
-
     port (
       CLKA   : in  std_logic;
       CLKB   : in  std_logic;
@@ -44,7 +39,36 @@ architecture Behavioral of serializetest is
 
   signal mainclk : std_logic := '0';
 
-  signal cnt  : integer := 0;
+  signal cnt : integer := 0;
+
+
+  signal inputdata : std_logic_vector(9 downto 0) := (others => '0');
+
+  signal DOUT_P : std_logic := '0';
+  signal DOUT_N : std_logic := '1';
+
+  component serdes
+
+    port (
+      RI_P   : in  std_logic;
+      RI_N   : in  std_logic;
+      REFCLK : in  std_logic;
+      BITCLK : in  std_logic;
+      LOCK   : out std_logic;
+      RCLK   : out std_logic;
+      ROUT   : out std_logic_vector(9 downto 0));
+
+  end component;
+
+  signal lock, rclk      : std_logic                    := '0';
+  signal rxdata, rxdatal : std_logic_vector(9 downto 0) := (others => '0');
+
+  signal rxdatacnt : integer := 0;
+
+
+
+
+
 begin  -- Behavioral
 
   -- main clock driver
@@ -54,7 +78,7 @@ begin  -- Behavioral
   --
   --
 
-  serialize_uut: serialize
+  serialize_uut : serialize
     port map (
       CLKA   => CLKA,
       CLKB   => CLKB,
@@ -63,33 +87,78 @@ begin  -- Behavioral
       DIN    => DIN,
       DOUT   => DOUT,
       STOPTX => STOPTX);
-  
+
+
+  serdes_inst : serdes
+    port map (
+      RI_P   => DOUT_P,
+      RI_N   => DOUT_N,
+      REFCLK => CLKA,
+      BITCLK => mainclk,
+      LOCK   => lock,
+      RCLK   => rclk,
+      ROUT   => rxdata);
+
 
   clocka_gen : process
-    
+
   begin
     while true loop
-      
+
       wait until rising_edge(mainclk);
       if cnt mod 6 = 0 then
-        --CLKA <= not CLKA; 
+        CLKA <= not CLKA;
       end if;
 
       if cnt mod 5 = 0 then
-        CLKB <= not CLKB; 
+        CLKB <= not CLKB;
       end if;
 
       if cnt mod 1 = 0 then
-        BITCLK <= not BITCLK; 
+        BITCLK <= not BITCLK;
       end if;
-      cnt <= cnt + 1;
-      
-    end loop;   
+      cnt      <= cnt + 1;
+
+    end loop;
   end process clocka_gen;
 
+  RESET <= '0' after 100 ns;
 
+  -- input data stream
+  inputdata_gen : process (CLKA)
+  begin
+    if rising_edge(CLKA) then
+      inputdata <= inputdata + 1;
+      DIN       <= inputdata;
+    end if;
+  end process inputdata_gen;
 
-  RESET  <= '0' after 100 ns;
+  DOUT_P <= DOUT;
+  DOUT_N <= not DOUT;
 
+  -- data recovery
+  data_recovery : process(rclk)
+  begin
+    if rising_edge(rclk) then
+      if LOCK = '0' then
+        rxdatal <= rxdata;
 
+        if rxdatal + 1 = rxdata then
+          rxdatacnt <= rxdatacnt + 1;
+
+          if rxdatacnt = 2048 then
+            assert false report "End of Simulation" severity Failure;
+
+            
+          end if;
+        else
+          rxdatacnt <= 0;
+        end if;
+
+      else
+        rxdatacnt <= 0;
+      end if;
+    end if;
+
+  end process data_recovery;
 end Behavioral;
