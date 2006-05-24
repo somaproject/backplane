@@ -30,7 +30,10 @@ byte 2: lsb: the 8th evenet in the sequence is for this device
 ... through byte 10
 
 The total header duration is 11*4 + 1 = 45 bytes. The events are
-subsequently sent on the 50th byte (inclusive to the k28.5)
+subsequently sent on the 49th byte (inclusive to the k28.5), that
+is, there are 4 full-events-worth of packets before we start. 
+
+
 
 \subsection{RX Link}
 

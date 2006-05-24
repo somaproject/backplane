@@ -1,0 +1,19 @@
+
+
+The rxeventfifo is designed to interface with a core event port and
+provide a simple synchronous input FIFO for event reception, handling
+event address decoding. 
+
+The biggest challenge in the fifo is getting the timing correct. We
+already suffer from a proliferation of counters for keeping track of
+fifo state, and we really didn't want to add too many more.
+
+Every inbound event, nay every inbound byte, is actually written to
+the fifo, but on the 12th byte (BCNT = 11) if that EATX bit is set we
+increment the MSBs of the fifo input address (EINCNT), essentially
+``saving'' this event.
+
+Readout is simple: the assertion of EVALID informs the client that the
+event readable by EOUTA / EOUTD is valid; when the client is done
+reading that event, they can assert \signal{ENEXT}, and then on the
+subsequent cycle test EVALID again.
