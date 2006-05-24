@@ -1,0 +1,14 @@
+This is the test of the RX FIFO; 
+
+
+What do we want to test? 
+
+1. event sequencing: Can we read a single event? 
+2. Event simultaneity: can we read an event while we're writing more events? 
+3. Do we properly handle the no-op case? 
+4. do we properly wrap-around? 
+
+
+We generate a fake series of events with the high byte being the event source ID, and the low bytes counting 0->5. 
+
+
