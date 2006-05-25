@@ -20,6 +20,7 @@ else:
     
     suite.addTest(vhdlTestCase("eventrouter"))
     suite.addTest(vhdlTestCase("serialize"))
+    suite.addTest(vhdlTestCase("rxeventfifo"))
 
     # core devices
     suite.addTest(vhdlTestCase("timer"))

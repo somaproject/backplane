@@ -49,8 +49,8 @@
   <sodipodi:namedview
      inkscape:window-y="0"
      inkscape:window-x="0"
-     inkscape:window-height="1174"
-     inkscape:window-width="1598"
+     inkscape:window-height="756"
+     inkscape:window-width="903"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
      gridtolerance="10000"
@@ -62,9 +62,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="842.00845"
-     inkscape:cx="660.29658"
-     inkscape:zoom="2.8284271"
+     inkscape:cy="791.14256"
+     inkscape:cx="396.78757"
+     inkscape:zoom="1.4142136"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -247,7 +247,11 @@
          sodipodi:role="line"
          x="234.375"
          y="109.375"
-         id="tspan3642">FPROG=0</tspan></text>
+         id="tspan3642">FPROG=0</tspan><tspan
+         sodipodi:role="line"
+         x="234.375"
+         y="120.625"
+         id="tspan4999">FSET= 1</tspan></text>
     <path
        id="path2690"
        d="M 415.62506,61.874981 L 415.62506,61.874981"
@@ -326,7 +330,7 @@
          id="tspan2714">else</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:9;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="365.62506"
        y="86.874977"
        id="text2716"
@@ -338,7 +342,11 @@
          sodipodi:role="line"
          x="365.62506"
          y="98.124977"
-         id="tspan2720">OUTINC=1</tspan></text>
+         id="tspan2720">OUTINC=1</tspan><tspan
+         sodipodi:role="line"
+         x="365.62506"
+         y="109.37498"
+         id="tspan5001">FSET=0</tspan></text>
     <path
        id="path3610"
        d="M 575.00003,61.875012 L 575.00003,61.875012"
@@ -428,7 +436,11 @@
          sodipodi:role="line"
          x="559.375"
          y="109.375"
-         id="tspan3644">FPROG=1</tspan></text>
+         id="tspan3644">FPROG=1</tspan><tspan
+         sodipodi:role="line"
+         x="559.375"
+         y="120.625"
+         id="tspan5003">FSET=1</tspan></text>
     <path
        id="path3646"
        d="M 162.50006,186.87501 L 162.50006,186.87501"
@@ -1034,7 +1046,7 @@
          sodipodi:role="line"
          x="678.27545"
          y="220"
-         id="tspan4814">MCNTINT=1</tspan></text>
+         id="tspan4814">MCNTINT=0</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 737.5,305.625 L 746.875,305.625 C 746.875,305.625 759.375,305.625 759.375,293.125 C 759.375,280.625 759.375,186.875 759.375,186.875 C 759.375,186.875 759.375,174.375 746.875,174.375 C 746.875,174.375 737.5,174.375 737.5,174.375"
@@ -1132,5 +1144,16 @@
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.25;font-family:Bitstream Vera Sans"
        xml:space="preserve"><tspan
          id="tspan4856">else</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="184.375"
+       y="49.375"
+       id="text4995"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4997"
+         x="184.375"
+         y="49.375">START=1</tspan></text>
   </g>
 </svg>

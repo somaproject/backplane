@@ -1,0 +1,17 @@
+
+Boot Is the simple low-level interface to the MMC-based early-stage
+boot configuration for all devices. 
+
+It receives a single command, 0x20, which is structured as follows: 
+
+byte 0-1: bit mask indiciating which devices to boot
+byte 2: length (in 512-byte blocks) of boot sequence
+bytes 3-4: address to start to boot from
+
+it sends one response back to the original sender
+
+
+0x21: Response, with : 
+   byte 0: 0x0001 -- boot complete and successful
+	   0x0002 -- boot request ignored, current boot pending
+

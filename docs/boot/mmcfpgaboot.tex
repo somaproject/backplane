@@ -1,0 +1,51 @@
+
+
+This prompts us to formalize our serial protocol. There's a problem
+because our serial protocol is asynchronous. We'll make the assumption
+that our clocks are close-enough that we can just send our data 5x
+slower, and successfuly recover the bits.
+
+
+Our bitstream is a list of 5 bits:
+
+
+\section{bootserialize}
+
+0
+FPROG
+FCLK
+FDIN
+
+all other bits are ones. 
+
+Capture is initiated by the 1->0 transition, which prompts the capture
+of the next 4*5 = 25 bits; the middle bit is sampled.
+
+BCNT just counts to 4 and resets
+
+This is a very simple FSM which just uses the BCNT as a clock-enable
+and outputs each bit for 5 ticks.
+
+
+\section{mmcfpgaboot}
+
+The MMCFPGAboot interface lets you give it an address, a length, and a
+list of devices, and it will serial-boot those devices.
+
+upon assertion of \signal{START}, the FSM first serializes an
+assertion of the FPGA's \signal{PROGRAM} line for a fixed duration to
+reset the target chips.
+
+Then, we use the MMCio interface (defined elsewhere) to read in a
+single block from the MMC interface.
+
+We read the full 512 bytes into a buffer and then use an additional
+counter on the other side of the BlockRAM to read them out a bit at a
+time. 
+
+We serialize these via the BootSerialize module, asserting the fclk as
+we go along.
+
+Wen we have transfered enough blocks, MCNT will equal bootlen, and we
+stop and assert \signal{DONE}.
+
