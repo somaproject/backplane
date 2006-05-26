@@ -9,6 +9,10 @@ use WORK.somabackplane.all;
 use work.somabackplane;
 
 
+library UNISIM;
+use UNISIM.VComponents.all;
+
+
 entity mmcfpgaboot is
 
   generic (
@@ -16,6 +20,7 @@ entity mmcfpgaboot is
 
   port (
     CLK      : in  std_logic;
+    RESET    : in  std_logic;
     BOOTASEL : in  std_logic_vector(M-1 downto 0);
     SEROUT   : out std_logic_vector(M-1 downto 0);
     BOOTADDR : in  std_logic_vector(15 downto 0);
@@ -34,6 +39,8 @@ architecture Behavioral of mmcfpgaboot is
   signal mcnt             : std_logic_vector(15 downto 0) := (others => '0');
   signal mcntinc, mcntrst : std_logic                     := '0';
 
+  signal incnt : std_logic_vector(9 downto 0) := (others => '0');
+
   signal mmcdata        : std_logic_vector(7 downto 0) := (others => '0');
   signal dstart, dvalid : std_logic                    := '0';
   signal ddone          : std_logic                    := '0';
@@ -42,18 +49,20 @@ architecture Behavioral of mmcfpgaboot is
   signal outcnt : std_logic_vector(13 downto 0) := (others => '0');
   signal outinc : std_logic                     := '0';
 
+  signal outrst : std_logic := '0';
+
   signal fprog, fclk, fset, fdone : std_logic := '0';
 
   signal addr : std_logic_vector(15 downto 0) := (others => '0');
 
   type states is (none, fprogs, fprogw, fproge, nextbl,
-                enddone, blreads, blreadw, bitwrite, bitsclk, bits
+                  enddone, blreads, blreadw, bitwrite, bitsclk, bitsclk0, bits,
                   clk0, bitnext, bitnext2);
-  signal cs, ns : states := non;
-  
+  signal cs, ns : states := none;
+
   component bootserialize
     generic (
-      M : integer := 20);
+      M      :     integer := 20);
     port (
       CLK    : in  std_logic;
       FPROG  : in  std_logic;
@@ -62,41 +71,41 @@ architecture Behavioral of mmcfpgaboot is
       FSET   : in  std_logic;
       FDONE  : out std_logic;
       SEROUT : out std_logic_vector(M-1 downto 0);
-      ASELM  : out std_logic_vector(M-1 downto 0));
+      ASEL   : in  std_logic_vector(M-1 downto 0));
   end component;
 
-  component mmcio 
-  port ( CLK    : in  std_logic;
-         RESET  : in  std_logic;
-         SCS    : out std_logic;
-         SDIN   : in  std_logic;
-         SDOUT  : out std_logic;
-         SCLK   : out std_logic;
-         DOUT   : out std_logic_vector(7 downto 0);
-         DSTART : in  std_logic;
-         ADDR   : in std_logic_vector(15 downto 0);
-         DVALID : out std_logic;
-         DREADING : out std_logic;
-         DDONE  : out std_logic
-         );
+  component mmcio
+    port ( CLK      : in  std_logic;
+           RESET    : in  std_logic;
+           SCS      : out std_logic;
+           SDIN     : in  std_logic;
+           SDOUT    : out std_logic;
+           SCLK     : out std_logic;
+           DOUT     : out std_logic_vector(7 downto 0);
+           DSTART   : in  std_logic;
+           ADDR     : in  std_logic_vector(15 downto 0);
+           DVALID   : out std_logic;
+           DREADING : out std_logic;
+           DDONE    : out std_logic
+           );
   end component;
 
 begin  -- Behavioral
 
-  bootserialize_inst: bootserialize
+  bootserialize_inst : bootserialize
     generic map (
-      M => M); 
+      M      => M)
     port map (
-      CLK      => CLK,
-      FPROG    => fprog,
-      FCLK     => fclk, ,
-      FDIN     => fdin,
-      FSET     => fset,
-      FDONE    => fdone,
-      SEROUT   => SEROUT,
-      BOOTASEL => BOOTASEL); 
-    
-  mmcio_inst: mmcio
+      CLK    => CLK,
+      FPROG  => fprog,
+      FCLK   => fclk,
+      FDIN   => fdin(0),
+      FSET   => fset,
+      FDONE  => fdone,
+      SEROUT => SEROUT,
+      ASEL   => BOOTASEL);
+
+  mmcio_inst : mmcio
     port map (
       CLK      => CLK,
       RESET    => RESET,
@@ -109,253 +118,285 @@ begin  -- Behavioral
       DVALID   => dvalid,
       ADDR     => addr,
       DREADING => open,
-      DDONE    => ddone); 
+      DDONE    => ddone);
 
   addr <= mcnt + BOOTADDR;
 
-  main: process(CLK, RESET)
-    begin
-      if RESET = '1' then
+  main : process(CLK, RESET)
+  begin
+    if RESET = '1' then
+    else
+      if rising_edge(CLK) then
+
+        cs <= ns;
+
+        -- MCNT
+        if mcntrst = '1' then
+          mcnt   <= (others => '0');
         else
-          if rising_edge(CLK) then
-
-            cs <= ns;
-
-            -- MCNT
-            if mcntrst = '1' then
-              mcnt <= (others => '0');
-            else
-              if mcntinc = '1' then
-                mcnt <= mcnt + 1; 
-              end if;
-            end if;
-
-            -- acnt
-            if dstart = '1' then
-              incnt <= (others => '0');
-            else
-              if dvalid = 1'' then
-                incnt <= incnt + 1; 
-              end if;
-            end if;
-
-
-            -- out counter
-            if outrst = '1' then
-              outcnt <= (others => '0');
-            else
-              if outinc = '1' then
-                outcnt <= outcnt + 1; 
-              end if;
-            end if;
-            
+          if mcntinc = '1' then
+            mcnt <= mcnt + 1;
           end if;
+        end if;
+
+        -- acnt
+        if dstart = '1' then
+          incnt   <= (others => '0');
+        else
+          if dvalid = '1' then
+            incnt <= incnt + 1;
+          end if;
+        end if;
+
+
+        -- out counter
+        if outrst = '1' then
+          outcnt   <= (others => '0');
+        else
+          if outinc = '1' then
+            outcnt <= outcnt + 1;
+          end if;
+        end if;
+
       end if;
+    end if;
 
-    end process main; 
-
-
-
+  end process main;
 
 
 
-    fsm: process (cs, start, fdone, outcnt,mcnt, bootcnt, ddone)
-      begin
-        case cs is
-          when none =>
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if START = '1' then
-              ns <= fprogs;
-            else
-              ns <= none; 
-            end if;
+  fsm : process (cs, start, fdone, outcnt, mcnt, BOOTLEN, ddone)
+  begin
+    case cs is
+      when none =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if START = '1' then
+          ns    <= fprogs;
+        else
+          ns    <= none;
+        end if;
 
-          when fprogs =>
-            outrst <= '1';
-            outinc <= '0';
-            fprog <= '0';
-            fset <= '1';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if fdone = '1' then
-              ns <= fprogw;
-            else
-              ns <= fprogs;  
-            end if;
-            
-          when fprogw =>
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '0';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if outcnt = 1024 then
-              ns <= fproge;
-            else
-              ns <= fprogw;  
-            end if;
-            
-          when fprogs =>
-            outrst <= '1';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '1';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if fdone = '1'
-              ns <= blreads;
-            else
-              ns <= fproge;  
-            end if;
-            
-          when blreads =>
-            outrst <= '1';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '1'; 
-            mcntint <= '0';
-            DONE <= '0';
-            ns <= blreadw;
+      when fprogs =>
+        outrst  <= '1';
+        outinc  <= '0';
+        fprog   <= '0';
+        fset    <= '1';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if fdone = '1' then
+          ns    <= fprogw;
+        else
+          ns    <= fprogs;
+        end if;
 
-          when blreadw =>
-            outrst <= '1';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if ddone = '1' then
-              ns <= bitwrite;
-            else
-              ns <= blreadw; 
-            end if;
+      when fprogw =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '0';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if outcnt = 1024 then
+          ns    <= fproge;
+        else
+          ns    <= fprogw;
+        end if;
 
-          when bitwrite =>
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '1';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if fdone = '1' then
-              ns <= bitsclk;
-            else
-              ns <= bitwrite; 
-            end if;
-            
-          when bitsclk => 
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '1';
-            fclk <= '1';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if fdone = '1' then
-              ns <= bitsclk0;
-            else
-              ns <= bitsclk; 
-            end if;
-            
-          when bitsclk0 => 
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '1';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if fdone = '1' then
-              ns <= bitnext;
-            else
-              ns <= bitsclk0; 
-            end if;
-            
-          when bitnext => 
-            outrst <= '0';
-            outinc <= '1';
-            fprog <= '1';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if outcnt = "00111111111111" then
-              ns <= bitnext2;
-            else
-              ns <= bitwrite;
-            end if;
-            
-          when bitnext2 => 
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '1';
-            DONE <= '0';
-            ns <= nextbl; 
-            
-          when nextbl => 
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '1';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            if mcnt = bootcnt then
-              ns <= enddone;
-            else
-              ns <= blreads; 
-            end if;
-            
-          when enddone => 
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '0';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '1';
-            ns <= none; 
-          when others =>
-            outrst <= '0';
-            outinc <= '0';
-            fprog <= '0';
-            fset <= '0';
-            fclk <= '0';
-            dstart <= '0'; 
-            mcntint <= '0';
-            DONE <= '0';
-            ns <= none; 
-        end case;
-      end process fsm; 
-      
-      
-  end Behavioral;
+      when fproge =>
+        outrst  <= '1';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '1';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if fdone = '1' then
+          ns    <= blreads;
+        else
+          ns    <= fproge;
+        end if;
+
+      when blreads =>
+        outrst  <= '1';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '1';
+        mcntinc <= '0';
+        DONE    <= '0';
+        ns      <= blreadw;
+
+      when blreadw =>
+        outrst  <= '1';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if ddone = '1' then
+          ns    <= bitwrite;
+        else
+          ns    <= blreadw;
+        end if;
+
+      when bitwrite =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '1';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if fdone = '1' then
+          ns    <= bitsclk;
+        else
+          ns    <= bitwrite;
+        end if;
+
+      when bitsclk =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '1';
+        fclk    <= '1';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if fdone = '1' then
+          ns    <= bitsclk0;
+        else
+          ns    <= bitsclk;
+        end if;
+
+      when bitsclk0 =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '1';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if fdone = '1' then
+          ns    <= bitnext;
+        else
+          ns    <= bitsclk0;
+        end if;
+
+      when bitnext =>
+        outrst  <= '0';
+        outinc  <= '1';
+        fprog   <= '1';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if outcnt = "00111111111111" then
+          ns    <= bitnext2;
+        else
+          ns    <= bitwrite;
+        end if;
+
+      when bitnext2 =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '1';
+        DONE    <= '0';
+        ns      <= nextbl;
+
+      when nextbl =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if mcnt = BOOTLEN then
+          ns    <= enddone;
+        else
+          ns    <= blreads;
+        end if;
+
+      when enddone =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '0';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '1';
+        ns      <= none;
+      when others  =>
+        outrst  <= '0';
+        outinc  <= '0';
+        fprog   <= '0';
+        fset    <= '0';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        ns      <= none;
+    end case;
+  end process fsm;
+
+
+
+
+
+
+  eventbuffer : RAMB16_S1_S9
+    generic map (
+      INIT_A              => "0",
+      INIT_B              => X"000",
+      SRVAL_A             => "0",
+      SRVAL_B             => X"000",
+      SIM_COLLISION_CHECK => "NONE"
+      )
+
+    port map (
+
+      DOA   => fdin,
+      DOB   => open,
+      DOPB  => open,
+      ADDRA => outcnt,
+      ADDRB => incnt,
+      CLKA  => CLK,
+      CLKB  => CLK,
+      DIA   => "0",
+      DIB   => mmcdata,
+      DIPB  => "0",
+      ENA   => '1',
+      ENB   => '1',
+      SSRA  => RESET,
+      SSRB  => RESET,
+      WEA   => '0',
+      WEB   => DVALID
+      );
+
+
+
+end Behavioral;

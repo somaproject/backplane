@@ -21,7 +21,7 @@ entity bootserialize is
     FSET   : in  std_logic;
     FDONE  : out std_logic;
     SEROUT : out std_logic_vector(M-1 downto 0);
-    ASELM  : out std_logic_vector(M-1 downto 0));
+    ASEL  : in std_logic_vector(M-1 downto 0));
 
 end bootserialize;
 
