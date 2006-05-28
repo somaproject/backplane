@@ -9,7 +9,7 @@ use WORK.somabackplane.all;
 use work.somabackplane;
 
 
-entity boot is
+entity bootcontrol is
 
   generic (
     M       :     integer                      := 20;
@@ -18,34 +18,29 @@ entity boot is
   port (
     CLK     : in  std_logic;
     RESET   : in  std_logic;
-    EDTX    : in  std_logic_vector(7 downto 0);
-    EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
     ECYCLE  : in  std_logic;
     EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
     EDRX    : out std_logic_vector(7 downto 0);
     EDSELRX : in  std_logic_vector(3 downto 0);
-    EOUTD  : out std_logic_vector(15 downto 0);
-    EOUTA  : in  std_logic_vector(2 downto 0);
-    EVALID : out std_logic;
-    ENEXT  : in  std_logic
+    EOUTD  : in std_logic_vector(15 downto 0);
+    EOUTA  : out  std_logic_vector(2 downto 0);
+    EVALID : in std_logic;
+    ENEXT  : out  std_logic;
     BOOTASEL : out  std_logic_vector(M-1 downto 0);
     BOOTADDR : out  std_logic_vector(15 downto 0);
-    BOOTLEN  : in  std_logic_vector(15 downto 0);
+    BOOTLEN  : out  std_logic_vector(15 downto 0);
     MMCSTART    : out  std_logic;
     MMCDONE     : in std_logic
     );
   
 
-end boot;
+end bootcontrol;
 
-architecture Behavioral of boot is
+architecture Behavioral of bootcontrol is
 
   constant CMD : std_logic_vector := X"20";
 
   -- event input
-  signal enext : std_logic                     := '0';
-  signal eouta : std_logic_vector(2 downto 0)  := (others => '0');
-  signal eoutd : std_logic_vector(15 downto 0) := (others => '0');
 
   -- boot parameters
 
@@ -58,7 +53,6 @@ architecture Behavioral of boot is
 
   signal oset : std_logic := '0';
 
-  signal evalid  : std_logic                    := '0';
   signal estatus : std_logic_vector(7 downto 0) := (others => '0');
 
   signal learx   : std_logic_vector(somabackplane.N - 1 downto 0);
