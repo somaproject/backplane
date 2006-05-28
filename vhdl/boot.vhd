@@ -24,11 +24,17 @@ entity boot is
     EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
     EDRX    : out std_logic_vector(7 downto 0);
     EDSELRX : in  std_logic_vector(3 downto 0);
-    SDOUT   : out std_logic;
-    SDIN    : in  std_logic;
-    SCLK    : out std_logic;
-    SCS     : out std_logic;
-    SEROUT  : out std_logic_vector(M-1 downto 0));
+    EOUTD  : out std_logic_vector(15 downto 0);
+    EOUTA  : in  std_logic_vector(2 downto 0);
+    EVALID : out std_logic;
+    ENEXT  : in  std_logic
+    BOOTASEL : out  std_logic_vector(M-1 downto 0);
+    BOOTADDR : out  std_logic_vector(15 downto 0);
+    BOOTLEN  : in  std_logic_vector(15 downto 0);
+    MMCSTART    : out  std_logic;
+    MMCDONE     : in std_logic
+    );
+  
 
 end boot;
 
@@ -42,13 +48,9 @@ architecture Behavioral of boot is
   signal eoutd : std_logic_vector(15 downto 0) := (others => '0');
 
   -- boot parameters
-  signal bootaddr : std_logic_vector(15 downto 0) := (others => '0');
-  signal bootlen  : std_logic_vector(15 downto 0) := (others => '0');
-  signal bootasel : std_logic_vector(31 downto 0) := (others => '0');
 
   signal booting : std_logic := '0';
 
-  signal mmcstart, mmcdone : std_logic := '0';
   signal mmcdonel          : std_logic := '0';
 
   signal errstate : std_logic                    := '0';
@@ -73,79 +75,9 @@ architecture Behavioral of boot is
 
 
 
-  component rxeventfifo
-    port (
-      CLK    : in  std_logic;
-      RESET  : in  std_logic;
-      ECYCLE : in  std_logic;
-      EATX   : in  std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX   : in  std_logic_vector(7 downto 0);
-      -- outputs
-      EOUTD  : out std_logic_vector(15 downto 0);
-      EOUTA  : in  std_logic_vector(2 downto 0);
-      EVALID : out std_logic;
-      ENEXT  : in  std_logic
-      );
-  end component;
-
-  component mmcfpgaboot
-
-    generic (
-      M : integer := 20);
-
-    port (
-      CLK      : in  std_logic;
-      RESET    : in  std_logic;
-      BOOTASEL : in  std_logic_vector(M-1 downto 0);
-      SEROUT   : out std_logic_vector(M-1 downto 0);
-      BOOTADDR : in  std_logic_vector(15 downto 0);
-      BOOTLEN  : in  std_logic_vector(15 downto 0);
-      START    : in  std_logic;
-      DONE     : out std_logic;
-      SDOUT    : out std_logic;
-      SDIN     : in  std_logic;
-      SCLK     : out std_logic;
-      SCS      : out std_logic);
-
-  end component;
-
-
-
-
 
 
 begin  -- Behavioral
-
-  rxeventfifo_inst : rxeventfifo
-    port map (
-      CLK    => CLK,
-      RESET  => RESET,
-      ECYCLE => ECYCLE,
-      EATX   => EATX,
-      EDTX   => EDTX,
-      EOUTD  => eoutd,
-      EOUTA  => eouta,
-      EVALID => evalid,
-      ENEXT  => enext);
-
-
-  mmcfpgaboot_inst : mmcfpgaboot
-    generic map (
-      M        => M)
-    port map (
-      CLK      => CLK,
-      RESET    => RESET,
-      BOOTASEL => bootasel(M-1 downto 0),
-      serout   => SEROUT,
-      bootaddr => bootaddr,
-      BOOTLEN  => bootlen,
-      START    => mmcstart,
-      DONE     => mmcdone,
-      SDOUT    => SDOUT,
-      SDIN     => SDIN,
-      SCLK     => SCLK,
-      SCS      => SCS);
-
 
   -- event data mux
   EDRX <= CMD     when edselrx = X"0" else

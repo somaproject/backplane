@@ -61,7 +61,7 @@ begin  -- Behavioral
     end process outregproc;
   end generate outreg;
 
-  main : process
+  main : process(CLK)
   begin
     if rising_edge(CLK) then
 

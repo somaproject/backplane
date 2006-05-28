@@ -39,7 +39,7 @@ architecture Behavioral of mmcfpgaboot is
   signal mcnt             : std_logic_vector(15 downto 0) := (others => '0');
   signal mcntinc, mcntrst : std_logic                     := '0';
 
-  signal incnt : std_logic_vector(9 downto 0) := (others => '0');
+  signal incnt : std_logic_vector(10 downto 0) := (others => '0');
 
   signal mmcdata        : std_logic_vector(7 downto 0) := (others => '0');
   signal dstart, dvalid : std_logic                    := '0';
@@ -60,19 +60,19 @@ architecture Behavioral of mmcfpgaboot is
                   clk0, bitnext, bitnext2);
   signal cs, ns : states := none;
 
-  component bootserialize
-    generic (
-      M      :     integer := 20);
-    port (
-      CLK    : in  std_logic;
-      FPROG  : in  std_logic;
-      FCLK   : in  std_logic;
-      FDIN   : in  std_logic;
-      FSET   : in  std_logic;
-      FDONE  : out std_logic;
-      SEROUT : out std_logic_vector(M-1 downto 0);
-      ASEL   : in  std_logic_vector(M-1 downto 0));
-  end component;
+   component bootserialize
+     generic (
+       M      :     integer := 20);
+     port (
+       CLK    : in  std_logic;
+       FPROG  : in  std_logic;
+       FCLK   : in  std_logic;
+       FDIN   : in  std_logic;
+       FSET   : in  std_logic;
+       FDONE  : out std_logic;
+       SEROUT : out std_logic_vector(M-1 downto 0);
+       ASEL   : in  std_logic_vector(M-1 downto 0));
+   end component;
 
   component mmcio
     port ( CLK      : in  std_logic;
@@ -92,33 +92,33 @@ architecture Behavioral of mmcfpgaboot is
 
 begin  -- Behavioral
 
-  bootserialize_inst : bootserialize
-    generic map (
-      M      => M)
-    port map (
-      CLK    => CLK,
-      FPROG  => fprog,
-      FCLK   => fclk,
-      FDIN   => fdin(0),
-      FSET   => fset,
-      FDONE  => fdone,
-      SEROUT => SEROUT,
-      ASEL   => BOOTASEL);
+    bootserialize_inst : bootserialize
+      generic map (
+        M      => M)
+      port map (
+        CLK    => CLK,
+        FPROG  => fprog,
+        FCLK   => fclk,
+        FDIN   => fdin(0),
+        FSET   => fset,
+        FDONE  => fdone,
+        SEROUT => SEROUT,
+        ASEL   => BOOTASEL);
 
-  mmcio_inst : mmcio
-    port map (
-      CLK      => CLK,
-      RESET    => RESET,
-      SCS      => SCS,
-      SDIN     => SDIN,
-      SDOUT    => SDOUT,
-      SCLK     => SCLK,
-      DOUT     => mmcdata,
-      DSTART   => dstart,
-      DVALID   => dvalid,
-      ADDR     => addr,
-      DREADING => open,
-      DDONE    => ddone);
+   mmcio_inst : mmcio
+     port map (
+       CLK      => CLK,
+       RESET    => RESET,
+       SCS      => SCS,
+       SDIN     => SDIN,
+       SDOUT    => SDOUT,
+       SCLK     => SCLK,
+       DOUT     => mmcdata,
+       DSTART   => dstart,
+       DVALID   => dvalid,
+       ADDR     => addr,
+       DREADING => open,
+       DDONE    => ddone);
 
   addr <= mcnt + BOOTADDR;
 
