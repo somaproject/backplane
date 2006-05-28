@@ -38,7 +38,8 @@ architecture Behavioral of bootserialize is
   type states is (none, swait, s0, s1, s2, s3, s4, sdone);
   signal cs, ns : states := none;
 
-
+  signal lserout : std_logic_vector(M-1 downto 0) := (others => '1');
+  
 
 begin  -- Behavioral
 
@@ -49,13 +50,13 @@ begin  -- Behavioral
             fclkl  when bsel = 3 else
             fdinl  when bsel = 4;
 
-
+  SEROUT <= lserout; 
   outreg       : for i in 0 to M-1 generate
     outregproc : process (CLK)
     begin
       if rising_edge(CLK) then
         if ASEL(i) = '1' then
-          SEROUT(i) <= muxout;
+          lserout(i) <= muxout;
         end if;
       end if;
     end process outregproc;

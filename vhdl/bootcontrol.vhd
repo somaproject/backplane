@@ -12,27 +12,27 @@ use work.somabackplane;
 entity bootcontrol is
 
   generic (
-    M       :     integer                      := 20;
-    DEVICE  :     std_logic_vector(7 downto 0) := X"01"
+    M        :     integer                      := 20;
+    DEVICE   :     std_logic_vector(7 downto 0) := X"01"
     );
   port (
-    CLK     : in  std_logic;
-    RESET   : in  std_logic;
-    ECYCLE  : in  std_logic;
-    EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
-    EDRX    : out std_logic_vector(7 downto 0);
-    EDSELRX : in  std_logic_vector(3 downto 0);
-    EOUTD  : in std_logic_vector(15 downto 0);
-    EOUTA  : out  std_logic_vector(2 downto 0);
-    EVALID : in std_logic;
-    ENEXT  : out  std_logic;
-    BOOTASEL : out  std_logic_vector(M-1 downto 0);
-    BOOTADDR : out  std_logic_vector(15 downto 0);
-    BOOTLEN  : out  std_logic_vector(15 downto 0);
-    MMCSTART    : out  std_logic;
-    MMCDONE     : in std_logic
+    CLK      : in  std_logic;
+    RESET    : in  std_logic;
+    ECYCLE   : in  std_logic;
+    EARX     : out std_logic_vector(somabackplane.N - 1 downto 0);
+    EDRX     : out std_logic_vector(7 downto 0);
+    EDSELRX  : in  std_logic_vector(3 downto 0);
+    EOUTD    : in  std_logic_vector(15 downto 0);
+    EOUTA    : out std_logic_vector(2 downto 0);
+    EVALID   : in  std_logic;
+    ENEXT    : out std_logic;
+    BOOTASEL : out std_logic_vector(M-1 downto 0);
+    BOOTADDR : out std_logic_vector(15 downto 0);
+    BOOTLEN  : out std_logic_vector(15 downto 0);
+    MMCSTART : out std_logic;
+    MMCDONE  : in  std_logic
     );
-  
+
 
 end bootcontrol;
 
@@ -46,7 +46,7 @@ architecture Behavioral of bootcontrol is
 
   signal booting : std_logic := '0';
 
-  signal mmcdonel          : std_logic := '0';
+  signal mmcdonel : std_logic := '0';
 
   signal errstate : std_logic                    := '0';
   signal srcl     : std_logic_vector(7 downto 0) := (others => '0');
@@ -179,7 +179,7 @@ begin  -- Behavioral
         eouta    <= "000";
         enext    <= '0';
         if mmcdonel = '1' then
-          ns     <= senddone; 
+          ns     <= senddone;
         else
           ns     <= readevt;
         end if;
