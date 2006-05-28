@@ -8,14 +8,14 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 entity mmc is
+  generic (
+    mode : integer := 0);
   port (
     RESET : in  std_logic;
     SCLK  : in  std_logic;
     SDIN  : in  std_logic;
     SDOUT : out std_logic;
-    SCS   : in  std_logic
-
-    );
+    SCS   : in  std_logic  );
 end mmc;
 
 architecture Behavioral of mmc is
@@ -27,6 +27,8 @@ architecture Behavioral of mmc is
   signal initstart : std_logic                    := '0';
   signal byteout   : std_logic_vector(7 downto 0) := (others => '0');
 
+  signal readaddr : std_logic_vector(31 downto 0) := (others => '0');
+  
 
 
 
@@ -121,7 +123,7 @@ begin  -- Behavioral
 
       elsif incmd(47 downto 40) = X"51" then
         -- read single block command
-
+        readaddr <= incmd(39 downto 8); 
         -- command not appropriate at this time; init not done
         for i in 1 to 3*8 loop
           -- NCR                        -- 4 bytes long
@@ -160,7 +162,17 @@ begin  -- Behavioral
           for bytepos in 0 to 511 loop
             for i in 7 downto 0 loop
               wait until falling_edge(SCLK);
+              if mode = 0 then
               SDOUT <= byteout(i);
+              elsif mode = 1 then
+                -- address-sending mode
+                if bytepos < 4 then
+                  SDOUT <= readaddr((3-bytepos) * 8 + i) ; 
+                else
+                  SDOUT <= byteout(i); 
+                end if;
+              end if;
+
               wait until rising_edge(SCLK);
             end loop;  -- i
             byteout <= byteout + 1;

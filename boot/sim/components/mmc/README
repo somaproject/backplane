@@ -3,5 +3,12 @@ Virtual MMC card
 This is a relatively simple virtual-MMC card which operates on the 
 "rising-edge latches, falling edge shifts" principle. 
 
+
+The MMC card has a variety of "modes" which enable its operation. 
+
+Mode 0:
 The MMC card, on each read, outputs 512 bytes counting from 0-255 twice
+
+Mode 1: 
+the first four words are the address of the block
 
