@@ -55,7 +55,7 @@ architecture Behavioral of mmcfpgaboot is
 
   signal addr : std_logic_vector(15 downto 0) := (others => '0');
 
-  type states is (none, fprogs, fprogw, fproge, nextbl,
+  type states is (none, fprogs, fprogw, fproge, mmcwait, nextbl,
                   enddone, blreads, blreadw, bitwrite, bitsclk, bitsclk0, bits,
                   clk0, bitnext, bitnext2);
   signal cs, ns : states := none;
@@ -131,7 +131,7 @@ begin  -- Behavioral
         cs <= ns;
 
         -- MCNT
-        if mcntrst = '1' then
+        if cs = none then
           mcnt   <= (others => '0');
         else
           if mcntinc = '1' then
@@ -200,7 +200,7 @@ begin  -- Behavioral
 
       when fprogw =>
         outrst  <= '0';
-        outinc  <= '0';
+        outinc  <= '1';
         fprog   <= '0';
         fset    <= '0';
         fclk    <= '0';
@@ -223,9 +223,23 @@ begin  -- Behavioral
         mcntinc <= '0';
         DONE    <= '0';
         if fdone = '1' then
-          ns    <= blreads;
+          ns    <= mmcwait;
         else
           ns    <= fproge;
+        end if;
+      when mmcwait =>
+        outrst  <= '1';
+        outinc  <= '0';
+        fprog   <= '1';
+        fset    <= '1';
+        fclk    <= '0';
+        dstart  <= '0';
+        mcntinc <= '0';
+        DONE    <= '0';
+        if ddone = '1' then
+          ns    <= blreads;
+        else
+          ns    <= mmcwait;
         end if;
 
       when blreads =>

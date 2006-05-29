@@ -21,7 +21,8 @@ end bootdeserialize;
 
 
 architecture Behavioral of bootdeserialize is
-  signal lfprog, lfdin, lfclk : std_logic := '0';
+  signal lfdin, lfclk : std_logic := '0';
+  signal lfprog : std_logic := '1';
   signal poscnt : integer := 0;
   signal dinreg : std_logic_vector(19 downto 0);
   

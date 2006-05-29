@@ -1,0 +1,21 @@
+This is a test of the mmc fpga boot interface. 
+
+The first test is a functional one: can we make it work at all? 
+
+We will create a simulated array of decoders and monitor the various
+state transitions.
+
+* simpleFPGA: 
+Part of the question is, how do we get an FPGA to boot and verify that
+it has booted properly? We need to verify proper PROGRAM assertion and then read out the correct blocks. 
+
+We create simpleFPGA; when it receives a "start" signal it will verify a proper boot sequence with the correct length and words, and then assert its VALIDBOOT line upon completion. 
+
+
+Then, we will try and boot the following: 
+
+boot(submask, start, blocklen, addr)
+
+Then we wait to see if that actually boots
+
+
