@@ -25,6 +25,9 @@ else:
     # core devices
     suite.addTest(vhdlTestCase("timer"))
 
-
+    # boot device
+    suite.addTest(vhdlTestCase("bootserialize"))
+    suite.addTest(vhdlTestCase("mmcfpgaboot"))
+    
 runner = unittest.TextTestRunner()
 runner.run(suite)
