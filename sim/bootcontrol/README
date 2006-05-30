@@ -1,0 +1,22 @@
+This is our boot control interface; we mate bootcontrol with rxeventfifo to test that we're properly receiving events and responding to them. 
+
+
+To that extent, we test: 
+1. what happens when we send no-op events? 
+2. what happens when we send a valid boot event? do we extract out the correct fields? 
+3. 
+
+
+Our current attempts are not working and this has become increasingly frustrating. 
+
+1. Cycle 1: transmit a no-op
+2. verify we receive no response event on the next cycle
+3. Transmit a boot event
+4. verify at some point in the future we receive a boot done event
+5. transmit multiple boot events
+6. verify that we receive errors
+7. verify that we receive the "boot done" event
+
+
+
+
