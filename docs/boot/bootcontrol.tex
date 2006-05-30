@@ -1,0 +1,28 @@
+The boot control interface serves as the bridge between the output of
+the rx event fifo and the mmcfpgaboot interface, handling command
+recept and response.
+
+Boot Is the simple low-level interface to the MMC-based early-stage
+boot configuration for all devices. 
+
+It receives a single command, 0x20, which is structured as follows: 
+
+word 0: high bits of field mask
+word 1: low bits of field mask
+
+word 2: length (in 512-byte blocks) of boot sequence
+word 3: address to start to boot from
+
+it sends one response back to the original sender
+
+
+0x20: Response, with : 
+   byte 0: 0x0002 -- boot complete and successful
+	   0x0001 -- boot request ignored, current boot pending
+
+
+           The interface of bootcontrol is such that the first boot
+           request it receives places it in ``booting'' mode
+           (\signal{BOOTING} = 1) and all subsequent requests cause an
+           error response until the boot is complete.
+
