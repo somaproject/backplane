@@ -254,15 +254,22 @@ begin  -- Behavioral
 
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
-    -- now try and send a correct event
+    -- now try and send a correct event and a second
+    -- request that should generate an error
     wait until rising_edge(CLK) and ECYCLE = '1';
-    eventinputs(4)(0) <= X"2008";
-    eventinputs(4)(1) <= X"0000";
-    eventinputs(4)(2) <= X"0100";
-    eventinputs(4)(3) <= X"2000";
-    eventinputs(4)(4) <= X"1000";
-    eventinputs(4)(5) <= X"0000";
+    eventinputs(8)(0) <= X"2008";
+    eventinputs(8)(1) <= X"0000";
+    eventinputs(8)(2) <= X"0100";
+    eventinputs(8)(3) <= X"2000";
+    eventinputs(8)(4) <= X"1000";
+    eventinputs(8)(5) <= X"0000";
     EATX(8)           <= '1';
+    eventinputs(9)(0) <= X"2009";
+    eventinputs(9)(1) <= X"0000";
+    eventinputs(9)(2) <= X"0100";
+    eventinputs(9)(3) <= X"2000";
+    eventinputs(9)(4) <= X"1000";
+    eventinputs(9)(5) <= X"0000";
     EATX(9)           <= '1';
     state <= multiwrite; 
     
@@ -272,7 +279,7 @@ begin  -- Behavioral
     assert bootaddr = X"1000" report "incorrect bootaddr" severity error;
 
 
-    -- now try and acquire the event
+    -- now try and acquire the error event
     while EARX(9) /= '1' loop
       wait until rising_edge(CLK) and ECYCLE = '1';
       EATX <= eazeros;
@@ -281,20 +288,44 @@ begin  -- Behavioral
     EDSELRX <= "0000";
     wait until rising_edge(CLK);
     assert EDRX = X"20"
-      report "1 : invalid transmitted event : command ID" severity error;
+      report "2 : invalid transmitted event : command ID" severity error;
 
     EDSELRX <= "0001";
     wait until rising_edge(CLK);
     assert EDRX = X"01"
-      report "1 : invalid transmitted event : device" severity error;
+      report "2 : invalid transmitted event : device" severity error;
 
     EDSELRX <= "0011";
     wait until rising_edge(CLK);
     assert EDRX = X"01"
-      report "1 : invalid transmitted event : response" severity error;
+      report "2 : invalid transmitted event : response" severity error;
     
-    state <= multiwriteerror; 
+    state <= multiwriteerror;
+ 
+   -- now try and acquire the valid event
+    while EARX(8) /= '1' loop
+      wait until rising_edge(CLK) and ECYCLE = '1';
+      wait for 20*50 ns;
+      EATX <= eazeros;
+    end loop;
 
+    EDSELRX <= "0000";
+    wait until rising_edge(CLK);
+    assert EDRX = X"20"
+      report "3 : invalid transmitted event : command ID" severity error;
+
+    EDSELRX <= "0001";
+    wait until rising_edge(CLK);
+    assert EDRX = X"01"
+      report "3 : invalid transmitted event : device" severity error;
+
+    EDSELRX <= "0011";
+    wait until rising_edge(CLK);
+    assert EDRX = X"02"
+      report "3 : invalid transmitted event : response" severity error;
+    
+    state <= multiwritedone;
+    
     assert false report "End of Simulation" severity failure;
 
 

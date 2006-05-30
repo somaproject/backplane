@@ -28,6 +28,7 @@ else:
     # boot device
     suite.addTest(vhdlTestCase("bootserialize"))
     suite.addTest(vhdlTestCase("mmcfpgaboot"))
+    suite.addTest(vhdlTestCase("bootcontrol"))
     
 runner = unittest.TextTestRunner()
 runner.run(suite)
