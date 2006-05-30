@@ -15,6 +15,9 @@ $(WORKDIR)/mmcio/_behavioral.var: ../../boot/vhdl/mmcio.vhd
 $(WORKDIR)/bootserialize/_behavioral.var: ../../vhdl/bootserialize.vhd
 	$(VHDLC) ../../vhdl/bootserialize.vhd
 
+$(WORKDIR)/bootcontrol/_behavioral.var: ../../vhdl/bootcontrol.vhd
+	$(VHDLC) ../../vhdl/bootcontrol.vhd
+
 $(WORKDIR)/mmcfpgaboot/_behavioral.var: ../../vhdl/mmcfpgaboot.vhd
 	$(VHDLC) ../../vhdl/mmcfpgaboot.vhd
 
@@ -24,7 +27,16 @@ $(WORKDIR)/rxeventfifo/_behavioral.var: ../../vhdl/rxeventfifo.vhd
 $(WORKDIR)/boot/_behavioral.var: ../../vhdl/boot.vhd
 	$(VHDLC) ../../vhdl/boot.vhd
 
-hw: $(WORKDIR)/somabackplane/_body.var $(WORKDIR)/byteio/_behavioral.var $(WORKDIR)/mmcio/_behavioral.var $(WORKDIR)/bootserialize/_behavioral.var $(WORKDIR)/mmcfpgaboot/_behavioral.var $(WORKDIR)/rxeventfifo/_behavioral.var $(WORKDIR)/boot/_behavioral.var 
+$(WORKDIR)/mmc/_behavioral.var: ../../boot/sim/components/mmc/mmc.vhd
+	$(VHDLC) ../../boot/sim/components/mmc/mmc.vhd
+
+$(WORKDIR)/bootdeserialize/_behavioral.var: ../components/bootdeser/bootdeserialize.vhd
+	$(VHDLC) ../components/bootdeser/bootdeserialize.vhd
+
+$(WORKDIR)/simplefpga/_behavioral.var: ../mmcfpgaboot/simplefpga.vhd
+	$(VHDLC) ../mmcfpgaboot/simplefpga.vhd
+
+hw: $(WORKDIR)/somabackplane/_body.var $(WORKDIR)/byteio/_behavioral.var $(WORKDIR)/mmcio/_behavioral.var $(WORKDIR)/bootserialize/_behavioral.var $(WORKDIR)/bootcontrol/_behavioral.var $(WORKDIR)/mmcfpgaboot/_behavioral.var $(WORKDIR)/rxeventfifo/_behavioral.var $(WORKDIR)/boot/_behavioral.var $(WORKDIR)/mmc/_behavioral.var $(WORKDIR)/bootdeserialize/_behavioral.var $(WORKDIR)/simplefpga/_behavioral.var 
 
 comp: 
 

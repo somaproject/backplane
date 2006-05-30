@@ -40,13 +40,18 @@ architecture Behavioral of simplefpga is
   signal lvalidboot : std_logic := '0';
   signal bitpos : integer := 0;
   
+  type states is (none, fprogwait, datawait, done);
+  signal status : states := none;
 
+  
 begin  -- Behavioral
 
   main : process
   begin
     while true loop
+      status <= none; 
       wait until rising_edge(START);
+      status <= fprogwait; 
       -- begin
       bootaddrl   <= BOOTADDR;
       bootlenl    <= BOOTLEN;
@@ -61,6 +66,7 @@ begin  -- Behavioral
       wait until falling_edge(FPROG);
       wait for 20 us;
       wait until rising_edge(FPROG);
+      status <= datawait; 
 
       -- boot len is in blocks
       for i in 0 to TO_INTEGER(unsigned(bootlenl)) - 1 loop
@@ -107,7 +113,7 @@ begin  -- Behavioral
         end loop;
 
       end loop;
-
+      status <= done; 
       VALIDBOOT <= lvalidboot;
       
     end loop;

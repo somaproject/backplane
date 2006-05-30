@@ -2,22 +2,16 @@
 Test of the boot configuration; we're going to try and test our boot
 configuration.
 
-We're using our previous MMC component as a boot interface, and
-reading events out of a textfile.
-
 The problem is that the operations which we coordinate occur on a very
 long timescale.
 
-
 Ideally we'll want to test: 
-1. Can we boot at all? i.e. does it work in even a retarded sense. 
+1. Can we boot at all? i.e. does it work to boot a single event
 2. Can we properly boot multiple devices? 
 3. Does ADDR, len, and mask work properly? 
 4. How do we handle multiple attempts to boot? 
 
- 
-MMCFPGAboot: 
-can we give it an address and a subset of code and have it DTRT? 
+
 
 
 
