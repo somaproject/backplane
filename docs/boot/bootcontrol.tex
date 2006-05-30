@@ -26,3 +26,19 @@ it sends one response back to the original sender
            (\signal{BOOTING} = 1) and all subsequent requests cause an
            error response until the boot is complete.
 
+\section{FSMs}
+
+On each cycle, the FSM checks for completion of a previous boot via the assertion of \signal{MMCDONEL}. If this signal is asserted, we transmit a ``boot successful'' event back to the source event and then do nothing for the remainder of the cycle. 
+
+Otherwise, we check to see if there are any pending events in the rxeventfifo, and if we receive a valid boot event, we take two actions based on wether or not we have a current boot pending:
+
+\begin{enumerate}
+\item Current boot is pending: transition to \state{BOOTERR} and set the relevant output bit.
+\item No pending boot: Trigger the boot, set the relevant bits, and begin the boot cycle. 
+\end{enumerate}
+
+The existence of \signal{LEARX} (latched-\signal{EARX} lets us respond
+to multiple simultaneous (invalid) boot requests, so that if we
+recived six boot requests during a single event cycle, we could
+successfully boot using the first and then in the same cycle respond
+to the others with an error event.
