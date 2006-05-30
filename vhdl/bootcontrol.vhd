@@ -69,18 +69,19 @@ architecture Behavioral of bootcontrol is
 
 
 
-
-
 begin  -- Behavioral
 
   -- event data mux
   EDRX <= CMD     when edselrx = X"0" else
           DEVICE  when edselrx = X"1" else
-          ESTATUS when edselrx = X"2" else
+          ESTATUS when edselrx = X"3" else
           X"00";
 
 
   dval   <= eoutd(7 downto 0) when errstate = '1' else srcl;
+
+  MMCSTART <= '1' when cs = wrboote else '0';
+  
   main : process(CLK, RESET)
   begin
     if RESET = '1' then
@@ -88,7 +89,7 @@ begin  -- Behavioral
 
     else
       if rising_edge(CLK) then
-        cs <= ecyclew;
+        cs <= ns;
 
 
         if cs = bootst then
@@ -96,7 +97,7 @@ begin  -- Behavioral
         end if;
 
         if cs = wrboota1 then
-          bootasel(31 downto 16) <= eoutd;
+          bootasel(M-1 downto 16) <= eoutd(M-1 -16 downto 0);
         end if;
 
         if cs = wrboota2 then
@@ -127,7 +128,7 @@ begin  -- Behavioral
 
 
         if oset = '1' then
-          if errstate = '1' then
+          if errstate = '0' then
             estatus <= X"02";
 
           else
