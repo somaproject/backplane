@@ -38,9 +38,15 @@ architecture Behavioral of syscontrol is
 
   signal learx    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal learxset : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
-  signal learxin : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
+  signal learxin  : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
 
   signal addrset : std_logic := '0';
+
+  signal bootaddrlen : std_logic_vector(31 downto 0) := (others => '0');
+
+  signal bootmask : std_logic_vector(31 downto 0) := (others => '0');
+
+
 
 
   -- event inputs
@@ -50,7 +56,7 @@ architecture Behavioral of syscontrol is
 
   signal evalid : std_logic := '0';
 
-  type states is (acheck, ecyclew, respw, erespchk, enext1, erespchk2, esuccess, enext2, notyet);
+  type states is (none, acheck, ecyclew, respw, erespchk, enext1, erespchk2, esuccess, enext2, notyet);
   signal cs, ns : states := acheck;
 
   component rxeventfifo
@@ -73,17 +79,17 @@ begin  -- Behavioral
 
   boot_id(2) <= '1';
 
-  EDRX <= edrxall(7 downto 0)   when EDSELRX = X"0" else
-          edrxall(15 downto 8)  when EDSELRX = X"1" else
-          edrxall(23 downto 16) when EDSELRX = X"2" else
-          edrxall(31 downto 24) when EDSELRX = X"3" else
-          edrxall(39 downto 32) when EDSELRX = X"4" else
-          edrxall(47 downto 40) when EDSELRX = X"5" else
-          edrxall(55 downto 48) when EDSELRX = X"6" else
-          edrxall(63 downto 56) when EDSELRX = X"7" else
-          edrxall(71 downto 64) when EDSELRX = X"8" else
-          edrxall(79 downto 72) when EDSELRX = X"9" else
-          edrxall(87 downto 80) when EDSELRX = X"A" else
+  EDRX <= edrxall(7 downto 0)   when EDSELRX = X"1" else
+          edrxall(15 downto 8)  when EDSELRX = X"0" else
+          edrxall(23 downto 16) when EDSELRX = X"3" else
+          edrxall(31 downto 24) when EDSELRX = X"2" else
+          edrxall(39 downto 32) when EDSELRX = X"5" else
+          edrxall(47 downto 40) when EDSELRX = X"4" else
+          edrxall(55 downto 48) when EDSELRX = X"7" else
+          edrxall(63 downto 56) when EDSELRX = X"6" else
+          edrxall(71 downto 64) when EDSELRX = X"9" else
+          edrxall(79 downto 72) when EDSELRX = X"8" else
+          edrxall(87 downto 80) when EDSELRX = X"B" else
           edrxall(95 downto 88);
 
   rxeventfifo_inst : rxeventfifo
@@ -107,7 +113,7 @@ begin  -- Behavioral
       -- The following INIT_xx declarations specify the initial contents of the RAM
       -- Address 0 to 127
       INIT_00    =>
-      X"0000000000000000000000000000000000000000000000000000000000000000",
+      X"0000000000000000000000000000000000000000000000000000000000000001",
       INIT_01    =>
       X"0000000000000000000000000000000000000000000000000000000000000000",
       INIT_02    =>
@@ -139,13 +145,13 @@ begin  -- Behavioral
       INIT_0F    =>
       X"0000000000000000000000000000000000000000000000000000000000000000")
     port map (
-      DO         => bootevt(47 downto 16),
+      DO         => bootmask,
       DOP        => open,
       ADDR       => romaddr,
       CLK        => clk,
       DI         => X"00000000",
       DIP        => X"0",
-      EN         => '0',
+      EN         => '1',
       SSR        => RESET,
       WE         => '0'
       );
@@ -158,7 +164,7 @@ begin  -- Behavioral
       -- The following INIT_xx declarations specify the initial contents of the RAM
       -- Address 0 to 127
       INIT_00    =>
-      X"0000000000000000000000000000000000000000000000000000000000000000",
+      X"0000000000000000000000000000000000000000000000000000000010002000",
       INIT_01    =>
       X"0000000000000000000000000000000000000000000000000000000000000000",
       INIT_02    =>
@@ -190,23 +196,30 @@ begin  -- Behavioral
       INIT_0F    =>
       X"0000000000000000000000000000000000000000000000000000000000000000")
     port map (
-      DO         => bootevt(79 downto 48),
+      DO         => bootaddrlen,
       DOP        => open,
       ADDR       => romaddr,
       CLK        => clk,
       DI         => X"00000000",
       DIP        => X"0",
-      EN         => '0',
+      EN         => '1',
       SSR        => RESET,
       WE         => '0'
       );
 
-  learxset <= boot_id when osel = '1' else learxin; 
+  learxset <= boot_id when osel = '0' else learxin;
+
+  bootevt(15 downto 0)  <= X"2001";
+  bootevt(31 downto 16) <= bootmask(31 downto 16); 
+  bootevt(47 downto 32) <= bootmask(15 downto 0);
+  bootevt(63 downto 48) <= bootaddrlen(31 downto 16);
+  bootevt(79 downto 64) <= bootaddrlen(15 downto 0);
+  bootevt(95 downto 80) <= X"0000";
 
   main : process(CLK, RESET)
   begin
     if RESET = '1' then
-      cs      <= acheck;
+      cs      <= none;
       romaddr <= (others => '0');
     else
       if rising_edge(CLK) then
@@ -217,9 +230,10 @@ begin  -- Behavioral
         end if;
 
         if ECYCLE = '1' then
-          if osel = '1' then
+          EARX <= learx;
+
+          if osel = '0' then
             edrxall <= bootevt;
-            EARX    <= learx;
           else
             -- something else here
           end if;
@@ -241,22 +255,28 @@ begin  -- Behavioral
   fsm : process(cs, ECYCLE, evalid, eoutd, bootevt)
   begin
     case cs is
+      when none   =>
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '0';
+        addrset <= '0';
+        ns      <= acheck;
       when acheck =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '0';
-        addrset <= '0'; 
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '0';
+        addrset <= '0';
 
-        if bootevt(47 downto 16) = X"00000000" then
+        if bootmask = X"00000000" then
           ns <= notyet;
         else
           ns <= ecyclew;
         end if;
 
       when ecyclew =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '0';
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '0';
         addrset <= '1';
 
         if ECYCLE = '1' then
@@ -266,9 +286,9 @@ begin  -- Behavioral
         end if;
 
       when respw =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '0';
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '0';
         addrset <= '0';
 
         if evalid = '1' then
@@ -278,9 +298,9 @@ begin  -- Behavioral
         end if;
 
       when erespchk =>
-        osel  <= '0';
-        eouta <= "001";
-        enext <= '0';
+        osel    <= '0';
+        eouta   <= "001";
+        enext   <= '0';
         addrset <= '0';
 
         if EOUTD = X"2002" then
@@ -290,16 +310,16 @@ begin  -- Behavioral
         end if;
 
       when enext1 =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '1';
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '1';
         addrset <= '0';
-        ns    <= respw;
+        ns      <= respw;
 
       when erespchk2 =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '0';
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '0';
         addrset <= '0';
 
         if EOUTD = X"0002" then
@@ -309,31 +329,31 @@ begin  -- Behavioral
         end if;
 
       when esuccess =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '0';
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '0';
         addrset <= '0';
-        ns    <= enext2;
+        ns      <= enext2;
 
       when enext2 =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '1';
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '1';
         addrset <= '0';
-        ns    <= acheck;
+        ns      <= acheck;
 
       when notyet =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '0';
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '0';
         addrset <= '0';
-        ns    <= notyet;
+        ns      <= notyet;
       when others =>
-        osel  <= '0';
-        eouta <= "000";
-        enext <= '0';
+        osel    <= '0';
+        eouta   <= "000";
+        enext   <= '0';
         addrset <= '0';
-        ns    <= acheck;
+        ns      <= acheck;
     end case;
   end process fsm;
 
