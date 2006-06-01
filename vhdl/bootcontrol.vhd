@@ -10,7 +10,6 @@ use work.somabackplane;
 
 
 entity bootcontrol is
-
   generic (
     M        :     integer                      := 20;
     DEVICE   :     std_logic_vector(7 downto 0) := X"01"
@@ -32,7 +31,6 @@ entity bootcontrol is
     MMCSTART : out std_logic;
     MMCDONE  : in  std_logic
     );
-
 
 end bootcontrol;
 

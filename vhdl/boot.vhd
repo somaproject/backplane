@@ -37,7 +37,7 @@ end boot;
 architecture Behavioral of boot is
 
   signal enext : std_logic                     := '0';
-  signal eouta : std_logic_vector(2 downto 0)  := (others = > '0');
+  signal eouta : std_logic_vector(2 downto 0)  := (others => '0');
   signal eoutd : std_logic_vector(15 downto 0) := (others => '0');
 
   signal evalid : std_logic := '0';
@@ -47,7 +47,7 @@ architecture Behavioral of boot is
 
   signal bootasel : std_logic_vector(M-1 downto 0) := (others => '0');
 
-  signal mmcstart, mmcstop : std_logic := '0';
+  signal mmcstart, mmcstop, mmcdone : std_logic := '0';
 
   
 component rxeventfifo 

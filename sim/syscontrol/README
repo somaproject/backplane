@@ -1,0 +1,13 @@
+Run the SYSCONTROL interface through its boot sequence, establishing
+that it correctly responds to events and errors.
+
+
+1. have it boot the NIC
+   1. verify proper boot request reception
+   2. muck around for a bit
+   3. respond
+2. verify it now boots DSPs
+   1. verify proper boot request
+   2. send an error
+   3. make sure it tries again
+   
