@@ -13,7 +13,7 @@ entity eventrouter is
       ECYCLE  : in std_logic;
       EARX    : in  somabackplane.addrarray;
       EDRX : in somabackplane.dataarray; 
-      EDSELRX : out std_logic_vector(3 downto 0);
+      EDSELRX : out std_logic_vector(3 downto 0) := (others => '0');
       EATX    : out somabackplane.addrarray;
       EDTX    : out std_logic_vector(7 downto 0)
       );
@@ -31,15 +31,17 @@ begin  -- Behavioral
 
   EDTX <= EDRX(dmuxsel);
   EDSELRX <= edsel; 
+
+  -- on the 48th byte, including the ECYCLE byte:
   
-  dstart <= '1' when bytecnt = 48 else '0';
+  dstart <= '1' when bytecnt = 47 else '0';
   edend <= '1' when edsel = X"B" else '0';
 
   main: process(CLK)
     begin
       if rising_edge(CLK) then
         if ECYCLE = '1' then
-          bytecnt <= 0;
+          bytecnt <= 1;
         else
           if bytecnt = 2047 then
             bytecnt <= 0;

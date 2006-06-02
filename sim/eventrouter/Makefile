@@ -3,13 +3,13 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/somabackplane/_body.var: ../../vhdl/somabackplane.vhd
+$(WORKDIR)/somabackplane/prim.var: ../../vhdl/somabackplane.vhd
 	$(VHDLC) ../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/eventrouter/_behavioral.var: ../../vhdl/core/eventrouter.vhd
+$(WORKDIR)/eventrouter/_behavioral.var: ../../vhdl/somabackplane.vhd ../../vhdl/core/eventrouter.vhd
 	$(VHDLC) ../../vhdl/core/eventrouter.vhd
 
-hw: $(WORKDIR)/somabackplane/_body.var $(WORKDIR)/eventrouter/_behavioral.var 
+hw: $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/eventrouter/_behavioral.var 
 
 comp: 
 

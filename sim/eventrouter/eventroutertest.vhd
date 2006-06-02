@@ -116,8 +116,8 @@ begin  -- Behavioral
   begin
     if RESET = '0' then
       if rising_edge(CLK) then
-        if ecnt >= 50 and ecnt < 986 then
-          assert edtx = std_logic_vector(TO_UNSIGNED(((ecnt - 50) mod 256), 8))
+        if ecnt > 47 and ecnt < 984 then
+          assert edtx = std_logic_vector(TO_UNSIGNED(((ecnt - 48) mod 256), 8))
             report "ERROR IN DATA" severity error;
 
         end if;
