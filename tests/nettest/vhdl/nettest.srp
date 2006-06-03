@@ -1,0 +1,1465 @@
+Release 8.1i - xst I.24
+Copyright (c) 1995-2005 Xilinx, Inc.  All rights reserved.
+--> 
+Parameter TMPDIR set to build
+CPU : 0.00 / 0.05 s | Elapsed : 0.00 / 1.00 s
+ 
+--> 
+Parameter xsthdpdir set to ./xst
+CPU : 0.00 / 0.05 s | Elapsed : 0.00 / 1.00 s
+ 
+--> 
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Compilation
+  3) HDL Analysis
+  4) HDL Synthesis
+     4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+     5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Final Report
+     7.1) Device utilization summary
+     7.2) TIMING REPORT
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "nettest.prj"
+Input Format                       : mixed
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "nettest"
+Output Format                      : NGC
+Target Device                      : xc4vlx25-10-ff668
+
+---- Source Options
+Top Module Name                    : nettest
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : One-Hot
+FSM Style                          : lut
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+ROM Style                          : Auto
+Mux Extraction                     : YES
+Decoder Extraction                 : YES
+Priority Encoder Extraction        : YES
+Shift Register Extraction          : YES
+Logical Shifter Extraction         : YES
+XOR Collapsing                     : YES
+Resource Sharing                   : YES
+Multiplier Style                   : auto
+Automatic Register Balancing       : No
+
+---- Target Options
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 500
+Add Generic Clock Buffer(BUFG)     : 8
+Register Duplication               : YES
+Equivalent register Removal        : YES
+Slice Packing                      : YES
+Pack IO Registers into IOBs        : true
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 2
+Keep Hierarchy                     : YES
+Global Optimization                : AllClockNets
+RTL Output                         : Yes
+Write Timing Constraints           : NO
+Hierarchy Separator                : _
+Bus Delimiter                      : <>
+Case Specifier                     : maintain
+Slice Utilization Ratio            : 100
+Slice Utilization Ratio Delta      : 5
+
+---- Other Options
+Read Cores                         : YES
+cross_clock_analysis               : YES
+verilog2001                        : YES
+safe_implementation                : No
+Optimize Instantiated Primitives   : YES
+use_clock_enable                   : Yes
+use_sync_set                       : Yes
+use_sync_reset                     : Yes
+
+=========================================================================
+
+Setting FSM Encoding Algorithm to : ONE
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "/home/jonas/soma/somabackplane/boot/vhdl/byteio.vhd" in Library work.
+Architecture behavioral of Entity byteio is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/somabackplane.vhd" in Library work.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/bootserialize.vhd" in Library work.
+Architecture behavioral of Entity bootserialize is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/boot/vhdl/mmcio.vhd" in Library work.
+Architecture behavioral of Entity mmcio is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/rxeventfifo.vhd" in Library work.
+Architecture behavioral of Entity rxeventfifo is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/bootcontrol.vhd" in Library work.
+Architecture behavioral of Entity bootcontrol is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/mmcfpgaboot.vhd" in Library work.
+Architecture behavioral of Entity mmcfpgaboot is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/core/eventrouter.vhd" in Library work.
+Architecture behavioral of Entity eventrouter is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/timer.vhd" in Library work.
+Architecture behavioral of Entity timer is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/syscontrol.vhd" in Library work.
+Architecture behavioral of Entity syscontrol is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/boot.vhd" in Library work.
+Architecture behavioral of Entity boot is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/deviceio/vhdl/bootdeser.vhd" in Library work.
+Architecture behavioral of Entity bootdeserialize is up to date.
+Compiling vhdl file "/home/jonas/soma/somabackplane/tests/nettest/vhdl/nettest.vhd" in Library work.
+Entity <nettest> compiled.
+Entity <nettest> (Architecture <behavioral>) compiled.
+
+=========================================================================
+*                            HDL Analysis                               *
+=========================================================================
+Analyzing Entity <nettest> (Architecture <behavioral>).
+Entity <nettest> analyzed. Unit <nettest> generated.
+
+Analyzing Entity <eventrouter> (Architecture <behavioral>).
+Entity <eventrouter> analyzed. Unit <eventrouter> generated.
+
+Analyzing Entity <timer> (Architecture <behavioral>).
+Entity <timer> analyzed. Unit <timer> generated.
+
+Analyzing Entity <syscontrol> (Architecture <behavioral>).
+WARNING:Xst:819 - "/home/jonas/soma/somabackplane/vhdl/syscontrol.vhd" line 256: The following signals are missing in the process sensitivity list:
+   bootmask.
+Entity <syscontrol> analyzed. Unit <syscontrol> generated.
+
+Analyzing Entity <rxeventfifo> (Architecture <behavioral>).
+WARNING:Xst:790 - "/home/jonas/soma/somabackplane/vhdl/rxeventfifo.vhd" line 75: Index value(s) does not match array range, simulation mismatch.
+WARNING:Xst:819 - "/home/jonas/soma/somabackplane/vhdl/rxeventfifo.vhd" line 81: The following signals are missing in the process sensitivity list:
+   RESET.
+WARNING:Xst:1962 - The length of the hexa value for the attribute INIT_A on instance RAMB16_S9_S18_inst should be 36 bits long. The current value set is 12 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute INIT_B on instance RAMB16_S9_S18_inst should be 36 bits long. The current value set is 20 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute SRVAL_A on instance RAMB16_S9_S18_inst should be 36 bits long. The current value set is 12 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute SRVAL_B on instance RAMB16_S9_S18_inst should be 36 bits long. The current value set is 20 bits long.  Value has been extended
+Entity <rxeventfifo> analyzed. Unit <rxeventfifo> generated.
+
+Analyzing generic Entity <boot> (Architecture <behavioral>).
+	M = 20
+
+	DEVICE = <u>00000010
+
+Entity <boot> analyzed. Unit <boot> generated.
+
+Analyzing generic Entity <bootcontrol> (Architecture <behavioral>).
+	M = 20
+
+	DEVICE = <u>00000001
+
+WARNING:Xst:790 - "/home/jonas/soma/somabackplane/vhdl/bootcontrol.vhd" line 146: Index value(s) does not match array range, simulation mismatch.
+INFO:Xst:1433 - Contents of array <learx> may be accessed with an index that exceeds the array size. This could cause simulation mismatch.
+Entity <bootcontrol> analyzed. Unit <bootcontrol> generated.
+
+Analyzing generic Entity <mmcfpgaboot> (Architecture <behavioral>).
+	M = 20
+
+WARNING:Xst:753 - "/home/jonas/soma/somabackplane/vhdl/mmcfpgaboot.vhd" line 108: Unconnected output port 'DREADING' of component 'mmcio'.
+WARNING:Xst:1962 - The length of the hexa value for the attribute INIT_A on instance eventbuffer should be 36 bits long. The current value set is 1 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute INIT_B on instance eventbuffer should be 36 bits long. The current value set is 12 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute SRVAL_A on instance eventbuffer should be 36 bits long. The current value set is 1 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute SRVAL_B on instance eventbuffer should be 36 bits long. The current value set is 12 bits long.  Value has been extended
+Entity <mmcfpgaboot> analyzed. Unit <mmcfpgaboot> generated.
+
+Analyzing generic Entity <bootserialize> (Architecture <behavioral>).
+	M = 20
+
+Entity <bootserialize> analyzed. Unit <bootserialize> generated.
+
+Analyzing Entity <mmcio> (Architecture <behavioral>).
+Entity <mmcio> analyzed. Unit <mmcio> generated.
+
+Analyzing Entity <byteio> (Architecture <behavioral>).
+Entity <byteio> analyzed. Unit <byteio> generated.
+
+Analyzing Entity <bootdeserialize> (Architecture <behavioral>).
+Entity <bootdeserialize> analyzed. Unit <bootdeserialize> generated.
+
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <byteio>.
+    Related source file is "/home/jonas/soma/somabackplane/boot/vhdl/byteio.vhd".
+    Found finite state machine <FSM_0> for signal <cs>.
+    -----------------------------------------------------------------------
+    | States             | 6                                              |
+    | Transitions        | 8                                              |
+    | Inputs             | 2                                              |
+    | Outputs            | 4                                              |
+    | Clock              | CLK (rising_edge)                              |
+    | Power Up State     | none                                           |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 1-bit 8-to-1 multiplexer for signal <SDOUT>.
+    Found 3-bit up counter for signal <bcnt>.
+    Found 8-bit register for signal <ireg>.
+    Summary:
+	inferred   1 Finite State Machine(s).
+	inferred   1 Counter(s).
+	inferred   8 D-type flip-flop(s).
+	inferred   1 Multiplexer(s).
+Unit <byteio> synthesized.
+
+
+Synthesizing Unit <mmcio>.
+    Related source file is "/home/jonas/soma/somabackplane/boot/vhdl/mmcio.vhd".
+WARNING:Xst:647 - Input <ADDR<15>> is never used.
+    Found finite state machine <FSM_1> for signal <cs>.
+    -----------------------------------------------------------------------
+    | States             | 32                                             |
+    | Transitions        | 63                                             |
+    | Inputs             | 9                                              |
+    | Outputs            | 15                                             |
+    | Clock              | CLK (rising_edge)                              |
+    | Reset              | RESET (positive)                               |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | none                                           |
+    | Power Up State     | none                                           |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Using one-hot encoding for signal <bsel>.
+    Found 9-bit 4-to-1 multiplexer for signal <$n0047>.
+    Found 9-bit adder for signal <$n0048> created at line 99.
+    Found 9-bit register for signal <bcnt>.
+    Summary:
+	inferred   1 Finite State Machine(s).
+	inferred   9 D-type flip-flop(s).
+	inferred   1 Adder/Subtractor(s).
+	inferred   9 Multiplexer(s).
+Unit <mmcio> synthesized.
+
+
+Synthesizing Unit <bootserialize>.
+    Related source file is "/home/jonas/soma/somabackplane/vhdl/bootserialize.vhd".
+    Found finite state machine <FSM_2> for signal <cs>.
+    -----------------------------------------------------------------------
+    | States             | 8                                              |
+    | Transitions        | 15                                             |
+    | Inputs             | 2                                              |
+    | Outputs            | 6                                              |
+    | Clock              | CLK (rising_edge)                              |
+    | Power Up State     | none                                           |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+INFO:Xst:2117 - HDL ADVISOR - Mux Selector <bsel> of Case statement line 0 was re-encoded using one-hot encoding. The case statement will be optimized (default statement optimization), but this optimization may lead to design initialization problems. To ensure the design works safely, you can:
+   	- add an 'INIT' attribute on signal <bsel> (optimization is then done without any risk)
+   	- use the attribute 'signal_encoding user' to avoid onehot optimization
+   	- use the attribute 'safe_implementation yes' to force XST to perform a safe (but less efficient) optimization
+    Using one-hot encoding for signal <bsel>.
+    Found 3-bit up counter for signal <bcnt>.
+    Found 1-bit register for signal <fclkl>.
+    Found 1-bit register for signal <fdinl>.
+    Found 1-bit register for signal <fprogl>.
+    Found 20-bit register for signal <lserout>.
+    Summary:
+	inferred   1 Finite State Machine(s).
+	inferred   1 Counter(s).
+	inferred  23 D-type flip-flop(s).
+Unit <bootserialize> synthesized.
+
+
+Synthesizing Unit <mmcfpgaboot>.
+    Related source file is "/home/jonas/soma/somabackplane/vhdl/mmcfpgaboot.vhd".
+WARNING:Xst:1780 - Signal <mcntrst> is never used or assigned.
+INFO:Xst:1799 - State bits is never reached in FSM <cs>.
+INFO:Xst:1799 - State clk0 is never reached in FSM <cs>.
+    Found finite state machine <FSM_3> for signal <cs>.
+    -----------------------------------------------------------------------
+    | States             | 14                                             |
+    | Transitions        | 25                                             |
+    | Inputs             | 6                                              |
+    | Outputs            | 9                                              |
+    | Clock              | CLK (rising_edge)                              |
+    | Clock enable       | RESET (negative)                               |
+    | Power Up State     | none                                           |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 16-bit comparator equal for signal <$n0006> created at line 351.
+    Found 16-bit adder for signal <addr>.
+    Found 11-bit up counter for signal <incnt>.
+    Found 16-bit up counter for signal <mcnt>.
+    Found 14-bit up counter for signal <outcnt>.
+    Summary:
+	inferred   1 Finite State Machine(s).
+	inferred   3 Counter(s).
+	inferred   1 Adder/Subtractor(s).
+	inferred   1 Comparator(s).
+Unit <mmcfpgaboot> synthesized.
+
+
+Synthesizing Unit <bootcontrol>.
+    Related source file is "/home/jonas/soma/somabackplane/vhdl/bootcontrol.vhd".
+WARNING:Xst:646 - Signal <dval<7>> is assigned but never used.
+    Found finite state machine <FSM_4> for signal <cs>.
+    -----------------------------------------------------------------------
+    | States             | 14                                             |
+    | Transitions        | 20                                             |
+    | Inputs             | 5                                              |
+    | Outputs            | 14                                             |
+    | Clock              | CLK (rising_edge)                              |
+    | Reset              | RESET (positive)                               |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | ecyclew                                        |
+    | Power Up State     | ecyclew                                        |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 20-bit register for signal <BOOTASEL>.
+    Found 16-bit register for signal <BOOTADDR>.
+    Found 16-bit register for signal <BOOTLEN>.
+    Found 78-bit register for signal <EARX>.
+    Found 1-bit register for signal <booting>.
+    Found 8-bit register for signal <estatus>.
+    Found 78-bit register for signal <learx>.
+    Found 1-bit register for signal <mmcdonel>.
+    Found 8-bit register for signal <srcl>.
+    Summary:
+	inferred   1 Finite State Machine(s).
+	inferred 226 D-type flip-flop(s).
+Unit <bootcontrol> synthesized.
+
+
+Synthesizing Unit <rxeventfifo>.
+    Related source file is "/home/jonas/soma/somabackplane/vhdl/rxeventfifo.vhd".
+WARNING:Xst:1780 - Signal <einc> is never used or assigned.
+WARNING:Xst:1780 - Signal <binc> is never used or assigned.
+    Found finite state machine <FSM_5> for signal <cs>.
+    -----------------------------------------------------------------------
+    | States             | 4                                              |
+    | Transitions        | 9                                              |
+    | Inputs             | 5                                              |
+    | Outputs            | 2                                              |
+    | Clock              | CLK (rising_edge)                              |
+    | Reset              | RESET (positive)                               |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | none                                           |
+    | Power Up State     | none                                           |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 7-bit 4-to-1 multiplexer for signal <$n0018>.
+    Found 7-bit adder for signal <$n0021> created at line 99.
+    Found 7-bit comparator not equal for signal <$n0022> created at line 77.
+    Found 4-bit up counter for signal <bcnt>.
+    Found 7-bit up counter for signal <eincnt>.
+    Found 7-bit up counter for signal <eoutcnt>.
+    Found 7-bit register for signal <epos>.
+    Found 1-bit 78-to-1 multiplexer for signal <etxbit>.
+    Summary:
+	inferred   1 Finite State Machine(s).
+	inferred   3 Counter(s).
+	inferred   7 D-type flip-flop(s).
+	inferred   1 Adder/Subtractor(s).
+	inferred   1 Comparator(s).
+	inferred   8 Multiplexer(s).
+Unit <rxeventfifo> synthesized.
+
+
+Synthesizing Unit <bootdeserialize>.
+    Related source file is "/home/jonas/soma/somabackplane/deviceio/vhdl/bootdeser.vhd".
+    Found finite state machine <FSM_6> for signal <cs>.
+    -----------------------------------------------------------------------
+    | States             | 3                                              |
+    | Transitions        | 6                                              |
+    | Inputs             | 2                                              |
+    | Outputs            | 1                                              |
+    | Clock              | CLK (rising_edge)                              |
+    | Power Up State     | none                                           |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 1-bit register for signal <FCLK>.
+    Found 1-bit register for signal <FDIN>.
+    Found 1-bit register for signal <FPROG>.
+    Found 5-bit up counter for signal <cnt>.
+    Found 1-bit register for signal <lfclk>.
+    Found 1-bit register for signal <lfdin>.
+    Found 1-bit register for signal <lfprog>.
+    Found 1-bit register for signal <serinl>.
+    Summary:
+	inferred   1 Finite State Machine(s).
+	inferred   1 Counter(s).
+	inferred   7 D-type flip-flop(s).
+Unit <bootdeserialize> synthesized.
+
+
+Synthesizing Unit <boot>.
+    Related source file is "/home/jonas/soma/somabackplane/vhdl/boot.vhd".
+WARNING:Xst:1780 - Signal <mmcstop> is never used or assigned.
+Unit <boot> synthesized.
+
+
+Synthesizing Unit <syscontrol>.
+    Related source file is "/home/jonas/soma/somabackplane/vhdl/syscontrol.vhd".
+WARNING:Xst:653 - Signal <boot_id<77:3>> is used but never assigned. Tied to value 000000000000000000000000000000000000000000000000000000000000000000000000000.
+WARNING:Xst:653 - Signal <boot_id<1:0>> is used but never assigned. Tied to value 00.
+WARNING:Xst:1780 - Signal <learxin> is never used or assigned.
+    Found finite state machine <FSM_7> for signal <cs>.
+    -----------------------------------------------------------------------
+    | States             | 10                                             |
+    | Transitions        | 15                                             |
+    | Inputs             | 5                                              |
+    | Outputs            | 6                                              |
+    | Clock              | CLK (rising_edge)                              |
+    | Reset              | RESET (positive)                               |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | none                                           |
+    | Power Up State     | none                                           |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 78-bit register for signal <EARX>.
+    Found 96-bit register for signal <edrxall>.
+    Found 78-bit register for signal <learx>.
+    Found 9-bit up counter for signal <romaddr>.
+    Summary:
+	inferred   1 Finite State Machine(s).
+	inferred   1 Counter(s).
+	inferred 252 D-type flip-flop(s).
+Unit <syscontrol> synthesized.
+
+
+Synthesizing Unit <timer>.
+    Related source file is "/home/jonas/soma/somabackplane/vhdl/timer.vhd".
+WARNING:Xst:647 - Input <EDTX> is never used.
+WARNING:Xst:647 - Input <EATX> is never used.
+    Found 1-bit register for signal <ECYCLE>.
+    Found 10-bit up counter for signal <ecnt>.
+    Found 48-bit up counter for signal <tcnt>.
+    Found 48-bit register for signal <tcntl>.
+    Summary:
+	inferred   2 Counter(s).
+	inferred  49 D-type flip-flop(s).
+Unit <timer> synthesized.
+
+
+Synthesizing Unit <eventrouter>.
+    Related source file is "/home/jonas/soma/somabackplane/vhdl/core/eventrouter.vhd".
+    Found 8-bit 78-to-1 multiplexer for signal <EDTX>.
+    Found 11-bit up counter for signal <bytecnt>.
+    Found 7-bit up counter for signal <dmuxsel>.
+    Found 4-bit up counter for signal <edsel>.
+    Summary:
+	inferred   3 Counter(s).
+	inferred   8 Multiplexer(s).
+Unit <eventrouter> synthesized.
+
+
+Synthesizing Unit <nettest>.
+    Related source file is "/home/jonas/soma/somabackplane/tests/nettest/vhdl/nettest.vhd".
+WARNING:Xst:1781 - Signal <EDRX<77:3>> is used but never assigned. Tied to default value.
+WARNING:Xst:653 - Signal <RESET> is used but never assigned. Tied to value 0.
+WARNING:Xst:1781 - Signal <EARX<77:3>> is used but never assigned. Tied to default value.
+WARNING:Xst:646 - Signal <EATX<77:3>> is assigned but never used.
+    Found 1-bit register for signal <LEDPOWER>.
+    Found 1-bit register for signal <LEDEVENT>.
+    Found 22-bit adder for signal <$n0008> created at line 222.
+    Found 22-bit up counter for signal <blinkcnt>.
+    Summary:
+	inferred   1 Counter(s).
+	inferred   2 D-type flip-flop(s).
+	inferred   1 Adder/Subtractor(s).
+Unit <nettest> synthesized.
+
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# Adders/Subtractors                                   : 5
+ 16-bit adder                                          : 1
+ 22-bit adder                                          : 1
+ 7-bit adder                                           : 2
+ 9-bit adder                                           : 1
+# Counters                                             : 19
+ 10-bit up counter                                     : 1
+ 11-bit up counter                                     : 2
+ 14-bit up counter                                     : 1
+ 16-bit up counter                                     : 1
+ 22-bit up counter                                     : 1
+ 3-bit up counter                                      : 2
+ 4-bit up counter                                      : 3
+ 48-bit up counter                                     : 1
+ 5-bit up counter                                      : 1
+ 7-bit up counter                                      : 5
+ 9-bit up counter                                      : 1
+# Registers                                            : 146
+ 1-bit register                                        : 133
+ 16-bit register                                       : 2
+ 48-bit register                                       : 1
+ 7-bit register                                        : 2
+ 78-bit register                                       : 3
+ 8-bit register                                        : 3
+ 9-bit register                                        : 1
+ 96-bit register                                       : 1
+# Comparators                                          : 3
+ 16-bit comparator equal                               : 1
+ 7-bit comparator not equal                            : 2
+# Multiplexers                                         : 7
+ 1-bit 78-to-1 multiplexer                             : 2
+ 1-bit 8-to-1 multiplexer                              : 1
+ 7-bit 4-to-1 multiplexer                              : 2
+ 8-bit 78-to-1 multiplexer                             : 1
+ 9-bit 4-to-1 multiplexer                              : 1
+
+=========================================================================
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+Optimizing FSM <syscontrol_inst/cs> on signal <cs[1:10]> with one-hot encoding.
+-------------------------
+ State     | Encoding
+-------------------------
+ none      | 0000000001
+ acheck    | 0000001000
+ ecyclew   | 0000000100
+ respw     | 0000010000
+ erespchk  | 0000100000
+ enext1    | 0010000000
+ erespchk2 | 0001000000
+ esuccess  | 0100000000
+ enext2    | 1000000000
+ notyet    | 0000000010
+-------------------------
+Optimizing FSM <bootdeserialize_inst/cs> on signal <cs[1:3]> with one-hot encoding.
+---------------------
+ State   | Encoding
+---------------------
+ none    | 001
+ cmdwait | 010
+ cmdpend | 100
+---------------------
+Optimizing FSM <syscontrol_inst/rxeventfifo_inst/cs> on signal <cs[1:4]> with one-hot encoding.
+-------------------
+ State | Encoding
+-------------------
+ none  | 0001
+ ehdrw | 0010
+ event | 0100
+ ewait | 1000
+-------------------
+Optimizing FSM <boot_inst/bootcontrol_inst/cs> on signal <cs[1:14]> with one-hot encoding.
+----------------------------
+ State    | Encoding
+----------------------------
+ ecyclew  | 00000000000001
+ donechk  | 00000000000010
+ senddone | 00000000000100
+ readevt  | 00000000001000
+ ebootchk | 00000000010000
+ bootchk  | 00000000100000
+ booterr  | 00000010000000
+ noop     | 00000001000000
+ bootst   | 00000100000000
+ wrboota1 | 00001000000000
+ wrboota2 | 00010000000000
+ wrboota3 | 00100000000000
+ wrboota4 | 01000000000000
+ wrboote  | 10000000000000
+----------------------------
+Optimizing FSM <boot_inst/mmcfpgaboot_inst/cs> on signal <cs[1:14]> with one-hot encoding.
+----------------------------
+ State    | Encoding
+----------------------------
+ none     | 00000000000001
+ fprogs   | 00000000000010
+ fprogw   | 00000000000100
+ fproge   | 00000000001000
+ mmcwait  | 00000000010000
+ nextbl   | 01000000000000
+ enddone  | 10000000000000
+ blreads  | 00000000100000
+ blreadw  | 00000001000000
+ bitwrite | 00000010000000
+ bitsclk  | 00000100000000
+ bitsclk0 | 00001000000000
+ bits     | unreached
+ clk0     | unreached
+ bitnext  | 00010000000000
+ bitnext2 | 00100000000000
+----------------------------
+Optimizing FSM <boot_inst/mmcfpgaboot_inst/bootserialize_inst/cs> on signal <cs[1:8]> with one-hot encoding.
+-------------------
+ State | Encoding
+-------------------
+ none  | 00000001
+ swait | 00000010
+ s0    | 00000100
+ s1    | 00001000
+ s2    | 00010000
+ s3    | 00100000
+ s4    | 01000000
+ sdone | 10000000
+-------------------
+Optimizing FSM <boot_inst/mmcfpgaboot_inst/mmcio_inst/cs> on signal <cs[1:32]> with one-hot encoding.
+-----------------------------------------------
+ State     | Encoding
+-----------------------------------------------
+ none      | 00000000000000000000000000000001
+ initticks | 00000000000000000000000000000010
+ initwait  | 00000000000000000000000000000100
+ srst0     | 00000000000000000000000000001000
+ srst1     | 00000000000000000000000000010000
+ srst2     | 00000000000000000000000000100000
+ srstchk   | 00000000000000000000000001000000
+ srstrwt   | 00000000000000000000000010000000
+ srstrwtw  | 00000000000000000000000100000000
+ srstdone  | 00000000000000000000001000000000
+ initcmd   | 00000000000000000000010000000000
+ init0     | 00000000000000000000100000000000
+ init1     | 00000000000000000001000000000000
+ initrw    | 00000000000000000010000000000000
+ initr     | 00000000000000000100000000000000
+ initdone  | 00000000000000001000000000000000
+ datardy   | 00000000000000010000000000000000
+ rdcmd     | 00000000000000100000000000000000
+ rdw1      | 00000000000001000000000000000000
+ rdw2      | 00000000001000000000000000000000
+ rdaddr1   | 00000000000010000000000000000000
+ rdaddr2   | 00000000010000000000000000000000
+ rdchk     | 00000000000100000000000000000000
+ rddelay1  | 00000000100000000000000000000000
+ rddelay2  | 00000001000000000000000000000000
+ rdtokw    | 00000010000000000000000000000000
+ rdtokchk  | 00000100000000000000000000000000
+ rddata    | 00001000000000000000000000000000
+ rddatadl  | 00010000000000000000000000000000
+ rdchk1    | 00100000000000000000000000000000
+ rdchk2    | 01000000000000000000000000000000
+ rddatadn  | 10000000000000000000000000000000
+-----------------------------------------------
+Optimizing FSM <boot_inst/mmcfpgaboot_inst/mmcio_inst/byteio_inst/cs> on signal <cs[1:6]> with one-hot encoding.
+-------------------
+ State | Encoding
+-------------------
+ none  | 000001
+ l1    | 000010
+ h1    | 000100
+ h2    | 001000
+ l2    | 010000
+ done  | 100000
+-------------------
+
+Synthesizing (advanced) Unit <FSM_0>.
+	Found 2-bit shift register for signal <FFd2>.
+Unit <FSM_0> synthesized (advanced).
+WARNING:Xst:1293 - FF/Latch  <estatus_2> has a constant value of 0 in block <bootcontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <estatus_3> has a constant value of 0 in block <bootcontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <estatus_4> has a constant value of 0 in block <bootcontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <estatus_5> has a constant value of 0 in block <bootcontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <estatus_6> has a constant value of 0 in block <bootcontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <estatus_7> has a constant value of 0 in block <bootcontrol>.
+WARNING:Xst:1291 - FF/Latch <srcl_7> is unconnected in block <bootcontrol>.
+WARNING:Xst:1426 - The value init of the FF/Latch edrxall_13 hinder the constant cleaning in the block syscontrol.
+   You should achieve better results by setting this init to 1.
+WARNING:Xst:1426 - The value init of the FF/Latch edrxall_0 hinder the constant cleaning in the block syscontrol.
+   You should achieve better results by setting this init to 1.
+WARNING:Xst:1293 - FF/Latch  <edrxall_3> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_2> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_1> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_77> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_76> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_75> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_74> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_73> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_72> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_71> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_70> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_69> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_68> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_67> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_66> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_65> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_64> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_63> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_62> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_61> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_60> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_59> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_58> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_57> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_56> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_55> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_95> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_94> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_93> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_92> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_91> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_90> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_89> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_88> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_87> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_86> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_85> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_84> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_83> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_82> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_81> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_80> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_15> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_14> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_12> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_11> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_10> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_9> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_8> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_7> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_6> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_5> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <edrxall_4> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_30> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_29> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_28> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_27> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_26> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_25> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_24> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_23> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_22> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_21> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_20> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_19> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_18> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_17> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_16> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_15> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_14> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_13> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_12> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_11> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_10> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_9> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_8> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_7> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_6> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_5> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_4> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_3> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_1> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_0> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_31> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_32> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_33> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_34> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_35> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_36> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_37> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_38> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_39> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_40> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_41> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_42> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_54> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_53> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_52> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_51> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_50> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_49> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_48> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_47> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_46> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_45> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_44> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <learx_43> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_70> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_69> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_68> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_67> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_66> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_65> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_64> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_63> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_62> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_61> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_60> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_59> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_58> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_71> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_72> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_73> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_74> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_75> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_76> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_77> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_6> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_5> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_4> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_3> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_1> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_0> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_31> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_30> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_29> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_28> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_27> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_26> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_25> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_24> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_23> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_22> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_21> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_20> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_19> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_18> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_17> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_16> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_15> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_14> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_13> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_12> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_11> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_10> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_9> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_8> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_7> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_57> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_56> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_55> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_54> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_53> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_52> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_51> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_50> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_49> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_48> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_47> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_46> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_45> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_44> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_43> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_42> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_41> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_40> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_39> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_38> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_37> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_36> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_35> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_34> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_33> has a constant value of 0 in block <syscontrol>.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <EARX_32> has a constant value of 0 in block <syscontrol>.
+INFO:Xst:2261 - The FF/Latch <edrxall_0> in Unit <syscontrol> is equivalent to the following FF/Latch, which will be removed : <edrxall_13> 
+WARNING:Xst:1291 - FF/Latch <learx_55> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_60> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_56> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_61> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_57> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_58> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_62> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_63> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_59> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_64> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_70> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_65> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_71> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_66> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_72> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_67> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_68> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_73> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_69> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_75> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_74> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_0> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_76> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_3> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_77> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_4> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_10> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_5> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_12> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_11> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_6> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_8> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_7> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_13> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_15> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_14> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_9> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_20> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_16> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_21> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_17> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_23> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_22> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_18> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_19> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_24> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_25> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_30> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_27> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_26> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_31> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_32> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_28> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_34> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_33> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_29> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_36> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_35> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_40> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_41> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_37> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_42> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_38> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_39> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_43> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_45> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_44> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_46> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_50> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_51> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_47> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_52> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_53> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_48> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_49> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_54> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_0> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_3> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_4> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_5> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_6> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_7> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_8> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_9> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_10> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_11> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_12> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_13> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_14> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_15> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_16> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_17> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_18> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_19> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_20> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_21> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_22> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_23> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_24> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_25> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_26> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_27> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_28> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_29> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_30> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_31> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_32> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_33> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_34> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_35> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_36> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_37> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_38> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_39> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_40> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_41> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_42> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_43> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_44> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_45> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_46> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_47> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_48> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_49> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_50> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_51> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_52> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_53> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_54> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_55> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_56> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_57> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_58> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_59> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_60> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_61> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_62> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_63> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_64> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_65> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_66> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_67> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_68> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_69> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_70> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_71> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_72> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_73> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_74> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_75> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_76> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_77> is unconnected in block <bootcontrol_inst>.
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# FSMs                                                 : 8
+# Adders/Subtractors                                   : 5
+ 16-bit adder                                          : 1
+ 22-bit adder                                          : 1
+ 7-bit adder                                           : 2
+ 9-bit adder                                           : 1
+# Counters                                             : 19
+ 10-bit up counter                                     : 1
+ 11-bit up counter                                     : 2
+ 14-bit up counter                                     : 1
+ 16-bit up counter                                     : 1
+ 22-bit up counter                                     : 1
+ 3-bit up counter                                      : 2
+ 4-bit up counter                                      : 3
+ 48-bit up counter                                     : 1
+ 5-bit up counter                                      : 1
+ 7-bit up counter                                      : 5
+ 9-bit up counter                                      : 1
+# Registers                                            : 489
+ Flip-Flops                                            : 489
+# Shift Registers                                      : 1
+ 2-bit shift register                                  : 1
+# Comparators                                          : 3
+ 16-bit comparator equal                               : 1
+ 7-bit comparator not equal                            : 2
+# Multiplexers                                         : 7
+ 1-bit 78-to-1 multiplexer                             : 2
+ 1-bit 8-to-1 multiplexer                              : 1
+ 7-bit 4-to-1 multiplexer                              : 2
+ 8-bit 78-to-1 multiplexer                             : 1
+ 9-bit 4-to-1 multiplexer                              : 1
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+Loading device for application Rf_Device from file '4vlx25.nph' in environment /home/jonas/xilinx.
+INFO:Xst:1901 - Instance RAMB16_S9_S18_inst in unit rxeventfifo of type RAMB16_S9_S18 has been replaced by RAMB16
+INFO:Xst:1901 - Instance destmask_ram in unit syscontrol of type RAMB16_S36 has been replaced by RAMB16
+INFO:Xst:1901 - Instance addrlen_ram in unit syscontrol of type RAMB16_S36 has been replaced by RAMB16
+INFO:Xst:1901 - Instance eventbuffer in unit mmcfpgaboot of type RAMB16_S1_S9 has been replaced by RAMB16
+INFO:Xst:1901 - Instance clkgen in unit nettest of type DCM_BASE has been replaced by DCM_ADV
+
+Optimizing unit <nettest> ...
+
+Optimizing unit <eventrouter> ...
+
+Optimizing unit <bootserialize> ...
+
+Optimizing unit <byteio> ...
+
+Optimizing unit <timer> ...
+
+Optimizing unit <bootdeserialize> ...
+
+Optimizing unit <rxeventfifo> ...
+
+Optimizing unit <bootcontrol> ...
+
+Optimizing unit <mmcio> ...
+
+Optimizing unit <mmcfpgaboot> ...
+
+Optimizing unit <boot> ...
+
+Optimizing unit <syscontrol> ...
+
+Mapping all equations...
+WARNING:Xst:1426 - The value init of the FF/Latch cs_FFd10 hinder the constant cleaning in the block syscontrol_inst.
+   You should achieve better results by setting this init to 0.
+WARNING:Xst:1426 - The value init of the FF/Latch cs_FFd32 hinder the constant cleaning in the block mmcio_inst.
+   You should achieve better results by setting this init to 0.
+WARNING:Xst:1291 - FF/Latch <learx_55> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_60> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_56> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_61> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_57> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_58> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_62> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_63> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_59> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_64> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_70> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_65> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_71> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_66> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_72> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_67> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_68> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_73> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_69> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_75> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_74> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_0> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_76> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_3> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <BOOTADDR_15> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_77> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_4> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_10> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_5> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_12> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_11> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_6> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_8> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_7> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_13> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_15> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_14> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_9> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_20> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_16> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_21> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_17> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_23> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_22> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_18> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_19> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_24> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_25> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_30> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_27> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_26> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_31> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_32> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_28> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_34> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_33> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_29> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_36> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_35> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_40> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_41> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_37> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_42> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_38> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_39> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_43> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_45> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_44> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_46> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_50> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_51> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_47> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_52> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_53> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_48> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_49> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <learx_54> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_0> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_3> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_4> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_5> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_6> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_7> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_8> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_9> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_10> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_11> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_12> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_13> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_14> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_15> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_16> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_17> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_18> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_19> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_20> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_21> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_22> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_23> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_24> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_25> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_26> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_27> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_28> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_29> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_30> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_31> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_32> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_33> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_34> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_35> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_36> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_37> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_38> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_39> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_40> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_41> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_42> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_43> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_44> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_45> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_46> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_47> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_48> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_49> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_50> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_51> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_52> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_53> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_54> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_55> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_56> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_57> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_58> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_59> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_60> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_61> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_62> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_63> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_64> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_65> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_66> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_67> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_68> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_69> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_70> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_71> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_72> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_73> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_74> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_75> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_76> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_77> is unconnected in block <bootcontrol_inst>.
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block nettest, actual ratio is 4.
+FlipFlop boot_inst/mmcfpgaboot_inst/cs_FFd9 has been replicated 2 time(s)
+FlipFlop eventrouter_inst/edsel_0 has been replicated 1 time(s)
+FlipFlop eventrouter_inst/edsel_1 has been replicated 1 time(s)
+FlipFlop eventrouter_inst/edsel_2 has been replicated 1 time(s)
+FlipFlop eventrouter_inst/edsel_3 has been replicated 1 time(s)
+
+=========================================================================
+*                            Final Report                               *
+=========================================================================
+Final Results
+RTL Top Level Output File Name     : nettest.ngr
+Top Level Output File Name         : nettest
+Output Format                      : NGC
+Optimization Goal                  : Speed
+Keep Hierarchy                     : YES
+
+Design Statistics
+# IOs                              : 30
+
+Cell Usage :
+# BELS                             : 1083
+#      GND                         : 9
+#      INV                         : 2
+#      LUT1                        : 88
+#      LUT1_D                      : 1
+#      LUT1_L                      : 20
+#      LUT2                        : 131
+#      LUT2_D                      : 2
+#      LUT2_L                      : 19
+#      LUT3                        : 96
+#      LUT3_D                      : 7
+#      LUT3_L                      : 63
+#      LUT4                        : 217
+#      LUT4_D                      : 15
+#      LUT4_L                      : 90
+#      MULT_AND                    : 3
+#      MUXCY                       : 149
+#      MUXF5                       : 36
+#      MUXF6                       : 5
+#      MUXF7                       : 2
+#      VCC                         : 7
+#      XORCY                       : 121
+# FlipFlops/Latches                : 542
+#      FD                          : 40
+#      FDC                         : 52
+#      FDCE                        : 15
+#      FDE                         : 379
+#      FDP                         : 5
+#      FDR                         : 38
+#      FDRE                        : 10
+#      FDRS                        : 1
+#      FDSE                        : 2
+# RAMS                             : 5
+#      RAMB16                      : 5
+# Shift Registers                  : 1
+#      SRL16                       : 1
+# Clock Buffers                    : 2
+#      BUFG                        : 2
+# IO Buffers                       : 30
+#      IBUF                        : 1
+#      IBUFG                       : 1
+#      OBUF                        : 28
+# DCMs                             : 1
+#      DCM_ADV                     : 1
+=========================================================================
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 4vlx25ff668-10 
+
+ Number of Slices:                     501  out of  10752     4%  
+ Number of Slice Flip Flops:           540  out of  21504     2%  
+ Number of 4 input LUTs:               750  out of  21504     3%  
+    Number used as logic: 749
+    Number used as Shift registers: 1
+ Number of bonded IOBs:                 30  out of    448     6%  
+    IOB Flip Flops: 2
+ Number of FIFO16/RAMB16s:               5  out of     72     6%  
+    Number used as RAMB16s:              5
+ Number of GCLKs:                        2  out of     32     6%  
+ Number of DCM_ADVs:                     1  out of      8    12%  
+
+
+=========================================================================
+TIMING REPORT
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+CLKIN                              | clkgen:CLKFX           | 548   |
+-----------------------------------+------------------------+-------+
+
+Timing Summary:
+---------------
+Speed Grade: -10
+
+   Minimum period: 4.996ns (Maximum Frequency: 200.158MHz)
+   Minimum input arrival time before clock: 1.890ns
+   Maximum output required time after clock: 13.412ns
+   Maximum combinational path delay: No path found
+
+Timing Detail:
+--------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'CLKIN'
+  Clock period: 4.996ns (frequency: 200.158MHz)
+  Total number of paths / destination ports: 8126 / 1081
+-------------------------------------------------------------------------
+Delay:               5.995ns (Levels of Logic = 10)
+  Source:            eventrouter_inst/edsel_2_1 (FF)
+  Destination:       boot_inst/rxeventfifo_inst/RAMB16_S9_S18_inst (RAM)
+  Source Clock:      CLKIN rising 0.8X
+  Destination Clock: CLKIN rising 0.8X
+
+  Data Path: eventrouter_inst/edsel_2_1 to boot_inst/rxeventfifo_inst/RAMB16_S9_S18_inst
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDR:C->Q             55   0.360   1.504  edsel_2_1 (EDSELRX<2>)
+     end scope: 'eventrouter_inst'
+     begin scope: 'timer_inst'
+     LUT3_L:I0->LO         1   0.195   0.000  EDRX<0>29_F (N528)
+     MUXF5:I0->O           1   0.382   0.712  EDRX<0>29 (EDRX<0>_map1000)
+     LUT4:I1->O            1   0.195   0.547  EDRX<0>88 (EDRX<0>)
+     end scope: 'timer_inst'
+     begin scope: 'eventrouter_inst'
+     LUT4_L:I3->LO         1   0.195   0.000  dmuxsel<1>_rn_31_F (N129)
+     MUXF5:I0->O           1   0.382   0.547  dmuxsel<1>_rn_31 (mux_3_dmuxsel<1>_MUXF63)
+     LUT4:I3->O            2   0.195   0.552  Mmux_EDTX_EDTX<0>1 (EDTX<0>)
+     end scope: 'eventrouter_inst'
+     begin scope: 'syscontrol_inst'
+     begin scope: 'rxeventfifo_inst'
+     RAMB16:DIA0               0.230          RAMB16_S9_S18_inst
+    ----------------------------------------
+    Total                      5.995ns (2.134ns logic, 3.861ns route)
+                                       (35.6% logic, 64.4% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'CLKIN'
+  Total number of paths / destination ports: 1 / 1
+-------------------------------------------------------------------------
+Offset:              1.890ns (Levels of Logic = 3)
+  Source:            SDIN (PAD)
+  Destination:       boot_inst/mmcfpgaboot_inst/mmcio_inst/byteio_inst/ireg_0 (FF)
+  Destination Clock: CLKIN rising 0.8X
+
+  Data Path: SDIN to boot_inst/mmcfpgaboot_inst/mmcio_inst/byteio_inst/ireg_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O             1   0.965   0.534  SDIN_IBUF (SDIN_IBUF)
+     begin scope: 'boot_inst'
+     begin scope: 'mmcfpgaboot_inst'
+     begin scope: 'mmcio_inst'
+     begin scope: 'byteio_inst'
+     FDE:D                     0.391          ireg_0
+    ----------------------------------------
+    Total                      1.890ns (1.356ns logic, 0.534ns route)
+                                       (71.8% logic, 28.2% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'CLKIN'
+  Total number of paths / destination ports: 769 / 28
+-------------------------------------------------------------------------
+Offset:              13.412ns (Levels of Logic = 15)
+  Source:            boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd26 (FF)
+  Destination:       SDOUT (PAD)
+  Source Clock:      CLKIN rising 0.8X
+
+  Data Path: boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd26 to SDOUT
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDC:C->Q              4   0.360   0.780  cs_FFd26 (cs_FFd26)
+     LUT4:I0->O            1   0.195   0.609  cs_Out1129 (cs_Out11_map531)
+     LUT4:I2->O            1   0.195   0.547  cs_Out1154_SW0_SW0 (N325)
+     LUT4:I3->O            2   0.195   0.565  cs_Out1154_SW0 (N319)
+     LUT4:I3->O            8   0.195   0.644  cs_Out1154 (bsel<3>)
+     LUT4:I3->O            1   0.195   0.547  _n005025_SW0 (N317)
+     LUT4:I3->O            8   0.195   0.862  _n005025 (_n0050)
+     LUT3:I0->O            1   0.195   0.765  pin<3>_SW0 (N3)
+     LUT4:I0->O            1   0.195   0.712  pin<3> (pin<3>)
+     begin scope: 'byteio_inst'
+     LUT3:I1->O            1   0.195   0.000  bcnt<0>1 (mux_4_N3)
+     MUXF5:I0->O           1   0.382   0.000  bcnt<1> (mux_4_bcnt<1>_MUXF5)
+     MUXF6:I1->O           1   0.395   0.534  Mmux_SDOUT_SDOUT (SDOUT)
+     end scope: 'byteio_inst'
+     end scope: 'mmcio_inst'
+     end scope: 'mmcfpgaboot_inst'
+     end scope: 'boot_inst'
+     OBUF:I->O                 3.957          SDOUT_OBUF (SDOUT)
+    ----------------------------------------
+    Total                     13.412ns (6.849ns logic, 6.563ns route)
+                                       (51.1% logic, 48.9% route)
+
+=========================================================================
+CPU : 430.63 / 430.70 s | Elapsed : 567.00 / 568.00 s
+ 
+--> 
+
+
+Total memory usage is 217848 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :  528 (   0 filtered)
+Number of infos    :   10 (   0 filtered)
+

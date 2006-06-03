@@ -17,7 +17,7 @@ architecture Behavioral of nettesttest is
 
   component nettest
     port (
-      CLK        : in  std_logic;
+      CLKIN        : in  std_logic;
       SERIALBOOT : out std_logic_vector(19 downto 0);
       SDOUT      : out std_logic;
       SDIN       : in  std_logic;
@@ -33,7 +33,7 @@ architecture Behavioral of nettesttest is
 
   end component;
 
-  signal CLK        : std_logic                     := '0';
+  signal CLKIN, CLK        : std_logic                     := '0';
   signal SERIALBOOT : std_logic_vector(19 downto 0) := (others => '0');
 
   signal SDOUT    : std_logic := '0';
@@ -89,7 +89,7 @@ begin  -- Behavioral
 
   nettest_uut : nettest
     port map (
-      CLk        => CLK,
+      CLKIN        => CLKIN,
       SERIALBOOT => SERIALBOOT,
       SDOUT      => SDOUT,
       SDIN       => SDIN,
@@ -101,7 +101,8 @@ begin  -- Behavioral
       LEDPOWER   => LEDPOWER,
       LEDEVENT   => LEDEVENT);
 
-  CLK <= not clk after 10 ns;
+  CLKIN <= not CLKIN after 16.666666  ns;
+  CLK <= CLKIN; 
 
   mmc_inst : mmc
     generic map (

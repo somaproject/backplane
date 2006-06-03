@@ -9,9 +9,12 @@ use WORK.somabackplane.all;
 use work.somabackplane;
 
 
+library UNISIM;
+use UNISIM.VComponents.all;
+
 entity nettest is
   port (
-    CLK        : in  std_logic;
+    CLKIN        : in  std_logic;
     SERIALBOOT : out std_logic_vector(19 downto 0);
     SDOUT      : out std_logic;
     SDIN       : in  std_logic;
@@ -107,8 +110,47 @@ architecture Behavioral of nettest is
   signal RESET       : std_logic                      := '0';
   
   signal lserialboot : std_logic_vector(19 downto 0) := (others => '1');
+
+  signal clk, clkint : std_logic := '0';
+  signal clkf, clkfint : std_logic := '0';
+  
   
 begin  -- Behavioral
+
+  clkgen : DCM_BASE
+    generic map (
+      CLKFX_DIVIDE          => 6, 
+      CLKFX_MULTIPLY        => 5, 
+      CLKIN_PERIOD          => 15.0,
+      CLKOUT_PHASE_SHIFT    => "NONE",
+      CLK_FEEDBACK          => "1X",
+      DCM_AUTOCALIBRATION   => true,
+      DCM_PERFORMANCE_MODE  => "MAX_SPEED",
+      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
+      DFS_FREQUENCY_MODE    => "LOW",
+      DLL_FREQUENCY_MODE    => "LOW",
+      DUTY_CYCLE_CORRECTION => true,
+      FACTORY_JF            => X"F0F0",
+      PHASE_SHIFT           => 0,
+      STARTUP_WAIT          => false)
+    port map(
+      CLKIN                 => CLKIN,
+      CLK0                  => clkfint,
+      CLKFB                 => clkf,
+      CLKFX                 => clkint,
+      RST                   => RESET,
+      LOCKED                => open
+      );
+
+  clk_bufg : BUFG
+    port map (
+      O => clkf,
+      I => clkfint);
+
+  clksrc_bufg : BUFG
+    port map (
+      O => clk,
+      I => clkint);
 
   eventrouter_inst : eventrouter
     port map (
@@ -171,5 +213,15 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
-  
+  -- dummy
+  process(CLK)
+    variable blinkcnt: std_logic_vector(21 downto 0) := (others => '0'); 
+    
+    begin
+      if rising_edge(CLK) then
+        blinkcnt := blinkcnt + 1;
+        LEDPOWER <= blinkcnt(21);
+        LEDEVENT <= ECYCLE; 
+      end if;
+    end process; 
 end Behavioral;
