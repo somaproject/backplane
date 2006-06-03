@@ -2,11 +2,11 @@ Release 8.1i - xst I.24
 Copyright (c) 1995-2005 Xilinx, Inc.  All rights reserved.
 --> 
 Parameter TMPDIR set to build
-CPU : 0.00 / 0.05 s | Elapsed : 0.00 / 1.00 s
+CPU : 0.00 / 0.05 s | Elapsed : 0.00 / 0.00 s
  
 --> 
 Parameter xsthdpdir set to ./xst
-CPU : 0.00 / 0.05 s | Elapsed : 0.00 / 1.00 s
+CPU : 0.00 / 0.05 s | Elapsed : 0.00 / 0.00 s
  
 --> 
 
@@ -120,8 +120,7 @@ Architecture behavioral of Entity boot is up to date.
 Compiling vhdl file "/home/jonas/soma/somabackplane/deviceio/vhdl/bootdeser.vhd" in Library work.
 Architecture behavioral of Entity bootdeserialize is up to date.
 Compiling vhdl file "/home/jonas/soma/somabackplane/tests/nettest/vhdl/nettest.vhd" in Library work.
-Entity <nettest> compiled.
-Entity <nettest> (Architecture <behavioral>) compiled.
+Architecture behavioral of Entity nettest is up to date.
 
 =========================================================================
 *                            HDL Analysis                               *
@@ -474,7 +473,7 @@ WARNING:Xst:1781 - Signal <EARX<77:3>> is used but never assigned. Tied to defau
 WARNING:Xst:646 - Signal <EATX<77:3>> is assigned but never used.
     Found 1-bit register for signal <LEDPOWER>.
     Found 1-bit register for signal <LEDEVENT>.
-    Found 22-bit adder for signal <$n0008> created at line 222.
+    Found 22-bit adder for signal <$n0008> created at line 221.
     Found 22-bit up counter for signal <blinkcnt>.
     Summary:
 	inferred   1 Counter(s).
@@ -1452,12 +1451,12 @@ Offset:              13.412ns (Levels of Logic = 15)
                                        (51.1% logic, 48.9% route)
 
 =========================================================================
-CPU : 430.63 / 430.70 s | Elapsed : 567.00 / 568.00 s
+CPU : 414.88 / 414.95 s | Elapsed : 420.00 / 420.00 s
  
 --> 
 
 
-Total memory usage is 217848 kilobytes
+Total memory usage is 217864 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :  528 (   0 filtered)

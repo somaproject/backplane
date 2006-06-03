@@ -26,7 +26,6 @@ entity nettest is
     NICFDIN    : out std_logic;
     NICFPROG   : out std_logic
     );
-
 end nettest;
 
 
