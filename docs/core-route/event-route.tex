@@ -1,7 +1,6 @@
 
 \section{Event Port Interface}
 
-
 Event routeing is based around the EventBus Port interface. This is a
 curious interface as it requires partial cooperation with the client
 devices for timing, thus violating an abstraction barrier. However,
@@ -27,9 +26,12 @@ eventbus port N, then the device connected to port N is the target
 
 \signal{EDTX} output event data, in a stream. This signal is common to all ports, that is, all ports send the same data at once (event target specificity is determined by EATX)
 
-On the cycle following ECYCLE, 50 ticks into the event cycle, the
-event router begins transmitting the data from the device on EventBus
-Port 0.
+On the cycle following ECYCLE, after 48 ticks into the event cycle
+(that is, the cycle where ECYCLE = '1' counts as tick 0, and there are
+47 ticks after that, then this tick) the event router begins
+transmitting the data from the device on EventBus Port 0.
+
+THIS NEEDS MORE EXPLANATION! 
 
 \section{Implementation}
 

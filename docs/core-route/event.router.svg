@@ -6,10 +6,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="event.router.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/docs"
+   sodipodi:docbase="/home/jonas/soma/somabackplane/docs/core-route"
    inkscape:version="0.43+devel"
    sodipodi:version="0.32"
    id="svg1996"
@@ -528,7 +528,7 @@
          sodipodi:role="line"
          id="tspan23406"
          x="218.75"
-         y="705.7453">=48</tspan></text>
+         y="705.7453">=47</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 421.875,702.5 L 240.625,702.5"
@@ -564,5 +564,19 @@
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 300,808.75 L 278.125,808.75 L 278.125,796.25"
        id="path23420" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="109.375"
+       y="646.25"
+       id="text1963"><tspan
+         sodipodi:role="line"
+         id="tspan1965"
+         x="109.375"
+         y="646.25">resets to 1 to correctly count </tspan><tspan
+         sodipodi:role="line"
+         x="109.375"
+         y="661.25"
+         id="tspan1967">ticks inclusive of ecycle</tspan></text>
   </g>
 </svg>
