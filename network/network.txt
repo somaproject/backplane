@@ -1,0 +1,25 @@
+The network interface is somewhat difficult as we want to be
+low-latency, high bandwidth, enable retransmission of lost datagrams,
+and we also want to be easy to implement in hardware.
+
+Our target functions are: 
+
+Transmit: 
+1. variable-length data bus UDP datagrams
+2. fixed-length event bus UDP datagrams
+3. arp responses
+4. ICMP-echo responses
+5. retransmit-request responses
+
+Receive: 
+1. event datagrams
+2. arp queries
+3. icmp queries
+4. retransmission requests
+
+We severely limit the type of network our system operates on to being
+a single subnet ideally behind some sort of firewall, running with a
+subnet mask of 255.255.255.0. The Soma Backplane can only send traffic
+on this subnet, as there are no provisions for routing or packet
+fragmentation.
+
