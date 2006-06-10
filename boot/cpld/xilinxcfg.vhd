@@ -58,7 +58,7 @@ begin  -- Behavioral
   FCLK  <= lfclk;
   FPROG <= lfprog;
 
-  fsel <= '0'; 
+  fsel <= '1' when cs = done else '0'; 
 
   main : process(CLK)
   begin

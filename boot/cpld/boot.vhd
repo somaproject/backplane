@@ -20,7 +20,8 @@ entity boot is
     FSCLK  : in  std_logic;
     FPROG : out std_logic;
     FCLK : out std_logic;
-    FDIN : out std_logic
+    FDIN : out std_logic;
+    FSELOUT : out std_logic
     );
 
 end boot;
@@ -89,6 +90,7 @@ begin  -- Behavioral
   FDIN <= SDIN;
   FCLK <= bsclk when dreading = '1' else '0';
 
+  FSELOUT <= fsel; 
   
   mmcio_inst : mmcio
     port map (
