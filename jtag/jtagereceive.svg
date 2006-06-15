@@ -8,7 +8,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="jtagrevent.svg"
+   sodipodi:docname="jtagereceive.svg"
    sodipodi:docbase="/home/jonas/soma/somabackplane/jtag"
    inkscape:version="0.43+devel"
    sodipodi:version="0.32"
@@ -62,9 +62,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="388.2368"
-     inkscape:cx="910.43499"
-     inkscape:zoom="2"
+     inkscape:cy="415.0863"
+     inkscape:cx="921.51146"
+     inkscape:zoom="2.8284271"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -1776,7 +1776,7 @@
          sodipodi:role="line"
          id="tspan4539"
          x="778.125"
-         y="530.625">OSEL=0</tspan></text>
+         y="530.625">OSHIFT=0</tspan></text>
     <path
        id="path4545"
        d="M 887.50017,421.25002 L 887.50017,421.25002"
@@ -1864,7 +1864,7 @@
            y="-35"
            x="127.87411"
            id="tspan4579"
-           sodipodi:role="line">EW5</tspan></text>
+           sodipodi:role="line">EW6</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -1876,7 +1876,7 @@
          sodipodi:role="line"
          x="940.625"
          y="461.875"
-         id="tspan4587">ADDRBINC=1</tspan></text>
+         id="tspan4587">ADDRBINC=0</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -1981,8 +1981,8 @@
     <text
        sodipodi:linespacing="100%"
        id="text4645"
-       y="502.5"
-       x="1036.9484"
+       y="571.25"
+       x="832.10254"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.25;font-family:Bitstream Vera Sans"
        xml:space="preserve"><tspan
          id="tspan4647">else</tspan></text>
@@ -2024,18 +2024,18 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="1043.75"
-       y="524.375"
+       x="993.75"
+       y="574.375"
        id="text4663"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         id="tspan4665"
-         x="1043.75"
-         y="524.375">OUPDATE=1</tspan><tspan
+         x="993.75"
+         y="574.375"
+         id="tspan4669">OSHIFT=1 &amp; </tspan><tspan
          sodipodi:role="line"
-         x="1043.75"
-         y="533.125"
-         id="tspan4669">and OSEL=1</tspan></text>
+         x="993.75"
+         y="583.125"
+         id="tspan2320">OSEL = 1</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 888.32796,536.875 L 957.07796,536.875"
@@ -2069,7 +2069,7 @@
          sodipodi:role="line"
          id="tspan4681"
          x="756.25"
-         y="258.75">ocs=ew5</tspan></text>
+         y="258.75">ocs=ew6</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -2323,5 +2323,37 @@
            id="tspan4789"
            sodipodi:role="line">OUTDONE</tspan></text>
     </g>
+    <path
+       id="path2294"
+       d="M 804.84574,636.87501 L 804.84574,636.87501"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-opacity:1" />
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="775"
+       y="593.125"
+       id="text2314"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="775"
+         y="593.125"
+         id="tspan2316">OSHIFT=0</tspan><tspan
+         sodipodi:role="line"
+         x="775"
+         y="601.875"
+         id="tspan2322">&amp; OSEL=1</tspan></text>
+    <path
+       transform="matrix(0.999935,1.145556e-2,1.145556e-2,-0.999935,664.4618,690.5602)"
+       sodipodi:open="true"
+       d="M 180.21352,107.48374 A 12.5,12.5 0 1 1 168.62925,90.000583"
+       sodipodi:end="4.7027288"
+       sodipodi:start="0.41009825"
+       sodipodi:ry="12.5"
+       sodipodi:rx="12.5"
+       sodipodi:cy="102.5"
+       sodipodi:cx="168.75"
+       id="path2318"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;marker-start:url(#TriangleInM);marker-end:none"
+       sodipodi:type="arc" />
   </g>
 </svg>

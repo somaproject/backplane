@@ -21,7 +21,8 @@ entity jtagereceive is
 
     ECYCLE : in  std_logic;
     EDTX   : in  std_logic_vector(7 downto 0);
-    EATX   : out std_logic_vector(somabackplane.N - 1 downto 0)
+    EATX   : in std_logic_vector(somabackplane.N - 1 downto 0);
+    DEBUG: out std_logic_vector(3 downto 0)
     );
 end jtagereceive;
 
@@ -37,7 +38,7 @@ architecture Behavioral of jtagereceive is
   signal odrck, osel, oshift, oupdate, otdo : std_logic             := '0';
   signal bitcnt                             : integer range 0 to 95 := 0;
 
-  type ostates is (eoutw, ew0, ew1, ew2, ew3, ew4, ew5, selwait, wwrite, outwait, outdone);
+  type ostates is (eoutw, ew0, ew1, ew2, ew3, ew4, ew5, ew6,  selwait, wwrite, outwait, outdone);
   signal ocs, ons : ostates := eoutw;
 
   signal addrbinc : std_logic := '0';
@@ -59,15 +60,15 @@ begin  -- Behavioral
       WRITE_MODE_B        => "WRITE_FIRST",  --  WRITE_FIRST, READ_FIRST or NO_CHANGE
       SIM_COLLISION_CHECK => "ALL",     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
       -- Address 0 to 255
-      INIT_00             => X"0000000000000000000000000000000000000000000000000000000000000001",
-      INIT_01             => X"0000000000000000000000000000000000000000000000000000000000000002",
-      INIT_02             => X"0000000000000000000000000000000000000000000000000000000000000003",
-      INIT_03             => X"0000000000000000000000000000000000000000000000000000000000000004",
-      INIT_04             => X"0000000000000000000000000000000000000000000000000000000000000005",
-      INIT_05             => X"0000000000000000000000000000000000000000000000000000000000000006",
-      INIT_06             => X"0000000000000000000000000000000000000000000000000000000000000007",
-      INIT_07             => X"0000000000000000000000000000000000000000000000000000000000000008",
-      INIT_08             => X"0000000000000000000000000000000000000000000000000000000000000009",
+      INIT_00             => X"AAA1AAA2AAA3AAA4AAA5AAA6AAA7AAA8AAA9AAA01AAAA32AAFEDCB9876543210",
+      INIT_01             => X"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB0DC2",
+      INIT_02             => X"BCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC0FE3",
+      INIT_03             => X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4",
+      INIT_04             => X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5",
+      INIT_05             => X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF6",
+      INIT_06             => X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7",
+      INIT_07             => X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8",
+      INIT_08             => X"FFF0000000000000000000000000000000000000000000000000000000000009",
       INIT_09             => X"000000000000000000000000000000000000000000000000000000000000000A",
       INIT_0A             => X"000000000000000000000000000000000000000000000000000000000000000B",
       INIT_0B             => X"000000000000000000000000000000000000000000000000000000000000000C",
@@ -128,7 +129,7 @@ begin  -- Behavioral
       INIT_3F             => X"0000000000000000000000000000000000000000000000000000000000000000")
     port map (
       DOA                 => open,
-      DOB                 => dob,
+      DOB                 => open, -- open dob,  --debugging
       DOPA                => open,
       DOPB                => open,
       ADDRA               => addra,
@@ -161,6 +162,11 @@ begin  -- Behavioral
       TDO        => otdo);
 
 
+  DEBUG(0) <= odrck;
+  DEBUG(1) <= osel;
+  DEBUG(2) <= oshift;
+  DEBUG(3) <= otdo;
+  
   -- output jtag proces
   jtagout : process(ODRCK, OUPDATE)
   begin
@@ -188,35 +194,37 @@ begin  -- Behavioral
       ocs <= ons;
 
       if addrbinc = '1' then
-        addrb <= addrb + 1;
+        addrb <= addrb + 1;           
       end if;
-
-      if ocs = ew0 then
+      dob <= "000000" & addrb; 
+      if ocs = ew1 then
         dout(15 downto 0)  <= dob;
       end if;
-      if ocs = ew1 then
+      if ocs = ew2 then
         dout(31 downto 16) <= dob;
       end if;
-      if ocs = ew2 then
+      if ocs = ew3 then
         dout(47 downto 32) <= dob;
       end if;
-      if ocs = ew3 then
+      if ocs = ew4 then
         dout(63 downto 48) <= dob;
       end if;
-      if ocs = ew4 then
+      if ocs = ew5 then
         dout(79 downto 64) <= dob;
       end if;
-      if ocs = ew5 then
+      if ocs = ew6 then
         dout(95 downto 80) <= dob;
       end if;
 
-      if ocs = outdone then
+      
+      if ocs = eoutw then
         doutl   <= (others => '0');
       else
         if ocs = wwrite then
-          doutl <= dout;
+          doutl <= dout; 
         end if;
       end if;
+      
 
     end if;
   end process main;
@@ -225,6 +233,7 @@ begin  -- Behavioral
   begin
     case ocs is
       when eoutw =>
+        --DEBUG <= X"0"; 
         addrbinc <= '0';
         if addrb /= cp then
           ons     <= ew0;
@@ -232,54 +241,74 @@ begin  -- Behavioral
           ons     <= eoutw;
         end if;
       when ew0   =>
+        --DEBUG <= X"1";
         addrbinc <= '1';
         ons       <= ew1;
 
       when ew1 =>
+        --DEBUG <= X"2";
         addrbinc <= '1';
         ons       <= ew2;
 
       when ew2 =>
+        --DEBUG <= X"3";
         addrbinc <= '1';
         ons       <= ew3;
 
       when ew3 =>
+        --DEBUG <= X"4";
         addrbinc <= '1';
         ons       <= ew4;
 
       when ew4 =>
+        --DEBUG <= X"5";
         addrbinc <= '1';
         ons       <= ew5;
 
       when ew5 =>
+        --DEBUG <= X"6";
         addrbinc <= '1';
+        ons       <= ew6;
+
+      when ew6 =>
+        --DEBUG <= X"6";
+        addrbinc <= '0';
         ons       <= selwait;
 
       when selwait =>
+        --DEBUG <= X"7";
         addrbinc <= '0';
-        if osel = '0' then
+        if oshift = '0' then
           ons     <= wwrite;
         else
           ons     <= selwait;
         end if;
 
       when wwrite =>
+        --DEBUG <= X"8";
         addrbinc <= '0';
         ons       <= outwait;
 
       when outwait =>
+        --DEBUG <= X"9";
         addrbinc <= '0';
-        if oupdate = '1' and osel = '1' then
+        if oshift = '1' and osel = '1' then
           ons     <= outdone;
         else
           ons     <= outwait;
         end if;
 
       when outdone  =>
+        --DEBUG <= X"A";
         addrbinc <= '0';
-        ons       <= eoutw;
+        if oshift = '0' and osel = '1'then
+          ons <= eoutw;
+        else
+          ons <= outdone; 
+        end if;
 
       when others  =>
+        --DEBUG <= X"B";
         addrbinc <= '0';
         ons       <= eoutw;
 
