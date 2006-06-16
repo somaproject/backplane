@@ -19,11 +19,16 @@ def flipbits(x):
 
 #assert flipbits('\x01') == '\x80'
 #assert flipbits('\x55') == '\xAA'
+
+rampos = sys.argv[1] 
     
-fid = file(sys.argv[1], 'rb')
-fout = file(sys.argv[2], 'wb')
+fid = file(sys.argv[2], 'rb')
+fout = file(sys.argv[3], 'wb')
 
 fid.seek(72)
+
+dist = 512 * int(rampos)
+fout.seek(dist)
 
 for i in fid.read():
     #fout.write(flipbits(i))

@@ -19,7 +19,8 @@ entity syscontrol is
     EDTX    : in  std_logic_vector(7 downto 0);
     EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
     ECYCLE  : in  std_logic;
-    EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
+    EARX    : out std_logic_vector(somabackplane.N - 1 downto 0)
+    := (others => '0'); 
     EDRX    : out std_logic_vector(7 downto 0);
     EDSELRX : in  std_logic_vector(3 downto 0)
     );
@@ -57,7 +58,7 @@ architecture Behavioral of syscontrol is
   signal evalid : std_logic := '0';
 
   type states is (none, acheck, ecyclew, respw, erespchk, enext1, erespchk2, esuccess, enext2, notyet);
-  signal cs, ns : states := acheck;
+  signal cs, ns : states := none;
 
   component rxeventfifo
     port (
@@ -164,7 +165,7 @@ begin  -- Behavioral
       -- The following INIT_xx declarations specify the initial contents of the RAM
       -- Address 0 to 127
       INIT_00    =>
-      X"0000000000000000000000000000000000000000000000000000000010002000",
+      X"0000000000000000000000000000000000000000000000000000000000040010",
       INIT_01    =>
       X"0000000000000000000000000000000000000000000000000000000000000000",
       INIT_02    =>

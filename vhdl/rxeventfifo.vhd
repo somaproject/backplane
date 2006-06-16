@@ -1,8 +1,10 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.numeric_std.all;
+
+
 
 library WORK;
 use WORK.somabackplane.all;
@@ -58,7 +60,7 @@ architecture Behavioral of rxeventfifo is
   signal cs, ns : states := none;
 
   signal epos_max : std_logic_vector(6 downto 0) := (others => '0');
-
+  
 begin  -- Behavioral
 
   -- combinational
@@ -70,7 +72,7 @@ begin  -- Behavioral
   addrb <= eoutcnt & EOUTA;
   
   epos_max <=  std_logic_vector(TO_UNSIGNED(somabackplane.N -1, 7)); 
-  etxbit <= EATX(to_integer(UNSIGNED(epos)));
+  etxbit <= EATX(conv_integer(epos)); -- when epos <= epos_max else '0'; 
 
   EVALID <= '1' when eincnt /= eoutcnt else '0'; 
 

@@ -38,10 +38,14 @@ architecture Behavioral of mmcfpgaboot is
 
   signal mcnt             : std_logic_vector(15 downto 0) := (others => '0');
   signal mcntinc, mcntrst : std_logic                     := '0';
-
+  signal mmcioreset : std_logic := '1';
+  signal mmciostartdelay : integer range 0 to 500000 := 0;
+  
+  
   signal incnt : std_logic_vector(10 downto 0) := (others => '0');
 
-  signal mmcdata        : std_logic_vector(7 downto 0) := (others => '0');
+  signal mmcdata, mmcdatarev        : std_logic_vector(7 downto 0)
+    := (others => '0');
   signal dstart, dvalid : std_logic                    := '0';
   signal ddone          : std_logic                    := '0';
 
@@ -108,7 +112,7 @@ begin  -- Behavioral
    mmcio_inst : mmcio
      port map (
        CLK      => CLK,
-       RESET    => RESET,
+       RESET    => mmcioreset,
        SCS      => SCS,
        SDIN     => SDIN,
        SDOUT    => SDOUT,
@@ -158,6 +162,14 @@ begin  -- Behavioral
           end if;
         end if;
 
+        -- start delay
+        if mmciostartdelay < 500000 then
+          mmciostartdelay <= mmciostartdelay + 1;
+          mmcioreset <= '1'; 
+        else
+          mmcioreset <= '0'; 
+        end if;
+        
       end if;
     end if;
 
@@ -378,7 +390,15 @@ begin  -- Behavioral
   end process fsm;
 
 
-
+    mmcdatarev(0) <= mmcdata(7);
+    mmcdatarev(1) <= mmcdata(6);
+    mmcdatarev(2) <= mmcdata(5);
+    mmcdatarev(3) <= mmcdata(4);
+    mmcdatarev(4) <= mmcdata(3);
+    mmcdatarev(5) <= mmcdata(2);
+    mmcdatarev(6) <= mmcdata(1);
+    mmcdatarev(7) <= mmcdata(0);
+    
 
 
 
@@ -401,7 +421,7 @@ begin  -- Behavioral
       CLKA  => CLK,
       CLKB  => CLK,
       DIA   => "0",
-      DIB   => mmcdata,
+      DIB   => mmcdatarev,
       DIPB  => "0",
       ENA   => '1',
       ENB   => '1',

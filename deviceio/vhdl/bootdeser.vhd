@@ -15,7 +15,7 @@ entity bootdeserialize is
   port (
     CLK   : in  std_logic;
     SERIN : in  std_logic;
-    FPROG : out std_logic;
+    FPROG : out std_logic := '1';
     FCLK  : out std_logic;
     FDIN  : out std_logic);
 
@@ -25,7 +25,7 @@ architecture Behavioral of bootdeserialize is
 
   signal serinl : std_logic := '1';
 
-  signal lfprog : std_logic := '0';
+  signal lfprog : std_logic := '1';
                                
   signal lfclk, lfdin : std_logic := '0';
   
@@ -75,7 +75,7 @@ begin  -- Behavioral
     end process main; 
                      
   
-    fsm: process(CS, serinl)
+    fsm: process(CS, serinl, cnt)
       begin
         case cs is
           when none =>
@@ -98,7 +98,7 @@ begin  -- Behavioral
           when cmdpend =>
             cmdrst <= '0';
 
-            if cmd = 20 then
+            if cnt = 20 then
               ns <= none;
             else
               ns <= cmdpend; 

@@ -1,8 +1,8 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
+use IEEE.STD_LOGIC_ARITH.all;
 
 library WORK;
 use WORK.somabackplane.all;
@@ -18,7 +18,8 @@ entity bootcontrol is
     CLK      : in  std_logic;
     RESET    : in  std_logic;
     ECYCLE   : in  std_logic;
-    EARX     : out std_logic_vector(somabackplane.N - 1 downto 0);
+    EARX     : out std_logic_vector(somabackplane.N - 1 downto 0)
+    := (others => '0');
     EDRX     : out std_logic_vector(7 downto 0);
     EDSELRX  : in  std_logic_vector(3 downto 0);
     EOUTD    : in  std_logic_vector(15 downto 0);
@@ -53,7 +54,8 @@ architecture Behavioral of bootcontrol is
 
   signal estatus : std_logic_vector(7 downto 0) := (others => '0');
 
-  signal learx   : std_logic_vector(somabackplane.N - 1 downto 0);
+  signal learx   : std_logic_vector(somabackplane.N - 1 downto 0)
+    := (others => '0');
   signal addrset : std_logic := '0';
 
   signal dval : std_logic_vector(7 downto 0) := (others => '0');
@@ -141,7 +143,7 @@ begin  -- Behavioral
           learx                               <= (others => '0');
         else
           if addrset = '1' then
-            learx(to_integer(unsigned(dval))) <= '1';
+            learx(conv_integer(dval)) <= '1';
           end if;
         end if;
 

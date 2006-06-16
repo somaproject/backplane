@@ -14,7 +14,7 @@ use UNISIM.VComponents.all;
 
 entity nettest is
   port (
-    CLKIN        : in  std_logic;
+    CLKIN      : in  std_logic;
     SERIALBOOT : out std_logic_vector(19 downto 0);
     SDOUT      : out std_logic;
     SDIN       : in  std_logic;
@@ -24,7 +24,8 @@ entity nettest is
     LEDEVENT   : out std_logic;
     NICFCLK    : out std_logic;
     NICFDIN    : out std_logic;
-    NICFPROG   : out std_logic
+    NICFPROG   : out std_logic;
+    DEBUG      : out std_logic_vector(3 downto 0)
     );
 end nettest;
 
@@ -86,7 +87,8 @@ architecture Behavioral of nettest is
       SDIN    : in  std_logic;
       SCLK    : out std_logic;
       SCS     : out std_logic;
-      SEROUT  : out std_logic_vector(M-1 downto 0));
+      SEROUT  : out std_logic_vector(M-1 downto 0);
+      DEBUG   : out std_logic_vector(1 downto 0));
   end component;
 
 
@@ -99,27 +101,66 @@ architecture Behavioral of nettest is
       FDIN  : out std_logic);
   end component;
 
+
+  component jtagesend
+    generic (
+      JTAG_CHAIN :     integer := 1);
+    port (
+      CLK        : in  std_logic;
+      ECYCLE     : in  std_logic;
+      EARX       : out std_logic_vector(somabackplane.N - 1 downto 0)
+                               := (others => '0');
+      EDRX       : out std_logic_vector(7 downto 0);
+      EDSELRX    : in  std_logic_vector(3 downto 0)
+      );
+  end component;
+
+  component jtagereceive
+    generic (
+      JTAG_CHAIN_MASK :     integer := 1;
+      JTAG_CHAIN_OUT  :     integer := 1
+      );
+    port (
+      CLK             : in  std_logic;
+      ECYCLE          : in  std_logic;
+      EDTX            : in  std_logic_vector(7 downto 0);
+      EATX            : in std_logic_vector(somabackplane.N - 1 downto 0);
+      DEBUG : out std_logic_vector(3 downto 0)
+      );
+  end component;
+
   signal ECYCLE : std_logic := '0';
 
-  signal EARX        : somabackplane.addrarray := (others => (others => '0'));
-  signal EDRX        : somabackplane.dataarray := (others => (others => '0'));
-  signal EDSELRX     : std_logic_vector(3 downto 0) := (others => '0'); 
-  signal EATX        : somabackplane.addrarray := (others => (others => '0'));
-  signal EDTX        : std_logic_vector(7 downto 0)  := (others => '0'); 
-  signal RESET       : std_logic                      := '0';
-  
+  signal EARX    : somabackplane.addrarray      := (others => (others => '0'));
+  signal EDRX    : somabackplane.dataarray      := (others => (others => '0'));
+  signal EDSELRX : std_logic_vector(3 downto 0) := (others => '0');
+  signal EATX    : somabackplane.addrarray      := (others => (others => '0'));
+  signal EDTX    : std_logic_vector(7 downto 0) := (others => '0');
+  signal RESET   : std_logic                    := '0';
+
   signal lserialboot : std_logic_vector(19 downto 0) := (others => '1');
 
-  signal clk, clkint : std_logic := '0';
+  signal clk, clkint   : std_logic := '0';
   signal clkf, clkfint : std_logic := '0';
-  
-  
+
+  -- jtag signal test
+  signal jtagcapture : std_logic := '0';
+  signal jtagdrck    : std_logic := '0';
+  signal jtagreset   : std_logic := '0';
+  signal jtagsel     : std_logic := '0';
+  signal jtagshift   : std_logic := '0';
+  signal jtagtdi     : std_logic := '0';
+  signal jtagupdate  : std_logic := '0';
+  signal jtagtdo     : std_logic := '0';
+
+  signal testout : std_logic_vector(31 downto 0) := X"00000001";
+
 begin  -- Behavioral
 
   clkgen : DCM_BASE
     generic map (
-      CLKFX_DIVIDE          => 6, 
-      CLKFX_MULTIPLY        => 5, 
+      CLKFX_DIVIDE          => 6,
+      CLKFX_MULTIPLY        => 5,
       CLKIN_PERIOD          => 15.0,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
@@ -200,7 +241,8 @@ begin  -- Behavioral
       SDIN    => SDIN,
       SCLK    => SCLK,
       SCS     => SCS,
-      SEROUT  => lserialboot);
+      SEROUT  => lserialboot,
+      DEBUG   => open);
 
   bootdeserialize_inst : bootdeserialize
     port map (
@@ -212,15 +254,71 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
+
+  BSCAN_VIRTEX4_inst : BSCAN_VIRTEX4
+    generic map (
+      JTAG_CHAIN => 2)
+    port map (
+      CAPTURE    => jtagcapture,
+      DRCK       => jtagdrck,
+      reset      => jtagreset,
+      SEL        => jtagsel,
+      SHIFT      => jtagshift,
+      TDI        => jtagtdi,
+      UPDATE     => jtagupdate,
+      TDO        => jtagtdo);
+
+  LEDEVENT <= jtagshift;
+
+  jtagtdo         <= testout(0);
+  process(jtagsel, jtagdrck, jtagupdate)
+  begin
+    if jtagupdate = '1' then
+      testout     <= X"1234ABCD";
+    else
+      if rising_edge(jtagdrck) then
+        if jtagsel = '1' and jtagshift = '1' then
+          testout <= testout(0) & testout(31 downto 1);
+        end if;
+      end if;
+    end if;
+  end process;
+
+  jtagsend_inst : jtagesend
+    generic map (
+      JTAG_CHAIN => 1)
+    port map (
+      CLK        => clk,
+      ECYCLE     => ecycle,
+      EARX       => earx(7),
+      EDRX       => edrx(7),
+      EDSELRX    => edselrx);
+
+  jtagreceive_inst : jtagereceive
+    generic map (
+      JTAG_CHAIN_MASK => 3,
+      JTAG_CHAIN_OUT => 4  )
+    port map (
+      CLK        => clk,
+      ECYCLE     => ecycle,
+      EDTX => edtx,
+      EATX => eatx(7),
+      DEBUG => DEBUG); 
+
   -- dummy
   process(CLK)
-    variable blinkcnt: std_logic_vector(21 downto 0) := (others => '0'); 
-    
-    begin
-      if rising_edge(CLK) then
-        blinkcnt := blinkcnt + 1;
-        LEDPOWER <= blinkcnt(21);
-        LEDEVENT <= ECYCLE; 
-      end if;
-    end process; 
+    variable blinkcnt : std_logic_vector(21 downto 0) := (others => '0');
+
+  begin
+    if rising_edge(CLK) then
+      blinkcnt := blinkcnt + 1;
+      LEDPOWER <= blinkcnt(21);
+    end if;
+  end process;
+
+
+
+  -- test
+
+
 end Behavioral;

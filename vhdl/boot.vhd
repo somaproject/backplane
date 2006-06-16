@@ -22,14 +22,16 @@ entity boot is
     EDTX    : in  std_logic_vector(7 downto 0);
     EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
     ECYCLE  : in  std_logic;
-    EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
+    EARX    : out std_logic_vector(somabackplane.N - 1 downto 0)
+    := (others => '0');
     EDRX    : out std_logic_vector(7 downto 0);
     EDSELRX : in  std_logic_vector(3 downto 0);
     SDOUT   : out std_logic;
     SDIN    : in  std_logic;
     SCLK    : out std_logic;
     SCS     : out std_logic;
-    SEROUT  : out std_logic_vector(M-1 downto 0));
+    SEROUT  : out std_logic_vector(M-1 downto 0); 
+    DEBUG : out std_logic_vector(1 downto 0));
 
 end boot;
 
@@ -148,6 +150,9 @@ bootcontrol_inst: bootcontrol
     MMCDONE  => mmcdone);
 
 
+  DEBUG(0) <= mmcstart;
+  DEBUG(1) <= mmcdone; 
+  
 mmcfpgaboot_inst: mmcfpgaboot
   generic map (
     M => M)

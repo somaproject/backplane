@@ -50,7 +50,46 @@ architecture Behavioral of jtagereceive is
   signal addra : std_logic_vector(9 downto 0)  := (others => '0');
   signal eoutd : std_logic_vector(15 downto 0) := (others => '0');
 
+  signal enext : std_logic := '0';
+  signal eouta : std_logic_vector(2 downto 0) := (others => '0');
+  signal evalid : std_logic; 
 
+    --input side
+  type istates is (ewaita, edone, scheck, ew0, ew1, ew2, ew3, ew4, ew5, ewritten);
+  signal ics, ins : istates := ewaita;
+  
+  signal addrainc : std_logic := '0';
+  
+  signal fifocnt : integer range 0 to 255 := 0;
+  
+  -- input mask
+  signal smdrck : std_logic := '0';
+  signal smsel : std_logic := '0';
+  signal smshift : std_logic := '0';
+  signal smupdate : std_logic := '0';
+  signal smtdi : std_logic := '0';
+  signal smaskreg : std_logic_vector(79 downto 0) := (others => '0');
+  signal smaskregl : std_logic_vector(79 downto 0) := (others => '0');
+  signal smaskregll : std_logic_vector(79 downto 0) := (others => '0');
+  signal smask : std_logic := '0';
+  
+
+component rxeventfifo
+  port (
+    CLK    : in  std_logic;
+    RESET  : in  std_logic;
+    ECYCLE : in  std_logic;
+    EATX   : in  std_logic_vector(somabackplane.N -1 downto 0);
+    EDTX   : in  std_logic_vector(7 downto 0); 
+    -- outputs
+    EOUTD  : out std_logic_vector(15 downto 0);
+    EOUTA  : in std_logic_vector(2 downto 0);
+    EVALID : out std_logic;
+    ENEXT  : in  std_logic
+    );
+end component;
+ 
+  
 begin  -- Behavioral
 
   eventbuffer_inst : RAMB16_S18_S18
@@ -129,7 +168,7 @@ begin  -- Behavioral
       INIT_3F             => X"0000000000000000000000000000000000000000000000000000000000000000")
     port map (
       DOA                 => open,
-      DOB                 => open, -- open dob,  --debugging
+      DOB                 => dob, 
       DOPA                => open,
       DOPB                => open,
       ADDRA               => addra,
@@ -168,7 +207,7 @@ begin  -- Behavioral
   DEBUG(3) <= otdo;
   
   -- output jtag proces
-  jtagout : process(ODRCK, OUPDATE)
+  jtagin : process(ODRCK, OUPDATE)
   begin
     if OUPDATE = '1' then
       bitcnt     <= 0;
@@ -179,12 +218,10 @@ begin  -- Behavioral
         end if;
       end if;
     end if;
-  end process jtagout;
+  end process jtagin;
 
-  cp <= "0000000001";
-
-  otdo <= doutl(bitcnt);
-
+  otdo <= doutl(bitcnt); 
+  --otdo <= smaskregll(bitcnt); 
 
   main : process(CLK)
   begin
@@ -196,24 +233,23 @@ begin  -- Behavioral
       if addrbinc = '1' then
         addrb <= addrb + 1;           
       end if;
-      dob <= "000000" & addrb; 
       if ocs = ew1 then
-        dout(15 downto 0)  <= dob;
+        dout(15 downto 0)  <= dob(7 downto 0) & dob(15 downto 8);
       end if;
       if ocs = ew2 then
-        dout(31 downto 16) <= dob;
+        dout(31 downto 16) <= dob(7 downto 0) & dob(15 downto 8);
       end if;
       if ocs = ew3 then
-        dout(47 downto 32) <= dob;
+        dout(47 downto 32) <= dob(7 downto 0) & dob(15 downto 8);
       end if;
       if ocs = ew4 then
-        dout(63 downto 48) <= dob;
+        dout(63 downto 48) <= dob(7 downto 0) & dob(15 downto 8);
       end if;
       if ocs = ew5 then
-        dout(79 downto 64) <= dob;
+        dout(79 downto 64) <= dob(7 downto 0) & dob(15 downto 8);
       end if;
       if ocs = ew6 then
-        dout(95 downto 80) <= dob;
+        dout(95 downto 80) <= dob(7 downto 0) & dob(15 downto 8);
       end if;
 
       
@@ -225,7 +261,32 @@ begin  -- Behavioral
         end if;
       end if;
       
+      -- input side
+      ics <= ins;
 
+      if addrainc = '1' then
+        addra <= addra + 1; 
+      end if;
+
+      if ics = ewritten then
+        cp <= addra; 
+      end if;
+
+      -- mask side
+
+      if enext = '1' then
+        smaskregll <= smaskregl;
+      end if;
+
+      -- fifocounter
+
+      if ics = ewritten and ocs /= wwrite then
+        fifocnt <= fifocnt + 1;
+      elsif ics /= ewritten and ocs = wwrite then
+        fifocnt <= fifocnt - 1; 
+      end if;
+
+      
     end if;
   end process main;
 
@@ -315,4 +376,143 @@ begin  -- Behavioral
     end case;
   end process outfsm;
 
+
+  -- input
+  rxeventfifo_inst: rxeventfifo
+    port map (
+      CLK    => CLK,
+      RESET => '0', 
+      EDTX   => EDTX,
+      EATX   => EATX,
+      ECYCLE => ECYCLE,
+      ENEXT  => enext,
+      EOUTA  => eouta,
+      EVALID => evalid,
+      EOUTD  => eoutd); 
+    
+    
+
+  BSCAN_MASK_inst : BSCAN_VIRTEX4
+    generic map (
+      JTAG_CHAIN => JTAG_CHAIN_MASK)
+    port map (
+      CAPTURE    => open,
+      DRCK       => smdrck,
+      reset      => open,
+      SEL        => smsel,
+      SHIFT      => smshift,
+      TDI        => smtdi,
+      UPDATE     => smupdate,
+      TDO        => '0') ; 
+
+  
+  jtagout : process(SMDRCK, smupdate)
+  begin
+    if SMUPDATE = '1' then
+      smaskregl <= smaskreg; 
+    else
+      if rising_edge(smdrck) then
+        if smsel = '1' and smshift = '1' then
+          smaskreg <= smtdi & smaskreg(79 downto 1); 
+        end if;
+      end if;
+    end if;
+  end process jtagout;
+
+
+  infsm: process (ics, evalid, smask, addra, addrb)
+    begin
+      case ics is
+        when ewaita =>
+          eouta <= "000";
+          enext <= '0';
+          wea <= '0';
+          addrainc <= '0';
+
+          if evalid = '1' then
+            ins <= scheck;
+          else
+            ins <= ewaita;
+          end if;
+
+        when scheck =>
+          eouta <= "000";
+          enext <= '0';
+          wea <= '0';
+          addrainc <= '0';
+
+          if smask = '1' and fifocnt < 100 then
+            ins <= ew0; 
+          else
+            ins <= edone; 
+          end if;
+
+        when edone =>
+          eouta <= "000";
+          enext <= '1';
+          wea <= '0';
+          addrainc <= '0';
+          ins <= ewaita;
+
+        when ew0 =>
+          eouta <= "001";
+          enext <= '0';
+          wea <= '1';
+          addrainc <= '1';
+          ins <= ew1;
+
+        when ew1 =>
+          eouta <= "010";
+          enext <= '0';
+          wea <= '1';
+          addrainc <= '1';
+          ins <= ew2;
+
+        when ew2 =>
+          eouta <= "011";
+          enext <= '0';
+          wea <= '1';
+          addrainc <= '1';
+          ins <= ew3;
+
+        when ew3 =>
+          eouta <= "100";
+          enext <= '0';
+          wea <= '1';
+          addrainc <= '1';
+          ins <= ew4;
+
+        when ew4 =>
+          eouta <= "101";
+          enext <= '0';
+          wea <= '1';
+          addrainc <= '1';
+          ins <= ew5;
+
+        when ew5 =>
+          eouta <= "110";
+          enext <= '0';
+          wea <= '1';
+          addrainc <= '1';
+          ins <= ewritten; 
+
+        when ewritten =>
+          eouta <= "000";
+          enext <= '0';
+          wea <= '0';
+          addrainc <= '0';
+          ins <= edone; 
+          
+        when others =>
+          eouta <= "000";
+          enext <= '0';
+          wea <= '0';
+          addrainc <= '0';
+          ins <= ewaita; 
+      end case; 
+    end process infsm;
+    
+
+    smask <= smaskregll(conv_integer(eoutd(7 downto 0)));
+    
 end Behavioral;

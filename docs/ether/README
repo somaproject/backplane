@@ -1,0 +1,9 @@
+The ethernet interface is the general control interface for the
+MAC/PHY on the NIC.
+
+To that extent, things we care about are:
+1. maintaining link status
+2. providing a debug interface to the registers on the PHY
+3. Generic PHY interfacing
+
+

@@ -82,7 +82,7 @@ Slice Utilization Ratio Delta      : 5
 Read Cores                         : YES
 cross_clock_analysis               : YES
 verilog2001                        : YES
-safe_implementation                : No
+safe_implementation                : Yes
 Optimize Instantiated Primitives   : YES
 use_clock_enable                   : Yes
 use_sync_set                       : Yes
@@ -97,35 +97,55 @@ Setting FSM Encoding Algorithm to : ONE
 *                          HDL Compilation                              *
 =========================================================================
 Compiling vhdl file "/home/jonas/soma/somabackplane/boot/vhdl/byteio.vhd" in Library work.
-Architecture behavioral of Entity byteio is up to date.
+Entity <byteio> compiled.
+Entity <byteio> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/somabackplane.vhd" in Library work.
+Package <somabackplane> compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/bootserialize.vhd" in Library work.
-Architecture behavioral of Entity bootserialize is up to date.
+Entity <bootserialize> compiled.
+Entity <bootserialize> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/boot/vhdl/mmcio.vhd" in Library work.
-Architecture behavioral of Entity mmcio is up to date.
+Entity <mmcio> compiled.
+Entity <mmcio> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/rxeventfifo.vhd" in Library work.
-Architecture behavioral of Entity rxeventfifo is up to date.
+Entity <rxeventfifo> compiled.
+Entity <rxeventfifo> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/bootcontrol.vhd" in Library work.
-Architecture behavioral of Entity bootcontrol is up to date.
+Entity <bootcontrol> compiled.
+Entity <bootcontrol> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/mmcfpgaboot.vhd" in Library work.
-Architecture behavioral of Entity mmcfpgaboot is up to date.
+Entity <mmcfpgaboot> compiled.
+Entity <mmcfpgaboot> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/core/eventrouter.vhd" in Library work.
-Architecture behavioral of Entity eventrouter is up to date.
+Entity <eventrouter> compiled.
+Entity <eventrouter> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/timer.vhd" in Library work.
-Architecture behavioral of Entity timer is up to date.
+Entity <timer> compiled.
+Entity <timer> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/syscontrol.vhd" in Library work.
-Architecture behavioral of Entity syscontrol is up to date.
+Entity <syscontrol> compiled.
+Entity <syscontrol> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/vhdl/boot.vhd" in Library work.
-Architecture behavioral of Entity boot is up to date.
+Entity <boot> compiled.
+Entity <boot> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/deviceio/vhdl/bootdeser.vhd" in Library work.
-Architecture behavioral of Entity bootdeserialize is up to date.
+Entity <bootdeserialize> compiled.
+Entity <bootdeserialize> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/somabackplane/jtag/vhdl/jtagesend.vhd" in Library work.
+Entity <jtagesend> compiled.
+Entity <jtagesend> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/somabackplane/jtag/vhdl/jtagereceive.vhd" in Library work.
+Entity <jtagereceive> compiled.
+Entity <jtagereceive> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/somabackplane/tests/nettest/vhdl/nettest.vhd" in Library work.
-Architecture behavioral of Entity nettest is up to date.
+Entity <nettest> compiled.
+Entity <nettest> (Architecture <Behavioral>) compiled.
 
 =========================================================================
 *                            HDL Analysis                               *
 =========================================================================
-Analyzing Entity <nettest> (Architecture <behavioral>).
+Analyzing Entity <nettest> (Architecture <Behavioral>).
+WARNING:Xst:753 - "/home/jonas/soma/somabackplane/tests/nettest/vhdl/nettest.vhd" line 226: Unconnected output port 'DEBUG' of component 'boot'.
 Entity <nettest> analyzed. Unit <nettest> generated.
 
 Analyzing Entity <eventrouter> (Architecture <behavioral>).
@@ -168,7 +188,7 @@ Entity <bootcontrol> analyzed. Unit <bootcontrol> generated.
 Analyzing generic Entity <mmcfpgaboot> (Architecture <behavioral>).
 	M = 20
 
-WARNING:Xst:753 - "/home/jonas/soma/somabackplane/vhdl/mmcfpgaboot.vhd" line 108: Unconnected output port 'DREADING' of component 'mmcio'.
+WARNING:Xst:753 - "/home/jonas/soma/somabackplane/vhdl/mmcfpgaboot.vhd" line 112: Unconnected output port 'DREADING' of component 'mmcio'.
 WARNING:Xst:1962 - The length of the hexa value for the attribute INIT_A on instance eventbuffer should be 36 bits long. The current value set is 1 bits long.  Value has been extended
 WARNING:Xst:1962 - The length of the hexa value for the attribute INIT_B on instance eventbuffer should be 36 bits long. The current value set is 12 bits long.  Value has been extended
 WARNING:Xst:1962 - The length of the hexa value for the attribute SRVAL_A on instance eventbuffer should be 36 bits long. The current value set is 1 bits long.  Value has been extended
@@ -189,6 +209,30 @@ Entity <byteio> analyzed. Unit <byteio> generated.
 Analyzing Entity <bootdeserialize> (Architecture <behavioral>).
 Entity <bootdeserialize> analyzed. Unit <bootdeserialize> generated.
 
+Analyzing generic Entity <jtagesend> (Architecture <behavioral>).
+	JTAG_CHAIN = 1
+
+Entity <jtagesend> analyzed. Unit <jtagesend> generated.
+
+Analyzing generic Entity <jtagereceive> (Architecture <behavioral>).
+	JTAG_CHAIN_MASK = 3
+
+	JTAG_CHAIN_OUT = 4
+
+WARNING:Xst:1962 - The length of the hexa value for the attribute INIT_A on instance eventbuffer_inst should be 36 bits long. The current value set is 20 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute INIT_B on instance eventbuffer_inst should be 36 bits long. The current value set is 20 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute SRVAL_A on instance eventbuffer_inst should be 36 bits long. The current value set is 20 bits long.  Value has been extended
+WARNING:Xst:1962 - The length of the hexa value for the attribute SRVAL_B on instance eventbuffer_inst should be 36 bits long. The current value set is 20 bits long.  Value has been extended
+WARNING:Xst:819 - "/home/jonas/soma/somabackplane/jtag/vhdl/jtagereceive.vhd" line 293: The following signals are missing in the process sensitivity list:
+   oshift.
+WARNING:Xst:819 - "/home/jonas/soma/somabackplane/jtag/vhdl/jtagereceive.vhd" line 409: The following signals are missing in the process sensitivity list:
+   smaskreg.
+WARNING:Xst:819 - "/home/jonas/soma/somabackplane/jtag/vhdl/jtagereceive.vhd" line 423: The following signals are missing in the process sensitivity list:
+   fifocnt.
+WARNING:Xst:790 - "/home/jonas/soma/somabackplane/jtag/vhdl/jtagereceive.vhd" line 516: Index value(s) does not match array range, simulation mismatch.
+INFO:Xst:1433 - Contents of array <smaskregll> may be accessed with an index that exceeds the array size. This could cause simulation mismatch.
+Entity <jtagereceive> analyzed. Unit <jtagereceive> generated.
+
 
 =========================================================================
 *                           HDL Synthesis                               *
@@ -204,6 +248,7 @@ Synthesizing Unit <byteio>.
     | Outputs            | 4                                              |
     | Clock              | CLK (rising_edge)                              |
     | Power Up State     | none                                           |
+    | Recovery State     | none                                           |
     | Encoding           | one-hot                                        |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
@@ -232,6 +277,7 @@ WARNING:Xst:647 - Input <ADDR<15>> is never used.
     | Reset type         | asynchronous                                   |
     | Reset State        | none                                           |
     | Power Up State     | none                                           |
+    | Recovery State     | none                                           |
     | Encoding           | one-hot                                        |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
@@ -257,6 +303,7 @@ Synthesizing Unit <bootserialize>.
     | Outputs            | 6                                              |
     | Clock              | CLK (rising_edge)                              |
     | Power Up State     | none                                           |
+    | Recovery State     | none                                           |
     | Encoding           | one-hot                                        |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
@@ -291,19 +338,24 @@ INFO:Xst:1799 - State clk0 is never reached in FSM <cs>.
     | Clock              | CLK (rising_edge)                              |
     | Clock enable       | RESET (negative)                               |
     | Power Up State     | none                                           |
+    | Recovery State     | none                                           |
     | Encoding           | one-hot                                        |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 16-bit comparator equal for signal <$n0006> created at line 351.
+    Found 16-bit comparator equal for signal <$n0007> created at line 363.
+    Found 19-bit comparator less for signal <$n0035> created at line 166.
     Found 16-bit adder for signal <addr>.
     Found 11-bit up counter for signal <incnt>.
     Found 16-bit up counter for signal <mcnt>.
+    Found 1-bit register for signal <mmcioreset>.
+    Found 19-bit up counter for signal <mmciostartdelay>.
     Found 14-bit up counter for signal <outcnt>.
     Summary:
 	inferred   1 Finite State Machine(s).
-	inferred   3 Counter(s).
+	inferred   4 Counter(s).
+	inferred   1 D-type flip-flop(s).
 	inferred   1 Adder/Subtractor(s).
-	inferred   1 Comparator(s).
+	inferred   2 Comparator(s).
 Unit <mmcfpgaboot> synthesized.
 
 
@@ -321,6 +373,7 @@ WARNING:Xst:646 - Signal <dval<7>> is assigned but never used.
     | Reset type         | asynchronous                                   |
     | Reset State        | ecyclew                                        |
     | Power Up State     | ecyclew                                        |
+    | Recovery State     | ecyclew                                        |
     | Encoding           | one-hot                                        |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
@@ -354,6 +407,7 @@ WARNING:Xst:1780 - Signal <binc> is never used or assigned.
     | Reset type         | asynchronous                                   |
     | Reset State        | none                                           |
     | Power Up State     | none                                           |
+    | Recovery State     | none                                           |
     | Encoding           | one-hot                                        |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
@@ -375,9 +429,77 @@ WARNING:Xst:1780 - Signal <binc> is never used or assigned.
 Unit <rxeventfifo> synthesized.
 
 
+Synthesizing Unit <jtagereceive>.
+    Related source file is "/home/jonas/soma/somabackplane/jtag/vhdl/jtagereceive.vhd".
+    Found finite state machine <FSM_6> for signal <ocs>.
+    -----------------------------------------------------------------------
+    | States             | 12                                             |
+    | Transitions        | 18                                             |
+    | Inputs             | 3                                              |
+    | Outputs            | 13                                             |
+    | Clock              | CLK (rising_edge)                              |
+    | Power Up State     | eoutw                                          |
+    | Recovery State     | eoutw                                          |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found finite state machine <FSM_7> for signal <ics>.
+    -----------------------------------------------------------------------
+    | States             | 10                                             |
+    | Transitions        | 13                                             |
+    | Inputs             | 3                                              |
+    | Outputs            | 14                                             |
+    | Clock              | CLK (rising_edge)                              |
+    | Power Up State     | ewaita                                         |
+    | Recovery State     | ewaita                                         |
+    | Encoding           | one-hot                                        |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+WARNING:Xst:737 - Found 80-bit latch for signal <smaskregl>.
+    Found 10-bit comparator not equal for signal <$n0012> created at line 299.
+    Found 8-bit comparator less for signal <$n0025> created at line 444.
+    Found 10-bit up counter for signal <addra>.
+    Found 10-bit up counter for signal <addrb>.
+    Found 7-bit up counter for signal <bitcnt>.
+    Found 10-bit register for signal <cp>.
+    Found 96-bit register for signal <dout>.
+    Found 96-bit register for signal <doutl>.
+    Found 8-bit updown counter for signal <fifocnt>.
+    Found 1-bit 96-to-1 multiplexer for signal <otdo>.
+    Found 1-bit 80-to-1 multiplexer for signal <smask>.
+    Found 80-bit register for signal <smaskreg>.
+    Found 80-bit register for signal <smaskregll>.
+    Summary:
+	inferred   2 Finite State Machine(s).
+	inferred   4 Counter(s).
+	inferred 362 D-type flip-flop(s).
+	inferred   2 Comparator(s).
+	inferred   2 Multiplexer(s).
+Unit <jtagereceive> synthesized.
+
+
+Synthesizing Unit <jtagesend>.
+    Related source file is "/home/jonas/soma/somabackplane/jtag/vhdl/jtagesend.vhd".
+WARNING:Xst:653 - Signal <tdo> is used but never assigned. Tied to value 0.
+WARNING:Xst:646 - Signal <shift> is assigned but never used.
+WARNING:Xst:646 - Signal <reset> is assigned but never used.
+WARNING:Xst:646 - Signal <capture> is assigned but never used.
+WARNING:Xst:646 - Signal <data<79:78>> is assigned but never used.
+    Found 78-bit register for signal <EARX>.
+    Found 176-bit register for signal <data>.
+    Found 96-bit register for signal <edrxall>.
+    Found 1-bit xor2 for signal <newdata>.
+    Found 176-bit register for signal <sreg>.
+    Found 1-bit register for signal <ubit>.
+    Found 1-bit register for signal <ubitl>.
+    Summary:
+	inferred 528 D-type flip-flop(s).
+Unit <jtagesend> synthesized.
+
+
 Synthesizing Unit <bootdeserialize>.
     Related source file is "/home/jonas/soma/somabackplane/deviceio/vhdl/bootdeser.vhd".
-    Found finite state machine <FSM_6> for signal <cs>.
+    Found finite state machine <FSM_8> for signal <cs>.
     -----------------------------------------------------------------------
     | States             | 3                                              |
     | Transitions        | 6                                              |
@@ -385,6 +507,7 @@ Synthesizing Unit <bootdeserialize>.
     | Outputs            | 1                                              |
     | Clock              | CLK (rising_edge)                              |
     | Power Up State     | none                                           |
+    | Recovery State     | none                                           |
     | Encoding           | one-hot                                        |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
@@ -414,7 +537,7 @@ Synthesizing Unit <syscontrol>.
 WARNING:Xst:653 - Signal <boot_id<77:3>> is used but never assigned. Tied to value 000000000000000000000000000000000000000000000000000000000000000000000000000.
 WARNING:Xst:653 - Signal <boot_id<1:0>> is used but never assigned. Tied to value 00.
 WARNING:Xst:1780 - Signal <learxin> is never used or assigned.
-    Found finite state machine <FSM_7> for signal <cs>.
+    Found finite state machine <FSM_9> for signal <cs>.
     -----------------------------------------------------------------------
     | States             | 10                                             |
     | Transitions        | 15                                             |
@@ -425,6 +548,7 @@ WARNING:Xst:1780 - Signal <learxin> is never used or assigned.
     | Reset type         | asynchronous                                   |
     | Reset State        | none                                           |
     | Power Up State     | none                                           |
+    | Recovery State     | none                                           |
     | Encoding           | one-hot                                        |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
@@ -467,17 +591,23 @@ Unit <eventrouter> synthesized.
 
 Synthesizing Unit <nettest>.
     Related source file is "/home/jonas/soma/somabackplane/tests/nettest/vhdl/nettest.vhd".
-WARNING:Xst:1781 - Signal <EDRX<77:3>> is used but never assigned. Tied to default value.
+WARNING:Xst:646 - Signal <jtagreset> is assigned but never used.
+WARNING:Xst:1781 - Signal <EDRX<77:8>> is used but never assigned. Tied to default value.
+WARNING:Xst:1781 - Signal <EDRX<6:3>> is used but never assigned. Tied to default value.
 WARNING:Xst:653 - Signal <RESET> is used but never assigned. Tied to value 0.
-WARNING:Xst:1781 - Signal <EARX<77:3>> is used but never assigned. Tied to default value.
-WARNING:Xst:646 - Signal <EATX<77:3>> is assigned but never used.
+WARNING:Xst:646 - Signal <jtagcapture> is assigned but never used.
+WARNING:Xst:646 - Signal <jtagtdi> is assigned but never used.
+WARNING:Xst:1781 - Signal <EARX<77:8>> is used but never assigned. Tied to default value.
+WARNING:Xst:1781 - Signal <EARX<6:3>> is used but never assigned. Tied to default value.
+WARNING:Xst:646 - Signal <EATX<77:8>> is assigned but never used.
+WARNING:Xst:646 - Signal <EATX<6:3>> is assigned but never used.
     Found 1-bit register for signal <LEDPOWER>.
-    Found 1-bit register for signal <LEDEVENT>.
-    Found 22-bit adder for signal <$n0008> created at line 221.
+    Found 22-bit adder for signal <$n0009> created at line 314.
     Found 22-bit up counter for signal <blinkcnt>.
+    Found 32-bit register for signal <testout>.
     Summary:
 	inferred   1 Counter(s).
-	inferred   2 D-type flip-flop(s).
+	inferred   1 D-type flip-flop(s).
 	inferred   1 Adder/Subtractor(s).
 Unit <nettest> synthesized.
 
@@ -486,41 +616,56 @@ Unit <nettest> synthesized.
 HDL Synthesis Report
 
 Macro Statistics
-# Adders/Subtractors                                   : 5
+# Adders/Subtractors                                   : 6
  16-bit adder                                          : 1
  22-bit adder                                          : 1
- 7-bit adder                                           : 2
+ 7-bit adder                                           : 3
  9-bit adder                                           : 1
-# Counters                                             : 19
- 10-bit up counter                                     : 1
+# Counters                                             : 27
+ 10-bit up counter                                     : 3
  11-bit up counter                                     : 2
  14-bit up counter                                     : 1
  16-bit up counter                                     : 1
+ 19-bit up counter                                     : 1
  22-bit up counter                                     : 1
  3-bit up counter                                      : 2
- 4-bit up counter                                      : 3
+ 4-bit up counter                                      : 4
  48-bit up counter                                     : 1
  5-bit up counter                                      : 1
- 7-bit up counter                                      : 5
+ 7-bit up counter                                      : 8
+ 8-bit updown counter                                  : 1
  9-bit up counter                                      : 1
-# Registers                                            : 146
- 1-bit register                                        : 133
+# Registers                                            : 254
+ 1-bit register                                        : 231
+ 10-bit register                                       : 1
  16-bit register                                       : 2
+ 176-bit register                                      : 2
+ 32-bit register                                       : 1
  48-bit register                                       : 1
- 7-bit register                                        : 2
- 78-bit register                                       : 3
+ 7-bit register                                        : 3
+ 78-bit register                                       : 4
  8-bit register                                        : 3
+ 80-bit register                                       : 2
  9-bit register                                        : 1
- 96-bit register                                       : 1
-# Comparators                                          : 3
+ 96-bit register                                       : 3
+# Latches                                              : 1
+ 80-bit latch                                          : 1
+# Comparators                                          : 7
+ 10-bit comparator not equal                           : 1
  16-bit comparator equal                               : 1
- 7-bit comparator not equal                            : 2
-# Multiplexers                                         : 7
- 1-bit 78-to-1 multiplexer                             : 2
+ 19-bit comparator less                                : 1
+ 7-bit comparator not equal                            : 3
+ 8-bit comparator less                                 : 1
+# Multiplexers                                         : 11
+ 1-bit 78-to-1 multiplexer                             : 3
  1-bit 8-to-1 multiplexer                              : 1
- 7-bit 4-to-1 multiplexer                              : 2
+ 1-bit 80-to-1 multiplexer                             : 1
+ 1-bit 96-to-1 multiplexer                             : 1
+ 7-bit 4-to-1 multiplexer                              : 3
  8-bit 78-to-1 multiplexer                             : 1
  9-bit 4-to-1 multiplexer                              : 1
+# Xors                                                 : 1
+ 1-bit xor2                                            : 1
 
 =========================================================================
 
@@ -551,6 +696,38 @@ Optimizing FSM <bootdeserialize_inst/cs> on signal <cs[1:3]> with one-hot encodi
  cmdwait | 010
  cmdpend | 100
 ---------------------
+Optimizing FSM <jtagreceive_inst/ics> on signal <ics[1:10]> with one-hot encoding.
+------------------------
+ State    | Encoding
+------------------------
+ ewaita   | 0000000001
+ edone    | 0000001000
+ scheck   | 0000000010
+ ew0      | 0000000100
+ ew1      | 0000010000
+ ew2      | 0000100000
+ ew3      | 0001000000
+ ew4      | 0010000000
+ ew5      | 0100000000
+ ewritten | 1000000000
+------------------------
+Optimizing FSM <jtagreceive_inst/ocs> on signal <ocs[1:12]> with one-hot encoding.
+-------------------------
+ State   | Encoding
+-------------------------
+ eoutw   | 000000000001
+ ew0     | 000000000010
+ ew1     | 000000000100
+ ew2     | 000000001000
+ ew3     | 000000010000
+ ew4     | 000000100000
+ ew5     | 000001000000
+ ew6     | 000010000000
+ selwait | 000100000000
+ wwrite  | 001000000000
+ outwait | 010000000000
+ outdone | 100000000000
+-------------------------
 Optimizing FSM <syscontrol_inst/rxeventfifo_inst/cs> on signal <cs[1:4]> with one-hot encoding.
 -------------------
  State | Encoding
@@ -661,10 +838,8 @@ Optimizing FSM <boot_inst/mmcfpgaboot_inst/mmcio_inst/byteio_inst/cs> on signal 
  l2    | 010000
  done  | 100000
 -------------------
-
-Synthesizing (advanced) Unit <FSM_0>.
-	Found 2-bit shift register for signal <FFd2>.
-Unit <FSM_0> synthesized (advanced).
+WARNING:Xst:1291 - FF/Latch <data_78> is unconnected in block <jtagesend>.
+WARNING:Xst:1291 - FF/Latch <data_79> is unconnected in block <jtagesend>.
 WARNING:Xst:1293 - FF/Latch  <estatus_2> has a constant value of 0 in block <bootcontrol>.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <estatus_3> has a constant value of 0 in block <bootcontrol>.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch  <estatus_4> has a constant value of 0 in block <bootcontrol>.
@@ -893,7 +1068,6 @@ WARNING:Xst:1291 - FF/Latch <learx_12> is unconnected in block <bootcontrol_inst
 WARNING:Xst:1291 - FF/Latch <learx_11> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_6> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_8> is unconnected in block <bootcontrol_inst>.
-WARNING:Xst:1291 - FF/Latch <learx_7> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_13> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_15> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_14> is unconnected in block <bootcontrol_inst>.
@@ -942,7 +1116,6 @@ WARNING:Xst:1291 - FF/Latch <EARX_3> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_4> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_5> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_6> is unconnected in block <bootcontrol_inst>.
-WARNING:Xst:1291 - FF/Latch <EARX_7> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_8> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_9> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_10> is unconnected in block <bootcontrol_inst>.
@@ -1013,42 +1186,208 @@ WARNING:Xst:1291 - FF/Latch <EARX_74> is unconnected in block <bootcontrol_inst>
 WARNING:Xst:1291 - FF/Latch <EARX_75> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_76> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_77> is unconnected in block <bootcontrol_inst>.
+WARNING:Xst:1291 - FF/Latch <sreg_0> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_0> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_3> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_4> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_5> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_6> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_8> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_9> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_10> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_11> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_12> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_13> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_14> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_15> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_16> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_17> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_18> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_19> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_20> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_21> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_22> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_23> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_24> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_25> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_26> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_27> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_28> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_29> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_30> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_31> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_32> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_33> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_34> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_35> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_36> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_37> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_38> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_39> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_40> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_41> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_42> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_43> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_44> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_45> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_46> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_47> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_48> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_49> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_50> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_51> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_52> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_53> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_54> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_55> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_56> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_57> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_58> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_59> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_60> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_61> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_62> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_63> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_64> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_65> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_66> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_67> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_68> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_69> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_70> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_71> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_72> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_73> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_74> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_75> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_76> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_77> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_0> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_3> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_4> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_5> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_6> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_8> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_9> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_10> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_11> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_12> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_13> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_14> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_15> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_16> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_17> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_18> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_19> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_20> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_21> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_22> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_23> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_24> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_25> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_26> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_27> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_28> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_29> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_30> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_31> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_32> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_33> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_34> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_35> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_36> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_37> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_38> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_39> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_40> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_41> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_42> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_43> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_44> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_45> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_46> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_47> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_48> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_49> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_50> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_51> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_52> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_53> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_54> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_55> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_56> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_57> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_58> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_59> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_60> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_61> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_62> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_63> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_64> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_65> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_66> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_67> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_68> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_69> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_70> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_71> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_72> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_73> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_74> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_75> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_76> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_77> is unconnected in block <jtagsend_inst>.
+
+Synthesizing (advanced) Unit <jtagesend>.
+	Found 3-bit shift register for signal <sreg<77>>.
+Unit <jtagesend> synthesized (advanced).
 
 =========================================================================
 Advanced HDL Synthesis Report
 
 Macro Statistics
-# FSMs                                                 : 8
-# Adders/Subtractors                                   : 5
+# FSMs                                                 : 10
+# Adders/Subtractors                                   : 6
  16-bit adder                                          : 1
  22-bit adder                                          : 1
- 7-bit adder                                           : 2
+ 7-bit adder                                           : 3
  9-bit adder                                           : 1
-# Counters                                             : 19
- 10-bit up counter                                     : 1
+# Counters                                             : 27
+ 10-bit up counter                                     : 3
  11-bit up counter                                     : 2
  14-bit up counter                                     : 1
  16-bit up counter                                     : 1
+ 19-bit up counter                                     : 1
  22-bit up counter                                     : 1
  3-bit up counter                                      : 2
- 4-bit up counter                                      : 3
+ 4-bit up counter                                      : 4
  48-bit up counter                                     : 1
  5-bit up counter                                      : 1
- 7-bit up counter                                      : 5
+ 7-bit up counter                                      : 8
+ 8-bit updown counter                                  : 1
  9-bit up counter                                      : 1
-# Registers                                            : 489
- Flip-Flops                                            : 489
+# Registers                                            : 1432
+ Flip-Flops                                            : 1432
+# Latches                                              : 1
+ 80-bit latch                                          : 1
 # Shift Registers                                      : 1
- 2-bit shift register                                  : 1
-# Comparators                                          : 3
+ 3-bit shift register                                  : 1
+# Comparators                                          : 7
+ 10-bit comparator not equal                           : 1
  16-bit comparator equal                               : 1
- 7-bit comparator not equal                            : 2
-# Multiplexers                                         : 7
- 1-bit 78-to-1 multiplexer                             : 2
+ 19-bit comparator less                                : 1
+ 7-bit comparator not equal                            : 3
+ 8-bit comparator less                                 : 1
+# Multiplexers                                         : 11
+ 1-bit 78-to-1 multiplexer                             : 3
  1-bit 8-to-1 multiplexer                              : 1
- 7-bit 4-to-1 multiplexer                              : 2
+ 1-bit 80-to-1 multiplexer                             : 1
+ 1-bit 96-to-1 multiplexer                             : 1
+ 7-bit 4-to-1 multiplexer                              : 3
  8-bit 78-to-1 multiplexer                             : 1
  9-bit 4-to-1 multiplexer                              : 1
+# Xors                                                 : 1
+ 1-bit xor2                                            : 1
 
 =========================================================================
 
@@ -1056,41 +1395,193 @@ Macro Statistics
 *                         Low Level Synthesis                           *
 =========================================================================
 Loading device for application Rf_Device from file '4vlx25.nph' in environment /home/jonas/xilinx.
-INFO:Xst:1901 - Instance RAMB16_S9_S18_inst in unit rxeventfifo of type RAMB16_S9_S18 has been replaced by RAMB16
+INFO:Xst:1901 - Instance eventbuffer in unit mmcfpgaboot of type RAMB16_S1_S9 has been replaced by RAMB16
+INFO:Xst:1901 - Instance eventbuffer_inst in unit jtagereceive of type RAMB16_S18_S18 has been replaced by RAMB16
 INFO:Xst:1901 - Instance destmask_ram in unit syscontrol of type RAMB16_S36 has been replaced by RAMB16
 INFO:Xst:1901 - Instance addrlen_ram in unit syscontrol of type RAMB16_S36 has been replaced by RAMB16
-INFO:Xst:1901 - Instance eventbuffer in unit mmcfpgaboot of type RAMB16_S1_S9 has been replaced by RAMB16
+INFO:Xst:1901 - Instance RAMB16_S9_S18_inst in unit rxeventfifo of type RAMB16_S9_S18 has been replaced by RAMB16
 INFO:Xst:1901 - Instance clkgen in unit nettest of type DCM_BASE has been replaced by DCM_ADV
 
 Optimizing unit <nettest> ...
 
-Optimizing unit <eventrouter> ...
-
-Optimizing unit <bootserialize> ...
+Optimizing unit <mmcio> ...
 
 Optimizing unit <byteio> ...
+
+Optimizing unit <bootserialize> ...
 
 Optimizing unit <timer> ...
 
 Optimizing unit <bootdeserialize> ...
 
+Optimizing unit <jtagesend> ...
+
 Optimizing unit <rxeventfifo> ...
 
 Optimizing unit <bootcontrol> ...
 
-Optimizing unit <mmcio> ...
+Optimizing unit <eventrouter> ...
 
-Optimizing unit <mmcfpgaboot> ...
-
-Optimizing unit <boot> ...
+Optimizing unit <jtagereceive> ...
 
 Optimizing unit <syscontrol> ...
 
+Optimizing unit <boot> ...
+
+Optimizing unit <mmcfpgaboot> ...
+
 Mapping all equations...
-WARNING:Xst:1426 - The value init of the FF/Latch cs_FFd10 hinder the constant cleaning in the block syscontrol_inst.
-   You should achieve better results by setting this init to 0.
-WARNING:Xst:1426 - The value init of the FF/Latch cs_FFd32 hinder the constant cleaning in the block mmcio_inst.
-   You should achieve better results by setting this init to 0.
+WARNING:Xst:1291 - FF/Latch <sreg_0> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_0> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_3> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_4> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_5> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_6> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_8> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_9> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_10> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_11> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_12> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_13> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_14> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_15> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_16> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_17> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_18> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_19> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_20> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_21> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_22> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_23> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_24> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_25> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_26> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_27> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_28> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_29> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_30> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_31> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_32> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_33> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_34> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_35> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_36> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_37> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_38> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_39> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_40> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_41> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_42> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_43> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_44> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_45> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_46> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_47> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_48> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_49> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_50> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_51> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_52> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_53> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_54> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_55> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_56> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_57> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_58> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_59> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_60> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_61> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_62> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_63> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_64> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_65> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_66> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_67> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_68> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_69> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_70> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_71> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_72> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_73> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_74> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_75> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_76> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <data_77> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_0> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_3> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_4> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_5> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_6> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_8> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_9> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_10> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_11> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_12> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_13> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_14> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_15> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_16> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_17> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_18> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_19> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_20> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_21> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_22> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_23> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_24> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_25> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_26> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_27> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_28> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_29> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_30> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_31> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_32> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_33> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_34> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_35> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_36> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_37> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_38> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_39> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_40> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_41> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_42> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_43> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_44> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_45> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_46> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_47> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_48> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_49> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_50> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_51> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_52> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_53> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_54> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_55> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_56> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_57> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_58> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_59> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_60> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_61> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_62> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_63> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_64> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_65> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_66> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_67> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_68> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_69> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_70> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_71> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_72> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_73> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_74> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_75> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_76> is unconnected in block <jtagsend_inst>.
+WARNING:Xst:1291 - FF/Latch <EARX_77> is unconnected in block <jtagsend_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_55> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_60> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_56> is unconnected in block <bootcontrol_inst>.
@@ -1124,7 +1615,6 @@ WARNING:Xst:1291 - FF/Latch <learx_12> is unconnected in block <bootcontrol_inst
 WARNING:Xst:1291 - FF/Latch <learx_11> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_6> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_8> is unconnected in block <bootcontrol_inst>.
-WARNING:Xst:1291 - FF/Latch <learx_7> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_13> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_15> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <learx_14> is unconnected in block <bootcontrol_inst>.
@@ -1173,7 +1663,6 @@ WARNING:Xst:1291 - FF/Latch <EARX_3> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_4> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_5> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_6> is unconnected in block <bootcontrol_inst>.
-WARNING:Xst:1291 - FF/Latch <EARX_7> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_8> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_9> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_10> is unconnected in block <bootcontrol_inst>.
@@ -1245,12 +1734,26 @@ WARNING:Xst:1291 - FF/Latch <EARX_75> is unconnected in block <bootcontrol_inst>
 WARNING:Xst:1291 - FF/Latch <EARX_76> is unconnected in block <bootcontrol_inst>.
 WARNING:Xst:1291 - FF/Latch <EARX_77> is unconnected in block <bootcontrol_inst>.
 Building and optimizing final netlist ...
-Found area constraint ratio of 100 (+ 5) on block nettest, actual ratio is 4.
-FlipFlop boot_inst/mmcfpgaboot_inst/cs_FFd9 has been replicated 2 time(s)
+Found area constraint ratio of 100 (+ 5) on block nettest, actual ratio is 12.
+FlipFlop boot_inst/mmcfpgaboot_inst/cs_FFd13 has been replicated 1 time(s)
+FlipFlop boot_inst/mmcfpgaboot_inst/cs_FFd14 has been replicated 1 time(s)
+FlipFlop boot_inst/mmcfpgaboot_inst/cs_FFd9 has been replicated 1 time(s)
+FlipFlop boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd10 has been replicated 1 time(s)
+FlipFlop boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd12 has been replicated 1 time(s)
+FlipFlop boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd16 has been replicated 1 time(s)
+FlipFlop boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd4 has been replicated 3 time(s)
 FlipFlop eventrouter_inst/edsel_0 has been replicated 1 time(s)
 FlipFlop eventrouter_inst/edsel_1 has been replicated 1 time(s)
 FlipFlop eventrouter_inst/edsel_2 has been replicated 1 time(s)
 FlipFlop eventrouter_inst/edsel_3 has been replicated 1 time(s)
+FlipFlop jtagreceive_inst/ocs_FFd10 has been replicated 1 time(s)
+FlipFlop jtagreceive_inst/ocs_FFd12 has been replicated 1 time(s)
+FlipFlop jtagreceive_inst/ocs_FFd3 has been replicated 1 time(s)
+FlipFlop jtagreceive_inst/ocs_FFd5 has been replicated 1 time(s)
+FlipFlop jtagreceive_inst/ocs_FFd6 has been replicated 1 time(s)
+FlipFlop jtagreceive_inst/ocs_FFd7 has been replicated 1 time(s)
+FlipFlop jtagreceive_inst/ocs_FFd8 has been replicated 1 time(s)
+FlipFlop jtagreceive_inst/ocs_FFd9 has been replicated 1 time(s)
 
 =========================================================================
 *                            Final Report                               *
@@ -1263,53 +1766,56 @@ Optimization Goal                  : Speed
 Keep Hierarchy                     : YES
 
 Design Statistics
-# IOs                              : 30
+# IOs                              : 34
 
 Cell Usage :
-# BELS                             : 1083
-#      GND                         : 9
+# BELS                             : 2111
+#      GND                         : 11
 #      INV                         : 2
-#      LUT1                        : 88
-#      LUT1_D                      : 1
-#      LUT1_L                      : 20
-#      LUT2                        : 131
-#      LUT2_D                      : 2
-#      LUT2_L                      : 19
-#      LUT3                        : 96
-#      LUT3_D                      : 7
-#      LUT3_L                      : 63
-#      LUT4                        : 217
-#      LUT4_D                      : 15
-#      LUT4_L                      : 90
+#      LUT1                        : 140
+#      LUT2                        : 179
+#      LUT2_D                      : 1
+#      LUT2_L                      : 17
+#      LUT3                        : 311
+#      LUT3_D                      : 22
+#      LUT3_L                      : 127
+#      LUT4                        : 557
+#      LUT4_D                      : 40
+#      LUT4_L                      : 173
 #      MULT_AND                    : 3
-#      MUXCY                       : 149
-#      MUXF5                       : 36
-#      MUXF6                       : 5
-#      MUXF7                       : 2
-#      VCC                         : 7
-#      XORCY                       : 121
-# FlipFlops/Latches                : 542
-#      FD                          : 40
-#      FDC                         : 52
-#      FDCE                        : 15
-#      FDE                         : 379
-#      FDP                         : 5
-#      FDR                         : 38
-#      FDRE                        : 10
+#      MUXCY                       : 199
+#      MUXF5                       : 116
+#      MUXF6                       : 39
+#      MUXF7                       : 19
+#      MUXF8                       : 5
+#      VCC                         : 11
+#      XORCY                       : 139
+# FlipFlops/Latches                : 1514
+#      FD                          : 132
+#      FDC                         : 68
+#      FDCE                        : 33
+#      FDE                         : 994
+#      FDP                         : 6
+#      FDPE                        : 15
+#      FDR                         : 72
+#      FDRE                        : 109
 #      FDRS                        : 1
-#      FDSE                        : 2
-# RAMS                             : 5
-#      RAMB16                      : 5
+#      FDS                         : 4
+#      LD                          : 80
+# RAMS                             : 7
+#      RAMB16                      : 7
 # Shift Registers                  : 1
-#      SRL16                       : 1
-# Clock Buffers                    : 2
-#      BUFG                        : 2
-# IO Buffers                       : 30
+#      SRL16E                      : 1
+# Clock Buffers                    : 6
+#      BUFG                        : 6
+# IO Buffers                       : 34
 #      IBUF                        : 1
 #      IBUFG                       : 1
-#      OBUF                        : 28
+#      OBUF                        : 32
 # DCMs                             : 1
 #      DCM_ADV                     : 1
+# Others                           : 4
+#      BSCAN_VIRTEX4               : 4
 =========================================================================
 
 Device utilization summary:
@@ -1317,16 +1823,16 @@ Device utilization summary:
 
 Selected Device : 4vlx25ff668-10 
 
- Number of Slices:                     501  out of  10752     4%  
- Number of Slice Flip Flops:           540  out of  21504     2%  
- Number of 4 input LUTs:               750  out of  21504     3%  
-    Number used as logic: 749
+ Number of Slices:                    1333  out of  10752    12%  
+ Number of Slice Flip Flops:          1513  out of  21504     7%  
+ Number of 4 input LUTs:              1568  out of  21504     7%  
+    Number used as logic: 1567
     Number used as Shift registers: 1
- Number of bonded IOBs:                 30  out of    448     6%  
-    IOB Flip Flops: 2
- Number of FIFO16/RAMB16s:               5  out of     72     6%  
-    Number used as RAMB16s:              5
- Number of GCLKs:                        2  out of     32     6%  
+ Number of bonded IOBs:                 34  out of    448     7%  
+    IOB Flip Flops: 1
+ Number of FIFO16/RAMB16s:               7  out of     72     9%  
+    Number used as RAMB16s:              7
+ Number of GCLKs:                        6  out of     32    18%  
  Number of DCM_ADVs:                     1  out of      8    12%  
 
 
@@ -1342,104 +1848,405 @@ Clock Information:
 -----------------------------------+------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)  | Load  |
 -----------------------------------+------------------------+-------+
-CLKIN                              | clkgen:CLKFX           | 548   |
+CLKIN                              | clkgen:CLKFX           | 1148  |
+jtagdrck1                          | BUFG                   | 32    |
+jtagsend_inst/drck1                | BUFG                   | 174   |
+jtagsend_inst/update               | NONE                   | 1     |
+jtagreceive_inst/smdrck1           | BUFG                   | 80    |
+jtagreceive_inst/DEBUG<0>          | NONE                   | 7     |
+jtagreceive_inst/smupdate1         | BUFG                   | 80    |
 -----------------------------------+------------------------+-------+
+INFO:Xst:2169 - HDL ADVISOR - Some clock signals were not automatically buffered by XST with BUFG/BUFR resources. Please use the buffer_type constraint in order to insert these buffers to the clock signals to help prevent skew problems.
 
 Timing Summary:
 ---------------
 Speed Grade: -10
 
-   Minimum period: 4.996ns (Maximum Frequency: 200.158MHz)
-   Minimum input arrival time before clock: 1.890ns
-   Maximum output required time after clock: 13.412ns
-   Maximum combinational path delay: No path found
+   Minimum period: 6.807ns (Maximum Frequency: 146.899MHz)
+   Minimum input arrival time before clock: 3.085ns
+   Maximum output required time after clock: 13.779ns
+   Maximum combinational path delay: 4.588ns
 
 Timing Detail:
 --------------
 All values displayed in nanoseconds (ns)
 
 =========================================================================
-Timing constraint: Default period analysis for Clock 'CLKIN'
-  Clock period: 4.996ns (frequency: 200.158MHz)
-  Total number of paths / destination ports: 8126 / 1081
+Timing constraint: Default period analysis for Clock 'jtagsend_inst/update'
+  Clock period: 3.543ns (frequency: 282.216MHz)
+  Total number of paths / destination ports: 100 / 100
 -------------------------------------------------------------------------
-Delay:               5.995ns (Levels of Logic = 10)
-  Source:            eventrouter_inst/edsel_2_1 (FF)
-  Destination:       boot_inst/rxeventfifo_inst/RAMB16_S9_S18_inst (RAM)
-  Source Clock:      CLKIN rising 0.8X
+Offset:              3.543ns (Levels of Logic = 1)
+  Source:            jtagsend_inst/ubit (FF)
+  Destination:       jtagsend_inst/data_1 (FF)
+  Source Clock:      jtagsend_inst/update rising
   Destination Clock: CLKIN rising 0.8X
 
-  Data Path: eventrouter_inst/edsel_2_1 to boot_inst/rxeventfifo_inst/RAMB16_S9_S18_inst
+  Data Path: jtagsend_inst/ubit to jtagsend_inst/data_1
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDR:C->Q             55   0.360   1.504  edsel_2_1 (EDSELRX<2>)
+     FDE:C->Q              3   0.360   0.781  ubit (ubit)
+     LUT2:I0->O           99   0.195   1.465  Mxor_newdata_Result1 (newdata)
+     FDRE:CE                   0.743          data_173
+    ----------------------------------------
+    Total                      3.543ns (1.298ns logic, 2.245ns route)
+                                       (36.6% logic, 63.4% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'jtagsend_inst/drck1'
+  Clock period: 1.303ns (frequency: 767.460MHz)
+  Total number of paths / destination ports: 99 / 99
+-------------------------------------------------------------------------
+Offset:              1.303ns (Levels of Logic = 0)
+  Source:            jtagsend_inst/sreg_2 (FF)
+  Destination:       jtagsend_inst/data_2 (FF)
+  Source Clock:      jtagsend_inst/drck1 rising
+  Destination Clock: CLKIN rising 0.8X
+
+  Data Path: jtagsend_inst/sreg_2 to jtagsend_inst/data_2
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDE:C->Q              2   0.360   0.552  sreg_2 (sreg_2)
+     FDRE:D                    0.391          data_2
+    ----------------------------------------
+    Total                      1.303ns (0.751ns logic, 0.552ns route)
+                                       (57.6% logic, 42.4% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'jtagreceive_inst/smupdate1'
+  Clock period: 1.398ns (frequency: 715.512MHz)
+  Total number of paths / destination ports: 80 / 80
+-------------------------------------------------------------------------
+Offset:              1.398ns (Levels of Logic = 0)
+  Source:            jtagreceive_inst/smaskregl_0 (LATCH)
+  Destination:       jtagreceive_inst/smaskregll_0 (FF)
+  Source Clock:      jtagreceive_inst/smupdate1 falling
+  Destination Clock: CLKIN rising 0.8X
+
+  Data Path: jtagreceive_inst/smaskregl_0 to jtagreceive_inst/smaskregll_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     LD:G->Q               1   0.473   0.534  smaskregl_0 (smaskregl_0)
+     FDE:D                     0.391          smaskregll_0
+    ----------------------------------------
+    Total                      1.398ns (0.864ns logic, 0.534ns route)
+                                       (61.8% logic, 38.2% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'jtagreceive_inst/smdrck1'
+  Clock period: 1.303ns (frequency: 767.460MHz)
+  Total number of paths / destination ports: 80 / 80
+-------------------------------------------------------------------------
+Offset:              1.303ns (Levels of Logic = 0)
+  Source:            jtagreceive_inst/smaskreg_79 (FF)
+  Destination:       jtagreceive_inst/smaskregl_79 (LATCH)
+  Source Clock:      jtagreceive_inst/smdrck1 rising
+  Destination Clock: jtagreceive_inst/smupdate1 falling
+
+  Data Path: jtagreceive_inst/smaskreg_79 to jtagreceive_inst/smaskregl_79
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDE:C->Q              2   0.360   0.552  smaskreg_79 (smaskreg_79)
+     LD:D                      0.391          smaskregl_79
+    ----------------------------------------
+    Total                      1.303ns (0.751ns logic, 0.552ns route)
+                                       (57.6% logic, 42.4% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'CLKIN'
+  Clock period: 6.807ns (frequency: 146.899MHz)
+  Total number of paths / destination ports: 16226 / 2151
+-------------------------------------------------------------------------
+Delay:               8.169ns (Levels of Logic = 14)
+  Source:            eventrouter_inst/edsel_2_1 (FF)
+  Destination:       jtagreceive_inst/rxeventfifo_inst/RAMB16_S9_S18_inst (RAM)
+  Source Clock:      CLKIN rising 0.8X
+  Destination Clock: CLKIN rising 0.8X
+
+  Data Path: eventrouter_inst/edsel_2_1 to jtagreceive_inst/rxeventfifo_inst/RAMB16_S9_S18_inst
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDR:C->Q             73   0.360   1.530  edsel_2_1 (EDSELRX<2>)
      end scope: 'eventrouter_inst'
-     begin scope: 'timer_inst'
-     LUT3_L:I0->LO         1   0.195   0.000  EDRX<0>29_F (N528)
-     MUXF5:I0->O           1   0.382   0.712  EDRX<0>29 (EDRX<0>_map1000)
-     LUT4:I1->O            1   0.195   0.547  EDRX<0>88 (EDRX<0>)
-     end scope: 'timer_inst'
+     begin scope: 'syscontrol_inst'
+     LUT3_D:I1->O         14   0.195   0.832  Ker911 (N22)
+     LUT4_L:I2->LO         1   0.195   0.000  EDRX<0>581_F (N740)
+     MUXF5:I0->O           1   0.382   0.547  EDRX<0>581 (EDRX<0>_map5460)
+     LUT4:I3->O            1   0.195   0.609  EDRX<0>66 (EDRX<0>)
+     end scope: 'syscontrol_inst'
      begin scope: 'eventrouter_inst'
-     LUT4_L:I3->LO         1   0.195   0.000  dmuxsel<1>_rn_31_F (N129)
-     MUXF5:I0->O           1   0.382   0.547  dmuxsel<1>_rn_31 (mux_3_dmuxsel<1>_MUXF63)
-     LUT4:I3->O            2   0.195   0.552  Mmux_EDTX_EDTX<0>1 (EDTX<0>)
+     LUT3_L:I2->LO         1   0.195   0.000  dmuxsel<4>11 (mux_3_N20)
+     MUXF5:I0->O           1   0.382   0.000  dmuxsel<5>_rn_4 (mux_3_dmuxsel<5>_MUXF55)
+     MUXF6:I0->O           1   0.388   0.000  dmuxsel<1>_rn_2 (mux_3_dmuxsel<1>_MUXF62)
+     MUXF7:I1->O           1   0.395   0.609  dmuxsel<0>_rn_3 (mux_3_dmuxsel<0>_MUXF71)
+     LUT3_L:I2->LO         1   0.195   0.000  Mmux_EDTX_EDTX<0>11_F (N132)
+     MUXF5:I0->O           3   0.382   0.550  Mmux_EDTX_EDTX<0>11 (EDTX<0>)
      end scope: 'eventrouter_inst'
      begin scope: 'syscontrol_inst'
      begin scope: 'rxeventfifo_inst'
      RAMB16:DIA0               0.230          RAMB16_S9_S18_inst
     ----------------------------------------
-    Total                      5.995ns (2.134ns logic, 3.861ns route)
-                                       (35.6% logic, 64.4% route)
+    Total                      8.169ns (3.494ns logic, 4.675ns route)
+                                       (42.8% logic, 57.2% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'jtagdrck1'
+  Clock period: 1.285ns (frequency: 778.452MHz)
+  Total number of paths / destination ports: 32 / 32
+-------------------------------------------------------------------------
+Delay:               1.285ns (Levels of Logic = 0)
+  Source:            testout_1 (FF)
+  Destination:       testout_0 (FF)
+  Source Clock:      jtagdrck1 rising
+  Destination Clock: jtagdrck1 rising
+
+  Data Path: testout_1 to testout_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDCE:C->Q             1   0.360   0.534  testout_1 (testout_1)
+     FDPE:D                    0.391          testout_0
+    ----------------------------------------
+    Total                      1.285ns (0.751ns logic, 0.534ns route)
+                                       (58.5% logic, 41.5% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'jtagsend_inst/drck1'
+  Clock period: 2.594ns (frequency: 385.505MHz)
+  Total number of paths / destination ports: 173 / 173
+-------------------------------------------------------------------------
+Delay:               2.594ns (Levels of Logic = 0)
+  Source:            jtagsend_inst/Mshreg_sreg_77 (FF)
+  Destination:       jtagsend_inst/sreg_77 (FF)
+  Source Clock:      jtagsend_inst/drck1 rising
+  Destination Clock: jtagsend_inst/drck1 rising
+
+  Data Path: jtagsend_inst/Mshreg_sreg_77 to jtagsend_inst/sreg_77
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     SRL16E:CLK->Q         1   2.203   0.000  Mshreg_sreg_77 (Mshreg_sreg_77)
+     FDE:D                     0.391          sreg_77
+    ----------------------------------------
+    Total                      2.594ns (2.594ns logic, 0.000ns route)
+                                       (100.0% logic, 0.0% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'jtagsend_inst/update'
+  Clock period: 1.727ns (frequency: 579.139MHz)
+  Total number of paths / destination ports: 1 / 1
+-------------------------------------------------------------------------
+Delay:               1.727ns (Levels of Logic = 1)
+  Source:            jtagsend_inst/ubit (FF)
+  Destination:       jtagsend_inst/ubit (FF)
+  Source Clock:      jtagsend_inst/update rising
+  Destination Clock: jtagsend_inst/update rising
+
+  Data Path: jtagsend_inst/ubit to jtagsend_inst/ubit
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDE:C->Q              3   0.360   0.781  ubit (ubit)
+     LUT1:I0->O            1   0.195   0.000  _n00171 (_n0017)
+     FDE:D                     0.391          ubit
+    ----------------------------------------
+    Total                      1.727ns (0.946ns logic, 0.781ns route)
+                                       (54.8% logic, 45.2% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'jtagreceive_inst/smdrck1'
+  Clock period: 1.303ns (frequency: 767.460MHz)
+  Total number of paths / destination ports: 79 / 79
+-------------------------------------------------------------------------
+Delay:               1.303ns (Levels of Logic = 0)
+  Source:            jtagreceive_inst/smaskreg_1 (FF)
+  Destination:       jtagreceive_inst/smaskreg_0 (FF)
+  Source Clock:      jtagreceive_inst/smdrck1 rising
+  Destination Clock: jtagreceive_inst/smdrck1 rising
+
+  Data Path: jtagreceive_inst/smaskreg_1 to jtagreceive_inst/smaskreg_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDE:C->Q              2   0.360   0.552  smaskreg_1 (smaskreg_1)
+     FDE:D                     0.391          smaskreg_0
+    ----------------------------------------
+    Total                      1.303ns (0.751ns logic, 0.552ns route)
+                                       (57.6% logic, 42.4% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'jtagreceive_inst/DEBUG<0>'
+  Clock period: 4.043ns (frequency: 247.329MHz)
+  Total number of paths / destination ports: 28 / 7
+-------------------------------------------------------------------------
+Delay:               4.043ns (Levels of Logic = 3)
+  Source:            jtagreceive_inst/bitcnt_0 (FF)
+  Destination:       jtagreceive_inst/bitcnt_6 (FF)
+  Source Clock:      jtagreceive_inst/DEBUG<0> rising
+  Destination Clock: jtagreceive_inst/DEBUG<0> rising
+
+  Data Path: jtagreceive_inst/bitcnt_0 to jtagreceive_inst/bitcnt_6
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDCE:C->Q            38   0.360   1.378  bitcnt_0 (bitcnt_0)
+     LUT2:I1->O            1   0.195   0.547  jtagereceive_Result<4>cy1_SW0 (N23)
+     LUT4:I3->O            2   0.195   0.783  jtagereceive_Result<4>cy1 (jtagereceive_Result<4>_cyo)
+     LUT3:I0->O            1   0.195   0.000  jtagereceive_Result<6>_xor11 (Result<6>)
+     FDCE:D                    0.391          bitcnt_6
+    ----------------------------------------
+    Total                      4.043ns (1.336ns logic, 2.707ns route)
+                                       (33.0% logic, 67.0% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'jtagdrck1'
+  Total number of paths / destination ports: 64 / 32
+-------------------------------------------------------------------------
+Offset:              2.895ns (Levels of Logic = 1)
+  Source:            BSCAN_VIRTEX4_inst:SHIFT (PAD)
+  Destination:       testout_0 (FF)
+  Destination Clock: jtagdrck1 rising
+
+  Data Path: BSCAN_VIRTEX4_inst:SHIFT to testout_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+    BSCAN_VIRTEX4:SHIFT    2   0.000   0.783  BSCAN_VIRTEX4_inst (LEDEVENT_OBUF)
+     LUT2:I0->O           32   0.195   1.174  _n00101 (_n0010)
+     FDCE:CE                   0.743          testout_30
+    ----------------------------------------
+    Total                      2.895ns (0.938ns logic, 1.957ns route)
+                                       (32.4% logic, 67.6% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'jtagsend_inst/drck1'
+  Total number of paths / destination ports: 175 / 175
+-------------------------------------------------------------------------
+Offset:              2.910ns (Levels of Logic = 0)
+  Source:            jtagsend_inst/BSCAN_VIRTEX4_inst:SEL (PAD)
+  Destination:       jtagsend_inst/Mshreg_sreg_77 (FF)
+  Destination Clock: jtagsend_inst/drck1 rising
+
+  Data Path: jtagsend_inst/BSCAN_VIRTEX4_inst:SEL to jtagsend_inst/Mshreg_sreg_77
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+    BSCAN_VIRTEX4:SEL    175   0.000   1.795  BSCAN_VIRTEX4_inst (sel)
+     SRL16E:CE                 1.115          Mshreg_sreg_77
+    ----------------------------------------
+    Total                      2.910ns (1.115ns logic, 1.795ns route)
+                                       (38.3% logic, 61.7% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'jtagsend_inst/update'
+  Total number of paths / destination ports: 1 / 1
+-------------------------------------------------------------------------
+Offset:              2.538ns (Levels of Logic = 0)
+  Source:            jtagsend_inst/BSCAN_VIRTEX4_inst:SEL (PAD)
+  Destination:       jtagsend_inst/ubit (FF)
+  Destination Clock: jtagsend_inst/update rising
+
+  Data Path: jtagsend_inst/BSCAN_VIRTEX4_inst:SEL to jtagsend_inst/ubit
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+    BSCAN_VIRTEX4:SEL    175   0.000   1.795  BSCAN_VIRTEX4_inst (sel)
+     FDE:CE                    0.743          ubit
+    ----------------------------------------
+    Total                      2.538ns (0.743ns logic, 1.795ns route)
+                                       (29.3% logic, 70.7% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'jtagreceive_inst/smdrck1'
+  Total number of paths / destination ports: 241 / 81
+-------------------------------------------------------------------------
+Offset:              3.085ns (Levels of Logic = 1)
+  Source:            jtagreceive_inst/BSCAN_MASK_inst:SEL (PAD)
+  Destination:       jtagreceive_inst/smaskreg_0 (FF)
+  Destination Clock: jtagreceive_inst/smdrck1 rising
+
+  Data Path: jtagreceive_inst/BSCAN_MASK_inst:SEL to jtagreceive_inst/smaskreg_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+    BSCAN_VIRTEX4:SEL      1   0.000   0.765  BSCAN_MASK_inst (smsel)
+     LUT3:I0->O           80   0.195   1.382  _n00351 (_n0035)
+     FDE:CE                    0.743          smaskreg_0
+    ----------------------------------------
+    Total                      3.085ns (0.938ns logic, 2.147ns route)
+                                       (30.4% logic, 69.6% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'jtagreceive_inst/DEBUG<0>'
+  Total number of paths / destination ports: 14 / 7
+-------------------------------------------------------------------------
+Offset:              2.348ns (Levels of Logic = 1)
+  Source:            jtagreceive_inst/BSCAN_OUT_inst:SHIFT (PAD)
+  Destination:       jtagreceive_inst/bitcnt_0 (FF)
+  Destination Clock: jtagreceive_inst/DEBUG<0> rising
+
+  Data Path: jtagreceive_inst/BSCAN_OUT_inst:SHIFT to jtagreceive_inst/bitcnt_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+    BSCAN_VIRTEX4:SHIFT    8   0.000   0.809  BSCAN_OUT_inst (DEBUG<2>)
+     LUT2:I1->O            7   0.195   0.600  _n00401 (_n0040)
+     FDCE:CE                   0.743          bitcnt_0
+    ----------------------------------------
+    Total                      2.348ns (0.938ns logic, 1.410ns route)
+                                       (40.0% logic, 60.0% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'CLKIN'
-  Total number of paths / destination ports: 1 / 1
+  Total number of paths / destination ports: 12 / 8
 -------------------------------------------------------------------------
-Offset:              1.890ns (Levels of Logic = 3)
-  Source:            SDIN (PAD)
-  Destination:       boot_inst/mmcfpgaboot_inst/mmcio_inst/byteio_inst/ireg_0 (FF)
+Offset:              2.355ns (Levels of Logic = 2)
+  Source:            jtagreceive_inst/BSCAN_OUT_inst:SHIFT (PAD)
+  Destination:       jtagreceive_inst/ocs_FFd1 (FF)
   Destination Clock: CLKIN rising 0.8X
 
-  Data Path: SDIN to boot_inst/mmcfpgaboot_inst/mmcio_inst/byteio_inst/ireg_0
+  Data Path: jtagreceive_inst/BSCAN_OUT_inst:SHIFT to jtagreceive_inst/ocs_FFd1
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             1   0.965   0.534  SDIN_IBUF (SDIN_IBUF)
-     begin scope: 'boot_inst'
-     begin scope: 'mmcfpgaboot_inst'
-     begin scope: 'mmcio_inst'
-     begin scope: 'byteio_inst'
-     FDE:D                     0.391          ireg_0
+    BSCAN_VIRTEX4:SHIFT    8   0.000   0.862  BSCAN_OUT_inst (DEBUG<2>)
+     LUT4:I0->O            1   0.195   0.712  ocs_FFd1-In_SW0 (N11)
+     LUT2:I1->O            1   0.195   0.000  ocs_FFd1-In1 (N288)
+     FDR:D                     0.391          ocs_FFd1
     ----------------------------------------
-    Total                      1.890ns (1.356ns logic, 0.534ns route)
-                                       (71.8% logic, 28.2% route)
+    Total                      2.355ns (0.781ns logic, 1.574ns route)
+                                       (33.2% logic, 66.8% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'CLKIN'
-  Total number of paths / destination ports: 769 / 28
+  Total number of paths / destination ports: 961 / 29
 -------------------------------------------------------------------------
-Offset:              13.412ns (Levels of Logic = 15)
-  Source:            boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd26 (FF)
+Offset:              13.779ns (Levels of Logic = 15)
+  Source:            boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd21 (FF)
   Destination:       SDOUT (PAD)
   Source Clock:      CLKIN rising 0.8X
 
-  Data Path: boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd26 to SDOUT
+  Data Path: boot_inst/mmcfpgaboot_inst/mmcio_inst/cs_FFd21 to SDOUT
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDC:C->Q              4   0.360   0.780  cs_FFd26 (cs_FFd26)
-     LUT4:I0->O            1   0.195   0.609  cs_Out1129 (cs_Out11_map531)
-     LUT4:I2->O            1   0.195   0.547  cs_Out1154_SW0_SW0 (N325)
-     LUT4:I3->O            2   0.195   0.565  cs_Out1154_SW0 (N319)
-     LUT4:I3->O            8   0.195   0.644  cs_Out1154 (bsel<3>)
-     LUT4:I3->O            1   0.195   0.547  _n005025_SW0 (N317)
+     FDC:C->Q             17   0.360   0.965  cs_FFd21 (cs_FFd21)
+     LUT3:I1->O            2   0.195   0.783  Ker2111 (N93)
+     LUT3_D:I0->O          1   0.195   0.547  Ker611 (N61)
+     LUT4:I3->O            1   0.195   0.547  cs_Out11_SW1 (N1385)
+     LUT4:I3->O            9   0.195   0.671  cs_Out11 (bsel<3>)
+     LUT4:I3->O            1   0.195   0.547  _n005025_SW0 (N1373)
      LUT4:I3->O            8   0.195   0.862  _n005025 (_n0050)
-     LUT3:I0->O            1   0.195   0.765  pin<3>_SW0 (N3)
+     LUT3:I0->O            1   0.195   0.765  pin<3>_SW0 (N19)
      LUT4:I0->O            1   0.195   0.712  pin<3> (pin<3>)
      begin scope: 'byteio_inst'
-     LUT3:I1->O            1   0.195   0.000  bcnt<0>1 (mux_4_N3)
-     MUXF5:I0->O           1   0.382   0.000  bcnt<1> (mux_4_bcnt<1>_MUXF5)
+     LUT3:I1->O            1   0.195   0.000  bcnt<0>1 (mux_2_N3)
+     MUXF5:I0->O           1   0.382   0.000  bcnt<1> (mux_2_bcnt<1>_MUXF5)
      MUXF6:I1->O           1   0.395   0.534  Mmux_SDOUT_SDOUT (SDOUT)
      end scope: 'byteio_inst'
      end scope: 'mmcio_inst'
@@ -1447,18 +2254,83 @@ Offset:              13.412ns (Levels of Logic = 15)
      end scope: 'boot_inst'
      OBUF:I->O                 3.957          SDOUT_OBUF (SDOUT)
     ----------------------------------------
-    Total                     13.412ns (6.849ns logic, 6.563ns route)
-                                       (51.1% logic, 48.9% route)
+    Total                     13.779ns (6.849ns logic, 6.930ns route)
+                                       (49.7% logic, 50.3% route)
 
 =========================================================================
-CPU : 414.88 / 414.95 s | Elapsed : 420.00 / 420.00 s
+Timing constraint: Default OFFSET OUT AFTER for Clock 'jtagreceive_inst/DEBUG<0>'
+  Total number of paths / destination ports: 190 / 2
+-------------------------------------------------------------------------
+Offset:              9.839ns (Levels of Logic = 9)
+  Source:            jtagreceive_inst/bitcnt_5 (FF)
+  Destination:       DEBUG<3> (PAD)
+  Source Clock:      jtagreceive_inst/DEBUG<0> rising
+
+  Data Path: jtagreceive_inst/bitcnt_5 to DEBUG<3>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDCE:C->Q            34   0.360   1.413  bitcnt_5 (bitcnt_5)
+     LUT3:I0->O            1   0.195   0.000  bitcnt<5>1 (mux_4_N3)
+     MUXF5:I0->O           1   0.382   0.000  bitcnt<0> (mux_4_bitcnt<0>_MUXF5)
+     MUXF6:I1->O           1   0.395   0.000  bitcnt<1> (mux_4_bitcnt<1>_MUXF6)
+     MUXF7:I1->O           1   0.395   0.000  bitcnt<2> (mux_4_bitcnt<2>_MUXF7)
+     MUXF8:I1->O           1   0.395   0.712  bitcnt<3> (mux_4_bitcnt<3>_MUXF8)
+     LUT3:I1->O            1   0.195   0.712  bitcnt<6>1_SW0 (N306)
+     LUT3:I1->O            1   0.195   0.534  bitcnt<6>1 (DEBUG<3>)
+     end scope: 'jtagreceive_inst'
+     OBUF:I->O                 3.957          DEBUG_3_OBUF (DEBUG<3>)
+    ----------------------------------------
+    Total                      9.839ns (6.469ns logic, 3.370ns route)
+                                       (65.7% logic, 34.3% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'jtagdrck1'
+  Total number of paths / destination ports: 1 / 1
+-------------------------------------------------------------------------
+Offset:              0.894ns (Levels of Logic = 0)
+  Source:            testout_0 (FF)
+  Destination:       BSCAN_VIRTEX4_inst:TDO (PAD)
+  Source Clock:      jtagdrck1 rising
+
+  Data Path: testout_0 to BSCAN_VIRTEX4_inst:TDO
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDPE:C->Q             1   0.360   0.534  testout_0 (testout_0)
+    BSCAN_VIRTEX4:TDO          0.000          BSCAN_VIRTEX4_inst
+    ----------------------------------------
+    Total                      0.894ns (0.360ns logic, 0.534ns route)
+                                       (40.3% logic, 59.7% route)
+
+=========================================================================
+Timing constraint: Default path analysis
+  Total number of paths / destination ports: 4 / 4
+-------------------------------------------------------------------------
+Delay:               4.588ns (Levels of Logic = 2)
+  Source:            jtagreceive_inst/BSCAN_OUT_inst:SHIFT (PAD)
+  Destination:       DEBUG<2> (PAD)
+
+  Data Path: jtagreceive_inst/BSCAN_OUT_inst:SHIFT to DEBUG<2>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+    BSCAN_VIRTEX4:SHIFT    8   0.000   0.000  BSCAN_OUT_inst (DEBUG<2>)
+     end scope: 'jtagreceive_inst'
+     OBUF:I->O                 3.957          DEBUG_2_OBUF (DEBUG<2>)
+    ----------------------------------------
+    Total                      4.588ns (4.588ns logic, 0.000ns route)
+                                       (100.0% logic, 0.0% route)
+
+=========================================================================
+CPU : 518.14 / 518.21 s | Elapsed : 522.00 / 522.00 s
  
 --> 
 
 
-Total memory usage is 217864 kilobytes
+Total memory usage is 262064 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  528 (   0 filtered)
-Number of infos    :   10 (   0 filtered)
+Number of warnings :  847 (   0 filtered)
+Number of infos    :   13 (   0 filtered)
 

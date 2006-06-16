@@ -4,9 +4,9 @@ boot configuration for all devices.
 
 It receives a single command, 0x20, which is structured as follows: 
 
-byte 0-1: bit mask indiciating which devices to boot
-byte 2: length (in 512-byte blocks) of boot sequence
-bytes 3: address to start to boot from
+word 0-1: bit mask indiciating which devices to boot
+word 2: length (in 512-byte blocks) of boot sequence
+word 3: address to start to boot from
 
 it sends one response back to the original sender
 
@@ -15,3 +15,14 @@ it sends one response back to the original sender
    byte 0: 0x0002 -- boot complete and successful
 	   0x0001 -- boot request ignored, current boot pending
 
+
+
+Boot file organization: 
+
+Every MB we have a new ROM
+
+ADDR (in 512-byte blocks) :    Block len:
+0x0000                         0x0780 (don't worry) 
+0x0800			       0x006c (0x001)
+
+			       
