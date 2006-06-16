@@ -106,12 +106,12 @@ begin  -- Behavioral
       wait until rising_edge(CLK);
       EDSELRX <= X"0";
       wait for 2 ns;
-      assert EDRX = X"00" report "Incorrect command byte" severity error;
+      assert EDRX = X"10" report "Incorrect command byte" severity error;
 
       wait until rising_edge(CLK);
       EDSELRX <= X"1";
       wait for 2 ns;
-      assert EDRX = X"10" report "Incorrect source byte" severity error;
+      assert EDRX = X"00" report "Incorrect source byte" severity error;
 
       for i in 0 to 5 loop
         wait until rising_edge(CLK);

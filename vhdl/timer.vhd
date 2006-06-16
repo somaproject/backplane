@@ -33,8 +33,8 @@ begin  -- Behavioral
 
   lecycle <= '1' when ecnt =999 else '0';
 
-  EDRX <= X"00" when EDSELRX = X"0" else
-          X"10" when EDSELRX = X"1" else
+  EDRX <= X"10" when EDSELRX = X"0" else
+          X"00" when EDSELRX = X"1" else
           tcntl(47 downto 40) when EDSELRX = X"2" else
           tcntl(39 downto 32) when EDSELRX = X"3" else
           tcntl(31 downto 24) when EDSELRX = X"4" else
