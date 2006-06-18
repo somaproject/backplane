@@ -6,4 +6,16 @@ To that extent, things we care about are:
 2. providing a debug interface to the registers on the PHY
 3. Generic PHY interfacing
 
+Events: 
+1. low-level things
+2. set MAC address
+3. 
+
+
+Simple command : 
+
+Word 0: CMD | SRC
+Word 1: 0 = R, 1 = W
+Word 2: Addr [LSBs] 
+Words 3-4: 32-bit input word
 
