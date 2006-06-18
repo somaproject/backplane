@@ -8,15 +8,14 @@ library WORK;
 use WORK.somabackplane.all;
 use work.somabackplane;
 
-entity bootcontroltest is
+entity ethercontroltest is
 
-end bootcontroltest;
+end ethercontroltest;
 
-architecture Behavioral of bootcontroltest is
+architecture Behavioral of ethercontroltest is
 
-  component bootcontrol
+  component ethercontrol
     generic (
-      M        :     integer                      := 20;
       DEVICE   :     std_logic_vector(7 downto 0) := X"01"
       );
     port (
@@ -30,11 +29,12 @@ architecture Behavioral of bootcontroltest is
       EOUTA    : out std_logic_vector(2 downto 0);
       EVALID   : in  std_logic;
       ENEXT    : out std_logic;
-      BOOTASEL : out std_logic_vector(M-1 downto 0);
-      BOOTADDR : out std_logic_vector(15 downto 0);
-      BOOTLEN  : out std_logic_vector(15 downto 0);
-      MMCSTART : out std_logic;
-      MMCDONE  : in  std_logic
+      RW: out std_logic;
+      ADDR : out std_logic_vector(5 downto 0); 
+      DIN: out std_logic_vector(31 downto 0);
+      DOUT : in std_logic_vector(31 downto 0);
+      NICSTART : out std_logic;
+      NICDONE : in std_logic
       );
   end component;
 
@@ -42,7 +42,6 @@ architecture Behavioral of bootcontroltest is
   signal RESET  : std_logic := '1';
   signal ECYCLE : std_logic := '0';
 
-  constant M : integer := 20;
 
   signal EARX : std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
 
@@ -54,12 +53,13 @@ architecture Behavioral of bootcontroltest is
   signal EVALID : std_logic := '0';
   signal ENEXT  : std_logic := '0';
 
-  signal BOOTASEL : std_logic_vector(M-1 downto 0) := (others => '0');
-  signal BOOTADDR : std_logic_vector(15 downto 0)  := (others => '0');
-  signal BOOTLEN  : std_logic_vector(15 downto 0)  := (others => '0');
+  signal RW : std_logic := '0';
+  signal ADDR : std_logic_vector(5 downto 0) := (others => '0');
 
-  signal MMCSTART : std_logic := '0';
-  signal MMCDONE  : std_logic := '0';
+  signal DIN, DOUT : std_logic_vector(31 downto 0) := (others => '0');
+  
+  signal NICSTART : std_logic := '0';
+  signal NICDONE  : std_logic := '0';
 
   signal EATX : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDTX : std_logic_vector(7 downto 0)                  := (others => '0');
@@ -101,9 +101,8 @@ begin  -- Behavioral
   CLK   <= not clk after 10 ns;
   RESET <= '0'     after 100 ns;
 
-  bootcontrol_uut : bootcontrol
+  ethercontrol_uut : ethercontrol
     generic map (
-      M        => M,
       DEVICE   => x"01")
     port map (
       CLK      => CLK,
@@ -116,12 +115,12 @@ begin  -- Behavioral
       EOUTA    => EOUTA,
       EVALID   => EVALID,
       ENEXT    => ENEXT,
-      BOOTASEL => BOOTASEL,
-      BOOTADDR => BOOTADDR,
-      BOOTLEN  => BOOTLEN,
-      MMCSTART => MMCSTART,
-      MMCDONE  => MMCDONE);
-
+      RW => RW,
+      ADDR => ADDR,
+      DIN => DIN,
+      DOUT => DOUT,
+      NICSTART => NICSTART,
+      NICDONE => NICDONE);
 
   rxeventfifo_inst : rxeventfifo
     port map (
@@ -175,20 +174,21 @@ begin  -- Behavioral
 
 
 
-  mmcboot_sim : process
+  nicserialio_sim : process
   begin
     while true loop
 
-      wait until rising_edge(CLK) and MMCSTART = '1';
+      wait until rising_edge(CLK) and NICSTART = '1';
       wait for 100 us;
       wait until rising_edge(CLK);
       wait for 4 ns;
-      MMCDONE <= '1';
+      NICDONE <= '1';
       wait until rising_edge(CLK);
       wait for 4 ns;
-      MMCDONE <= '0';
+      DOUT <= X"ABCDEF12"; 
+      NICDONE <= '0';
     end loop;
-  end process mmcboot_sim;
+  end process nicserialio_sim;
 
   main : process
     --generate the commands, read the outputs
@@ -214,19 +214,19 @@ begin  -- Behavioral
     -- now try and send a correct event
     wait until rising_edge(CLK) and ECYCLE = '1';
     state <= firstwrite; 
-    eventinputs(4)(0) <= X"2004";
-    eventinputs(4)(1) <= X"0000";
-    eventinputs(4)(2) <= X"0010";
-    eventinputs(4)(3) <= X"2000";
-    eventinputs(4)(4) <= X"1000";
+    eventinputs(4)(0) <= X"3004";
+    eventinputs(4)(1) <= X"0001";
+    eventinputs(4)(2) <= X"0017";
+    eventinputs(4)(3) <= X"1234";
+    eventinputs(4)(4) <= X"5678";
     eventinputs(4)(5) <= X"0000";
     EATX(0)           <= '0';
     EATX(4)           <= '1';
 
-    wait until rising_edge(CLK) and MMCSTART = '1';
-    assert bootasel(4) = '1' report "Incorrect asel set for event write" severity error;
-    assert bootlen = X"2000" report "incorrect bootlen" severity error;
-    assert bootaddr = X"1000" report "incorrect bootaddr" severity error;
+    wait until rising_edge(CLK) and NICSTART = '1';
+    assert rw = '1' report "Incorrect rw set for event write" severity error;
+    assert addr = "010111" report "incorrect addr" severity error;
+    assert din = X"12345678" report "incorrect din" severity error;
 
 
     -- now try and acquire the event
@@ -235,97 +235,127 @@ begin  -- Behavioral
       EATX <= eazeros;
     end loop;
 
+    wait for 3 ns;
     EDSELRX <= "0000";
     wait until rising_edge(CLK);
-    assert EDRX = X"20"
+    assert EDRX = X"30"
       report "1 : invalid transmitted event : command ID" severity error;
-
+ 
+    wait for 3 ns;
     EDSELRX <= "0001";
     wait until rising_edge(CLK);
     assert EDRX = X"01"
       report "1 : invalid transmitted event : device" severity error;
 
+   
+    wait for 3 ns;
     EDSELRX <= "0011";
     wait until rising_edge(CLK);
-    assert EDRX = X"02"
+    assert EDRX = X"01"
+      report "1 : invalid transmitted event : success" severity error;
+
+    wait for 3 ns;
+    EDSELRX <= "0100";
+    wait until rising_edge(CLK);
+    assert EDRX = X"AB"
       report "1 : invalid transmitted event : response" severity error;
+
+    wait for 3 ns;
+    EDSELRX <= "0101";
+    wait until rising_edge(CLK);
+    assert EDRX = X"CD"
+      report "1 : invalid transmitted event : response" severity error;
+    
+    wait for 3 ns;
+    EDSELRX <= "0110";
+    wait until rising_edge(CLK);
+    assert EDRX = X"EF"
+      report "1 : invalid transmitted event : response" severity error;
+
+    wait for 3 ns;
+    EDSELRX <= "0111";
+    wait until rising_edge(CLK);
+    assert EDRX = X"12"
+      report "1 : invalid transmitted event : response" severity error;
+
     state <= firstwritedone; 
 
 
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-    -- now try and send a correct event and a second
-    -- request that should generate an error
+-------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------
+-- send a second event, while the first one is in progress
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------    
+    -- now try and send a correct event
     wait until rising_edge(CLK) and ECYCLE = '1';
-    eventinputs(8)(0) <= X"2008";
-    eventinputs(8)(1) <= X"0000";
-    eventinputs(8)(2) <= X"0100";
-    eventinputs(8)(3) <= X"2000";
-    eventinputs(8)(4) <= X"1000";
-    eventinputs(8)(5) <= X"0000";
-    EATX(8)           <= '1';
-    eventinputs(9)(0) <= X"2009";
-    eventinputs(9)(1) <= X"0000";
-    eventinputs(9)(2) <= X"0100";
-    eventinputs(9)(3) <= X"2000";
-    eventinputs(9)(4) <= X"1000";
-    eventinputs(9)(5) <= X"0000";
-    EATX(9)           <= '1';
-    state <= multiwrite; 
-    
-    wait until rising_edge(CLK) and MMCSTART = '1';
-    assert bootasel(8) = '1' report "Incorrect asel set for event write" severity error;
-    assert bootlen = X"2000" report "incorrect bootlen" severity error;
-    assert bootaddr = X"1000" report "incorrect bootaddr" severity error;
+    state <= firstwrite; 
+    eventinputs(4)(0) <= X"3004";
+    eventinputs(4)(1) <= X"0001";
+    eventinputs(4)(2) <= X"0017";
+    eventinputs(4)(3) <= X"ABCD";
+    eventinputs(4)(4) <= X"1234";
+    eventinputs(4)(5) <= X"0000";
+    EATX(0)           <= '0';
+    EATX(4)           <= '1';
+
+    wait until rising_edge(CLK) and NICSTART = '1';
+    assert rw = '1' report "Incorrect rw set for event write" severity error;
+    assert addr = "010111" report "incorrect addr" severity error;
+    assert din = X"ABCD1234" report "incorrect din" severity error;
 
 
-    -- now try and acquire the error event
-    while EARX(9) /= '1' loop
+    -- now try and acquire the event
+    while EARX(4) /= '1' loop
       wait until rising_edge(CLK) and ECYCLE = '1';
       EATX <= eazeros;
     end loop;
 
+    wait for 3 ns;
     EDSELRX <= "0000";
     wait until rising_edge(CLK);
-    assert EDRX = X"20"
-      report "2 : invalid transmitted event : command ID" severity error;
-
-    EDSELRX <= "0001";
-    wait until rising_edge(CLK);
-    assert EDRX = X"01"
-      report "2 : invalid transmitted event : device" severity error;
-
-    EDSELRX <= "0011";
-    wait until rising_edge(CLK);
-    assert EDRX = X"01"
-      report "2 : invalid transmitted event : response" severity error;
-    
-    state <= multiwriteerror;
+    assert EDRX = X"30"
+      report "1 : invalid transmitted event : command ID" severity error;
  
-   -- now try and acquire the valid event
-    while EARX(8) /= '1' loop
-      wait until rising_edge(CLK) and ECYCLE = '1';
-      wait for 20*50 ns;
-      EATX <= eazeros;
-    end loop;
-
-    EDSELRX <= "0000";
-    wait until rising_edge(CLK);
-    assert EDRX = X"20"
-      report "3 : invalid transmitted event : command ID" severity error;
-
+    wait for 3 ns;
     EDSELRX <= "0001";
     wait until rising_edge(CLK);
     assert EDRX = X"01"
-      report "3 : invalid transmitted event : device" severity error;
+      report "1 : invalid transmitted event : device" severity error;
 
+   
+    wait for 3 ns;
     EDSELRX <= "0011";
     wait until rising_edge(CLK);
-    assert EDRX = X"02"
-      report "3 : invalid transmitted event : response" severity error;
+    assert EDRX = X"01"
+      report "1 : invalid transmitted event : success" severity error;
+
+    wait for 3 ns;
+    EDSELRX <= "0100";
+    wait until rising_edge(CLK);
+    assert EDRX = X"AB"
+      report "1 : invalid transmitted event : response" severity error;
+
+    wait for 3 ns;
+    EDSELRX <= "0101";
+    wait until rising_edge(CLK);
+    assert EDRX = X"CD"
+      report "1 : invalid transmitted event : response" severity error;
     
-    state <= multiwritedone;
-    
+    wait for 3 ns;
+    EDSELRX <= "0110";
+    wait until rising_edge(CLK);
+    assert EDRX = X"EF"
+      report "1 : invalid transmitted event : response" severity error;
+
+    wait for 3 ns;
+    EDSELRX <= "0111";
+    wait until rising_edge(CLK);
+    assert EDRX = X"12"
+      report "1 : invalid transmitted event : response" severity error;
+
+    state <= firstwritedone; 
+
+
     assert false report "End of Simulation" severity failure;
 
 

@@ -3,25 +3,25 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/somabackplane/_body.var: ../../vhdl/somabackplane.vhd
+$(WORKDIR)/somabackplane/prim.var: ../../vhdl/somabackplane.vhd
 	$(VHDLC) ../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/rxeventfifo/_behavioral.var: ../../vhdl/rxeventfifo.vhd
+$(WORKDIR)/rxeventfifo/_behavioral.var: ../../vhdl/somabackplane.vhd ../../vhdl/rxeventfifo.vhd
 	$(VHDLC) ../../vhdl/rxeventfifo.vhd
 
-$(WORKDIR)/bootcontrol/_behavioral.var: ../../vhdl/bootcontrol.vhd
-	$(VHDLC) ../../vhdl/bootcontrol.vhd
+$(WORKDIR)/ethercontrol/_behavioral.var: ../../vhdl/somabackplane.vhd ../../vhdl/rxeventfifo.vhd ../../vhdl/ether/ethercontrol.vhd
+	$(VHDLC) ../../vhdl/ether/ethercontrol.vhd
 
-hw: $(WORKDIR)/somabackplane/_body.var $(WORKDIR)/rxeventfifo/_behavioral.var $(WORKDIR)/bootcontrol/_behavioral.var 
+hw: $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/rxeventfifo/_behavioral.var $(WORKDIR)/ethercontrol/_behavioral.var 
 
 comp: 
 
-$(WORKDIR)/bootcontroltest/_behavioral.var: bootcontroltest.vhd
-	$(VHDLC) bootcontroltest.vhd
+$(WORKDIR)/ethercontroltest/_behavioral.var: ethercontroltest.vhd
+	$(VHDLC) ethercontroltest.vhd
 
-sim: $(WORKDIR)/bootcontroltest/_behavioral.var 
+sim: $(WORKDIR)/ethercontroltest/_behavioral.var 
 runsim: all
-	$(VHDLS) bootcontroltest
+	$(VHDLS) ethercontroltest
 
 
 clean:
