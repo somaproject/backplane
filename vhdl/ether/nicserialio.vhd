@@ -128,26 +128,26 @@ begin  -- Behavioral
         lscs      <= '0';
         lsclk    <= '0';
         if ticcnt = 15 then
-          ns     <= shifth1;
-        else
-          ns     <= shiftl1;
-        end if;
-
-      when shifth1 =>
-        ticcnten <= '1';
-        lscs      <= '0';
-        lsclk    <= '1';
-        if ticcnt = 15 then
           ns     <= shiftin;
         else
-          ns     <= shifth1;
+          ns     <= shiftl1;
         end if;
 
       when shiftin =>
         ticcnten <= '0';
         lscs      <= '0';
         lsclk    <= '1';
-        ns       <= shiftl2;
+        ns       <= shifth1;
+
+      when shifth1 =>
+        ticcnten <= '1';
+        lscs      <= '0';
+        lsclk    <= '1';
+        if ticcnt = 15 then
+          ns     <= shiftl2;
+        else
+          ns     <= shifth1;
+        end if;
 
       when shiftl2 =>
         ticcnten <= '1';

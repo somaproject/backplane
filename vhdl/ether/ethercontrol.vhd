@@ -9,9 +9,8 @@ use WORK.somabackplane.all;
 use work.somabackplane;
 
 
-entity bootcontrol is
+entity ethercontrol is
   generic (
-    M        :     integer                      := 20;
     DEVICE   :     std_logic_vector(7 downto 0) := X"01"
     );
   port (
@@ -26,28 +25,29 @@ entity bootcontrol is
     EOUTA    : out std_logic_vector(2 downto 0);
     EVALID   : in  std_logic;
     ENEXT    : out std_logic;
-    BOOTASEL : out std_logic_vector(M-1 downto 0);
-    BOOTADDR : out std_logic_vector(15 downto 0);
-    BOOTLEN  : out std_logic_vector(15 downto 0);
-    MMCSTART : out std_logic;
-    MMCDONE  : in  std_logic
+    RW : out std_logic;
+    ADDR : out std_logic_vector(5 downto 0);
+    DIN: out std_logic_vector(31 downto 0);
+    DOUT : in std_logic_vector(31 downto 0);
+    NICSTART : out std_logic;
+    NICDONE : in std_logic
     );
 
-end bootcontrol;
+end ethercontrol;
 
-architecture Behavioral of bootcontrol is
+architecture Behavioral of ethercontrol is
 
-  constant CMD : std_logic_vector := X"20";
+  constant CMD : std_logic_vector := X"30";
 
   -- event input
 
   -- boot parameters
 
-  signal booting : std_logic := '0';
+  signal pending : std_logic := '0';
 
-  signal mmcdonel : std_logic := '0';
+  signal donewait : std_logic := '0';
 
-  signal errstate : std_logic                    := '0';
+  signal addrsel : integer range 0 to 1                    := 0;
   signal srcl     : std_logic_vector(7 downto 0) := (others => '0');
 
   signal oset : std_logic := '0';
@@ -59,28 +59,56 @@ architecture Behavioral of bootcontrol is
   signal addrset : std_logic := '0';
 
   signal dval : std_logic_vector(7 downto 0) := (others => '0');
+  signal eosel : integer range 0 to 3 := 0;
 
-
-  type states is (ecyclew, donechk, senddone, readevt, ebootchk,
-                  bootchk, booterr, noop, bootst, wrboota1,
-                  wrboota2, wrboota3, wrboota4, wrboote);
+  type states is (ecyclew, donechk, senddone, readevt, eserchk,
+                  serchk, sererr, noop, serinit, wrnicrw,
+                  wrnicaddr, wrnicd1, wrnicd2, serstart);
 
   signal cs, ns : states := ecyclew;
 
+  signal edrxall : std_logic_vector(16*6 -1 downto 0);
+  signal edrxin : std_logic_vector(16*6 -1 downto 0);
 
+  -- output commands
+  signal errorpending : std_logic_vector(16*6 -1 downto 0) := (others => '0');
+  signal linkstatus : std_logic_vector(16*6 -1 downto 0) := (others => '0');
+  signal validresp : std_logic_vector(16*6 -1 downto 0) := (others => '0');
 
+  signal nicdonel : std_logic := '0';
+  
 begin  -- Behavioral
 
   -- event data mux
-  EDRX <= CMD     when edselrx = X"0" else
-          DEVICE  when edselrx = X"1" else
-          ESTATUS when edselrx = X"3" else
-          X"00";
+    EDRX <= edrxall(7 downto 0)   when EDSELRX = X"1" else
+          edrxall(15 downto 8)  when EDSELRX = X"0" else
+          edrxall(23 downto 16) when EDSELRX = X"3" else
+          edrxall(31 downto 24) when EDSELRX = X"2" else
+          edrxall(39 downto 32) when EDSELRX = X"5" else
+          edrxall(47 downto 40) when EDSELRX = X"4" else
+          edrxall(55 downto 48) when EDSELRX = X"7" else
+          edrxall(63 downto 56) when EDSELRX = X"6" else
+          edrxall(71 downto 64) when EDSELRX = X"9" else
+          edrxall(79 downto 72) when EDSELRX = X"8" else
+          edrxall(87 downto 80) when EDSELRX = X"B" else
+          edrxall(95 downto 88);
 
+ 
+    edrxin <= errorpending when eosel = 0 else
+              linkstatus when eosel = 1 else
+              validresp when eosel = 2 else
+              (others => '0');
+    
+    errorpending(15 downto 0) <= X"30" &  DEVICE;
+    errorpending(31 downto 16) <= X"0002";
 
-  dval   <= eoutd(7 downto 0) when errstate = '1' else srcl;
+    validresp(15 downto 0) <= X"30" & DEVICE;
+    validresp(31 downto 16) <= X"0001"; 
+    validresp(47 downto 32) <= DOUT(31 downto 16);
+    validresp(63 downto 48) <= DOUT(15 downto 0); 
+  dval   <= EOUTD(7 downto 0) when addrsel = 1 else srcl;
 
-  MMCSTART <= '1' when cs = wrboote else '0';
+  NICSTART <= '1' when cs = serstart else '0';
   
   main : process(CLK, RESET)
   begin
@@ -91,52 +119,51 @@ begin  -- Behavioral
       if rising_edge(CLK) then
         cs <= ns;
 
-
-        if cs = bootst then
-          srcl <= eoutd(7 downto 0);
+        if NICDONE = '1'  then
+          nicdonel <= '1';
+        else
+          if cs = senddone then
+            nicdonel <= '0'; 
+          end if;
+        end if;
+        
+        if cs = serinit then
+          srcl <= EOUTD(7 downto 0);
         end if;
 
-        if cs = wrboota1 then
-          bootasel(M-1 downto 16) <= eoutd(M-1 -16 downto 0);
+        -- data capture
+        if cs = wrnicrw then
+          RW <= EOUTD(0); 
         end if;
 
-        if cs = wrboota2 then
-          bootasel(15 downto 0) <= eoutd;
+        if cs = wrnicaddr then
+          ADDR <= EOUTD(5 downto 0); 
         end if;
 
-        if cs = wrboota3 then
-          bootlen <= eoutd;
+        if cs = wrnicd1 then
+          din(31 downto 16) <= EOUTD; 
         end if;
-
-        if cs = wrboota4 then
-          bootaddr <= eoutd;
+        
+        if cs = wrnicd2 then
+          din(15 downto 0) <= EOUTD; 
         end if;
-
+        
         -- set/reset for boot status
         if cs = senddone then
-          booting   <= '0';
-          mmcdonel  <= '0';
+          pending  <= '0';
+          donewait  <= '0';
         else
-          if cs = wrboote then
-            booting <= '1';
+          if cs = serstart then
+            pending <= '1';
           end if;
 
-          if mmcdone = '1' then
-            mmcdonel <= '1';
-          end if;
-        end if;
-
-
-        if oset = '1' then
-          if errstate = '0' then
-            estatus <= X"02";
-
-          else
-            estatus <= X"01";
+          if NICDONE = '1' then
+            donewait <= '1';
           end if;
         end if;
 
 
+        
         -- decoder architecture
 
         if ECYCLE = '1' then
@@ -153,17 +180,21 @@ begin  -- Behavioral
         end if;
 
 
+        if oset = '1' then
+          edrxall <= edrxin; 
+        end if;
       end if;
     end if;
 
   end process main;
 
-  fsm : process(cs, ECYCLE, mmcdonel, evalid, eoutd, booting)
+  fsm : process(cs, ECYCLE, nicdonel, evalid, eoutd, pending)
   begin
     case cs is
       when ecyclew =>
-        errstate <= '0';
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 0; 
         oset     <= '0';
         eouta    <= "000";
         enext    <= '0';
@@ -174,28 +205,31 @@ begin  -- Behavioral
         end if;
 
       when donechk =>
-        errstate <= '0';
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 0; 
         oset     <= '0';
         eouta    <= "000";
         enext    <= '0';
-        if mmcdonel = '1' then
+        if nicdonel = '1' then
           ns     <= senddone;
         else
           ns     <= readevt;
         end if;
 
       when senddone =>
-        errstate <= '0';
         addrset  <= '1';
+        eosel <= 2;
+        addrsel <= 0; 
         oset     <= '1';
         eouta    <= "000";
         enext    <= '0';
         ns       <= ecyclew;
 
       when readevt =>
-        errstate <= '0';
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 0; 
         oset     <= '0';
         eouta    <= "000";
         enext    <= '0';
@@ -203,103 +237,114 @@ begin  -- Behavioral
           ns     <= donechk;
         else
           if evalid = '1' then
-            ns   <= ebootchk;
+            ns   <= eserchk;
           else
             ns   <= readevt;
           end if;
         end if;
 
-      when ebootchk =>
-        errstate <= '0';
+      when eserchk =>
         addrset  <= '0';
+        eosel <= 2;
+        addrsel <= 0; 
         oset     <= '0';
         eouta    <= "000";
         enext    <= '0';
         if eoutd(15 downto 8) = CMD then
-          ns     <= bootchk;
+          ns     <= serchk;
         else
           ns     <= noop;
         end if;
 
       when noop =>
-        errstate <= '0';
-        addrset  <= '0';
+        addrset  <= '0'; 
+        eosel <= 2;
+        addrsel <= 0; 
         oset     <= '0';
         eouta    <= "000";
         enext    <= '1';
         ns       <= readevt;
 
-      when bootchk =>
-        errstate <= '0';
+      when serchk =>
         addrset  <= '0';
+        eosel <= 2;
+        addrsel <= 0; 
         oset     <= '0';
         eouta    <= "000";
         enext    <= '0';
-        if booting = '1' then
-          ns     <= booterr;
+        if pending = '1' then
+          ns     <= sererr;
         else
-          ns     <= bootst;
+          ns     <= serinit;
         end if;
 
-      when booterr =>
-        errstate <= '1';
+      when sererr =>
         addrset  <= '1';
+        eosel <= 0;
+        addrsel <= 1; 
         oset     <= '1';
         eouta    <= "000";
         enext    <= '0';
         ns       <= noop;
 
-      when bootst =>
-        errstate <= '0';
+      when serinit =>
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 1; 
         oset     <= '0';
         eouta    <= "001";
         enext    <= '0';
-        ns       <= wrboota1;
+        ns       <= wrnicrw;
 
-      when wrboota1 =>
-        errstate <= '0';
+      when wrnicrw =>
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 1; 
         oset     <= '0';
         eouta    <= "010";
         enext    <= '0';
-        ns       <= wrboota2;
+        ns       <= wrnicaddr;
 
-      when wrboota2 =>
-        errstate <= '0';
+      when wrnicaddr =>
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 1; 
         oset     <= '0';
         eouta    <= "011";
         enext    <= '0';
-        ns       <= wrboota3;
+        ns       <= wrnicd1;
 
-      when wrboota3 =>
-        errstate <= '0';
+      when wrnicd1 =>
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 1; 
         oset     <= '0';
         eouta    <= "100";
         enext    <= '0';
-        ns       <= wrboota4;
+        ns       <= wrnicd2;
 
-      when wrboota4 =>
-        errstate <= '0';
+      when wrnicd2 =>
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 1; 
         oset     <= '0';
         eouta    <= "101";
         enext    <= '0';
-        ns       <= wrboote;
+        ns       <= serstart;
 
-      when wrboote =>
-        errstate <= '0';
+      when serstart =>
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 1; 
         oset     <= '0';
         eouta    <= "000";
         enext    <= '1';
         ns       <= readevt;
 
       when others =>
-        errstate <= '0';
         addrset  <= '0';
+        eosel <= 0;
+        addrsel <= 1; 
         oset     <= '0';
         eouta    <= "000";
         enext    <= '0';

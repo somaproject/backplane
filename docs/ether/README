@@ -19,3 +19,9 @@ Word 1: 0 = R, 1 = W
 Word 2: Addr [LSBs] 
 Words 3-4: 32-bit input word
 
+and the response will contain the nic response
+
+The current implementation is really targeted at only responding to a
+single event and doing so in a very simplistic fashion. We don't
+really know exactly what we want this module to do, nor the extent of
+initialization that is necessary to bring up the ethernet interface.

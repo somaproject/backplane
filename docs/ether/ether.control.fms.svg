@@ -8,8 +8,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="boot.fsm.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/docs/boot"
+   sodipodi:docname="ether.control.fms.svg"
+   sodipodi:docbase="/home/jonas/soma/somabackplane/docs/ether"
    inkscape:version="0.43+devel"
    sodipodi:version="0.32"
    id="svg1996"
@@ -61,10 +61,10 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="48"
-     inkscape:window-x="9"
-     inkscape:window-height="817"
-     inkscape:window-width="903"
+     inkscape:window-y="65"
+     inkscape:window-x="7"
+     inkscape:window-height="951"
+     inkscape:window-width="1052"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
      gridtolerance="10000"
@@ -76,9 +76,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="179.16088"
-     inkscape:cx="333.09487"
-     inkscape:zoom="1"
+     inkscape:cy="224.95265"
+     inkscape:cx="229.24614"
+     inkscape:zoom="2"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -120,7 +120,7 @@
          sodipodi:role="line"
          id="tspan3704"
          x="-16.970564"
-         y="92.681496">Start Boot Cycle</tspan></text>
+         y="92.681496">Send serial command</tspan></text>
   </g>
   <g
      id="layer1"
@@ -233,14 +233,14 @@
     <text
        xml:space="preserve"
        style="font-size:6px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="293.75"
+       x="296.875"
        y="49.375"
        id="text2977"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2979"
-         x="293.75"
-         y="49.375">MMCDONEL=1</tspan></text>
+         x="296.875"
+         y="49.375">NICDONEL=1</tspan></text>
     <g
        id="g2981"
        transform="translate(253.125,90.625)">
@@ -286,7 +286,7 @@
          sodipodi:role="line"
          id="tspan3005"
          x="365.625"
-         y="83.75">ERRSTATE=0</tspan><tspan
+         y="83.75">EOSEL=2</tspan><tspan
          sodipodi:role="line"
          x="365.625"
          y="95"
@@ -294,7 +294,7 @@
          sodipodi:role="line"
          x="365.625"
          y="106.25"
-         id="tspan3009">OSET=1</tspan></text>
+         id="tspan3009">ADDRSEL=0</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 381.25,33.75 L 381.25,15 C 381.25,15 381.25,2.5 368.75,2.5 C 356.25,2.5 146.875,2.5 146.875,2.5 C 146.875,2.5 134.375,2.5 134.375,15 C 134.375,18.125 134.375,30.625 134.375,30.625"
@@ -391,7 +391,7 @@
            y="224.375"
            x="259.12412"
            id="tspan4120"
-           sodipodi:role="line">EBOOTCHK</tspan></text>
+           sodipodi:role="line">ESERCHK</tspan></text>
     </g>
     <text
        transform="matrix(0,-1,1,0,0,0)"
@@ -408,7 +408,7 @@
          y="255.625"
          x="-273.28125"
          sodipodi:role="line"
-         id="tspan4250">=0x20</tspan></text>
+         id="tspan4250">=0x30</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 259.375,155.625 L 259.375,199.375"
@@ -452,7 +452,7 @@
            y="224.375"
            x="259.12412"
            id="tspan4154"
-           sodipodi:role="line">BOOTCHK</tspan></text>
+           sodipodi:role="line">SERCHK</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -560,7 +560,7 @@
          y="324.375"
          x="318.44922"
          sodipodi:role="line"
-         id="tspan4258">BOOTING=1</tspan></text>
+         id="tspan4258">PENDING=1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -575,14 +575,18 @@
          sodipodi:role="line"
          x="409.375"
          y="370"
-         id="tspan4294">ERRSTATE=1</tspan><tspan
+         id="tspan4270">EOSEL=0</tspan><tspan
          sodipodi:role="line"
          x="409.375"
          y="381.25"
-         id="tspan4270">ADDRSET=1</tspan><tspan
+         id="tspan7860">ADDRSEL=1</tspan><tspan
          sodipodi:role="line"
          x="409.375"
          y="392.5"
+         id="tspan7858">ADDRSET=1</tspan><tspan
+         sodipodi:role="line"
+         x="409.375"
+         y="403.75"
          id="tspan4272">OSET=1</tspan></text>
     <g
        id="g4274"
@@ -617,7 +621,7 @@
            y="224.375"
            x="259.12411"
            id="tspan4284"
-           sodipodi:role="line">BOOTERR</tspan></text>
+           sodipodi:role="line">SERERR</tspan></text>
     </g>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
@@ -701,9 +705,9 @@
          style="font-size:10.19999981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            y="224.375"
-           x="259.12412"
+           x="259.12411"
            id="tspan4318"
-           sodipodi:role="line">BOOTST</tspan></text>
+           sodipodi:role="line">SERINIT</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -756,9 +760,9 @@
          style="font-size:10.19999981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            y="224.375"
-           x="259.12412"
+           x="259.12411"
            id="tspan4340"
-           sodipodi:role="line">WRBOOTA1</tspan></text>
+           sodipodi:role="line">WRNICRW</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -806,9 +810,9 @@
          style="font-size:10.19999981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            y="224.375"
-           x="259.12412"
+           x="259.12411"
            id="tspan4360"
-           sodipodi:role="line">WRBOOTA3</tspan></text>
+           sodipodi:role="line">WRNICD1</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -856,9 +860,9 @@
          style="font-size:10.19999981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            y="224.375"
-           x="259.12412"
+           x="259.12411"
            id="tspan4396"
-           sodipodi:role="line">WRBOOTA4</tspan></text>
+           sodipodi:role="line">WRNICD2</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -906,9 +910,9 @@
          style="font-size:10.19999981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            y="224.375"
-           x="259.12411"
+           x="259.12412"
            id="tspan4414"
-           sodipodi:role="line">WRBOOTE</tspan></text>
+           sodipodi:role="line">SERSTART</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -975,9 +979,9 @@
          style="font-size:10.19999981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            y="224.375"
-           x="259.12412"
+           x="259.12411"
            id="tspan2799"
-           sodipodi:role="line">WRBOOTA2</tspan></text>
+           sodipodi:role="line">WRNICADDR</tspan></text>
     </g>
     <text
        xml:space="preserve"

@@ -25,7 +25,12 @@ entity nettest is
     NICFCLK    : out std_logic;
     NICFDIN    : out std_logic;
     NICFPROG   : out std_logic;
-    DEBUG      : out std_logic_vector(3 downto 0)
+    NICSCLK    : out std_logic;
+    NICSIN     : in  std_logic;
+    NICSOUT    : out std_logic;
+    NICSCS     : out std_logic;
+
+    DEBUG : out std_logic_vector(3 downto 0)
     );
 end nettest;
 
@@ -124,9 +129,29 @@ architecture Behavioral of nettest is
       CLK             : in  std_logic;
       ECYCLE          : in  std_logic;
       EDTX            : in  std_logic_vector(7 downto 0);
-      EATX            : in std_logic_vector(somabackplane.N - 1 downto 0);
-      DEBUG : out std_logic_vector(3 downto 0)
+      EATX            : in  std_logic_vector(somabackplane.N - 1 downto 0);
+      DEBUG           : out std_logic_vector(3 downto 0)
       );
+  end component;
+
+  component ether
+    generic (
+      DEVICE  :     std_logic_vector(7 downto 0) := X"01"
+      );
+    port (
+      CLK     : in  std_logic;
+      RESET   : in  std_logic;
+      EDTX    : in  std_logic_vector(7 downto 0);
+      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
+      ECYCLE  : in  std_logic;
+      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0)
+                                                 := (others => '0');
+      EDRX    : out std_logic_vector(7 downto 0);
+      EDSELRX : in  std_logic_vector(3 downto 0);
+      SOUT    : out std_logic;
+      SIN     : in  std_logic;
+      SCLK    : out std_logic;
+      SCS     : out std_logic);
   end component;
 
   signal ECYCLE : std_logic := '0';
@@ -274,7 +299,7 @@ begin  -- Behavioral
   process(jtagsel, jtagdrck, jtagupdate)
   begin
     if jtagupdate = '1' then
-      testout     <= X"1234ABCD";
+      testout     <= X"87654321";
     else
       if rising_edge(jtagdrck) then
         if jtagsel = '1' and jtagshift = '1' then
@@ -297,13 +322,30 @@ begin  -- Behavioral
   jtagreceive_inst : jtagereceive
     generic map (
       JTAG_CHAIN_MASK => 3,
-      JTAG_CHAIN_OUT => 4  )
+      JTAG_CHAIN_OUT  => 4 )
     port map (
-      CLK        => clk,
-      ECYCLE     => ecycle,
-      EDTX => edtx,
-      EATX => eatx(7),
-      DEBUG => DEBUG); 
+      CLK             => clk,
+      ECYCLE          => ecycle,
+      EDTX            => edtx,
+      EATX            => eatx(7),
+      DEBUG           => DEBUG);
+
+  ether_inst : ether
+    generic map (
+      DEVICE  => X"05")
+    port map (
+      CLK     => clk,
+      RESET   => reset,
+      EDTX    => edtx,
+      EATX    => eatx(5),
+      ECYCLE  => ecycle,
+      EARX    => earx(5),
+      EDRX => edrx(5), 
+      EDSELRX => edselrx,
+      SOUT    => NICSOUT,
+      SIN     => NICSIN,
+      SCLK    => NICSCLK,
+      SCS     => NICSCS);
 
   -- dummy
   process(CLK)
