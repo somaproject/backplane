@@ -91,8 +91,8 @@ architecture Behavioral of inputcontroltest is
     while not endfile(data_file) loop
       readline(data_file, L);
       while L'length /= 0 loop
-        hread(L, lbyte);
         hread(L, hbyte);
+        hread(L, lbyte);
 
         DOUTEN <= '1';
         DOUT   <= (hbyte & lbyte);
@@ -158,7 +158,8 @@ begin  -- Behavioral
     wait until rising_edge(CLK);
     PINGDONE <= '0';
 
-    
+    wait for 10 us;
+    assert False report "End of Simulation" severity Failure;
     wait; 
     
 
