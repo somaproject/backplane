@@ -65,7 +65,7 @@ architecture Behavioral of inputcontrol is
 
 begin  -- Behavioral
 
-
+  PKTDATA <= dob; 
   frame_buffer : RAMB16_S18_S18
     generic map (
       SIM_COLLISION_CHECK => "GENERATE_X_ONLY") 

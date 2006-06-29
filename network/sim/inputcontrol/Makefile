@@ -3,10 +3,13 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/inputcontrol/_behavioral.var: ../../vhdl/inputcontrol.vhd
+$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
+	$(VHDLC) ../../vhdl/networkstack.vhd
+
+$(WORKDIR)/inputcontrol/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/inputcontrol.vhd
 	$(VHDLC) ../../vhdl/inputcontrol.vhd
 
-hw: $(WORKDIR)/inputcontrol/_behavioral.var 
+hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/inputcontrol/_behavioral.var 
 
 comp: 
 
