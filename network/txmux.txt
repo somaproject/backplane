@@ -1,0 +1,15 @@
+The TX input mux selects among armed inputs. To send a packet, a
+device asserts the ARM signal and waits for the assertion of GRANT.
+
+Note that ARM should be deasserted by the source once GRANT has been
+asserted to prevent multiple-triggering.
+
+
+When GRANT is asserted, that port is given the exclusive control of the output to the NIC. 
+
+The DEN and and DIN are passed through after a register phrase. 
+
+When DENMUX transitions from high-to-low, that port has completed
+sending its packet. Then, we deassert ARM and move on. 
+
+
