@@ -3,10 +3,41 @@
 Code to take raw text-octect export from ethereal along with frame filenames
 and packetize it into DIN/DOUT formats
 
+We also recompute the ip header for each packet such that we can be
+sure we're reflecting any modifications to the source file from the
+original ethereal dump, such as changing the response/verification ID field
+
 """
 
 import sys
 import re
+
+
+def computeIPHeader(octetlist):
+    header = octetlist[14:14+20]
+    x = 0
+    for i in range(10):
+        s = "%s%s" % (header[i*2],  header[i*2+1])
+        a = int(s, 16)
+        if i != 5:
+            x += a
+            print hex(a), hex(x) 
+    y = ((x & 0xFFFF) + (x >> 16)) 
+    return ( ~ y) & 0xFFFF
+
+def updateIPHeader(octetlist):
+    iphdr = hex(computeIPHeader(alloctets))
+
+    if octetlist[12] == '08' and octetlist[13] == '00':
+        csum = computeIPHeader(octetlist)
+        o1 = "%2.2X" % (csum >> 8)
+        o2 = "%2.2X" % (csum & 0xFF)
+        octetlist[24] = o1
+        octetlist[25] = o2
+        print octetlist[14:14+20]
+    else:
+        pass
+
 
 
 filename = sys.argv[1]
@@ -36,6 +67,10 @@ while True:
             l = fid.readline()
 
 
+
+        print outfilename
+        
+        updateIPHeader(alloctets)
         framelen = len(alloctets)
         ofid.write("%4.4X\n" % (int(framelen) + 2))
 

@@ -63,13 +63,14 @@ begin  -- Behavioral
 
   DOUT <= inpktdata when dmux = 1 else
           csum;
-
-  AOUT <= "0000010101" when dmux = 0 else acntl;
+  
+  AOUT <= "0000010011" when dmux = 0 else acntl;
 
   INPKTADDR <= acnt;
 
   cdin <= INPKTDATA when chksel = '0' else X"0000";
-
+  chksel <= '1' when cs = loadcsum else '0';
+  
   DONE  <= '1' when cs = pktdone else '0';
 
   main : process(CLK)
@@ -79,7 +80,7 @@ begin  -- Behavioral
       cs <= ns;
 
     if cs = loadcsum then
-      acnt <= "0000011000";
+      acnt <= "0000010100";
     else
       if addrinc = '1' then
         acnt <= acnt + 1; 
@@ -99,7 +100,7 @@ begin  -- Behavioral
     end if;
   end process main;
 
-  fsm : process(cs, START, INPKTDATA)
+  fsm : process(cs, START, INPKTDATA, DATALEN, pktlen)
   begin
     case cs is
       when none =>
@@ -132,7 +133,7 @@ begin  -- Behavioral
         addrinc <= '1';
         WEOUT <= '1';
         dmux <= 1; 
-        if DATALEN <= pktlen then
+        if DATALEN(9 downto 0) = pktlen then
           ns <= chkwr;
           else
             ns <= datawait; 

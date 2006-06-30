@@ -34,6 +34,7 @@ architecture Behavioral of pingipwriter is
   
   signal pia : std_logic_vector(9 downto 0) := (others => '0');
 
+  signal doutint : std_logic_vector(15 downto 0) := (others => '0');
   
   type states is (none, gettype, chkping, pktabort, pktdone,
                   wrlen, destmac1, destmac2, destmac3, srcmac1,
@@ -61,8 +62,8 @@ begin  -- Behavioral
       EN     => chken,
       CHKOUT => csum);
 
-
-  DOUT <= mymac(47 downto 32) when dmux = 0 else
+  DOUT <= doutint; 
+  doutint <= mymac(47 downto 32) when dmux = 0 else
           mymac(31 downto 16) when dmux = 1 else
           mymac(15 downto 0)  when dmux = 2 else
           myip(31 downto 16)  when dmux = 3 else
@@ -72,8 +73,9 @@ begin  -- Behavioral
 
   INPKTADDR <= pia;
 
-  cdin <= INPKTDATA when chksel = '0' else X"1234";
-
+  cdin <= doutint when chksel = '0' else X"8501";
+  chkld <= '1' when cs = none else '0';
+  
   
   DONE  <= '1' when cs = pktdone else '0';
   ABORT <= '1' when cs = pktabort   else '0';
@@ -88,7 +90,7 @@ begin  -- Behavioral
         len <= INPKTDATA;
       end if;
 
-      DATALEN <= len - X"0000010110";
+      DATALEN <= len - "0000011000";
 
     end if;
   end process main;
@@ -112,7 +114,7 @@ begin  -- Behavioral
         when  gettype =>
           WEOUT <= '0';
           AOUT <= "0000000000";
-          pia <= "0000010100";
+          pia <= "0000010010";
           dmux <= 0;
           chksel <= '0';
           chken <= '0';
@@ -214,7 +216,7 @@ begin  -- Behavioral
           
         when srcip1 =>
           WEOUT <= '1';
-          AOUT <= "0000001111";
+          AOUT <= "0000001110";
           pia <= "0000001111";
           dmux <= 3;
           chksel <= '0';
@@ -237,7 +239,7 @@ begin  -- Behavioral
           dmux <= 5;
           chksel <= '0';
           chken <= '1';
-          ns <= destip1; 
+          ns <= destip2; 
           
         when destip2 =>
           WEOUT <= '1';
@@ -254,7 +256,7 @@ begin  -- Behavioral
           pia <= "0000001110";
           dmux <= 6;
           chksel <= '0';
-          chken <= '1';
+          chken <= '0';
           ns <= pktdone; 
           
         when pktdone=>

@@ -102,9 +102,48 @@ architecture Behavioral of pingresponsetest is
 
 
   signal dexpected : std_logic_vector(15 downto 0) := (others => '0');
-  signal doutl : std_logic_vector(15 downto 0) := (others => '0');
+  signal doutl     : std_logic_vector(15 downto 0) := (others => '0');
+  signal dataerror : std_logic                     := '0';
+
+  procedure verifypkt (
+    constant filename  : in    string;
+    signal   CLK       : in    std_logic;
+    signal   DIN       : in    std_logic_vector(15 downto 0);
+    signal   DOEN      : in    std_logic;
+    signal   doutl     : inout std_logic_vector(15 downto 0);
+    signal   dexpected : inout std_logic_vector(15 downto 0);
+    signal   dataerror : inout std_logic) is
+
+    file data_file : text;
+    variable L     : line;
+    variable word  : std_logic_vector(15 downto 0);
+
+  begin
+    file_open(data_file, filename, read_mode);
+    while not endfile(data_file) loop
+      wait until rising_edge(CLK);
+      if DOEN = '1' then
+        readline(data_file, L);
+        hread(L, word);
+        doutl       <= dout;
+        dexpected   <= word;
+        wait for 1 ns;
+        assert doutl = dexpected report "Error reading DOUT" severity error;
+        if doutl /= dexpected then
+          dataerror <= '1';
+        else
+          dataerror <= '0';
+        end if;
+
+      end if;
+
+    end loop;
+    file_close(data_file);
+
+  end procedure verifypkt;
 
 begin  -- Behavioral
+
 
   CLK   <= not CLK after 10 ns;
   RESET <= '0'     after 20 ns;
@@ -144,48 +183,129 @@ begin  -- Behavioral
       EVENTADDR  => EVENTADDR,
       EVENTDONE  => EVENTDONE);
 
+
   process
-
-
-    file data_file : text open read_mode is "goodresp.txt";
-    variable L     : line;
-    variable word  : std_logic_vector(15 downto 0);
-
   begin
+
+    -- first ping response
+    
     wait for 2 us;
-    networkstack.writepkt("goodquery.txt", CLK, DINEN, NEXTFRAME, DIN);
-    wait until rising_edge(CLK) and ARPSTART = '1';
+
+    networkstack.writepkt("req_host1_1.txt", CLK, DINEN, NEXTFRAME, DIN);
+    wait until rising_edge(CLK) and PINGSTART = '1';
     wait until rising_edge(CLK) and ARM = '1';
-    wait for 20 us;
+    wait for 5 us;
     wait until rising_edge(CLK);
     GRANT <= '1';
     wait until rising_edge(CLK);
     GRANT <= '0';
-    while not endfile(data_file) loop
-      wait until rising_edge(CLK);
-      if DOEN = '1' then
-        readline(data_file, L);
-        hread(L, word);
-        doutl <= dout; 
-        dexpected <= word; 
-        wait for 1 ns;
-        assert doutl = dexpected report "Error reading DOUT" severity Error; 
-        
-        
-      end if;
 
-    end loop;
+    verifypkt("resp_host1_1.txt", CLK, DIN, DOEN,
+              doutl, dexpected, dataerror);
 
-    wait until rising_edge(CLK) and ARPDONE = '1';
-      
+    wait until rising_edge(CLK) and PINGDONE = '1';
+
+--------------------------------------------------------------------------
+-- second ping from first host
+--------------------------------------------------------------------------    
     wait for 2 us;
-    networkstack.writepkt("notusquery.txt", CLK, DINEN, NEXTFRAME, DIN);
 
-    wait until rising_edge(CLK) and ARPDONE = '1';
+    networkstack.writepkt("req_host1_2.txt", CLK, DINEN, NEXTFRAME, DIN);
+    wait until rising_edge(CLK) and PINGSTART = '1';
+    wait until rising_edge(CLK) and ARM = '1';
+    wait for 5 us;
+    wait until rising_edge(CLK);
+    GRANT <= '1';
+    wait until rising_edge(CLK);
+    GRANT <= '0';
 
-    assert False report "End of Simulation" severity Failure;
+    verifypkt("resp_host1_2.txt", CLK, DIN, DOEN,
+              doutl, dexpected, dataerror);
+
+    wait until rising_edge(CLK) and PINGDONE = '1';
+
+--------------------------------------------------------------------------
+-- third ping from first host
+--------------------------------------------------------------------------    
+    wait for 1 us;
+
+    networkstack.writepkt("req_host1_3.txt", CLK, DINEN, NEXTFRAME, DIN);
+    wait until rising_edge(CLK) and PINGSTART = '1';
+    wait until rising_edge(CLK) and ARM = '1';
+    wait for 5 us;
+    wait until rising_edge(CLK);
+    GRANT <= '1';
+    wait until rising_edge(CLK);
+    GRANT <= '0';
+
+    verifypkt("resp_host1_3.txt", CLK, DIN, DOEN,
+              doutl, dexpected, dataerror);
+
+    wait until rising_edge(CLK) and PINGDONE = '1';
+
+
+--------------------------------------------------------------------------
+-- fourth ping from first host
+--------------------------------------------------------------------------    
+    wait for 1 us;
+
+    networkstack.writepkt("req_host1_4.txt", CLK, DINEN, NEXTFRAME, DIN);
+    wait until rising_edge(CLK) and PINGSTART = '1';
+    wait until rising_edge(CLK) and ARM = '1';
+    wait for 5 us;
+    wait until rising_edge(CLK);
+    GRANT <= '1';
+    wait until rising_edge(CLK);
+    GRANT <= '0';
+
+    verifypkt("resp_host1_4.txt", CLK, DIN, DOEN,
+              doutl, dexpected, dataerror);
+
+    wait until rising_edge(CLK) and PINGDONE = '1';
+
+--------------------------------------------------------------------------
+-- first ping from windows host 
+--------------------------------------------------------------------------    
+    wait for 1 us;
+
+    networkstack.writepkt("req_host2_1.txt", CLK, DINEN, NEXTFRAME, DIN);
+    wait until rising_edge(CLK) and PINGSTART = '1';
+    wait until rising_edge(CLK) and ARM = '1';
+    wait for 5 us;
+    wait until rising_edge(CLK);
+    GRANT <= '1';
+    wait until rising_edge(CLK);
+    GRANT <= '0';
+
+    verifypkt("resp_host2_1.txt", CLK, DIN, DOEN,
+              doutl, dexpected, dataerror);
+
+    wait until rising_edge(CLK) and PINGDONE = '1';
+
+
+--------------------------------------------------------------------------
+-- first ping from remote (non-subnet) host
+--------------------------------------------------------------------------    
+    wait for 1 us;
+
+    networkstack.writepkt("req_hostremote_1.txt", CLK, DINEN, NEXTFRAME, DIN);
+    wait until rising_edge(CLK) and PINGSTART = '1';
+    wait until rising_edge(CLK) and ARM = '1';
+    wait for 5 us;
+    wait until rising_edge(CLK);
+    GRANT <= '1';
+    wait until rising_edge(CLK);
+    GRANT <= '0';
+
+    verifypkt("resp_hostremote_1.txt", CLK, DIN, DOEN,
+              doutl, dexpected, dataerror);
+
+    wait until rising_edge(CLK) and PINGDONE = '1';
 
     
+    assert false report "End of Simulation" severity failure;
+
+
     wait;
 
   end process;

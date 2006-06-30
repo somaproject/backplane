@@ -126,13 +126,13 @@ begin  -- Behavioral
   wea   <= weouta when insel = '0' else weoutb;
 
   INPKTADDR <= paa when insel = '0' else pab;
-
+  DONE <= '1' when cs = pktdone else '0'; 
   outen <= '1' when cs = pktout else '0';
 
   ipstart   <= '1' when cs = ipstarts   else '0';
   pingstart <= '1' when cs = pingstarts else '0';
 
-
+  ARM <= '1' when cs = armout else '0'; 
 
   main : process(CLK)
   begin
@@ -225,10 +225,10 @@ begin  -- Behavioral
 
   RAMB16_S18_S18_inst : RAMB16_S18_S18
     generic map (
-      SIM_COLLISION_CHECK => "ALL",     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
       -- The follosing INIT_xx declarations specify the intiial contents of the RAM
       -- Address 0 to 255
-      INIT_00             => X"000000000000000000020604080000010806000000000000000000000000003e",
+      INIT_00             => X"000000000000400100000000000045000800000000000000000000000000003e",
       INIT_01             => X"0000000000000000000000000000000000000000000000000000000000000000",
       INIT_02             => X"0000000000000000000000000000000000000000000000000000000000000000",
       INIT_03             => X"0000000000000000000000000000000000000000000000000000000000000000",
