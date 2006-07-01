@@ -1,0 +1,20 @@
+The event transmitter is somewhat complex due to the desire to avoid
+sending packets with no / few events, but to also avoid event
+overflow. A worst-case would be every single event in an event cycle
+being directed at the network device; This would result in 960 bytes of data for the UDP packet. But sending a single event wastes 80% of the ethernet frame capacity. But we also wish to avoid prolonged periods of event queuing. 
+
+To meet these parameters, we send an event datagram whenever: 
+\begin{enumerate}
+\item More than 5 ecycles have passed without a transmission
+\item we have a buffer with more than 100 bytes of events. 
+\end{enumerate} 
+
+Our buffers are only 1024-bytes long (512 words)
+
+If a buffer has more than 100 bytes of events, say, 105, it's possible that the next ecycle will result in an overflow, so we must transmit. 
+
+at 50 MHz, a 1024-byte event takes 10.3 \muS to transmit. We need to
+maintain the ability for the network TX interface to transmit one of
+these per cycle.
+
+
