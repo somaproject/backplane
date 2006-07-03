@@ -18,3 +18,12 @@ maintain the ability for the network TX interface to transmit one of
 these per cycle.
 
 
+Our implementation uses separate FSMs to write the relevant bits for the IP/UDP headers and the. 
+
+
+The eventbodywriter module: 
+1. takes in an event port
+2. at the relevant point begins writing out events
+3.
+
+
