@@ -64,7 +64,7 @@ begin  -- Behavioral
       cs <= ns;
 
       -- event position counter
-      if cs = none or cs = ebegin then
+      if estart = '1' then
         epos     <= 0;
       else
         if elb = '1' and epos < somabackplane.N -1 then
@@ -72,7 +72,7 @@ begin  -- Behavioral
         end if;
       end if;
 
-      if elb = '1' or estart = '1' then
+      if elb = '1' or estart = '1' then 
         bcnt <= 0;
       else
         bcnt <= bcnt + 1;
@@ -92,7 +92,7 @@ begin  -- Behavioral
         end if;
       end if;
 
-      if estart = '1' then
+      if cs = ebegin then
         eincnt <= "000000001"; 
       else
         if eininc = '1' then
@@ -115,7 +115,7 @@ begin  -- Behavioral
   begin
     case cs is
       when none =>
-        estart <= '0';
+        estart <= '1';
         wrlen  <= '0';
         if ECYCLE = '1' then
           ns   <= ehdrw;
@@ -126,7 +126,7 @@ begin  -- Behavioral
       when ehdrw =>
         estart <= '0';
         wrlen  <= '0';
-        if epos = 3 and bcnt = 10 then
+        if epos = 3 and bcnt = 9 then
           ns   <= ebegin;
         else
           ns   <= ehdrw;

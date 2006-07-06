@@ -60,6 +60,8 @@ architecture Behavioral of eventbodywritertest is
 
 
   -- simulated ram
+  signal ramaddr : integer range 0 to 1023 := 0;
+  signal ramdata : std_logic_vector(15 downto 0);
 
 begin  -- Behavioral
 
@@ -118,7 +120,7 @@ begin  -- Behavioral
 
   end process;
 
-  ramwriter           : process(CLK)
+  ramwriter           : process(CLK, ramaddr)
     type eventram_t is array(1023 downto 0) of
     std_logic_vector(15 downto 0);
     variable eventram : eventram_t := (others => (others => '0'));
@@ -129,8 +131,8 @@ begin  -- Behavioral
       if WEOUT = '1' then
         eventram(to_integer(unsigned(ADDR))) := DOUT;
       end if;
-
     end if;
+    ramdata <= eventram(ramaddr);
 
   end process ramwriter;
   main : process
@@ -144,6 +146,12 @@ begin  -- Behavioral
     wait until rising_edge(CLK) and ECYCLE = '1';
     EATX              <= eazeros;
 
+
+    ---------------------------------------------------------------------------
+    -- Basic input event
+    ---------------------------------------------------------------------------
+
+
     wait until rising_edge(CLK) and ECYCLE = '1';
     eventinputs(0)(0) <= X"0123";
     eventinputs(0)(1) <= X"4567";
@@ -154,9 +162,77 @@ begin  -- Behavioral
     EATX(0)           <= '1';
 
     wait until rising_edge(CLK) and ECYCLE = '1';
+    -- verification
+    ramaddr <= 0;
+    wait for 1 ns;
+    assert ramdata = X"0001" report "Error writing length" severity error;
+
+    ramaddr <= 1;
+    wait for 1 ns;
+    assert ramdata = X"0123" report "Error reading data" severity error;
+
+    ramaddr <= 2;
+    wait for 1 ns;
+    assert ramdata = X"4567" report "Error reading data" severity error;
+
+    ramaddr <= 3;
+    wait for 1 ns;
+    assert ramdata = X"89ab" report "Error reading data" severity error;
+
+    ramaddr <= 4;
+    wait for 1 ns;
+    assert ramdata = X"cdef" report "Error reading data" severity error;
+
+    ramaddr <= 5;
+    wait for 1 ns;
+    assert ramdata = X"1357" report "Error reading data" severity error;
+
+    ramaddr <= 6;
+    wait for 1 ns;
+    assert ramdata = X"9bdf" report "Error reading data" severity error;
+
+    wait for 3 us;
+    assert addr'stable(3 us) report "ADDR changed" severity error;
+
     EATX <= eazeros;
 
+    ---------------------------------------------------------------------------
+    -- Complex multi-device event
+    ---------------------------------------------------------------------------
 
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    for i in 0 to 31 loop
+      eventinputs(i)(0) <= std_logic_vector(to_unsigned(i, 8)) & X"00";
+      eventinputs(i)(1) <= std_logic_vector(to_unsigned(i, 8)) & X"01";
+      eventinputs(i)(2) <= std_logic_vector(to_unsigned(i, 8)) & X"02";
+      eventinputs(i)(3) <= std_logic_vector(to_unsigned(i, 8)) & X"03";
+      eventinputs(i)(4) <= std_logic_vector(to_unsigned(i, 8)) & X"04";
+      eventinputs(i)(5) <= std_logic_vector(to_unsigned(i, 8)) & X"05";
+      EATX(i)           <= '1';
+    end loop;  -- i 
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX    <= eazeros;
+    -- verification
+    ramaddr <= 0;
+    wait for 1 ns;
+    assert ramdata = X"0020" report "Error writing length" severity error;
+
+    -- verify events
+    for i in 0 to 31 loop
+      for j in 0 to 5 loop
+        ramaddr <= i * 6 + j + 1;
+        wait for 1 ns;
+        assert ramdata = ( std_logic_vector(to_unsigned(i, 8))
+                           & std_logic_vector(to_unsigned(j, 8)))
+          report "Error in event data" severity error;
+
+      end loop;  -- j
+
+    end loop;  -- i 
+
+    assert False report "End of Simulation" severity Failure;
+    
 
 
     wait;
