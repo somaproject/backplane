@@ -1,4 +1,4 @@
-library IEEE;
+library IEEE; 
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
@@ -13,10 +13,12 @@ entity eventbodywriter is
     ECYCLE : in  std_logic;
     EDTX   : in  std_logic_vector(7 downto 0);
     EATX   : in  std_logic_vector(somabackplane.N-1 downto 0);
+    DONE : out std_logic;
+    
     DOUT   : out std_logic_vector(15 downto 0);
     WEOUT  : out std_logic;
-    ADDR   : out std_logic_vector(8 downto 0);
-    DONE   : out std_logic);
+    ADDR: out std_logic_vector(8 downto 0)); 
+    
 end eventbodywriter;
 
 
