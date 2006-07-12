@@ -34,6 +34,9 @@ architecture Behavioral of eventheaderwriter is
 
   signal ain : std_logic_vector(15 downto 0) := (others => '0');
 
+  signal doutint : std_logic_vector(15 downto 0) := (others => '0');
+
+  
   type states is (none, macwh, macwm, macwl, ipwh, ipwl, udplenw, iplenw, framelw, chksumw);
 
   signal cs, ns : states := none;

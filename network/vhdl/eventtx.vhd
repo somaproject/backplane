@@ -7,6 +7,9 @@ library WORK;
 use WORK.somabackplane.all;
 use work.somabackplane;
 
+library UNISIM;
+use UNISIM.vcomponents.all;
+
 entity eventtx is
   port (
     CLK : in std_logic;
@@ -62,7 +65,7 @@ architecture Behavioral of eventtx is
   signal ecnt : std_logic_vector(15 downto 0) := (others => '0');
 
   type instates is (none, sendchk, hdrs, hdrw, flipbuf);
-  signal ics, ncs : instates := none;
+  signal ics, ins : instates := none;
 
   -- output side
 
@@ -74,6 +77,8 @@ architecture Behavioral of eventtx is
 
   signal outen : std_logic := '0';
 
+  type outstates is (none, armw, pktout, done);
+  signal ocs, ons : outstates := none;
 
   -- components
   component eventheaderwriter
@@ -118,7 +123,7 @@ begin  -- Behavioral
       ADDR  => addrhdr,
       DONE  => hdrdone);
 
-  eventbodywriter_inst : eventboydwriter
+  eventbodywriter_inst : eventbodywriter
     port map (
       CLK    => CLK,
       ECYCLE => ECYCLE,
@@ -134,7 +139,7 @@ begin  -- Behavioral
   dia               <= douthdr  when osel = '0' else doutbody;
   wea               <= weouthdr when osel = '0' else weoutbody;
   addra(8 downto 0) <= addrhdr  when osel = '0' else dataaddr;
-  addr(9)           <= nbsel;
+  addra(9)          <= nbsel;
 
   dataaddr <= addrbody + datalen;
   nbsel    <= not bsel;
@@ -164,84 +169,139 @@ begin  -- Behavioral
         end if;
       end if;
 
-      
+
     end if;
   end process main_input;
 
 
-  outen <= '1' when ocs = pktout else '0';
+  outen    <= '1' when ocs = pktout else '0';
   addrb(9) <= bsel;
-  ARM <= '1' when ocs = armw else '0';
+  ARM      <= '1' when ocs = armw   else '0';
 
-  
-  main_output: Process(CLK)
-    begin
-      if rising_edge(CLK) then
-        ocs <= ons;
 
-        if ocs = none then
-          olen <= dob; 
-        end if;
-        
-        DOEN <= outen;
+  main_output : process(CLK)
+  begin
+    if rising_edge(CLK) then
+      ocs <= ons;
 
-        if ocs = none then
-          addrb(8 downto 0)  <= (others => '0');
-        else
-          if outen = '1' then
-            addrb <= addrb + 1; 
-          end if;
-        end if;
-
+      if ocs = none then
+        olen <= dob;
       end if;
-    end process main_output; 
+
+      DOEN <= outen;
+
+      if ocs = none then
+        addrb(8 downto 0) <= (others => '0');
+      else
+        if outen = '1' then
+          addrb           <= addrb + 1;
+        end if;
+      end if;
+
+    end if;
+  end process main_output;
 
 
-    input_fsm: process(ics, ebdone, ecnt5, dataddr, hdrdone)
-      begin
-        case ics is
-          when none =>
-            nextbuf <= '0';
-            hdrstart <= '0';
-            if ebdone = '1'  then
-              ons <= sendchk;
-            else
-              ons <= none; 
-            end if;
+  input_fsm : process(ics, ebdone, ecnt, dataaddr, hdrdone)
+  begin
+    case ics is
+      when none =>
+        nextbuf  <= '0';
+        hdrstart <= '0';
+        if ebdone = '1' then
+          ins    <= sendchk;
+        else
+          ins    <= none;
+        end if;
 
-          when sendchk =>
-            nextbuf <= '0';
-            hdrstart <= '0';
-            if ecnt = 5 or dataaddr > "010000000" then
-              ons <= hdrs; 
-            else
-              ons <= none;  
-            end if;
+      when sendchk =>
+        nextbuf  <= '0';
+        hdrstart <= '0';
+        if ecnt = 5 or dataaddr > "010000000" then
+          ins    <= hdrs;
+        else
+          ins    <= none;
+        end if;
 
-          when hdrs =>
-            nextbuf <= '0';
-            hdrstart <= '1';
-            ons <= hdrw;
-          when hdrw =>
-            nextbuf <= '0';
-            hdrstart <= '0';
-            if hdrdone = '1' then
-              ons <= flipbuf;
-            else
-              ons <= hdrw; 
-            end if;
+      when hdrs =>
+        nextbuf  <= '0';
+        hdrstart <= '1';
+        ins      <= hdrw;
+      when hdrw =>
+        nextbuf  <= '0';
+        hdrstart <= '0';
+        if hdrdone = '1' then
+          ins    <= flipbuf;
+        else
+          ins    <= hdrw;
+        end if;
 
-          when flipbuf =>
-            nextbuf <= '1';
-            hdrstart <= '0';
-            ons <= none;
-            
-          when others =>
-            nextbuf <= '0';
-            hdrstart <= '0';
-            ons <= none;
-        end case;
-      end process input_fsm;
+      when flipbuf =>
+        nextbuf  <= '1';
+        hdrstart <= '0';
+        ins      <= none;
 
-      
+      when others =>
+        nextbuf  <= '0';
+        hdrstart <= '0';
+        ins      <= none;
+    end case;
+  end process input_fsm;
+
+
+  output_fsm : process(ocs, nextbuf, GRANT, olen, addrb)
+  begin
+    case ocs is
+      when none =>
+        if nextbuf = '1' then
+          ons <= armw;
+        else
+          ons <= none;
+        end if;
+
+      when armw =>
+        if grant = '1' then
+          ons <= pktout;
+        else
+          ons <= armw;
+        end if;
+
+      when pktout =>
+        if olen = addrb then
+          ons <= done;
+        else
+          ons <= pktout;
+        end if;
+
+      when done   =>
+        ons <= none;
+      when others =>
+        ons <= none;
+    end case;
+  end process output_fsm;
+
+  RAMB16_S18_S18_inst : RAMB16_S18_S18
+    generic map (
+      SIM_COLLISION_CHECK => "NONE" )
+    port map (
+      DOA                 => open,
+      DOB                 => dob,
+      DOPA                => open,
+      DOPB                => open,
+      ADDRA               => addra,
+      ADDRB               => addrb,
+      CLKA                => CLK,
+      CLKB                => CLK,
+      DIA                 => dia,
+      DIB                 => X"0000",
+      DIPA                => "00",
+      DIPB                => "00",
+      ENA                 => '1',
+      ENB                 => '1',
+      SSRA                => '0',
+      SSRB                => '0',
+      WEA                 => wea,
+      WEB                 => '0'
+      );
+
 end Behavioral;
