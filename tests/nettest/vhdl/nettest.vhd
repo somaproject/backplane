@@ -14,21 +14,24 @@ use UNISIM.VComponents.all;
 
 entity nettest is
   port (
-    CLKIN      : in  std_logic;
-    SERIALBOOT : out std_logic_vector(19 downto 0);
-    SDOUT      : out std_logic;
-    SDIN       : in  std_logic;
-    SCLK       : out std_logic;
-    SCS        : out std_logic;
-    LEDPOWER   : out std_logic;
-    LEDEVENT   : out std_logic;
-    NICFCLK    : out std_logic;
-    NICFDIN    : out std_logic;
-    NICFPROG   : out std_logic;
-    NICSCLK    : out std_logic;
-    NICSIN     : in  std_logic;
-    NICSOUT    : out std_logic;
-    NICSCS     : out std_logic;
+    CLKIN       : in  std_logic;
+    SERIALBOOT  : out std_logic_vector(19 downto 0);
+    SDOUT       : out std_logic;
+    SDIN        : in  std_logic;
+    SCLK        : out std_logic;
+    SCS         : out std_logic;
+    LEDPOWER    : out std_logic;
+    LEDEVENT    : out std_logic;
+    NICFCLK     : out std_logic;
+    NICFDIN     : out std_logic;
+    NICFPROG    : out std_logic;
+    NICSCLK     : out std_logic;
+    NICSIN      : in  std_logic;
+    NICSOUT     : out std_logic;
+    NICSCS      : out std_logic;
+    NETDOUT     : out std_logic_vector(15 downto 0);
+    NETNEWFRAME : out std_logic;
+    NETCLK      : out std_logic;
 
     DEBUG : out std_logic_vector(3 downto 0)
     );
@@ -154,6 +157,29 @@ architecture Behavioral of nettest is
       SCS     : out std_logic);
   end component;
 
+  component network
+    port (
+      CLK       : in  std_logic;
+      MYIP      : in  std_logic_vector(31 downto 0);
+      MYMAC     : in  std_logic_vector(31 downto 0);
+      MYBCAST   : in  std_logic_vector(31 downto 0);
+      NEXTFRAME : out std_logic;
+      DINEN     : in  std_logic;
+      DIN       : in  std_logic_vector(15 downto 0);
+      NEWFRAME  : out std_logic;
+      DOUT      : out std_logic_vector(15 downto 0);
+      IOCLOCK   : out std_logic
+      );
+  end component;
+
+
+  component pingdump
+    port (
+      CLK      : in  std_logic;
+      DOUT     : out std_logic_vector(15 downto 0);
+      NEWFRAME : out std_logic);        -- (others => '0')
+  end component;
+
   signal ECYCLE : std_logic := '0';
 
   signal EARX    : somabackplane.addrarray      := (others => (others => '0'));
@@ -179,6 +205,8 @@ architecture Behavioral of nettest is
   signal jtagtdo     : std_logic := '0';
 
   signal testout : std_logic_vector(31 downto 0) := X"00000001";
+
+
 
 begin  -- Behavioral
 
@@ -340,7 +368,7 @@ begin  -- Behavioral
       EATX    => eatx(5),
       ECYCLE  => ecycle,
       EARX    => earx(5),
-      EDRX => edrx(5), 
+      EDRX    => edrx(5),
       EDSELRX => edselrx,
       SOUT    => NICSOUT,
       SIN     => NICSIN,
@@ -349,8 +377,8 @@ begin  -- Behavioral
 
   -- dummy
   process(CLK)
-    variable blinkcnt : std_logic_vector(21 downto 0) := (others => '0');
-
+    variable blinkcnt : std_logic_vector(21 downto 0)
+               := (others => '0');
   begin
     if rising_edge(CLK) then
       blinkcnt := blinkcnt + 1;
@@ -358,9 +386,13 @@ begin  -- Behavioral
     end if;
   end process;
 
+  NETCLK <= clk;
 
-
-  -- test
+  pingdump_inst : pingdump
+    port map (
+      CLK      => clk,
+      DOUT     => NETDOUT,
+      NEWFRAME => NETNEWFRAME);
 
 
 end Behavioral;

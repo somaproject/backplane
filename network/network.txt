@@ -17,13 +17,22 @@ Receive:
 3. icmp queries
 4. retransmission requests
 
-We severely limit the type of network our system operates on to being
-a single subnet ideally behind some sort of firewall, running with a
-subnet mask of 255.255.255.0. The Soma Backplane can only send traffic
-on this subnet, as there are no provisions for routing or packet
-fragmentation.
-
 \section{Overview}
 
 We have an input/output mux configuration. We multiplex through the mux. 
+
+
+\section{TX Prioritization} 
+
+Our goal is to transmit at least one event packet and as many data
+packets as are necessary per frame.
+
+A data packet is going to be at most 280 ticks (560 bytes) long, and a
+event packet is going to be at most 550 ticks (1100 bytes) long.
+
+This means that we can transmit one event and 1.6 data packets per
+ecycle, or 50 event packets and 80 data packets per ms.
+
+We implement a TX prioritization scheme with port 0 always being
+checked for pending TX before port 1, etc.
 

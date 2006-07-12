@@ -7,16 +7,16 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 library WORK;
-use WORK.networkstack; 
+use WORK.networkstack;
 
 entity txmux is
   port (
-    CLK   : in std_logic;
-    DEN   : in std_logic_vector(networkstack.N-1 downto 0);
-    DIN   : in networkstack.dataarray;
-    GRANT : out std_logic_vector(networkstack.N-1 downto 0);
-    ARM : in std_logic_vector(networkstack.N-1 downto 0);
-    DOUT : out std_logic_vector(15 downto 0);
+    CLK      : in  std_logic;
+    DEN      : in  std_logic_vector(4 downto 0);
+    DIN      : in  networkstack.dataarray;
+    GRANT    : out std_logic_vector(4 downto 0);
+    ARM      : in  std_logic_vector(4 downto 0);
+    DOUT     : out std_logic_vector(15 downto 0);
     NEWFRAME : out std_logic
     );
 
@@ -27,118 +27,110 @@ architecture Behavioral of txmux is
 
 
   signal dinmux : std_logic_vector(15 downto 0) := (others => '0');
-  signal denmux : std_logic := '0';
-  
-  signal chan : integer range 0 to networkstack.N-1 := 0;
-  signal arml : std_logic_vector(networkstack.N-1 downto 0) := (others => '0');
-  signal armll : std_logic := '0';
+  signal denmux : std_logic                     := '0';
+
+  signal lchan, chan  : integer range 0 to 4         := 0;
+  signal arml  : std_logic_vector(4 downto 0) := (others => '0');
+  signal orarml : std_logic := '0';
   
   signal grantmux : std_logic := '0';
 
-  signal chaninc : std_logic := '0';
-
-  
-  type states is (start, grants, grantw, nextchan);
+  type states is (start, grants, grantw, chanlat); 
   signal cs, ns : states := start;
 
-  
+
 begin  -- Behavioral
 
   dinmux <= DIN(chan);
   denmux <= DEN(chan);
 
-  armll <= arml(chan);
   
-
-  setregs: for i in 0 to networkstack.N-1 generate
+  lchan <= 0 when arml(0) = '1' else
+           1 when arml(1) = '1' else
+           2 when arml(2) = '1' else
+           3 when arml(3) = '1' else
+           4 when arml(4) = '1' else
+           0; 
+  
+  orarml <= arml(0) or arml(1) or arml(2) or arml(3) or arml(4); 
+  
+  setregs : for i in 0 to networkstack.N-1 generate
     process (CLK)
-      begin
-        if rising_edge(CLK) then
-          if cs = grantw and chan = i then
-            arml(i) <= '0';
-          else
-            if ARM(i) = '1' then
-              arml(i) <= '1'; 
-            end if;
+    begin
+      if rising_edge(CLK) then
+        if cs = grantw and chan = i then
+          arml(i)   <= '0';
+        else
+          if ARM(i) = '1' then
+            arml(i) <= '1';
           end if;
-
-          if grantmux = '1' and chan = i then
-            grant(i) <= '1';
-          else
-            grant(i) <= '0'; 
-          end if;
-          
         end if;
-        
-      end process; 
+
+        if grantmux = '1' and chan = i then
+          grant(i) <= '1';
+        else
+          grant(i) <= '0';
+        end if;
+
+      end if;
+
+    end process;
   end generate setregs;
 
 
-  
-  main: process(CLK)
-    begin
-      if rising_edge(CLK) then
-        cs <= ns;
 
-        DOUT <= dinmux;
-        NEWFRAME <= denmux;
+  main : process(CLK)
+  begin
+    if rising_edge(CLK) then
+      cs <= ns;
 
-        if chaninc = '1' then
-          
-          if chan = networkstack.N-1 then
-            chan <= 0;
-          else
-            chan <= chan + 1; 
-          end if;
-          
+      DOUT     <= dinmux;
+      NEWFRAME <= denmux;
+
+      if cs = chanlat then
+        chan <= lchan; 
+      end if;
+
+    end if;
+  end process main;
+
+  fsm : process(cs, chan, orarml, denmux)
+  begin
+    case cs is
+      when start =>
+        grantmux <= '0';
+        if orarml = '1' then
+          ns     <= chanlat;
+        else
+          ns     <= start; 
         end if;
         
-        
-      end if;
-    end process main;
+      when chanlat =>
+        grantmux <= '0';
+        ns <= grants; 
 
-    fsm: process(cs, armll, denmux)
-      begin
-        case cs is
-          when start =>
-            grantmux <= '0';
-            chaninc <= '0';
-            if armll = '1' then
-              ns <= grants;
-            else
-              ns <= nextchan; 
-            end if;
+      when grants =>
+        grantmux <= '1';
+        if denmux = '1' then
+          ns     <= grantw;
+        else
+          ns     <= grants;
+        end if;
 
-          when grants =>
-            grantmux <= '1';
-            chaninc <= '0';
-            if denmux = '1' then
-              ns <= grantw;
-            else
-              ns <= grants; 
-            end if;
+      when grantw =>
+        grantmux <= '1';
+        if denmux = '0' then
+          ns     <= start; 
+        else
+          ns     <= grantw;
+        end if;
 
-          when grantw =>
-            grantmux <= '1';
-            chaninc <= '0';
-            if denmux = '0' then
-              ns <= nextchan;
-            else
-              ns <= grantw; 
-            end if;
+      when others =>
+        grantmux <= '0';
+        ns       <= start;
 
-          when nextchan =>
-            grantmux <= '0';
-            chaninc <= '1';
-            ns <= start;
-            
-          when others =>
-            grantmux <= '0';
-            chaninc <= '1';
-            ns <= start; 
+    end case;
+  end process fsm;
 
-        end case;
-      end process fsm;
 
-      
 end Behavioral;

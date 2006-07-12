@@ -26,6 +26,9 @@ architecture Behavioral of nettesttest is
       NICFCLK    : out std_logic;
       NICFDIN    : out std_logic;
       NICFPROG   : out std_logic;
+    NETDOUT : out std_logic_vector(15 downto 0);
+    NETNEWFRAME : out std_logic;
+    NETCLK : out std_logic;
 
       LEDPOWER : out std_logic;
       LEDEVENT : out std_logic
@@ -46,6 +49,9 @@ architecture Behavioral of nettesttest is
   signal NICFCLK  : std_logic := '0';
   signal NICFDIN  : std_logic := '0';
   signal NICFPROG : std_logic := '0';
+  signal NETDOUT :  std_logic_vector(15 downto 0);
+  signal NETNEWFRAME : std_logic;
+  signal NETCLK : std_logic;
 
   component mmc
     generic (
@@ -99,7 +105,10 @@ begin  -- Behavioral
       NICFDIN    => NICFDIN,
       NICFPROG   => NICFPROG,
       LEDPOWER   => LEDPOWER,
-      LEDEVENT   => LEDEVENT);
+      LEDEVENT   => LEDEVENT,
+      NETDOUT => NETDOUT,
+      NETNEWFRAME => NETNEWFRAME,
+      NETCLK => NETCLK);
 
   CLKIN <= not CLKIN after 16.666666  ns;
   CLK <= CLKIN; 

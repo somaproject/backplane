@@ -12,4 +12,14 @@ The DEN and and DIN are passed through after a register phrase.
 When DENMUX transitions from high-to-low, that port has completed
 sending its packet. Then, we deassert ARM and move on. 
 
+Prioritization: 
+
+In an attempt to prioritize TX traffic, we engage in the following: 
+
+Every cycle we query all ports 0 to N to see if they are ready to TX. 
+
+port              we tx
+0  1  2  3  4  5
+T  x  x  x  x  x  0 
+0  T  x  x  x  x  1
 

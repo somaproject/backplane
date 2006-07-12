@@ -11,7 +11,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="core.svg"
    sodipodi:docbase="/home/jonas/soma/somabackplane/docs"
-   inkscape:version="0.43+devel"
+   inkscape:version="0.44"
    sodipodi:version="0.32"
    id="svg1996"
    height="11in"
@@ -198,21 +198,21 @@
        id="rect4573"
        width="103.03936"
        height="84.647247"
-       x="1184.1827"
-       y="874.10278" />
+       x="1465.6827"
+       y="749.10278" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="1199.7224"
-       y="908.75037"
+       x="1481.2224"
+       y="783.75037"
        id="text4575"><tspan
          sodipodi:role="line"
-         x="1199.7224"
-         y="908.75037"
+         x="1481.2224"
+         y="783.75037"
          id="tspan4593">BasicDevice</tspan><tspan
          sodipodi:role="line"
-         x="1199.7224"
-         y="923.75037"
+         x="1481.2224"
+         y="798.75037"
          id="tspan1829">Node</tspan></text>
     <text
        xml:space="preserve"
@@ -1589,11 +1589,11 @@
          x="312.5"
          y="752.5">CPLD Boot</tspan></text>
     <rect
-       style="fill:white;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.2499994;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:white;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.24999988;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect7962"
-       width="103.03936"
+       width="81.569565"
        height="56.387413"
-       x="755.80182"
+       x="755.80219"
        y="730.48761" />
     <text
        xml:space="preserve"
@@ -2599,20 +2599,20 @@
     <rect
        style="opacity:1;color:black;fill:white;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        id="rect3903"
-       width="250"
-       height="31.25"
-       x="910.59772"
-       y="763.60193" />
+       width="384.375"
+       height="121.875"
+       x="853.125"
+       y="755.625" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="941.5921"
-       y="786.2782"
+       x="1046.875"
+       y="786.875"
        id="text3905"><tspan
          sodipodi:role="line"
          id="tspan3907"
-         x="941.5921"
-         y="786.2782">Network Stack</tspan></text>
+         x="1046.875"
+         y="786.875">Network Stack</tspan></text>
     <g
        id="g3322">
       <rect
@@ -3080,6 +3080,150 @@
          id="tspan2490"
          x="1437.5"
          y="624.375">(for all devicelinks)</tspan></text>
+    <g
+       id="g2466"
+       transform="translate(-23.4375,4.6875)">
+      <rect
+         transform="matrix(0,-1,1,0,0,0)"
+         y="882.8125"
+         x="-832.1875"
+         height="78.125"
+         width="81.25"
+         id="rect2444"
+         style="fill:#f4ecff;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:inline" />
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text2446"
+         y="895.3125"
+         x="-754.0625"
+         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="895.3125"
+           x="-754.0625"
+           id="tspan2448"
+           sodipodi:role="line">EARX[N-1 : 0]</tspan></text>
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text2450"
+         y="907.8125"
+         x="-754.0625"
+         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="907.8125"
+           x="-754.0625"
+           id="tspan2452"
+           sodipodi:role="line">EDRX[7:0]</tspan></text>
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text2454"
+         y="920.3125"
+         x="-754.0625"
+         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="920.3125"
+           x="-754.0625"
+           id="tspan2456"
+           sodipodi:role="line">EDSELRX[3:0]</tspan></text>
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text2458"
+         y="942.1875"
+         x="-754.0625"
+         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="942.1875"
+           x="-754.0625"
+           id="tspan2460"
+           sodipodi:role="line">EATX[N-1:0]</tspan></text>
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text2462"
+         y="954.6875"
+         x="-754.0625"
+         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="954.6875"
+           x="-754.0625"
+           id="tspan2464"
+           sodipodi:role="line">EDTX[7:0]</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:7.91176462px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-874.375"
+       y="1009.375"
+       id="text2479"
+       sodipodi:linespacing="121%"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2481"
+         x="-874.375"
+         y="1009.375">NICDOUT[15:0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7.91176462px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="-874.375"
+       y="1018.75"
+       id="text2483"
+       sodipodi:linespacing="121%"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2485"
+         x="-874.375"
+         y="1018.75">NICDOUTEN</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7.91176462px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="-874.375"
+       y="1053.125"
+       id="text2487"
+       sodipodi:linespacing="121%"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2489"
+         x="-874.375"
+         y="1053.125">NICDIN[15:0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7.91176462px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="-874.375"
+       y="1062.5"
+       id="text2491"
+       sodipodi:linespacing="121%"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2493"
+         x="-874.375"
+         y="1062.5">NICDINEN</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7.91176462px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="-874.375"
+       y="1071.875"
+       id="text2499"
+       sodipodi:linespacing="121%"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2501"
+         x="-874.375"
+         y="1071.875">NICNEXTFRAME</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7.91176462px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="-874.375"
+       y="1034.375"
+       id="text2503"
+       sodipodi:linespacing="121%"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2505"
+         x="-874.375"
+         y="1034.375">IOCLOCK</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"

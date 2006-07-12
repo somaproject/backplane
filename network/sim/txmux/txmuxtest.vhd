@@ -20,10 +20,10 @@ architecture Behavioral of txmuxtest is
   component txmux
     port (
       CLK      : in  std_logic;
-      DEN      : in  std_logic_vector(networkstack.N-1 downto 0);
+      DEN      : in  std_logic_vector(4 downto 0);
       DIN      : in  networkstack.dataarray;
-      GRANT    : out std_logic_vector(networkstack.N-1 downto 0);
-      ARM      : in  std_logic_vector(networkstack.N-1 downto 0);
+      GRANT    : out std_logic_vector(4 downto 0);
+      ARM      : in  std_logic_vector(4 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
       NEWFRAME : out std_logic
       );
@@ -32,13 +32,13 @@ architecture Behavioral of txmuxtest is
 
   signal CLK : std_logic := '0';
 
-  signal DEN   : std_logic_vector(networkstack.N-1 downto 0)
+  signal DEN   : std_logic_vector(4 downto 0)
                                         := (others => '0');
   signal DIN   : networkstack.dataarray := (others => (others => '0'));
-  signal GRANT : std_logic_vector(networkstack.N-1 downto 0)
+  signal GRANT : std_logic_vector(4 downto 0)
                                         := (others => '0');
 
-  signal ARM      : std_logic_vector(networkstack.N-1 downto 0)
+  signal ARM      : std_logic_vector(4 downto 0)
                               := (others => '0');
   signal DOUT     : std_logic_vector(15 downto 0)
                               := (others => '0');
@@ -68,6 +68,7 @@ begin  -- Behavioral
     ARM(0) <= '1'; 
     wait until rising_edge(CLK);
     ARM(0) <= '0';
+    
     wait until rising_edge(CLK) and GRANT(0) = '1';
     -- now test if we really have it
     wait until rising_edge(CLK);
@@ -80,7 +81,7 @@ begin  -- Behavioral
 
     assert NEWFRAME = '1' report "" severity Error;
     assert DOUT = X"1234" report "" severity Error;
- 
+    
     wait until rising_edge(CLK);
     DEN(0) <= '0';
     DIN(0) <= X"9ABC";
@@ -91,11 +92,100 @@ begin  -- Behavioral
     wait until rising_edge(CLK);
     assert NEWFRAME = '0' report "" severity error;
 
-    wait; 
-   
+    wait for 10 us;
+
     
+    ---------------------------------------------------------------------------
+    -- Now test priority
+    ---------------------------------------------------------------------------
+
+    wait until rising_edge(CLK);
+    ARM <= (others => '1'); 
+    wait until rising_edge(CLK);
+
+    -- port 0 
+    wait until rising_edge(CLK) and GRANT(0) = '1';
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    ARM(0) <= '0';
+    DEN(0) <= '1';
+    DIN(0) <= X"0011";
+    wait until rising_edge(CLK);
+    DEN(0) <= '1';
+    DIN(0) <= X"2233";
+    wait until rising_edge(CLK);
+
+    assert NEWFRAME = '1' report "" severity Error;
+    assert DOUT = X"0011" report "" severity Error;
+
+
+    DEN(0) <= '0';
+    DIN(0) <= X"0000";
+    wait until rising_edge(CLK);
+    assert NEWFRAME = '1' report "" severity Error;
+    assert DOUT = X"2233" report "" severity Error;
     
+    -- port 1
+    wait until rising_edge(CLK) and GRANT(1) = '1';
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    ARM(1) <= '0';
+    DEN(1) <= '1';
+    DIN(1) <= X"4455";
+    wait until rising_edge(CLK);
+    DEN(1) <= '1';
+    DIN(1) <= X"6677";
+    wait until rising_edge(CLK);
+    DEN(1) <= '0';
+    DIN(1) <= X"0000";
+    wait until rising_edge(CLK);
+
+    -- port 2
+    wait until rising_edge(CLK) and GRANT(2) = '1';
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    ARM(2) <= '0';
+    DEN(2) <= '1';
+    DIN(2) <= X"4455";
+    wait until rising_edge(CLK);
+    DEN(2) <= '1';
+    DIN(2) <= X"6677";
+    -- arm port 0
+    ARM(0) <= '1'; 
+    wait until rising_edge(CLK);
+    DEN(2) <= '0';
+    DIN(2) <= X"0000";
+    wait until rising_edge(CLK);
+
     
+    -- port 0 
+    wait until rising_edge(CLK) and GRANT(0) = '1';
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    ARM(0) <= '0';
+    DEN(0) <= '1';
+    DIN(0) <= X"0011";
+    wait until rising_edge(CLK);
+    DEN(0) <= '1';
+    DIN(0) <= X"2233";
+    wait until rising_edge(CLK);
+
+    assert NEWFRAME = '1' report "" severity Error;
+    assert DOUT = X"0011" report "" severity Error;
+
+
+    DEN(0) <= '0';
+    DIN(0) <= X"0000";
+    wait until rising_edge(CLK);
+    assert NEWFRAME = '1' report "" severity Error;
+    assert DOUT = X"2233" report "" severity Error;
+    
+
+    wait for 10 us;
+    
+    assert False report "End of Simulation" severity Failure;
+
+        
   end process main;
 
 end Behavioral;
