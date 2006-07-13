@@ -8,7 +8,7 @@ use ieee.std_logic_textio.all;
 
 package networkstack is
   constant N : integer := 5;
-  type dataarray is array(4 downto 0) of std_logic_vector(15 downto 0);
+  --type dataarray is array(4 downto 0) of std_logic_vector(15 downto 0);
 
 -- synthesis translate_off 
   

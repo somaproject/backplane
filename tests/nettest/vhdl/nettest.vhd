@@ -177,7 +177,7 @@ architecture Behavioral of nettest is
       IOCLOCK   : out std_logic;
 
       -- event bus
-      ECYCLE  : out std_logic;
+      ECYCLE  : in std_logic;
       EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
       EDRX    : out std_logic_vector(7 downto 0);
       EDSELRX : in  std_logic_vector(3 downto 0);
