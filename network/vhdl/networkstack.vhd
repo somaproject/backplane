@@ -8,8 +8,10 @@ use ieee.std_logic_textio.all;
 
 package networkstack is
   constant N : integer := 5;
-  type dataarray is array(N-1 downto 0) of std_logic_vector(15 downto 0);
+  type dataarray is array(4 downto 0) of std_logic_vector(15 downto 0);
 
+-- synthesis translate_off 
+  
   procedure writepkt (
     constant packetfile   : in  string;
     signal   CLK          : in  std_logic;
@@ -17,10 +19,13 @@ package networkstack is
     signal   NEXTFRAME    : in  std_logic;
     signal   DOUT         : out std_logic_vector(15 downto 0)
     ); 
-
+-- synthesis translate_on
+  
 end networkstack;
 
 package body networkstack is
+
+-- synthesis translate_off 
 
   procedure writepkt (
     constant packetfile   : in  string;
@@ -59,5 +64,6 @@ package body networkstack is
 
   end writepkt;
 
-
+-- synthesis translate_on
+  
 end networkstack;

@@ -29,10 +29,12 @@ entity nettest is
     NICSIN      : in  std_logic;
     NICSOUT     : out std_logic;
     NICSCS      : out std_logic;
-    NETDOUT     : out std_logic_vector(15 downto 0);
-    NETNEWFRAME : out std_logic;
-    NETCLK      : out std_logic;
-
+    NICDOUT     : out std_logic_vector(15 downto 0);
+    NICNEWFRAME : out std_logic;
+    NICDIN    : in std_logic_vector(15 downto 0);
+    NICNEXTFRAME : out std_logic;
+    NICDINEN : in std_logic; 
+    NICCLK      : out std_logic;
     DEBUG : out std_logic_vector(3 downto 0)
     );
 end nettest;
@@ -160,18 +162,32 @@ architecture Behavioral of nettest is
   component network
     port (
       CLK       : in  std_logic;
+      RESET : in std_logic; 
+      -- config
       MYIP      : in  std_logic_vector(31 downto 0);
-      MYMAC     : in  std_logic_vector(31 downto 0);
+      MYMAC     : in  std_logic_vector(47 downto 0);
       MYBCAST   : in  std_logic_vector(31 downto 0);
-      NEXTFRAME : out std_logic;
-      DINEN     : in  std_logic;
-      DIN       : in  std_logic_vector(15 downto 0);
-      NEWFRAME  : out std_logic;
+      -- input
+      NICNEXTFRAME : out std_logic;
+      NICDINEN     : in  std_logic;
+      NICDIN       : in  std_logic_vector(15 downto 0);
+      -- output
       DOUT      : out std_logic_vector(15 downto 0);
-      IOCLOCK   : out std_logic
+      NEWFRAME  : out std_logic;
+      IOCLOCK   : out std_logic;
+
+      -- event bus
+      ECYCLE  : out std_logic;
+      EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
+      EDRX    : out std_logic_vector(7 downto 0);
+      EDSELRX : in  std_logic_vector(3 downto 0);
+      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
+      EDTX    : in  std_logic_vector(7 downto 0)
+
+      -- data bus
+      --                                  -- none at the moment;
       );
   end component;
-
 
   component pingdump
     port (
@@ -206,7 +222,10 @@ architecture Behavioral of nettest is
 
   signal testout : std_logic_vector(31 downto 0) := X"00000001";
 
-
+-- nic config signals
+  signal myip, mybcast : std_logic_vector(31 downto 0) := (others => '0');
+  signal mymac : std_logic_vector(47 downto 0) := (others => '0');
+  
 
 begin  -- Behavioral
 
@@ -386,13 +405,41 @@ begin  -- Behavioral
     end if;
   end process;
 
-  NETCLK <= clk;
+--  NETCLK <= clk;
 
-  pingdump_inst : pingdump
+
+
+--  pingdump_inst : pingdump
+--    port map (
+--      CLK      => clk,
+--      DOUT     => NETDOUT,
+--      NEWFRAME => NETNEWFRAME);
+
+  myip <= X"C0a80002";                  -- 192.168.0.2
+  mybcast <= X"C0a000FF";
+  
+  mymac <= X"DEADBEEF1234"; 
+           
+  network_inst : network
     port map (
-      CLK      => clk,
-      DOUT     => NETDOUT,
-      NEWFRAME => NETNEWFRAME);
+      CLK       => CLK,
+      RESET => RESET,
+      MYIP      => myip,
+      MYMAC     => mymac,
+      MYBCAST   => mybcast,
+      NICNEXTFRAME => NICNEXTFRAME,
+      NICDINEN     => NICDINEN,
+      NICDIN       => NICDIN,
+      DOUT      => NICDOUT,
+      NEWFRAME  => NICNEWFRAME,
+      IOCLOCK   => NICCLK,
+      ECYCLE    => ecycle,
+      EARX      => earx(3),
+      EDRX      => edrx(3),
+      EDSELRX   => edselrx,
+      EATX      => eatx(3),
+      EDTX      => edtx);
 
+  
 
 end Behavioral;

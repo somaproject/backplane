@@ -1,24 +1,37 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use std.TextIO.all;
+use IEEE.STD_LOGIC_ARITH.all;
+use IEEE.STD_LOGIC_UNSIGNED.all;
 
-use ieee.std_logic_textio.all;
+library WORK;
+use WORK.somabackplane.all;
+use work.somabackplane;
+
+
+use WORK.networkstack.all;
+
+use WORK.networkstack;
+
+
+library UNISIM;
+use UNISIM.vcomponents.all;
 
 entity network is
   port (
-    CLK       : in  std_logic;
+    CLK          : in  std_logic;
+    RESET        : in  std_logic;
     -- config
-    MYIP      : in  std_logic_vector(31 downto 0);
-    MYMAC     : in  std_logic_vector(31 downto 0);
-    MYBCAST   : in  std_logic_vector(31 downto 0);
+    MYIP         : in  std_logic_vector(31 downto 0);
+    MYMAC        : in  std_logic_vector(47 downto 0);
+    MYBCAST      : in  std_logic_vector(31 downto 0);
     -- input
-    NEXTFRAME : out std_logic;
-    DINEN     : in  std_logic;
-    DIN       : in  std_logic_vector(15 downto 0);
+    NICNEXTFRAME : out std_logic;
+    NICDINEN     : in  std_logic;
+    NICDIN       : in  std_logic_vector(15 downto 0);
     -- output
-    DOUT      : out std_logic_vector(15 downto 0);
-    NEWFRAME  : out std_logic;
-    IOCLOCK   : out std_logic;
+    DOUT         : out std_logic_vector(15 downto 0);
+    NEWFRAME     : out std_logic;
+    IOCLOCK      : out std_logic;
 
     -- event bus
     ECYCLE  : out std_logic;
@@ -134,78 +147,75 @@ architecture Behavioral of network is
   -- output
 
   signal den   : std_logic_vector(4 downto 0) := (others => '0');
-  signal din   : networkstack.dataarray       := (others => (others => '0'));
+  signal din   : networkstack.dataarray := (others => (others => '0'));
   signal grant : std_logic_vector(4 downto 0) := (others => '0');
   signal arm   : std_logic_vector(4 downto 0) := (others => '0');
 
 
-end component;
-
-
 begin  -- Behavioral
 
-  inputcontrol_inst : inputcontrol
-    port map (
-      CLK        => CLK,
-      RESET      => RESET,
-      NEXTFRAME  => NEXTFRAME,
-      DINEN      => DINEN,
-      DIN        => DIN,
-      PKTDATA    => pktdata,
-      PINGSTART  => pingstart,
-      PINGADDR   => pingaddr,
-      PINGDONE   => pingdone,
-      RETXSTART  => retxstart,
-      RETXADDR   => retxaddr,
-      RETXDONE   => retxdone,
-      ARPSTART   => arpstate,
-      ARPADDR    => arpaddr,
-      ARPDONE    => arpdone,
-      EVENTSTART => eventstart,
-      EVENTADDR  => eventaddr,
-      EVENTDONE  => eventdone);
+   inputcontrol_inst : inputcontrol
+     port map (
+       CLK        => CLK,
+       RESET      => RESET,
+       NEXTFRAME  => NICNEXTFRAME,
+       DINEN      => NICDINEN,
+       DIN        => NICDIN,
+       PKTDATA    => pktdata,
+       PINGSTART  => pingstart,
+       PINGADDR   => pingaddr,
+       PINGDONE   => pingdone,
+       RETXSTART  => retxstart,
+       RETXADDR   => retxaddr,
+       RETXDONE   => retxdone,
+       ARPSTART   => arpstart,
+       ARPADDR    => arpaddr,
+       ARPDONE    => arpdone,
+       EVENTSTART => eventstart,
+       EVENTADDR  => eventaddr,
+       EVENTDONE  => eventdone);
 
 
-  txmux_inst : txmux
-    port map (
-      CLK      => CLK,
-      DEN      => DEN,
-      DIN      => DIN,
-      GRANT    => grant,
-      ARM      => arm,
-      DOUT     => dout,
-      NEWFRAME => newframe);
+   txmux_inst : txmux
+     port map (
+       CLK      => CLK,
+       DEN      => den,
+       DIN      => din,
+       GRANT    => grant,
+       ARM      => arm,
+       DOUT     => dout,
+       NEWFRAME => newframe);
 
-  IOCLK <= CLK;
+  IOCLOCK <= CLK;
 
-  arpresponse_inst : arpresponse
-    port map (
-      CLK       => CLK,
-      MYMAC     => MYMAC,
-      MYIP      => MYIP,
-      START     => arpstart,
-      DONE      => arpdone,
-      INPKTDATA => pktdata,
-      INPKTADDR => arpaddr,
-      ARM       => arm(4),
-      GRANT     => grant(4),
-      DOUT      => dout(4),
-      DOEN      => doen(4));
+   arpresponse_inst : arpresponse
+     port map (
+       CLK       => CLK,
+       MYMAC     => MYMAC,
+       MYIP      => MYIP,
+       START     => arpstart,
+       DONE      => arpdone,
+       INPKTDATA => pktdata,
+       INPKTADDR => arpaddr,
+       ARM       => arm(4),
+       GRANT     => grant(4),
+       DOUT      => din(4),
+       DOEN      => den(4));
 
-  pingresponse_inst : pingresponse
-    port map (
-      CLK       => CLK,
-      MYMAC     => MYMAC,
-      MYIP      => MYIP,
-      START     => pingstart,
-      DONE      => pingdone,
-      INPKTDATA => pktdata,
-      INPKTADDR => pingaddr,
-      ARM       => arm(3),
-      GRANT     => grant(3),
-      DOUT      => dout(3),
-      DOEN      => doen(3));
+   pingresponse_inst : pingresponse
+     port map (
+       CLK       => CLK,
+       MYMAC     => MYMAC,
+       MYIP      => MYIP,
+       START     => pingstart,
+       DONE      => pingdone,
+       INPKTDATA => pktdata,
+       INPKTADDR => pingaddr,
+       ARM       => arm(3),
+       GRANT     => grant(3),
+       DOUT      => din(3),
+       DOEN      => den(3));
 
-  
-  
+
+
 end Behavioral;
