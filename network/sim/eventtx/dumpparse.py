@@ -6,7 +6,7 @@ def computeIPHeader(octetlist):
     header = octetlist[14:14+20]
     x = 0
     for i in range(10):
-        s = "%s%s" % (header[i*2],  header[i*2+1])
+        s = "%2.2X%2.2X" % (header[i*2],  header[i*2+1])
         a = int(s, 16)
         if i != 5:
             x += a
@@ -16,14 +16,11 @@ def computeIPHeader(octetlist):
 
 def updateIPHeader(octetlist):
     iphdr = hex(computeIPHeader(octetlist))
-
-    if octetlist[12] == '08' and octetlist[13] == '00':
+    if octetlist[12] == 8 and octetlist[13] == 0:
         csum = computeIPHeader(octetlist)
-        o1 = "%2.2X" % (csum >> 8)
-        o2 = "%2.2X" % (csum & 0xFF)
-        octetlist[24] = o1
-        octetlist[25] = o2
-        #print octetlist[14:14+20]
+        octetlist[24] =(csum >> 8)
+        octetlist[25] =(csum & 0xFF) 
+
     else:
         pass
 
@@ -70,13 +67,15 @@ for s in pktstrs:
     da[19] = 0
     da[20] = 0
 
-
+    # zero udp chksum
+    da[40] = 0
+    da[41] = 0
     
     updateIPHeader(da)
     
     # now we print our normal format
-
-    ofile.write("%4.4X " % len(da))
+    ofile.write("%d " % (len(da)/2 + 1))
+    ofile.write("%4.4X " % (len(da)+2))
 
     for i in range(len(da) / 2):
         ofile.write("%2.2X%2.2X " % (da[i*2], da[i*2+1]))

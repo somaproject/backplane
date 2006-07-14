@@ -87,6 +87,7 @@ architecture Behavioral of eventtx is
       CLK   : in  std_logic;
       MYMAC : in  std_logic_vector(47 downto 0);
       MYIP  : in  std_logic_vector(31 downto 0);
+      MYBCAST : in std_logic_vector(31 downto 0); 
       START : in  std_logic;
       WLEN  : in  std_logic_vector(8 downto 0);
       DOUT  : out std_logic_vector(15 downto 0);
@@ -117,6 +118,7 @@ begin  -- Behavioral
       CLK   => CLK,
       MYMAC => MYMAC,
       MYIP  => MYIP,
+      MYBCAST => MYBCAST, 
       START => hdrstart,
       WLEN  => datalen,
       DOUT  => douthdr,
@@ -139,7 +141,7 @@ begin  -- Behavioral
 
   dia               <= douthdr  when osel = '0' else doutbody;
   wea               <= weouthdr when osel = '0' else weoutbody;
-  addra(8 downto 0) <= addrhdr  when osel = '0' else dataaddr;
+  addra(8 downto 0) <= addrhdr  when osel = '0' else (dataaddr + "000010110");
   addra(9)          <= nbsel;
 
   dataaddr <= addrbody + datalen;
@@ -179,13 +181,13 @@ begin  -- Behavioral
   addrb(9) <= bsel;
   ARM      <= '1' when ocs = armw   else '0';
 
-
+  DOUT <= dob; 
   main_output : process(CLK)
   begin
     if rising_edge(CLK) then
       ocs <= ons;
 
-      if ocs = none then
+      if ocs = armw then
         olen <= dob;
       end if;
 
@@ -195,7 +197,7 @@ begin  -- Behavioral
         addrb(8 downto 0) <= (others => '0');
       else
         if outen = '1' then
-          addrb           <= addrb + 1;
+          addrb(8 downto 0) <= addrb(8 downto 0) + 1;
         end if;
       end if;
 
@@ -209,6 +211,7 @@ begin  -- Behavioral
       when none =>
         nextbuf  <= '0';
         hdrstart <= '0';
+        osel <= '1'; 
         if ebdone = '1' then
           ins    <= sendchk;
         else
@@ -218,7 +221,8 @@ begin  -- Behavioral
       when sendchk =>
         nextbuf  <= '0';
         hdrstart <= '0';
-        if ecnt = 5 or dataaddr > "010000000" then
+        osel <= '1'; 
+        if ecnt = 5 or dataaddr > "001100100" then
           ins    <= hdrs;
         else
           ins    <= none;
@@ -227,10 +231,12 @@ begin  -- Behavioral
       when hdrs =>
         nextbuf  <= '0';
         hdrstart <= '1';
+        osel <= '0'; 
         ins      <= hdrw;
       when hdrw =>
         nextbuf  <= '0';
         hdrstart <= '0';
+        osel <= '0'; 
         if hdrdone = '1' then
           ins    <= flipbuf;
         else
@@ -240,11 +246,13 @@ begin  -- Behavioral
       when flipbuf =>
         nextbuf  <= '1';
         hdrstart <= '0';
+        osel <= '1'; 
         ins      <= none;
 
       when others =>
         nextbuf  <= '0';
         hdrstart <= '0';
+        osel <= '1'; 
         ins      <= none;
     end case;
   end process input_fsm;
@@ -268,7 +276,7 @@ begin  -- Behavioral
         end if;
 
       when pktout =>
-        if olen = addrb then
+        if olen(9 downto 1) -1  = addrb(8 downto 0) then
           ons <= done;
         else
           ons <= pktout;
@@ -283,7 +291,16 @@ begin  -- Behavioral
 
   RAMB16_S18_S18_inst : RAMB16_S18_S18
     generic map (
-      SIM_COLLISION_CHECK => "NONE" )
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
+      -- The follosing INIT_xx declarations specify the intiial contents of the RAM
+      -- Address 0 to 255
+      INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
+      INIT_01             => X"00000000000000000000000000000000000000000000000013889c4000000000",
+
+      INIT_20             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
+      INIT_21             => X"00000000000000000000000000000000000000000000000013889c4000000000"
+)
+
     port map (
       DOA                 => open,
       DOB                 => dob,

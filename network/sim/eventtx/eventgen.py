@@ -51,7 +51,7 @@ def sendEventList(el):
         l = ec.addr.sum()
         data += struct.pack(">H", l) + outstr
 
-        if len(data) > 100 or eccnt == 4:
+        if len(data) > 200 or eccnt == 4:
             UDPSock.sendto(data,addr)
             data = ""
             eccnt = 0
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     # now generate a big event cycle with the full range of events
     a = EventCycle()
 
-    for i in range(80):
+    for i in range(78):
         a.addr[i] = 1
 
         a.data[i][0] = (i << 8) + i
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     for j in range(100):
         a = EventCycle()
         size = n.rand() 
-        for i in range(80):
+        for i in range(78):
             if n.rand() > size:
                 a.addr[i] = 1 
 

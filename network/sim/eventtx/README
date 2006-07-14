@@ -1,9 +1,18 @@
 Run eventgen.py and capture the pending packets tcpdump
 
 sudo tcpdump src host 192.168.0.2 and ip broadcast -t -xx -s 2000 > data.tcpdump 
+
+or 
+tcpdump  src host 192.168.0.2 and  udp -t -xx -s 2000 > data.tcpdump 
+
 This gives us: 
   events.txt : the events, in a vhdl-readable format
   data.tcpdump : the tcpdump output of the udp-encoded packets encoded by the linux udp/ip stack
+
+or 
+
+    
+
 
 Then run dumpparse.py which will: 
   1. extract out the UDP frames
