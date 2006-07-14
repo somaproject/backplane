@@ -79,6 +79,7 @@ begin  -- Behavioral
 
   ld <= '1' when cs = none else '0';
 
+  DONE <= '1' when cs = chksumw else '0'; 
   main : process(CLK)
   begin
     if rising_edge(CLK) then

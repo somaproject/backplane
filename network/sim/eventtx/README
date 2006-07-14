@@ -1,0 +1,13 @@
+Run eventgen.py and capture the pending packets tcpdump
+
+sudo tcpdump src host 192.168.0.2 and ip broadcast -t -xx -s 2000 > data.tcpdump 
+This gives us: 
+  events.txt : the events, in a vhdl-readable format
+  data.tcpdump : the tcpdump output of the udp-encoded packets encoded by the linux udp/ip stack
+
+Then run dumpparse.py which will: 
+  1. extract out the UDP frames
+  2. normalize the IP header: remove the sequence number and set the checksum to zero
+  3. clear the UDP checksum
+  4. packetize it in a format that we can read / validate in vhdl
+

@@ -17,6 +17,7 @@ entity eventtx is
 
     MYMAC : in std_logic_vector(47 downto 0);
     MYIP  : in std_logic_vector(31 downto 0);
+    MYBCAST : in std_logic_vector(31 downto 0); 
     -- event interface
 
     ECYCLE : in std_logic;

@@ -12,13 +12,16 @@ $(WORKDIR)/somabackplane/_somabackplane.var: ../../../vhdl/somabackplane.vhd
 $(WORKDIR)/eventbodywriter/_behavioral.var: ../../vhdl/eventbodywriter.vhd
 	$(VHDLC) ../../vhdl/eventbodywriter.vhd
 
+$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/ipchecksum.vhd
+	$(VHDLC) ../../vhdl/ipchecksum.vhd
+
 $(WORKDIR)/eventheaderwriter/_behavioral.var: ../../vhdl/eventheaderwriter.vhd
 	$(VHDLC) ../../vhdl/eventheaderwriter.vhd
 
 $(WORKDIR)/eventtx/_behavioral.var: ../../vhdl/eventtx.vhd
 	$(VHDLC) ../../vhdl/eventtx.vhd
 
-hw: $(WORKDIR)/networkstack/_networkstack.var $(WORKDIR)/somabackplane/_somabackplane.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/eventheaderwriter/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var 
+hw: $(WORKDIR)/networkstack/_networkstack.var $(WORKDIR)/somabackplane/_somabackplane.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/eventheaderwriter/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var 
 
 comp: 
 

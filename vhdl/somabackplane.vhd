@@ -11,7 +11,7 @@ package somabackplane is
 end somabackplane;
 
 
---package body somabackplane is
+package body somabackplane is
 
  
---end somabackplane;
+end somabackplane;

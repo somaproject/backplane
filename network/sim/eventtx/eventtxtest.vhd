@@ -21,6 +21,7 @@ architecture Behavioral of eventtxtest is
       CLK    : in  std_logic;
       MYMAC  : in  std_logic_vector(47 downto 0);
       MYIP   : in  std_logic_vector(31 downto 0);
+      MYBCAST  : in  std_logic_vector(31 downto 0);
       ECYCLE : in  std_logic;
       EDTX   : in  std_logic_vector(7 downto 0);
       EATX   : in  std_logic_vector(somabackplane.N-1 downto 0);
@@ -32,16 +33,17 @@ architecture Behavioral of eventtxtest is
 
   end component;
 
-  signal CLK    : std_logic;
-  signal MYMAC  : std_logic_vector(47 downto 0);
-  signal MYIP   : std_logic_vector(31 downto 0);
-  signal ECYCLE : std_logic;
-  signal EDTX   : std_logic_vector(7 downto 0);
-  signal EATX   : std_logic_vector(somabackplane.N-1 downto 0);
-  signal DOUT   : std_logic_vector(15 downto 0);
-  signal DOEN   : std_logic;
-  signal GRANT  : std_logic;
-  signal ARM    : std_logic;
+  signal CLK    : std_logic := '0';
+  signal MYMAC  : std_logic_vector(47 downto 0) := (others => '0');
+  signal MYIP   : std_logic_vector(31 downto 0) := (others => '0');
+  signal MYBCAST : std_logic_vector(31 downto 0) := (others => '0');
+  signal ECYCLE : std_logic := '0';
+  signal EDTX   : std_logic_vector(7 downto 0) := (others => '0');
+  signal EATX   : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+  signal DOUT   : std_logic_vector(15 downto 0) := (others => '0');
+  signal DOEN   : std_logic := '0';
+  signal GRANT  : std_logic := '0';
+  signal ARM    : std_logic := '0';
 
 -- simulated eventbus
   signal epos : integer := 0;
@@ -58,6 +60,26 @@ architecture Behavioral of eventtxtest is
 
 begin  -- Behavioral
 
+  eventtx_uut: eventtx
+    port map (
+      CLK    => CLK,
+      MYMAC  => MYMAC,
+      MYIP   => MYIP,
+      MYBCAST => MYBCAST, 
+      ECYCLE => ECYCLE,
+      EDTX   => EDTX,
+      EATX   => EATX,
+      DOUT   => DOUT,
+      DOEN   => DOEN,
+      GRANT  => GRANT,
+      ARM    => ARM); 
+    
+
+  MYMAC <= X"0011d882a689";
+
+  MYIP <= X"c0a80002";
+  MYBCAST <= X"c0a800FF";
+  
   -- basic clocking
   CLK <= not CLK after 10 ns;
 
@@ -88,11 +110,12 @@ begin  -- Behavioral
     variable datain : std_logic_vector(15 downto 0); 
       
   begin
-    file_open(eventfile, "events.dat");
+    file_open(eventfile, "events.txt");
     while true loop
       wait until rising_edge(CLK) and ECYCLE = '1';
       readline(eventfile, L);
       hread(L, ineatx);
+      eatx <= ineatx(somabackplane.N - 1 downto 0) ;
 
       wait until rising_edge(CLK) and epos = 47;
       -- now we send the events
@@ -112,4 +135,22 @@ begin  -- Behavioral
 
   end process;
 
+  -- data verify
+  process
+    begin
+
+      while true loop
+        
+
+      wait until rising_edge(CLK) and ARM = '1';
+      wait for 1 us;
+      wait until rising_edge(CLK);
+      GRANT <= '1'; 
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK) and DOEN = '1';
+      wait until rising_edge(CLK) and DOEN = '0';
+      wait for 2 us;
+      end loop;      
+
+    end process; 
 end Behavioral;
