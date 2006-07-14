@@ -9,15 +9,117 @@ use UNISIM.vcomponents.all;
 
 library WORK;
 use WORK.networkstack;
+use WORK.somabackplane.all;
+use Work.somabackplane; 
 
 entity networktest is
-  
+
 end networktest;
 
 architecture Behavioral of networktest is
 
+  component network
+    port (
+      CLK          : in  std_logic;
+      RESET        : in  std_logic;
+      -- config
+      MYIP         : in  std_logic_vector(31 downto 0);
+      MYMAC        : in  std_logic_vector(47 downto 0);
+      MYBCAST      : in  std_logic_vector(31 downto 0);
+      -- input
+      NICNEXTFRAME : out std_logic;
+      NICDINEN     : in  std_logic;
+      NICDIN       : in  std_logic_vector(15 downto 0);
+      -- output
+      DOUT         : out std_logic_vector(15 downto 0);
+      NEWFRAME     : out std_logic;
+      IOCLOCK      : out std_logic;
+
+      -- event bus
+      ECYCLE  : in  std_logic;
+      EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
+      EDRX    : out std_logic_vector(7 downto 0);
+      EDSELRX : in  std_logic_vector(3 downto 0);
+      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
+      EDTX    : in  std_logic_vector(7 downto 0)
+
+      -- data bus
+      --                                  -- none at the moment;
+      );
+  end component;
+
+
+
+  signal CLK          : std_logic                     := '0';
+  signal RESET        : std_logic                     := '1';
+  -- config
+  signal MYIP         : std_logic_vector(31 downto 0) := (others => '0');
+  signal MYMAC        : std_logic_vector(47 downto 0) := (others => '0');
+  signal MYBCAST      : std_logic_vector(31 downto 0) := (others => '0');
+  -- input
+  signal NICNEXTFRAME : std_logic                     := '0';
+  signal NICDINEN     : std_logic                     := '0';
+  signal NICDIN       : std_logic_vector(15 downto 0) := (others => '0');
+  -- output
+  signal DOUT         : std_logic_vector(15 downto 0) := (others => '0');
+  signal NEWFRAME     : std_logic                     := '0';
+  signal IOCLOCK      : std_logic                     := '0';
+
+  -- event bus
+  signal ECYCLE : std_logic := '0';
+
+  signal EARX : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
+  signal EATX : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
+
+  signal EDRX    : std_logic_vector(7 downto 0) := (others => '0');
+  signal EDSELRX : std_logic_vector(3 downto 0) := (others => '0');
+
+  signal EDTX : std_logic_vector(7 downto 0) := (others => '0');
+
+
 begin  -- Behavioral
 
+  network_uut : network
+    port map (
+      CLK          => CLK,
+      RESET        => RESET,
+      MYIP         => MYIP,
+      MYMAC        => MYMAC,
+      MYBCAST      => MYBCAST,
+      NICNEXTFRAME => NICNEXTFRAME,
+      NICDINEN     => NICDINEN,
+      NICDIN       => NICDIN,
+      DOUT         => DOUT,
+      NEWFRAME     => NEWFRAME,
+      IOCLOCK      => IOCLOCK,
+      ECYCLE       => ECYCLE,
+      EARX         => EARX,
+      EATX         => EATX,
+      EDRX         => EDRX,
+      EDSELRX      => EDSELRX,
+      EDTX         => EDTX); 
   
+  CLK   <= not CLK after 10 ns;
+  RESET <= '0'     after 20 ns;
+
+  -- configuration fields for device identity
+  -- 
+  myip <= X"C0a80002";                  -- 192.168.0.2
+  mybcast <= X"C0a000FF";
+  mymac <= X"DEADBEEF1234"; 
+
+  main: process
+    begin
+      wait for 2 us;
+      networkstack.writepkt("arpquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+      wait for 2 us;
+
+      networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+      networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+      
+      wait; 
+
+    end process main; 
+
 
 end Behavioral;

@@ -226,7 +226,7 @@ architecture Behavioral of nettest is
   signal myip, mybcast : std_logic_vector(31 downto 0) := (others => '0');
   signal mymac : std_logic_vector(47 downto 0) := (others => '0');
   
-
+  signal nicnextframeint : std_logic := '0';
 begin  -- Behavioral
 
   clkgen : DCM_BASE
@@ -375,7 +375,7 @@ begin  -- Behavioral
       ECYCLE          => ecycle,
       EDTX            => edtx,
       EATX            => eatx(7),
-      DEBUG           => DEBUG);
+      DEBUG           => open);
 
   ether_inst : ether
     generic map (
@@ -427,7 +427,7 @@ begin  -- Behavioral
       MYIP      => myip,
       MYMAC     => mymac,
       MYBCAST   => mybcast,
-      NICNEXTFRAME => NICNEXTFRAME,
+      NICNEXTFRAME => nicnextframeint, 
       NICDINEN     => NICDINEN,
       NICDIN       => NICDIN,
       DOUT      => NICDOUT,
@@ -440,6 +440,18 @@ begin  -- Behavioral
       EATX      => eatx(3),
       EDTX      => edtx);
 
-  
+  NICNEXTFRAME <= nicnextframeint; 
+  testrx: process (CLK)
+    variable niccnt : std_logic_vector(23 downto 0) := (others => '0');
+    begin
+      if rising_edge(CLK) then
+        niccnt := niccnt + 1;
+        DEBUG(0) <= NICDINEN;
+        DEBUG(1) <= nicnextframeint; 
+        DEBUG(2) <= NICDIN(0);
+        DEBUG(3) <= NICDIN(1);
+        
+      end if;
+    end process testrx;
 
 end Behavioral;
