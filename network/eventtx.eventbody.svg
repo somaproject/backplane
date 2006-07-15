@@ -9,8 +9,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="eventtx.eventbody.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/network"
-   inkscape:version="0.44"
+   sodipodi:docbase="/home/jonas/soma/backplane/network"
+   inkscape:version="0.43+0.44pre2"
    sodipodi:version="0.32"
    id="svg1996"
    height="453.125"
@@ -48,10 +48,10 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="14"
-     inkscape:window-x="13"
-     inkscape:window-height="915"
-     inkscape:window-width="1093"
+     inkscape:window-y="25"
+     inkscape:window-x="0"
+     inkscape:window-height="693"
+     inkscape:window-width="1014"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
      gridtolerance="10000"
@@ -63,9 +63,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="540.70092"
-     inkscape:cx="242.4268"
-     inkscape:zoom="1.9003331"
+     inkscape:cy="643.56171"
+     inkscape:cx="293.45667"
+     inkscape:zoom="2.6874768"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -198,7 +198,7 @@
          x="93.872253"
          style="font-size:8px;line-height:100%;text-anchor:middle;stroke-width:1pt;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
-           id="tspan2902">9-bit counter</tspan></text>
+           id="tspan2902">10-bit counter</tspan></text>
       <text
          sodipodi:linespacing="100%"
          id="text2904"
@@ -697,7 +697,7 @@
          sodipodi:role="line"
          id="tspan4729"
          x="412.5"
-         y="-203.75">ADDR[8:0]</tspan></text>
+         y="-203.75">ADDR[9:0]</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -1146,5 +1146,25 @@
          id="tspan3660"
          x="375"
          y="-50.625">cs=wrlens</tspan></text>
+    <g
+       id="g2650"
+       transform="matrix(-0.5,0,0,0.5,334.375,-189.375)">
+      <path
+         d="M 146.875 108.75 A 3.125 3.125 0 1 1  140.625,108.75 A 3.125 3.125 0 1 1  146.875 108.75 z"
+         sodipodi:ry="3.125"
+         sodipodi:rx="3.125"
+         sodipodi:cy="108.75"
+         sodipodi:cx="143.75"
+         id="path2652"
+         style="fill:black;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.25;stroke-miterlimit:3.9000001;stroke-dasharray:none;stroke-opacity:1"
+         sodipodi:type="arc" />
+      <rect
+         y="102.5"
+         x="137.5"
+         height="12.5"
+         width="12.5"
+         id="rect2654"
+         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.25;stroke-miterlimit:3.9000001;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
   </g>
 </svg>

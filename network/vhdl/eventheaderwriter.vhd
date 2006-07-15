@@ -14,10 +14,10 @@ entity eventheaderwriter is
     MYIP  : in  std_logic_vector(31 downto 0);
     MYBCAST : in std_logic_vector(31 downto 0); 
     START : in  std_logic;
-    WLEN  : in  std_logic_vector(8 downto 0);
+    WLEN  : in  std_logic_vector(9 downto 0);
     DOUT  : out std_logic_vector(15 downto 0);
     WEOUT : out std_logic;
-    ADDR  : out std_logic_vector(8 downto 0);
+    ADDR  : out std_logic_vector(9 downto 0);
     DONE  : out std_logic);
 end eventheaderwriter;
 
@@ -97,7 +97,7 @@ begin  -- Behavioral
     case cs is
       when none =>
         dmux  <= 0;
-        addr  <= "000000000";
+        addr  <= "0000000000";
         chken <= '1';
         weout <= '0';
         if START = '1' then
@@ -108,84 +108,84 @@ begin  -- Behavioral
 
       when macwh =>
         dmux  <= 0;
-        addr  <= "000000100";
+        addr  <= "0000000100";
         chken <= '0';
         weout <= '1';
         ns    <= macwm;
 
       when macwm =>
         dmux  <= 1;
-        addr  <= "000000101";
+        addr  <= "0000000101";
         chken <= '0';
         weout <= '1';
         ns    <= macwl;
 
       when macwl =>
         dmux  <= 2;
-        addr  <= "000000110";
+        addr  <= "0000000110";
         chken <= '0';
         weout <= '1';
         ns    <= ipwh;
 
       when ipwh =>
         dmux  <= 3;
-        addr  <= "000001110";
+        addr  <= "0000001110";
         chken <= '1';
         weout <= '1';
         ns    <= ipwl;
 
       when ipwl =>
         dmux  <= 4;
-        addr  <= "000001111";
+        addr  <= "0000001111";
         chken <= '1';
         weout <= '1';
         ns    <= bcastwh; 
 
       when bcastwh =>
         dmux  <= 5;
-        addr  <= "000010000";
+        addr  <= "0000010000";
         chken <= '1';
         weout <= '1';
         ns    <= bcastwl; 
 
       when bcastwl =>
         dmux  <= 6;
-        addr  <= "000010001";
+        addr  <= "0000010001";
         chken <= '1';
         weout <= '1';
         ns    <= udplenw;
 
       when udplenw =>
         dmux  <= 7;
-        addr  <= "000010100";
+        addr  <= "0000010100";
         chken <= '0';
         weout <= '1';
         ns    <= iplenw;
 
       when iplenw =>
         dmux  <= 8;
-        addr  <= "000001001";
+        addr  <= "0000001001";
         chken <= '1';
         weout <= '1';
         ns    <= framelw;
 
       when framelw =>
         dmux  <= 9;
-        addr  <= "000000000";
+        addr  <= "0000000000";
         chken <= '0';
         weout <= '1';
         ns    <= chksumw;
 
       when chksumw =>
         dmux  <= 10;
-        addr  <= "000001101";
+        addr  <= "0000001101";
         chken <= '0';
         weout <= '1';
         ns    <= none;
 
       when others =>
         dmux  <= 10;
-        addr  <= "000001101";
+        addr  <= "0000001101";
         chken <= '0';
         weout <= '0';
         ns    <= none;

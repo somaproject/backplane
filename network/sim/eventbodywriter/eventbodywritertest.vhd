@@ -26,7 +26,7 @@ architecture Behavioral of eventbodywritertest is
       EATX   : in  std_logic_vector(somabackplane.N-1 downto 0);
       DOUT   : out std_logic_vector(15 downto 0);
       WEOUT  : out std_logic;
-      ADDR   : out std_logic_vector(8 downto 0);
+      ADDR   : out std_logic_vector(9 downto 0);
       DONE   : out std_logic);
   end component;
 
@@ -40,7 +40,7 @@ architecture Behavioral of eventbodywritertest is
   signal DOUT : std_logic_vector(15 downto 0) := (others => '0');
 
   signal WEOUT : std_logic                    := '0';
-  signal ADDR  : std_logic_vector(8 downto 0) := (others => '0');
+  signal ADDR  : std_logic_vector(9 downto 0) := (others => '0');
   signal DONE  : std_logic                    := '0';
 
 -- simulated eventbus
@@ -60,7 +60,7 @@ architecture Behavioral of eventbodywritertest is
 
 
   -- simulated ram
-  signal ramaddr : integer range 0 to 1023 := 0;
+  signal ramaddr : integer range 0 to 2047 := 0;
   signal ramdata : std_logic_vector(15 downto 0);
 
 begin  -- Behavioral
@@ -121,10 +121,9 @@ begin  -- Behavioral
   end process;
 
   ramwriter           : process(CLK, ramaddr)
-    type eventram_t is array(1023 downto 0) of
+    type eventram_t is array(2047 downto 0) of
     std_logic_vector(15 downto 0);
     variable eventram : eventram_t := (others => (others => '0'));
-
 
   begin
     if rising_edge(CLK) then
@@ -135,8 +134,9 @@ begin  -- Behavioral
     ramdata <= eventram(ramaddr);
 
   end process ramwriter;
-  main : process
 
+
+  main : process
   begin
 
     wait until rising_edge(CLK) and ECYCLE = '1';
@@ -162,6 +162,7 @@ begin  -- Behavioral
     EATX(0)           <= '1';
 
     wait until rising_edge(CLK) and ECYCLE = '1';
+
     -- verification
     ramaddr <= 0;
     wait for 1 ns;
@@ -232,8 +233,6 @@ begin  -- Behavioral
     end loop;  -- i 
 
     assert False report "End of Simulation" severity Failure;
-    
-
 
     wait;
 
