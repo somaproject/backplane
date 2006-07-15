@@ -41,15 +41,15 @@ architecture Behavioral of eventtx is
 
   signal douthdr  : std_logic_vector(15 downto 0) := (others => '0');
   signal weouthdr : std_logic                     := '0';
-  signal addrhdr  : std_logic_vector(8 downto 0)  := (others => '0');
+  signal addrhdr  : std_logic_vector(9 downto 0)  := (others => '0');
 
   signal doutbody  : std_logic_vector(15 downto 0) := (others => '0');
   signal weoutbody : std_logic                     := '0';
-  signal addrbody  : std_logic_vector(8 downto 0)  := (others => '0');
+  signal addrbody  : std_logic_vector(9 downto 0)  := (others => '0');
 
   signal ebdone : std_logic := '0';
 
-  signal datalen : std_logic_vector(8 downto 0) := (others => '0');
+  signal datalen : std_logic_vector(9 downto 0) := (others => '0');
 
   signal dia   : std_logic_vector(15 downto 0) := (others => '0');
   signal wea   : std_logic                     := '0';
@@ -57,7 +57,7 @@ architecture Behavioral of eventtx is
 
   signal osel : std_logic := '0';
 
-  signal dataaddr : std_logic_vector(8 downto 0) := (others => '0');
+  signal dataaddr : std_logic_vector(9 downto 0) := (others => '0');
 
   signal nbsel, bsel : std_logic := '0';
 
@@ -65,13 +65,17 @@ architecture Behavioral of eventtx is
 
   signal ecnt : std_logic_vector(15 downto 0) := (others => '0');
 
+
+  signal wea1, wea2 : std_logic := '0';
+  
   type instates is (none, sendchk, hdrs, hdrw, flipbuf);
   signal ics, ins : instates := none;
 
   -- output side
 
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
-
+  signal dob1, dob2 : std_logic_vector(15 downto 0) := (others => '0');
+  
   signal olen : std_logic_vector(15 downto 0) := (others => '0');
 
   signal addrb : std_logic_vector(9 downto 0) := (others => '0');
@@ -89,10 +93,10 @@ architecture Behavioral of eventtx is
       MYIP  : in  std_logic_vector(31 downto 0);
       MYBCAST : in std_logic_vector(31 downto 0); 
       START : in  std_logic;
-      WLEN  : in  std_logic_vector(8 downto 0);
+      WLEN  : in  std_logic_vector(9 downto 0);
       DOUT  : out std_logic_vector(15 downto 0);
       WEOUT : out std_logic;
-      ADDR  : out std_logic_vector(8 downto 0);
+      ADDR  : out std_logic_vector(9 downto 0);
       DONE  : out std_logic);
   end component;
 
@@ -105,7 +109,7 @@ architecture Behavioral of eventtx is
       DONE   : out std_logic;
       DOUT   : out std_logic_vector(15 downto 0);
       WEOUT  : out std_logic;
-      ADDR   : out std_logic_vector(8 downto 0));
+      ADDR   : out std_logic_vector(9 downto 0));
   end component;
 
 
@@ -141,8 +145,11 @@ begin  -- Behavioral
 
   dia               <= douthdr  when osel = '0' else doutbody;
   wea               <= weouthdr when osel = '0' else weoutbody;
-  addra(8 downto 0) <= addrhdr  when osel = '0' else (dataaddr + "000010110");
-  addra(9)          <= nbsel;
+  wea1 <= wea and bsel;
+  wea2 <= wea and nbsel;
+  
+  addra <= addrhdr  when osel = '0' else (dataaddr + "0000010110");
+
 
   dataaddr <= addrbody + datalen;
   nbsel    <= not bsel;
@@ -178,9 +185,9 @@ begin  -- Behavioral
 
 
   outen    <= '1' when ocs = pktout else '0';
-  addrb(9) <= bsel;
   ARM      <= '1' when ocs = armw   else '0';
-
+  dob <= dob1 when nbsel = '1' else dob2;
+  
   DOUT <= dob; 
   main_output : process(CLK)
   begin
@@ -194,10 +201,10 @@ begin  -- Behavioral
       DOEN <= outen;
 
       if ocs = none then
-        addrb(8 downto 0) <= (others => '0');
+        addrb <= (others => '0');
       else
         if outen = '1' then
-          addrb(8 downto 0) <= addrb(8 downto 0) + 1;
+          addrb <= addrb + 1;
         end if;
       end if;
 
@@ -222,7 +229,7 @@ begin  -- Behavioral
         nextbuf  <= '0';
         hdrstart <= '0';
         osel <= '1'; 
-        if ecnt = 5 or dataaddr > "001100100" then
+        if ecnt = 5 or dataaddr > "0001100100" then
           ins    <= hdrs;
         else
           ins    <= none;
@@ -276,7 +283,7 @@ begin  -- Behavioral
         end if;
 
       when pktout =>
-        if olen(9 downto 1) -1  = addrb(8 downto 0) then
+        if olen(10 downto 1) -1  = addrb then
           ons <= done;
         else
           ons <= pktout;
@@ -289,21 +296,18 @@ begin  -- Behavioral
     end case;
   end process output_fsm;
 
-  RAMB16_S18_S18_inst : RAMB16_S18_S18
+rambuffer1 : RAMB16_S18_S18
     generic map (
       SIM_COLLISION_CHECK => "GENERATE_X_ONLY",     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
       -- The follosing INIT_xx declarations specify the intiial contents of the RAM
       -- Address 0 to 255
       INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
-      INIT_01             => X"00000000000000000000000000000000000000000000000013889c4000000000",
-
-      INIT_20             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
-      INIT_21             => X"00000000000000000000000000000000000000000000000013889c4000000000"
+      INIT_01             => X"00000000000000000000000000000000000000000000000013889c4000000000"
 )
 
     port map (
       DOA                 => open,
-      DOB                 => dob,
+      DOB                 => dob1,
       DOPA                => open,
       DOPB                => open,
       ADDRA               => addra,
@@ -318,7 +322,37 @@ begin  -- Behavioral
       ENB                 => '1',
       SSRA                => '0',
       SSRB                => '0',
-      WEA                 => wea,
+      WEA                 => wea1,
+      WEB                 => '0'
+      );
+
+  rambuffer2 : RAMB16_S18_S18
+    generic map (
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
+      -- The follosing INIT_xx declarations specify the intiial contents of the RAM
+      -- Address 0 to 255
+      INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
+      INIT_01             => X"00000000000000000000000000000000000000000000000013889c4000000000"
+)
+
+    port map (
+      DOA                 => open,
+      DOB                 => dob2,
+      DOPA                => open,
+      DOPB                => open,
+      ADDRA               => addra,
+      ADDRB               => addrb,
+      CLKA                => CLK,
+      CLKB                => CLK,
+      DIA                 => dia,
+      DIB                 => X"0000",
+      DIPA                => "00",
+      DIPB                => "00",
+      ENA                 => '1',
+      ENB                 => '1',
+      SSRA                => '0',
+      SSRB                => '0',
+      WEA                 => wea2,
       WEB                 => '0'
       );
 

@@ -183,7 +183,7 @@ begin  -- Behavioral
 
   begin
     file_open(eventfile, "data.txt");
-    while true loop
+    while not endfile(eventfile) loop
       readline(eventfile, L);
       read(L, len);
       for i in 1 to len loop
@@ -194,7 +194,9 @@ begin  -- Behavioral
         wait until rising_edge(CLK) and DOEN = '1';
       end loop;  -- i
     end loop;
+    assert False report "End of Simulation" severity Failure;
 
+    
   end process;
 
 end Behavioral;

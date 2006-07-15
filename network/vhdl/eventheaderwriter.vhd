@@ -62,7 +62,7 @@ begin  -- Behavioral
       EN     => chken,
       CHKOUT => csum);
 
-  ain(9 downto 1) <= WLEN;
+  ain(10 downto 1) <= WLEN;
   udplen          <= ain + X"0008";
   iplen           <= ain + X"001c";
   framelen        <= ain + X"002c";
