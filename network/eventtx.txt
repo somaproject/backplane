@@ -6,10 +6,10 @@ being directed at the network device; This would result in 960 bytes of data for
 To meet these parameters, we send an event datagram whenever: 
 \begin{enumerate}
 \item More than 5 ecycles have passed without a transmission
-\item we have a buffer with more than 100 bytes of events. 
+\item we have a buffer whose total length is > 100. 
 \end{enumerate} 
 
-Our buffers are only 1024-bytes long (512 words)
+We use two BlockRAM devices to create a double-buffered system where we can acquire new events and transmit old ones simultaneously. Each buffer can hold 2048 bytes, enough for a full-MTU datagram. 
 
 If a buffer has more than 100 bytes of events, say, 105, it's possible that the next ecycle will result in an overflow, so we must transmit. 
 
@@ -44,5 +44,3 @@ MAC addr
 packet length
 UDP packet length
 frame length
-
-
