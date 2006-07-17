@@ -1,0 +1,63 @@
+The data interface
+
+Our goal here is to acquire up to one 560-byte packet from each
+devicemux'd device (64 total) and to buffer them for transmit out the
+TX interface.
+
+Note that this data is all determined to be latency-insensitive. Thus,
+deep fifos and buffering are acceptable.
+
+\section{TX Bus Allocation} 
+
+Data Bus devices are constrained to transmit no more than one packet
+every 50 ecycles (1 ms). But since our double-wide data bus aggregator
+can acquire two data packets per ECYCLE and in the worst-case we can
+only transmit < 2 data bus packets per ecycle (if the Event network
+packets are at max size), we will potentiall need substantial buffering. 
+
+\section{Retransmission} 
+
+Because our UDP interface is a lossy protocol, we'd like at least a
+rudimentary mechanism for data packet retransmission. The
+protocol-level support for this is described in the protocol
+description section. 
+
+However, our retransmission buffer size is limited. we use the TX fifo
+as our retx buffer as well. Our 128kx16 is viewed as having 256 packet
+locations. 
+
+The memory arbitration module keeps a lookup table that matches the
+packet identifier of (src, type, id) to the relevant location in the
+TX buffer, in a constant-lookup-time manner. 
+
+An example is illustrative. If we receive a packet from source 4, of
+type 2, with a sequence ID of 0x12345678, we:
+1. write it to the next slot in the reTX fifo, which is 17. 
+2. update the ReTX Pointer Table such that location 000100 | 10 | 0x8 
+now contains 17. 
+
+for a retx request, we perform a similar lookup and pass the contents
+of packet 17 to the ReTX interface. 
+
+But what if that location has since been overwritten by some other
+packet? It is the responsibility of the ReTX device to make sure that
+this is the correct (src, type, id) and transmit an "unavailable"
+response if that's not the case.
+
+\section{Data Bus Acquire}
+
+The data bus acquire interface takes a data bus packet and: 
+
+1. event-cycle aligns it, so it is guaranteed to be available on the
+   next ecycle.
+2. converts it to a 16-bit-wide packet
+3. measures the length
+
+It uses a double-fifo. On the cycle following ecycle-assertion, LEN contains the length of the packet; if LEN =0 then there is no packet. 
+
+\section{Data Bus Packet Generation} 
+
+The data bus packet simply queries each of the acquire interfaces,
+writes the results to the fifo, slaps on the header, and then updates
+the relevant sequence number.
+
