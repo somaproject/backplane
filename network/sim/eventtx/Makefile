@@ -3,25 +3,25 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/networkstack/_networkstack.var: ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
 	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/somabackplane/_somabackplane.var: ../../../vhdl/somabackplane.vhd
+$(WORKDIR)/somabackplane/prim.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd
 	$(VHDLC) ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/eventbodywriter/_behavioral.var: ../../vhdl/eventbodywriter.vhd
+$(WORKDIR)/eventbodywriter/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd
 	$(VHDLC) ../../vhdl/eventbodywriter.vhd
 
-$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/ipchecksum.vhd
+$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd
 	$(VHDLC) ../../vhdl/ipchecksum.vhd
 
-$(WORKDIR)/eventheaderwriter/_behavioral.var: ../../vhdl/eventheaderwriter.vhd
-	$(VHDLC) ../../vhdl/eventheaderwriter.vhd
+$(WORKDIR)/udpheaderwriter/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
+	$(VHDLC) ../../vhdl/udpheaderwriter.vhd
 
-$(WORKDIR)/eventtx/_behavioral.var: ../../vhdl/eventtx.vhd
+$(WORKDIR)/eventtx/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtx.vhd
 	$(VHDLC) ../../vhdl/eventtx.vhd
 
-hw: $(WORKDIR)/networkstack/_networkstack.var $(WORKDIR)/somabackplane/_somabackplane.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/eventheaderwriter/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var 
+hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var 
 
 comp: 
 
