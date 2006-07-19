@@ -53,7 +53,9 @@ The data bus acquire interface takes a data bus packet and:
 2. converts it to a 16-bit-wide packet
 3. measures the length
 
-It uses a double-fifo. On the cycle following ecycle-assertion, LEN contains the length of the packet; if LEN =0 then there is no packet. 
+It uses a double-fifo. On the cycle following ecycle-assertion, LEN
+contains the length of the packet in bytes, not words; if LEN =0 then
+there is no packet.
 
 \section{Data Bus Packet Generation} 
 
@@ -62,6 +64,10 @@ It uses a double-fifo. On the cycle following ecycle-assertion, LEN contains the
 3. Write header
 4. write sequence
 5. commit to FIFO
+
+The data bus packet generator generates one or two events every ecycle, which are ready for processing at the end of the event cycle. It uses a four-deep fifo such that the packets can be read out on the subsequent ecycle. 
+
+Note that the fifo output stage runs at the Memory Clock speed (100 MHz). 
 
 \section{Memory Arbitration} 
 

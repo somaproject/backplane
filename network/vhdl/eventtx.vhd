@@ -86,12 +86,13 @@ architecture Behavioral of eventtx is
   signal ocs, ons : outstates := none;
 
   -- components
-  component eventheaderwriter
+  component udpheaderwriter
     port (
       CLK   : in  std_logic;
       MYMAC : in  std_logic_vector(47 downto 0);
       MYIP  : in  std_logic_vector(31 downto 0);
-      MYBCAST : in std_logic_vector(31 downto 0); 
+      MYBCAST : in std_logic_vector(31 downto 0);
+      DESTPORT : in std_logic_vector(15 downto 0); 
       START : in  std_logic;
       WLEN  : in  std_logic_vector(9 downto 0);
       DOUT  : out std_logic_vector(15 downto 0);
@@ -117,12 +118,13 @@ architecture Behavioral of eventtx is
 
 begin  -- Behavioral
 
-  eventheaderwriter_inst : eventheaderwriter
+  udpheaderwriter_inst : udpheaderwriter
     port map (
       CLK   => CLK,
       MYMAC => MYMAC,
       MYIP  => MYIP,
-      MYBCAST => MYBCAST, 
+      MYBCAST => MYBCAST,
+      DESTPORT => X"1338", 
       START => hdrstart,
       WLEN  => datalen,
       DOUT  => douthdr,
@@ -302,7 +304,7 @@ rambuffer1 : RAMB16_S18_S18
       -- The follosing INIT_xx declarations specify the intiial contents of the RAM
       -- Address 0 to 255
       INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
-      INIT_01             => X"00000000000000000000000000000000000000000000000013889c4000000000"
+      INIT_01             => X"00000000000000000000000000000000000000000000000000009c4000000000"
 )
 
     port map (
@@ -332,7 +334,7 @@ rambuffer1 : RAMB16_S18_S18
       -- The follosing INIT_xx declarations specify the intiial contents of the RAM
       -- Address 0 to 255
       INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
-      INIT_01             => X"00000000000000000000000000000000000000000000000013889c4000000000"
+      INIT_01             => X"00000000000000000000000000000000000000000000000000009c4000000000"
 )
 
     port map (
