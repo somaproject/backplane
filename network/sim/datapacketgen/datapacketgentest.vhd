@@ -23,7 +23,7 @@ architecture Behavioral of datapacketgentest is
       DIN    : in  std_logic_vector(7 downto 0);
       DIEN   : in  std_logic;
       DOUT   : out std_logic_vector(15 downto 0);
-      ADDR   : out std_logic_vector(8 downto 0);
+      ADDR   : in  std_logic_vector(8 downto 0);
       LEN    : out std_logic_vector(9 downto 0));
   end component;
 
@@ -59,7 +59,7 @@ architecture Behavioral of datapacketgentest is
   signal ECYCLE  : std_logic                     := '0';
 
   -- inputs
-  signal DIENA, DIENB : std_logic                     := '0';
+  signal DIENA, DIENB : std_logic                    := '0';
   signal DINA, DINB   : std_logic_vector(7 downto 0) := (others => '0');
 
   -- interconnect
@@ -75,7 +75,11 @@ architecture Behavioral of datapacketgentest is
   signal FIFOVALID : std_logic                     := '0';
 
 
+  -- input
+  signal lenpkt : std_logic_vector(15 downto 0) := (others => '0');
 
+  signal DATAEXPECTED : std_logic_vector(15 downto 0) := (others => '0');
+  signal DATAERROR    : std_logic                     := '0';
 
 -- simulated eventbus
   signal epos : integer := 0;
@@ -155,6 +159,96 @@ begin  -- Behavioral
   end process;
 
   -- input stage
-  
+
+  datainput                   : process
+    file datafilea, datafileb : text;
+    variable L                : line;
+    variable doen             : std_logic                    := '0';
+    variable data             : std_logic_vector(7 downto 0) := (others => '0');
+
+  begin
+    file_open(datafilea, "dataa.txt");
+    file_open(datafileb, "datab.txt");
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    while not endfile(datafilea) loop
+
+      readline(datafilea, L);
+      read(L, doen);
+      hread(L, data);
+      DINA  <= data;
+      DIENA <= doen;
+
+      readline(datafileb, L);
+      read(L, doen);
+      hread(L, data);
+      DINB  <= data;
+      DIENB <= doen;
+      wait until rising_edge(CLK);
+
+    end loop;
+    assert False report "End of Simulation" severity failure;
+
+    
+  end process datainput;
+
+
+  -- capture the output packets
+
+  outputget          : process
+    file netdatafile : text;
+    variable L       : line;
+    variable data    : std_logic_vector(15 downto 0) := (others => '0');
+    variable len     : integer                       := 0;
+
+  begin
+    file_open(netdatafile, "data.txt");
+
+    while not endfile(netdatafile) loop
+      wait until rising_edge(MEMCLK) and ECYCLE = '1';
+
+      -- read length
+      for j in 0 to 1 loop
+
+
+        if FIFOVALID = '1' then
+          readline(netdatafile, L);
+          read(L, len);
+          ADDROUT <= (others => '0');
+          wait until rising_edge(MEMCLK);
+
+          for i in 0 to len -1 loop
+            wait until rising_edge(MEMCLK);
+            hread(L, data);
+            DATAEXPECTED <= data;
+            wait for 1 ns;
+
+            if data /= DOUT then
+              DATAERROR <= '1';
+            else
+              DATAERROR <= '0';
+            end if;
+            wait for 1 ns;
+            assert data = DOUT report "Error reading data" severity error;
+            ADDROUT     <= ADDROUT + 1;
+
+          end loop;  -- i
+
+          wait until rising_edge(MEMCLK);
+          FIFONEXT <= '1';
+          wait until rising_edge(MEMCLK);
+          FIFONEXT <= '0';
+          wait for 2 us;
+          wait until rising_edge(MEMCLK);
+          wait until rising_edge(MEMCLK);
+          wait until rising_edge(MEMCLK);
+
+        end if;
+      end loop;  -- j
+    end loop;
+
+    assert False report "End of Simulation" severity Failure;
+    
+  end process outputget;
 
 end Behavioral;

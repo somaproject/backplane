@@ -300,8 +300,7 @@ begin  -- Behavioral
 
 rambuffer1 : RAMB16_S18_S18
     generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
-      -- The follosing INIT_xx declarations specify the intiial contents of the RAM
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
       -- Address 0 to 255
       INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
       INIT_01             => X"00000000000000000000000000000000000000000000000000009c4000000000"

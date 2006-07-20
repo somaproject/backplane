@@ -33,7 +33,7 @@ class DataPacketGen(object):
 
         # random data
         for i in range(N):
-            data[i+6] = i % 256
+            data[i+6] = (i+typ+src) % 256
 
         return data
     

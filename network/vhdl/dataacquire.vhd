@@ -14,7 +14,7 @@ entity dataacquire is
     DIN    : in  std_logic_vector(7 downto 0);
     DIEN   : in  std_logic;
     DOUT   : out std_logic_vector(15 downto 0);
-    ADDR   : out std_logic_vector(8 downto 0);
+    ADDR   : in std_logic_vector(8 downto 0);
     LEN    : out std_logic_vector(9 downto 0));
 
 end dataacquire;
@@ -28,7 +28,8 @@ architecture Behavioral of dataacquire is
   signal addrb       : std_logic_vector(9 downto 0) := (others => '0');
   signal dob         : std_logic_vector(15 downto 0);
 
-
+  signal lenint : std_logic_vector(9 downto 0) := (others => '0');
+  
 begin  -- Beahavioral
 
   nbsel     <= not bsel;
@@ -51,14 +52,17 @@ begin  -- Beahavioral
       if ECYCLE = '1' then
         bsel <= nbsel;
 
-        len <= addra(9 downto 0);
+        lenint <= addra(9 downto 0);
       end if;
 
     end if;
 
   end process main;
 
-
+  LEN <= '0' & lenint(9 downto 1); 
+  addrb(8 downto 0) <= ADDR;
+  DOUT <= dob(7 downto 0) & dob(15 downto 8);
+  
   RAMB16_S9_S18_inst : RAMB16_S9_S18
     port map (
       DOA   => open,

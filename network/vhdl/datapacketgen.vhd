@@ -115,14 +115,15 @@ begin  -- Behavioral
       DONE     => hdrdone);
 
   -- input muxes
-  len <= LENA when bsel = '0' else LENB;
-  di  <= DIA  when bsel = '0' else DIB;
+  len <= LENA(9 downto 0) when bsel = '0' else
+         LENB(9 downto 0);
+  di  <= DIA                      when bsel = '0' else DIB;
 
-  nbsel <= bsel;
+  nbsel <= not bsel;
 
-  faddr(8 downto 0) <= addrl       when dsel = 0 else
-                       hdraddr     when dsel = 1 else
-                       "000010110" when dsel = 2 else
+  faddr(8 downto 0) <= addrl               when dsel = 0 else
+                       hdraddr(8 downto 0) when dsel = 1 else
+                       "000010110"         when dsel = 2 else
                        "000010111";
 
   ADDRA <= addr;
@@ -137,7 +138,7 @@ begin  -- Behavioral
           iddo(31 downto 16) when dsel = 2 else
           iddo(15 downto 0);
 
-  iddo <= iddi + 1;
+  iddi <= iddo + 1;
 
   idwe <= '1' when cs = nextfifo else '0';
 
@@ -146,16 +147,38 @@ begin  -- Behavioral
   ida <= "0" & typ & src;
 
   destport <= X"0fa0" + ("000000" & ida);
+  
   ID_buffer : RAMB16_S36
+    generic map (
+      INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_07 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_08 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_09 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_0A => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_0B => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_0C => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_0D => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_0E => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_0F => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_10 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_11 => X"0000000000000000000000000000000000000000000000000000000000000000",
+      INIT_12 => X"0000000000000000000000000000000000000000000000000000000000000000"
+      )
     port map (
-      DO   => iddo,
-      ADDR => ida,
-      CLK  => CLK,
-      DI   => iddi,
-      DIP  => "0000",
-      EN   => '1',
-      SSR  => '0',
-      WE   => idwe
+      DO      => iddo,
+      ADDR    => ida,
+      CLK     => CLK,
+      DI      => iddi,
+      DIP     => "0000",
+      EN      => '1',
+      SSR     => '0',
+      WE      => idwe
       );
 
   main : process(CLK)
@@ -176,7 +199,7 @@ begin  -- Behavioral
         end if;
       end if;
 
-      addrl <= addr + X"0018";
+      addrl <= addr + "000010110";
 
       if addrl = "000011000" then
         src <= di(5 downto 0);
@@ -190,7 +213,9 @@ begin  -- Behavioral
     end if;
   end process main;
 
-  FIFOVALID <= '1' when addroutint /= fifonum else '0';
+  FIFOVALID <= '1' when addroutint(10 downto 9)  /= fifonum else '0';
+
+  addroutint(8 downto 0) <= ADDROUT;
 
   -- memory output clock
   memproc : process(MEMCLK)
@@ -208,6 +233,15 @@ begin  -- Behavioral
 
 
   FIFO_BufferA_inst : RAMB16_S9_S9
+    generic map (
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
+      -- Address 0 to 255
+      INIT_00             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00" ,       
+      INIT_10             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00",        
+      INIT_20             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00" ,       
+      INIT_30             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00"        
+      )
+
     port map (
       DOA   => open,
       DOB   => DOUT(15 downto 8),
@@ -226,7 +260,18 @@ begin  -- Behavioral
       WEA   => fwe,
       WEB   => '0'
       );
+
+
   FIFO_BufferB_inst : RAMB16_S9_S9
+    generic map (
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
+      -- Address 0 to 255
+      INIT_00             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
+      INIT_10             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
+      INIT_20             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
+      INIT_30             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00"
+      )
+
     port map (
       DOA   => open,
       DOB   => DOUT(7 downto 0),
@@ -289,7 +334,7 @@ begin  -- Behavioral
         dsel    <= 0;
         addrinc <= '1';
         datawe  <= '1';
-        if len(9 downto 1) = addr then
+        if len(8 downto 0) = addr then
           ns    <= datadone;
         else
           ns    <= dataw;
@@ -328,7 +373,7 @@ begin  -- Behavioral
         ns      <= nextfifo;
 
       when nextfifo =>
-        dsel    <= 3;
+        dsel    <= 0;
         addrinc <= '0';
         datawe  <= '0';
         ns      <= nextdata;
