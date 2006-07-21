@@ -1,0 +1,14 @@
+
+To test the data packet memory writer we generate fake data frames, and write the important metadata. 
+
+We capture this via the linux UDP stack; 
+
+
+
+Things to check: 
+
+if fifovalid = 0, do we DTRT
+do we handle start / end correctly? 
+
+do we extract out the correct src, type, id bits? 
+
