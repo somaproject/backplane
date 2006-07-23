@@ -110,7 +110,7 @@ begin  -- Behavioral
       case cs is
         when none  =>
           bufaddrinc <= '0';
-          ramwe <= '0';
+          ramwe <= '1';
           idwe <= '0';
           if START = '1' then
             ns <= chkvalid;
@@ -120,7 +120,7 @@ begin  -- Behavioral
 
         when chkvalid  =>
           bufaddrinc <= '0';
-          ramwe <= '0';
+          ramwe <= '1';
           idwe <= '0';
           if FIFOVALID = '1' then
             ns <= startwr; 
@@ -130,13 +130,13 @@ begin  -- Behavioral
 
         when startwr  =>
           bufaddrinc <= '1';
-          ramwe <= '0';
+          ramwe <= '1';
           idwe <= '0';
           ns <= wrwait; 
           
         when wrwait  =>
           bufaddrinc <= '1';
-          ramwe <= '1';
+          ramwe <= '0';
           idwe <= '0';
           if bufaddr = len then
             ns <= addrwe;
@@ -152,13 +152,13 @@ begin  -- Behavioral
           
         when donewr  =>
           bufaddrinc <= '0';
-          ramwe <= '0';
+          ramwe <= '1';
           idwe <= '0';
           ns <= none; 
                    
         when others  =>
           bufaddrinc <= '0';
-          ramwe <= '0';
+          ramwe <= '1';
           idwe <= '0';
           ns <= none; 
       end case;
