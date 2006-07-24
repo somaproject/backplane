@@ -56,7 +56,10 @@ architecture Behavioral of inputcontrol is
   
 
   -- fsm
-  type states is (none, dinst, dinw, fstart, nextpkt, arppkt, arpopchk, arpqstart, arpwait, ipchka, icmpchk, udpporta, echoreq, icmpstart, pingwait);
+  type states is (none, dinst, dinw, fstart, nextpkt,
+                  arppkt, arpopchk, arpqstart, arpwait,
+                  ipchka, icmpchk, udpporta, udpchk, retxstarts, retxwait,
+                  echoreq, icmpstart, pingwait);
   signal cs, ns : states := none;
 
 
@@ -289,15 +292,46 @@ begin  -- Behavioral
           ns       <= pingwait;
         end if;
 
-        -- udp data
+       ------------------------------------------------------------------------
+        -- UDP Packets
+        -----------------------------------------------------------------------
 
       when udpporta =>
         lnextframe <= '0';
-        mode       <= 1;
+        mode       <= 0;
         start      <= '0';
-        intaddrb   <= X"00";
-        ns         <= nextpkt;
-
+        intaddrb   <= X"13";
+        ns         <= udpchk;
+        
+      when udpchk =>
+        lnextframe <= '0';
+        mode       <= 0;
+        start      <= '0';
+        intaddrb   <= X"13";
+        if dob = X"1130" then
+          ns <= retxstarts;
+        else
+          ns <= nextpkt; 
+        end if;
+        
+      when retxstarts =>
+        lnextframe <= '0';
+        mode       <= 2;
+        start      <= '1';
+        intaddrb   <= X"13";
+        ns <= retxwait;
+        
+      when retxwait =>
+        lnextframe <= '0';
+        mode       <= 2;
+        start      <= '0';
+        intaddrb   <= X"13";
+        if RETXDONE ='1' then
+          ns <= nextpkt;
+        else
+          ns <= retxwait; 
+        end if;
+        
       when others =>
         lnextframe <= '0';
         mode       <= 1;
