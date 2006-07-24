@@ -130,5 +130,50 @@ begin  -- Behavioral
 
       end case;
     end process fsm; 
+
+
+    buffer_high : RAMB16_S9_S9
+   generic map (
+      SIM_COLLISION_CHECK => "NONE")
+      port map (
+      DOA => open, 
+      DOB => DOUT(15 downto 8) ,
+      ADDRA => addra,
+      ADDRB => addrb,
+      CLKA => MEMCLK,
+      CLKB => CLK, 
+      DIA => DIN(15 downto 8),
+      DIB => X"0000",     
+      DIPA => "00",   
+      DIPB => "00",   
+      ENA => '1',     
+      ENB => '1',     
+      SSRA => '0', 
+      SSRB => '0',   
+      WEA => WEIN,     
+      WEB => '0'      
+   );
     
+    buffer_low : RAMB16_S9_S9
+   generic map (
+      SIM_COLLISION_CHECK => "NONE")
+      port map (
+      DOA => open, 
+      DOB => DOUT(7 downto 0) ,
+      ADDRA => addra,
+      ADDRB => addrb,
+      CLKA => MEMCLK,
+      CLKB => CLK, 
+      DIA => DIN(7 downto 0),
+      DIB => X"0000",     
+      DIPA => "00",   
+      DIPB => "00",   
+      ENA => '1',     
+      ENB => '1',     
+      SSRA => '0', 
+      SSRB => '0',   
+      WEA => WEIN,     
+      WEB => '0'      
+   );
+
 end Behavioral;
