@@ -10,9 +10,10 @@ use work.somabackplane;
 entity udpheaderwriter is
   port (
     CLK      : in  std_logic;
-    MYMAC    : in  std_logic_vector(47 downto 0);
-    MYIP     : in  std_logic_vector(31 downto 0);
-    MYBCAST  : in  std_logic_vector(31 downto 0);
+    SRCMAC    : in  std_logic_vector(47 downto 0);
+    SRCIP     : in  std_logic_vector(31 downto 0);
+    DESTMAC : in std_logic_vector(47 downto 0); 
+    DESTIP  : in  std_logic_vector(31 downto 0);
     DESTPORT : in  std_logic_vector(15 downto 0);
     START    : in  std_logic;
     WLEN     : in  std_logic_vector(9 downto 0);
@@ -25,7 +26,7 @@ end udpheaderwriter;
 
 architecture Behavioral of udpheaderwriter is
 
-  signal dmux                    : integer range 0 to 11         := 0;
+  signal dmux                    : integer range 0 to 14        := 0;
   signal udplen, iplen, framelen : std_logic_vector(15 downto 0) := (others => '0');
 
   signal cdin : std_logic_vector(15 downto 0) := (others => '0');
@@ -39,7 +40,9 @@ architecture Behavioral of udpheaderwriter is
   signal doutint : std_logic_vector(15 downto 0) := (others => '0');
 
 
-  type states is (none, macwh, macwm, macwl, ipwh, ipwl, bcastwh, bcastwl,
+  type states is (none, desmacwh, desmacwm, desmacwl,
+                  srcmacwh, srcmacwm, srcmacwl,
+                  srcipwh, srcipwl, destipwh, destipwl,
                   udpportw,             udplenw, iplenw, framelw, chksumw);
 
   signal cs, ns : states := none;
@@ -68,17 +71,20 @@ begin  -- Behavioral
   iplen            <= ain + X"001c";
   framelen         <= ain + X"002c";
 
-  doutint <= MYMAC(47 downto 32)   when dmux = 0  else
-             MYMAC(31 downto 16)   when dmux = 1  else
-             MYMAC(15 downto 0)    when dmux = 2  else
-             MYIP(31 downto 16)    when dmux = 3  else
-             MYIP(15 downto 0)     when dmux = 4  else
-             MYBCAST(31 downto 16) when dmux = 5  else
-             MYBCAST(15 downto 0)  when dmux = 6  else
-             DESTPORT              when dmux = 7  else
-             udplen                when dmux = 8  else
-             iplen                 when dmux = 9  else
-             framelen              when dmux = 10 else
+  doutint <= DESTMAC(47 downto 32) when dmux = 0 else
+             DESTMAC(31 downto 16) when dmux = 1 else
+             DESTMAC(15 downto 0) when dmux = 2 else 
+             SRCMAC(47 downto 32)   when dmux = 3  else
+             SRCMAC(31 downto 16)   when dmux = 4  else
+             SRCMAC(15 downto 0)    when dmux = 5  else
+             SRCIP(31 downto 16)    when dmux = 6  else
+             SRCIP(15 downto 0)     when dmux = 7  else
+             DESTIP(31 downto 16) when dmux = 8  else
+             DESTIP(15 downto 0)  when dmux = 9  else
+             DESTPORT              when dmux = 10  else
+             udplen                when dmux = 11  else
+             iplen                 when dmux = 12  else
+             framelen              when dmux = 13 else
              csum;
   DOUT    <= doutint;
   cdin    <= doutint               when ld = '0'  else X"8511";
@@ -103,90 +109,111 @@ begin  -- Behavioral
         chken <= '1';
         weout <= '0';
         if START = '1' then
-          ns  <= macwh;
+          ns  <= desmacwh;
         else
           ns  <= none;
         end if;
 
-      when macwh =>
+      when desmacwh =>
         dmux  <= 0;
+        addr  <= "0000000001";
+        chken <= '0';
+        weout <= '1';
+        ns    <= desmacwm;
+
+      when desmacwm =>
+        dmux  <= 1;
+        addr  <= "0000000010";
+        chken <= '0';
+        weout <= '1';
+        ns    <= desmacwl;
+
+      when desmacwl =>
+        dmux  <= 2;
+        addr  <= "0000000011";
+        chken <= '0';
+        weout <= '1';
+        ns    <= srcmacwh;
+
+      when srcmacwh =>
+        dmux  <= 3;
         addr  <= "0000000100";
         chken <= '0';
         weout <= '1';
-        ns    <= macwm;
+        ns    <= srcmacwm;
 
-      when macwm =>
-        dmux  <= 1;
+      when srcmacwm =>
+        dmux  <= 4;
         addr  <= "0000000101";
         chken <= '0';
         weout <= '1';
-        ns    <= macwl;
+        ns    <= srcmacwl;
 
-      when macwl =>
-        dmux  <= 2;
+      when srcmacwl =>
+        dmux  <= 5;
         addr  <= "0000000110";
         chken <= '0';
         weout <= '1';
-        ns    <= ipwh;
+        ns    <= srcipwh;
 
-      when ipwh =>
-        dmux  <= 3;
+      when srcipwh =>
+        dmux  <= 6;
         addr  <= "0000001110";
         chken <= '1';
         weout <= '1';
-        ns    <= ipwl;
+        ns    <= srcipwl;
 
-      when ipwl =>
-        dmux  <= 4;
+      when srcipwl =>
+        dmux  <= 7;
         addr  <= "0000001111";
         chken <= '1';
         weout <= '1';
-        ns    <= bcastwh;
+        ns    <= destipwh;
 
-      when bcastwh =>
-        dmux  <= 5;
+      when destipwh =>
+        dmux  <= 8;
         addr  <= "0000010000";
         chken <= '1';
         weout <= '1';
-        ns    <= bcastwl;
+        ns    <= destipwl;
 
-      when bcastwl =>
-        dmux  <= 6;
+      when destipwl =>
+        dmux  <= 9;
         addr  <= "0000010001";
         chken <= '1';
         weout <= '1';
         ns    <= udpportw;
 
       when udpportw =>
-        dmux  <= 7;
+        dmux  <= 10;
         addr  <= "0000010011";
         chken <= '0';
         weout <= '1';
         ns    <= udplenw;
 
       when udplenw =>
-        dmux  <= 8;
+        dmux  <= 11;
         addr  <= "0000010100";
         chken <= '0';
         weout <= '1';
         ns    <= iplenw;
 
       when iplenw =>
-        dmux  <= 9;
+        dmux  <= 12;
         addr  <= "0000001001";
         chken <= '1';
         weout <= '1';
         ns    <= framelw;
 
       when framelw =>
-        dmux  <= 10;
+        dmux  <= 13;
         addr  <= "0000000000";
         chken <= '0';
         weout <= '1';
         ns    <= chksumw;
 
       when chksumw =>
-        dmux  <= 11;
+        dmux  <= 14;
         addr  <= "0000001101";
         chken <= '0';
         weout <= '1';

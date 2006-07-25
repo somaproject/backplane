@@ -86,20 +86,21 @@ architecture Behavioral of eventtx is
   signal ocs, ons : outstates := none;
 
   -- components
-  component udpheaderwriter
-    port (
-      CLK   : in  std_logic;
-      MYMAC : in  std_logic_vector(47 downto 0);
-      MYIP  : in  std_logic_vector(31 downto 0);
-      MYBCAST : in std_logic_vector(31 downto 0);
-      DESTPORT : in std_logic_vector(15 downto 0); 
-      START : in  std_logic;
-      WLEN  : in  std_logic_vector(9 downto 0);
-      DOUT  : out std_logic_vector(15 downto 0);
-      WEOUT : out std_logic;
-      ADDR  : out std_logic_vector(9 downto 0);
-      DONE  : out std_logic);
-  end component;
+component udpheaderwriter
+  port (
+    CLK      : in  std_logic;
+    SRCMAC    : in  std_logic_vector(47 downto 0);
+    SRCIP     : in  std_logic_vector(31 downto 0);
+    DESTMAC : in std_logic_vector(47 downto 0); 
+    DESTIP  : in  std_logic_vector(31 downto 0);
+    DESTPORT : in  std_logic_vector(15 downto 0);
+    START    : in  std_logic;
+    WLEN     : in  std_logic_vector(9 downto 0);
+    DOUT     : out std_logic_vector(15 downto 0);
+    WEOUT    : out std_logic;
+    ADDR     : out std_logic_vector(9 downto 0);
+    DONE     : out std_logic);
+end component;
 
   component eventbodywriter
     port (
@@ -121,9 +122,10 @@ begin  -- Behavioral
   udpheaderwriter_inst : udpheaderwriter
     port map (
       CLK   => CLK,
-      MYMAC => MYMAC,
-      MYIP  => MYIP,
-      MYBCAST => MYBCAST,
+      SRCMAC => MYMAC,
+      SRCIP  => MYIP,
+      DESTIP => MYBCAST,
+      DESTMAC => X"FFFFFFFFFFFF", 
       DESTPORT => X"1338", 
       START => hdrstart,
       WLEN  => datalen,

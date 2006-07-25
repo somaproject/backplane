@@ -131,21 +131,21 @@ architecture Behavioral of network is
 
   signal pktdata : std_logic_vector(15 downto 0) := (others => '0');
 
-  signal eventstart : std_logic                    := '0';
-  signal eventaddr  : std_logic_vector(9 downto 0) := (others => '0');
-  signal eventdone  : std_logic                    := '0';
+  signal eventinstart : std_logic                    := '0';
+  signal eventinaddr  : std_logic_vector(9 downto 0) := (others => '0');
+  signal eventindone  : std_logic                    := '0';
 
-  signal arpstart : std_logic                    := '0';
-  signal arpaddr  : std_logic_vector(9 downto 0) := (others => '0');
-  signal arpdone  : std_logic                    := '0';
+  signal arpinstart : std_logic                    := '0';
+  signal arpinaddr  : std_logic_vector(9 downto 0) := (others => '0');
+  signal arpindone  : std_logic                    := '0';
 
-  signal pingstart : std_logic                    := '0';
-  signal pingaddr  : std_logic_vector(9 downto 0) := (others => '0');
-  signal pingdone  : std_logic                    := '0';
+  signal pinginstart : std_logic                    := '0';
+  signal pinginaddr  : std_logic_vector(9 downto 0) := (others => '0');
+  signal pingindone  : std_logic                    := '0';
 
-  signal retxstart : std_logic                    := '0';
-  signal retxaddr  : std_logic_vector(9 downto 0) := (others => '0');
-  signal retxdone  : std_logic                    := '0';
+  signal retxinstart : std_logic                    := '0';
+  signal retxinaddr  : std_logic_vector(9 downto 0) := (others => '0');
+  signal retxindone  : std_logic                    := '0';
 
   -- output
 
@@ -170,18 +170,18 @@ begin  -- Behavioral
       DINEN      => NICDINEN,
       DIN        => NICDIN,
       PKTDATA    => pktdata,
-      PINGSTART  => pingstart,
-      PINGADDR   => pingaddr,
-      PINGDONE   => pingdone,
-      RETXSTART  => retxstart,
-      RETXADDR   => retxaddr,
-      RETXDONE   => retxdone,
-      ARPSTART   => arpstart,
-      ARPADDR    => arpaddr,
-      ARPDONE    => arpdone,
-      EVENTSTART => eventstart,
-      EVENTADDR  => eventaddr,
-      EVENTDONE  => eventdone);
+      PINGSTART  => pinginstart,
+      PINGADDR   => pinginaddr,
+      PINGDONE   => pingindone,
+      RETXSTART  => retxinstart,
+      RETXADDR   => retxinaddr,
+      RETXDONE   => retxindone,
+      ARPSTART   => arpinstart,
+      ARPADDR    => arpinaddr,
+      ARPDONE    => arpindone,
+      EVENTSTART => eventinstart,
+      EVENTADDR  => eventinaddr,
+      EVENTDONE  => eventindone);
 
 
   txmux_inst : txmux
@@ -205,10 +205,10 @@ begin  -- Behavioral
       CLK       => CLK,
       MYMAC     => MYMAC,
       MYIP      => MYIP,
-      START     => arpstart,
-      DONE      => arpdone,
+      START     => arpinstart,
+      DONE      => arpindone,
       INPKTDATA => pktdata,
-      INPKTADDR => arpaddr,
+      INPKTADDR => arpinaddr,
       ARM       => arm(4),
       GRANT     => grant(4),
       DOUT      => din4,
@@ -219,10 +219,10 @@ begin  -- Behavioral
       CLK       => CLK,
       MYMAC     => MYMAC,
       MYIP      => MYIP,
-      START     => pingstart,
-      DONE      => pingdone,
+      START     => pinginstart,
+      DONE      => pingindone,
       INPKTDATA => pktdata,
-      INPKTADDR => pingaddr,
+      INPKTADDR => pinginaddr,
       ARM       => arm(3),
       GRANT     => grant(3),
       DOUT      => din3,
