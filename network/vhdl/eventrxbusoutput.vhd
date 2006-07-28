@@ -7,6 +7,9 @@ library WORK;
 use WORK.somabackplane.all;
 use work.somabackplane;
 
+library UNISIM;
+use UNISIM.vcomponents.all;
+
 
 entity eventrxbusoutput is
   port (
@@ -14,7 +17,7 @@ entity eventrxbusoutput is
     ADDROUT : out std_logic_vector(9 downto 0);
     EFREE   : out std_logic_vector(5 downto 0);
     DIN     : in  std_logic_vector(15 downto 0);
-    ECNT    : in  std_logic_vector(3 downto 0)
+    ECNT    : in  std_logic_vector(3 downto 0);
     START   : in  std_logic;
     DONE    : out std_logic;
     -- event bus interface
@@ -35,7 +38,7 @@ architecture Behavioral of eventrxbusoutput is
 
   signal addra : std_logic_vector(9 downto 0) := (others => '0');
 
-  signal ibpinc, iadrinc : std_logic := '0';
+  signal ibpinc, iaddrinc : std_logic := '0';
 
   type instates is (none, indone, echeck, inwait, nextevt);
   signal ics, ins : instates := none;
@@ -53,7 +56,7 @@ architecture Behavioral of eventrxbusoutput is
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
 
   type outstates is (none, inwait, oaddrinc, obpwinc, donew);
-  signal ocs, ons : ostates := none;
+  signal ocs, ons : outstates := none;
 
   signal epos : integer range 0 to 999 := 0;
 
@@ -82,8 +85,8 @@ begin  -- Behavioral
         end if;
       end if;
 
-      if cs = ?? then
-        iaddr   <= (others = > '0');
+      if ics = echeck then
+        iaddr   <= (others => '0');
       else
         if iaddrinc = '1' then
           iaddr <= iaddr + 1;
@@ -98,8 +101,7 @@ begin  -- Behavioral
     end if;
   end process main_in;
 
-
-  fsm_in : process(ics, START, ecntint, ECNT, inaddr)
+  fsm_in : process(ics, START, ecntint, ECNT, iaddr)
   begin
     case ics is
       when none =>
@@ -123,7 +125,7 @@ begin  -- Behavioral
       when inwait =>
         iaddrinc <= '1';
         ibpinc   <= '0';
-        if inaddr = "10101" then
+        if iaddr = "10101" then
           ins    <= nextevt;
         else
           ins    <= inwait;
@@ -132,17 +134,17 @@ begin  -- Behavioral
       when nextevt =>
         iaddrinc <= '0';
         ibpinc   <= '1';
-        ns       <= echeck;
+        ins      <= echeck;
 
       when indone =>
         iaddrinc <= '0';
         ibpinc   <= '0';
-        ns       <= none;
+        ins      <= none;
 
       when others =>
         iaddrinc <= '0';
         ibpinc   <= '0';
-        ns       <= none;
+        ins      <= none;
 
     end case;
   end process fsm_in;
@@ -165,20 +167,25 @@ begin  -- Behavioral
       ocs <= ons;
 
       if ECYCLE = '1' then
-        epos <= 0;
+        epos   <= 0;
       else
-        epos <= epos + 1;
+        if epos = 999 then
+          epos <= 0;
+        else
+          epos <= epos + 1;
+        end if;
+
       end if;
 
       -- addresses
-      if ocs = obpinc then
+      if ocs = obpwinc then
         obp <= obp + 1;
       end if;
 
-      if ocs = in wait then
+      if ocs = inwait then
         oaddr   <= (others => '0');
       else
-        if ocs = aaddrinc then
+        if ocs = oaddrinc then
           oaddr <= oaddr + 1;
         end if;
 
@@ -335,24 +342,24 @@ begin  -- Behavioral
       SIM_COLLISION_CHECK => "GENERATE_X_ONLY")
 
     port map (
-      DOA                 => open,
-      DOB                 => dob,
-      DOPA                => open,
-      DOPB                => open,
-      ADDRA               => addra,
-      ADDRB               => addrb,
-      CLKA                => CLK,
-      CLKB                => CLK,
-      DIA                 => DIN,
-      DIB                 => X"0000",
-      DIPA                => "00",
-      DIPB                => "00",
-      ENA                 => '1',
-      ENB                 => '1',
-      SSRA                => '0',
-      SSRB                => '0',
-      WEA                 => iaddrinc,
-      WEB                 => '0'
+      DOA   => open,
+      DOB   => dob,
+      DOPA  => open,
+      DOPB  => open,
+      ADDRA => addra,
+      ADDRB => addrb,
+      CLKA  => CLK,
+      CLKB  => CLK,
+      DIA   => DIN,
+      DIB   => X"0000",
+      DIPA  => "00",
+      DIPB  => "00",
+      ENA   => '1',
+      ENB   => '1',
+      SSRA  => '0',
+      SSRB  => '0',
+      WEA   => iaddrinc,
+      WEB   => '0'
       );
 
 end Behavioral;

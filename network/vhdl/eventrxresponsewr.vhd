@@ -7,6 +7,9 @@ library WORK;
 use WORK.somabackplane.all;
 use work.somabackplane;
 
+library UNISIM;
+use UNISIM.vcomponents.all; 
+
 
 entity eventrxresponsewr is
 
@@ -34,17 +37,20 @@ end eventrxresponsewr;
 architecture Behavioral of eventrxresponsewr is
 
   signal insel   : integer range 0 to 2          := 0;
-  signal hdrout  : std_logic_vector(15 downto 0) := (others => '0');
+  signal hdrdout  : std_logic_vector(15 downto 0) := (others => '0');
   signal hdraddr : std_logic_vector(8 downto 0)  := (others => '0');
   signal hdrwe   : std_logic                     := '0';
 
   signal dia   : std_logic_vector(15 downto 0) := (others => '0');
-  signal addra : std_logic_vector(9 downto 0)  := (others => '0');;
-  signal wea   : std_logic                     := '0'';
+  signal addra : std_logic_vector(9 downto 0)  := (others => '0');
+  signal wea   : std_logic                     := '0';
 
+  signal addrb : std_logic_vector(9 downto 0) := (others => '0');
+  
   signal outen : std_logic := '0';
 
-  type states is none, hdrs, hdrwait, noncewr, sucwr, dones, pktout, armw);
+  type states is (none, hdrst, hdrwait, noncewr,
+                  sucwr, dones, pktout, armw);
 
   signal cs, ns : states := none;
 
@@ -73,13 +79,13 @@ begin  -- Behavioral
          '1'   when insel = 1 else
          '1';
 
-  dia <= hdrout when insel = 0 else
+  dia <= hdrdout when insel = 0 else
          NONCE  when insel = 1 else
          "000000000000000" & SUCCESS;
 
   addra <= hdraddr     when insel = 0 else
-           "000010110" when insel = 1 else
-           "000010111";
+           "0000010110" when insel = 1 else
+           "0000010111";
 
   DONE <= '1' when cs = dones else '0';
 
@@ -95,7 +101,7 @@ begin  -- Behavioral
       DESTIP   => DESTIP,
       DESTPORT => DESTPORT,
       START    => hdrstart,
-      WLEN     => "001000000",
+      WLEN     => "0001000000",
       DOUT     => hdrdout,
       WEOUT    => hdrwe,
       ADDR     => hdraddr,
@@ -126,12 +132,12 @@ begin  -- Behavioral
       when none =>
         insel <= 0;
         if START = '1' then
-          ns  <= hstart;
+          ns  <= hdrst;
         else
           ns  <= none;
         end if;
 
-      when hstart =>
+      when hdrst =>
         insel <= 0;
         ns    <= hdrwait;
 
@@ -161,7 +167,7 @@ begin  -- Behavioral
 
       when pktout =>
         insel <= 0;
-        if addrb = "000100000" then
+        if addrb = "0000100000" then
           ns  <= dones;
         else
           ns  <= pktout;
