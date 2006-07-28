@@ -1,0 +1,11 @@
+This is used to verify a sequence of output events. 
+
+On the falling edge of RESET we open the file EVENTFILE and read in
+all of its events into an internal buffer; each event implicitly is
+associated with a position in this buffer.
+
+Then, we compare the ouput events from the eventport with the events
+in the buffer. If, ahead of time, an event is marked via the INVCLK
+interface as invalid, then it is not compared and in fact skipped over
+in the buffer.
+

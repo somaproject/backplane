@@ -1,12 +1,6 @@
 Event Receive test. 
 Let's separate packet generation from testing. First, how would we like to test? 
 
-
-2. if we send too many events such that the buffer is full, do we get
-a proper error?
-
-3. random testing...
-
 I think the most robust way of doing this is to generate all possible responses, and then in vhdl pick them. 
 
 We generate a series of event tuples for the intial check. 
@@ -18,6 +12,10 @@ input packet
 output packet
 
 separate event file, listing each EADDR / EDATA combination
+
+tcpdump -i eth2  udp port 5000  -t -xx -s 2000 > data.tcpdump
+
+parse out events and split them into readable chunks from the dump
 
 
 VHDL test pcode: 
@@ -59,8 +57,6 @@ response, then those events are not placed on the event bus."
 
 1. enable ecycle
 2. 
-
-
 
 
 event verify buffer: 

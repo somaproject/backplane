@@ -3,26 +3,29 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/networkstack/_networkstack.var: ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
 	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/somabackplane/_somabackplane.var: ../../../vhdl/somabackplane.vhd
+$(WORKDIR)/somabackplane/prim.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd
 	$(VHDLC) ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/eventrxbusoutput/_behavioral.var: ../../vhdl/eventrxbusoutput.vhd
+$(WORKDIR)/eventrxbusoutput/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventrxbusoutput.vhd
 	$(VHDLC) ../../vhdl/eventrxbusoutput.vhd
 
-$(WORKDIR)/eventrxresponsewr/_behavioral.var: ../../vhdl/eventrxresponsewr.vhd
+$(WORKDIR)/eventrxresponsewr/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd
 	$(VHDLC) ../../vhdl/eventrxresponsewr.vhd
 
-$(WORKDIR)/eventrx/_behavioral.var: ../../vhdl/eventrx.vhd
+$(WORKDIR)/eventrx/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd ../../vhdl/eventrx.vhd
 	$(VHDLC) ../../vhdl/eventrx.vhd
 
-hw: $(WORKDIR)/networkstack/_networkstack.var $(WORKDIR)/somabackplane/_somabackplane.var $(WORKDIR)/eventrxbusoutput/_behavioral.var $(WORKDIR)/eventrxresponsewr/_behavioral.var $(WORKDIR)/eventrx/_behavioral.var 
+hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/eventrxbusoutput/_behavioral.var $(WORKDIR)/eventrxresponsewr/_behavioral.var $(WORKDIR)/eventrx/_behavioral.var 
 
-comp: 
+$(WORKDIR)/eventrxverify/_behavioral.var: ../components/eventrxverify/eventrxverify.vhd
+	$(VHDLC) ../components/eventrxverify/eventrxverify.vhd
 
-$(WORKDIR)/eventrxtest/_behavioral.var: eventrxtest.vhd
+comp: $(WORKDIR)/eventrxverify/_behavioral.var 
+
+$(WORKDIR)/eventrxtest/_behavioral.var: ../components/eventrxverify/eventrxverify.vhd eventrxtest.vhd
 	$(VHDLC) eventrxtest.vhd
 
 sim: $(WORKDIR)/eventrxtest/_behavioral.var 
