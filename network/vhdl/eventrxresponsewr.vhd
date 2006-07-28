@@ -8,7 +8,7 @@ use WORK.somabackplane.all;
 use work.somabackplane;
 
 library UNISIM;
-use UNISIM.vcomponents.all; 
+use UNISIM.vcomponents.all;
 
 
 entity eventrxresponsewr is
@@ -37,8 +37,8 @@ end eventrxresponsewr;
 architecture Behavioral of eventrxresponsewr is
 
   signal insel   : integer range 0 to 2          := 0;
-  signal hdrdout  : std_logic_vector(15 downto 0) := (others => '0');
-  signal hdraddr : std_logic_vector(8 downto 0)  := (others => '0');
+  signal hdrdout : std_logic_vector(15 downto 0) := (others => '0');
+  signal hdraddr : std_logic_vector(9 downto 0)  := (others => '0');
   signal hdrwe   : std_logic                     := '0';
 
   signal dia   : std_logic_vector(15 downto 0) := (others => '0');
@@ -46,7 +46,7 @@ architecture Behavioral of eventrxresponsewr is
   signal wea   : std_logic                     := '0';
 
   signal addrb : std_logic_vector(9 downto 0) := (others => '0');
-  
+
   signal outen : std_logic := '0';
 
   type states is (none, hdrst, hdrwait, noncewr,
@@ -80,19 +80,19 @@ begin  -- Behavioral
          '1';
 
   dia <= hdrdout when insel = 0 else
-         NONCE  when insel = 1 else
+         NONCE   when insel = 1 else
          "000000000000000" & SUCCESS;
 
-  addra <= hdraddr     when insel = 0 else
+  addra <= hdraddr      when insel = 0 else
            "0000010110" when insel = 1 else
            "0000010111";
 
   DONE <= '1' when cs = dones else '0';
 
-  outen <= '1' when cs = pktout else '0';
-
-
-  udpheaderwriter_inst: udpheaderwriter
+  outen    <= '1' when cs = pktout else '0';
+  ARM      <= '1' when cs = armw   else '0';
+  hdrstart <= '1' when cs = hdrst  else '0';
+  udpheaderwriter_inst : udpheaderwriter
     port map (
       CLK      => CLK,
       SRCMAC   => SRCMAC,
@@ -101,12 +101,12 @@ begin  -- Behavioral
       DESTIP   => DESTIP,
       DESTPORT => DESTPORT,
       START    => hdrstart,
-      WLEN     => "0001000000",
+      WLEN     => "0000000010",
       DOUT     => hdrdout,
       WEOUT    => hdrwe,
       ADDR     => hdraddr,
-      DONE     => hdrdone); 
-    
+      DONE     => hdrdone);
+
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -186,27 +186,31 @@ begin  -- Behavioral
 
   rambuffer : RAMB16_S18_S18
     generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY")
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
+      INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
+      INIT_01             => X"0000000000000000000000000000000000000000000000000000138800000000"
+      )
+
 
     port map (
-      DOA                 => open,
-      DOB                 => DOUT,
-      DOPA                => open,
-      DOPB                => open,
-      ADDRA               => addra,
-      ADDRB               => addrb,
-      CLKA                => CLK,
-      CLKB                => CLK,
-      DIA                 => dia,
-      DIB                 => X"0000",
-      DIPA                => "00",
-      DIPB                => "00",
-      ENA                 => '1',
-      ENB                 => '1',
-      SSRA                => '0',
-      SSRB                => '0',
-      WEA                 => wea, 
-      WEB                 => '0'
+      DOA   => open,
+      DOB   => DOUT,
+      DOPA  => open,
+      DOPB  => open,
+      ADDRA => addra,
+      ADDRB => addrb,
+      CLKA  => CLK,
+      CLKB  => CLK,
+      DIA   => dia,
+      DIB   => X"0000",
+      DIPA  => "00",
+      DIPB  => "00",
+      ENA   => '1',
+      ENB   => '1',
+      SSRA  => '0',
+      SSRB  => '0',
+      WEA   => wea,
+      WEB   => '0'
       );
 
 

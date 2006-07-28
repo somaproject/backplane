@@ -132,8 +132,8 @@ begin  -- Behavioral
       DOEN     => DOEN); 
     
   INPKTADDR <= inaddr when asel = 0 else outaddr;
-
-
+  DONE <= '1' when cs = dones else '0'; 
+  outaddr <= ebaddr + "0000011000"; 
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -182,7 +182,7 @@ begin  -- Behavioral
       if cs = none then
         txdones   <= '0';
       else
-        if txdone = '0' then
+        if txdone = '1' then
           txdones <= '1';
         end if;
       end if;
@@ -197,7 +197,7 @@ begin  -- Behavioral
       case cs is
         when  none =>
           asel <= 0;
-          inaddr <= "0000000001";
+          inaddr <= "0000000100";
           txstart <= '0';
           estart <= '0';
           success <= '0';
@@ -209,7 +209,7 @@ begin  -- Behavioral
           
         when  destmach =>
           asel <= 0;
-          inaddr <= "0000000010";
+          inaddr <= "0000000101";
           txstart <= '0';
           estart <= '0';
           success <= '0';
@@ -217,7 +217,7 @@ begin  -- Behavioral
 
         when  destmacm =>
           asel <= 0;
-          inaddr <= "0000000011";
+          inaddr <= "0000000110";
           txstart <= '0';
           estart <= '0';
           success <= '0';
@@ -241,7 +241,7 @@ begin  -- Behavioral
 
         when  destipl =>
           asel <= 0;
-          inaddr <= "0000010110";
+          inaddr <= "0000010010";
           txstart <= '0';
           estart <= '0';
           success <= '0';
@@ -249,7 +249,7 @@ begin  -- Behavioral
 
         when  dportw =>
           asel <= 0;
-          inaddr <= "0000010111";
+          inaddr <= "0000010110";
           txstart <= '0';
           estart <= '0';
           success <= '0';
@@ -257,7 +257,7 @@ begin  -- Behavioral
 
         when  noncew =>
           asel <= 0;
-          inaddr <= "0000011000";
+          inaddr <= "0000010111";
           txstart <= '0';
           estart <= '0';
           success <= '0';

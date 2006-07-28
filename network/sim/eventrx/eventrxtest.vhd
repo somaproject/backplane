@@ -9,6 +9,8 @@ library WORK;
 use WORK.somabackplane.all;
 use work.somabackplane;
 
+use ieee.numeric_std.all;
+
 
 entity eventrxtest is
 
@@ -142,6 +144,9 @@ architecture Behavioral of eventrxtest is
   signal eventposout      : integer   := 0;
   signal eventverifyreset : std_logic := '1';
 
+  signal datagram_ecnt : integer := 0;
+  signal datagram_totalcnt : integer := 0;
+  
 
 begin  -- Behavioral
   MYMAC <= X"00095BE0F790";
@@ -194,16 +199,16 @@ begin  -- Behavioral
     generic map (
       eventfilename => "events.txt")
     port map (
-      CLK         => CLK,
-      ECYCLE      => ECYCLE,
-      EARX        => EARX, 
-      EDRX        => EDRX,
-      EDRXSEL     => EDSELRX,
-      RESET       => eventverifyreset,
-      INVNUM      => INVNUM,
-      INVCLK      => INVCLK,
-      EVTERROR    => EVTERROR,
-      EVENTPOSOUT => EVENTPOSOUT);
+      CLK           => CLK,
+      ECYCLE        => ECYCLE,
+      EARX          => EARX,
+      EDRX          => EDRX,
+      EDRXSEL       => EDSELRX,
+      RESET         => eventverifyreset,
+      INVNUM        => INVNUM,
+      INVCLK        => INVCLK,
+      EVTERROR      => EVTERROR,
+      EVENTPOSOUT   => EVENTPOSOUT);
 
   -- data input
 
@@ -212,8 +217,9 @@ begin  -- Behavioral
     variable L    : line;
     variable len  : integer := 0;
     variable word : std_logic_vector(15 downto 0);
+
   begin
-    while true loop
+    while not endfile(req_file) loop
 
       wait until rising_edge(CLK);
       readline(req_file, L);
@@ -225,16 +231,20 @@ begin  -- Behavioral
       wait until rising_edge(CLK);
       for i in 0 to len-1 loop
         hread(L, word);
-        DINEN <= '1';
-        DIN   <= word;
+        DINEN           <= '1';
+        DIN             <= word;
         wait until rising_edge(CLK);
+        if i = 23 then
+          datagram_ecnt <= to_integer(unsigned(DIN));
+        end if;
       end loop;  -- i 
-      DINEN   <= '0';
+      DINEN             <= '0';
       wait until rising_edge(CLK) and EVENTDONE = '1';  -- artificial wait
+      wait for 5 us;
 
 
     end loop;
-
+    wait;
   end process datainput;
 
   -- output verify
@@ -264,10 +274,31 @@ begin  -- Behavioral
         if pos < len then
           hread(L, word);
           data_expected <= word;
-          if word /= DOUT then
-            data_error  <= '1';
+          if pos = 22 then              -- skip success
+            if word(0) = '0' then       -- failure, invalidate these evnts
+              for i in 0 to datagram_ecnt -1 loop
+                wait for 1 ns;
+                invclk <= '0';
+                wait for 1 ns;
+                invnum <= datagram_totalcnt + i;
+                wait for 1 ns;
+                --invclk <= '1';
+                wait for 1 ns;
+                wait for 1 ns;
+                invclk <= '0';
+                
+              end loop;  -- i
+              
+            end if;
+            datagram_totalcnt <= datagram_totalcnt + datagram_ecnt;
+            
           else
-            data_error  <= '0';
+            if word /= DOUT then
+              data_error <= '1';
+            else
+              data_error <= '0';
+            end if;
+
           end if;
         end if;
 
@@ -310,7 +341,7 @@ begin  -- Behavioral
   -- event verify
   process
   begin
-    
+
     wait for 1 us;
     eventverifyreset <= '0';
 

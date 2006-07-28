@@ -65,8 +65,8 @@ architecture Behavioral of eventrxbusoutput is
 begin  -- Behavioral
 
   -- input constructions
-  ADDROUT <= ecnt & iaddr;
-  EFREE   <= ibp - obp;
+  ADDROUT <= ecntint & iaddr;
+  EFREE   <=  obp - ibp - 1;
 
   DONE <= '1' when ics = indone else '0';
 
@@ -125,7 +125,7 @@ begin  -- Behavioral
       when inwait =>
         iaddrinc <= '1';
         ibpinc   <= '0';
-        if iaddr = "10101" then
+        if iaddr = X"B" then
           ins    <= nextevt;
         else
           ins    <= inwait;
@@ -153,12 +153,18 @@ begin  -- Behavioral
 
   addrb <= obp & oaddr;
 
-  EDRX <= edout(15 downto 0)  when EDSELRX = X"0" else
-          edout(31 downto 16) when EDSELRX = X"1" else
-          edout(47 downto 32) when EDSELRX = X"2" else
-          edout(63 downto 48) when EDSELRX = X"3" else
-          edout(79 downto 64) when EDSELRX = X"4" else
-          edout(95 downto 80);
+  EDRX <= edout(7 downto 0) when EDSELRX = X"0" else
+          edout(15 downto 8) when EDSELRX = X"1" else
+          edout(23 downto 16) when EDSELRX = X"2" else
+          edout(31 downto 24) when EDSELRX = X"3" else
+          edout(39 downto 32) when EDSELRX = X"4" else
+          edout(47 downto 40) when EDSELRX = X"5" else
+          edout(55 downto 48) when EDSELRX = X"6" else
+          edout(63 downto 56) when EDSELRX = X"7" else
+          edout(71 downto 64) when EDSELRX = X"8" else
+          edout(79 downto 72) when EDSELRX = X"9" else
+          edout(87 downto 80)  when EDSELRX = X"A" else
+          edout(95 downto 88); 
 
   main_out : process(CLK)
   begin
@@ -239,7 +245,7 @@ begin  -- Behavioral
         ledout(15 downto 0)    <= (others => '0');
       else
         if oaddr = "0110" then
-          ledout(15 downto 15) <= dob;
+          ledout(15 downto 0) <= dob;
         end if;
       end if;
 
@@ -339,7 +345,7 @@ begin  -- Behavioral
 
   rambuffer : RAMB16_S18_S18
     generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY")
+      SIM_COLLISION_CHECK => "NONE")
 
     port map (
       DOA   => open,

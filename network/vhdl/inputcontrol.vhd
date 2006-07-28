@@ -59,6 +59,7 @@ architecture Behavioral of inputcontrol is
   type states is (none, dinst, dinw, fstart, nextpkt,
                   arppkt, arpopchk, arpqstart, arpwait,
                   ipchka, icmpchk, udpporta, udpchk, retxstarts, retxwait,
+                  evtstart, evtwait, 
                   echoreq, icmpstart, pingwait);
   signal cs, ns : states := none;
 
@@ -310,6 +311,9 @@ begin  -- Behavioral
         intaddrb   <= X"13";
         if dob = X"1130" then
           ns <= retxstarts;
+        elsif dob = X"1388" then
+          
+          ns <= evtstart; 
         else
           ns <= nextpkt; 
         end if;
@@ -330,6 +334,24 @@ begin  -- Behavioral
           ns <= nextpkt;
         else
           ns <= retxwait; 
+        end if;
+        
+      when evtstart =>
+        lnextframe <= '0';
+        mode       <= 4;
+        start      <= '1';
+        intaddrb   <= X"13";
+        ns <= evtwait;
+        
+      when evtwait =>
+        lnextframe <= '0';
+        mode       <= 4;
+        start      <= '0';
+        intaddrb   <= X"13";
+        if EVENTDONE ='1' then
+          ns <= nextpkt;
+        else
+          ns <= evtwait; 
         end if;
         
       when others =>
