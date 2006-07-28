@@ -1,8 +1,13 @@
-Event Receive test: 
+Event Receive test. 
+Let's separate packet generation from testing. First, how would we like to test? 
 
-1. send events to the device
-2. verify the events are put on the bus
-3. verify response packets
+
+2. if we send too many events such that the buffer is full, do we get
+a proper error?
+
+3. random testing...
+
+I think the most robust way of doing this is to generate all possible responses, and then in vhdl pick them. 
 
 We generate a series of event tuples for the intial check. 
 
@@ -13,4 +18,61 @@ input packet
 output packet
 
 separate event file, listing each EADDR / EDATA combination
+
+
+VHDL test pcode: 
+--------------------------------------------------------------------------
+Test #1 simple correct response
+--------------------------------------------------------------------------
+
+Can we send a single event packet to eventrx and
+   a. do the events appear on the bus? 
+   b. do we get a proper UDP response? 
+
+1. enable ECYCLE
+2. place expected events into event output verify buffer
+3. send the request packet
+4. wait for the response-success packet and the event output verify buffer to be empty
+
+--------------------------------------------------------------------------
+Test #2 buffer overflow test
+--------------------------------------------------------------------------
+
+1. disable ECYCLE
+2. while pendinglen < cnt:   
+   place expected events into output verify buffer
+   send request packet
+   wait for response
+
+--------------------------------------------------------------------------
+Test #3 large scale multi-packet fifo test
+--------------------------------------------------------------------------
+
+Recognizing that randomized testing will often reveil bugs in either
+design, implementation, or documentation....
+
+We need a good functional definition for "correct operation". One I
+like is "If we receive a success response, then those events will be
+transmitted in the correct contained order. If we receive a failed
+response, then those events are not placed on the event bus."
+
+
+1. enable ecycle
+2. 
+
+
+
+
+event verify buffer: 
+1. give a filename of EADDR/EDATAs, it reads all of them in internally
+
+2. all are assumed to be valid unless told otherwise by an INVCLK
+
+3. wait and selectively invalidate ints by the ID
+
+okay, but, but, how do we handle the empty-event case? an "ignore null
+events" option?
+
+So this has an EARX, EDRX, EDRXSEL, ECYCLE, CLK interface
+
 
