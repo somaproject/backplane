@@ -72,3 +72,13 @@ events" option?
 So this has an EARX, EDRX, EDRXSEL, ECYCLE, CLK interface
 
 
+
+------------------------------------------------------------------
+Processes
+
+output_verify: 
+wait until output arm'd,
+grant
+perform comparison with existing data except for success bit
+
+

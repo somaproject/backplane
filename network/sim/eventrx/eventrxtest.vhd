@@ -39,11 +39,11 @@ architecture Behavioral of eventrxtest is
       GRANT     : in  std_logic);
   end component;
 
-  signal CLK       : std_logic                     := '0';
-  signal INPKTADDR : std_logic_vector(9 downto 0)  := (others => '0');
-  signal INPKTDATA : std_logic_vector(15 downto 0) := (others => '0');
-  signal START     : std_logic                     := '0';
-  signal DONE      : std_logic                     := '0';
+  signal RESET : std_logic := '0';
+
+  signal CLK   : std_logic := '0';
+  signal START : std_logic := '0';
+  signal DONE  : std_logic := '0';
 
   -- input parameters
   signal MYMAC : std_logic_vector(47 downto 0) := (others => '0');
@@ -51,7 +51,7 @@ architecture Behavioral of eventrxtest is
 
   -- Event interface
   signal ECYCLE  : std_logic                    := '0';
-  signal EARX    : std_logic_vector(somabackplane.N -1 downto 0)
+  signal EARX    : std_logic_vector(79 downto 0)
                                                 := (others => '0');
   signal EDRX    : std_logic_vector(7 downto 0) := (others => '0');
   signal EDSELRX : std_logic_vector(3 downto 0) := (others => '0');
@@ -62,27 +62,259 @@ architecture Behavioral of eventrxtest is
   signal ARM   : std_logic                     := '0';
   signal GRANT : std_logic                     := '0';
 
-begin  -- Behavioral
+  component inputcontrol
+    port (
+      CLK        : in  std_logic;
+      RESET      : in  std_logic;
+      NEXTFRAME  : out std_logic;
+      DINEN      : in  std_logic;
+      DIN        : in  std_logic_vector(15 downto 0);
+      PKTDATA    : out std_logic_vector(15 downto 0);
+      -- ICMP echo request IO
+      PINGSTART  : out std_logic;
+      PINGADDR   : in  std_logic_vector(9 downto 0);
+      PINGDONE   : in  std_logic;
+      -- retransmit request 
+      RETXSTART  : out std_logic;
+      RETXADDR   : in  std_logic_vector(9 downto 0);
+      RETXDONE   : in  std_logic;
+      -- ARP Request
+      ARPSTART   : out std_logic;
+      ARPADDR    : in  std_logic_vector(9 downto 0);
+      ARPDONE    : in  std_logic;
+      -- input event
+      EVENTSTART : out std_logic;
+      EVENTADDR  : in  std_logic_vector(9 downto 0);
+      EVENTDONE  : in  std_logic
+      );
+  end component;
 
-  eventrx_uut: eventrx
+  signal NEXTFRAME  : std_logic                     := '0';
+  signal DINEN      : std_logic                     := '0';
+  signal DIN        : std_logic_vector(15 downto 0) := (others => '0');
+  signal PKTDATA    : std_logic_vector(15 downto 0) := (others => '0');
+  -- ICMP echo request IO
+  signal PINGSTART  : std_logic                     := '0';
+  signal PINGADDR   : std_logic_vector(9 downto 0)  := (others => '0');
+  signal PINGDONE   : std_logic                     := '0';
+  -- retransmit request
+  signal RETXSTART  : std_logic                     := '0';
+  signal RETXADDR   : std_logic_vector(9 downto 0)  := (others => '0');
+  signal RETXDONE   : std_logic                     := '0';
+  -- ARP Request
+  signal ARPSTART   : std_logic                     := '0';
+  signal ARPADDR    : std_logic_vector(9 downto 0)  := (others => '0');
+  signal ARPDONE    : std_logic                     := '0';
+  -- input event
+  signal EVENTSTART : std_logic                     := '0';
+  signal EVENTADDR  : std_logic_vector(9 downto 0)  := (others => '0');
+  signal EVENTDONE  : std_logic                     := '0';
+  signal data_dout  : std_logic_vector(15 downto 0) := (others => '0');
+
+  signal data_expected : std_logic_vector(15 downto 0) := (others => '0');
+  signal data_error    : std_logic                     := '0';
+
+  signal epos : integer := 0;
+
+  component eventrxverify
+    generic (
+      EVENTFILENAME : in string);
+
+    port (
+      CLK         : in  std_logic;
+      ECYCLE      : in  std_logic;
+      EARX        : in  std_logic_vector(79 downto 0);
+      EDRX        : in  std_logic_vector(7 downto 0);
+      EDRXSEL     : out std_logic_vector(3 downto 0);
+      RESET       : in  std_logic;
+      -- invalidate interface
+      INVNUM      : in  integer;
+      INVCLK      : in  std_logic;
+      -- output status
+      EVTERROR    : out std_logic;
+      EVENTPOSOUT : out integer
+      );
+  end component;
+
+  signal invnum           : integer   := 0;
+  signal invclk           : std_logic := '0';
+  signal evterror         : std_logic := '0';
+  signal eventposout      : integer   := 0;
+  signal eventverifyreset : std_logic := '1';
+
+
+begin  -- Behavioral
+  MYMAC <= X"00095BE0F790";
+  MYIP  <= X"12040E5B";
+
+  eventrx_uut : eventrx
     port map (
       CLK       => CLK,
-      INPKTADDR => INPKTADDR,
-      INPKTDATA => INPKTDATA,
-      START     => START,
-      DONE      => DONE,
+      INPKTADDR => EVENTADDR,
+      INPKTDATA => PKTDATA,
+      START     => EVENTSTART,
+      DONE      => EVENTDONE,
       MYMAC     => MYMAC,
       MYIP      => MYIP,
       ECYCLE    => ECYCLE,
-      EARX      => EARX,
+      EARX      => EARX(somabackplane.N-1 downto 0),
       EDRX      => EDRX,
       EDSELRX   => EDSELRX,
       DOUT      => DOUT,
       DOEN      => DOEN,
       ARM       => ARM,
-      GRANT     => GRANT); 
+      GRANT     => GRANT);
+
 
   CLK <= not CLK after 10 ns;
-  
+
+
+  inputcontrol_uut : inputcontrol
+    port map (
+      CLK        => CLK,
+      RESET      => RESET,
+      NEXTFRAME  => NEXTFRAME,
+      DINEN      => DINEN,
+      DIN        => DIN,
+      PKTDATA    => PKTDATA,
+      PINGSTART  => PINGSTART,
+      PINGADDR   => PINGADDR,
+      PINGDONE   => PINGDONE,
+      RETXSTART  => RETXSTART,
+      RETXADDR   => RETXADDR,
+      RETXDONE   => RETXDONE,
+      ARPSTART   => ARPSTART,
+      ARPADDR    => ARPADDR,
+      ARPDONE    => ARPDONE,
+      EVENTSTART => EVENTSTART,
+      EVENTADDR  => EVENTADDR,
+      EVENTDONE  => EVENTDONE);
+
+  eventrxverify_inst : eventrxverify
+    generic map (
+      eventfilename => "events.txt")
+    port map (
+      CLK         => CLK,
+      ECYCLE      => ECYCLE,
+      EARX        => EARX, 
+      EDRX        => EDRX,
+      EDRXSEL     => EDSELRX,
+      RESET       => eventverifyreset,
+      INVNUM      => INVNUM,
+      INVCLK      => INVCLK,
+      EVTERROR    => EVTERROR,
+      EVENTPOSOUT => EVENTPOSOUT);
+
+  -- data input
+
+  datainput       : process
+    file req_file : text open read_mode is "client_requests.txt";
+    variable L    : line;
+    variable len  : integer := 0;
+    variable word : std_logic_vector(15 downto 0);
+  begin
+    while true loop
+
+      wait until rising_edge(CLK);
+      readline(req_file, L);
+      read(L, len);
+      wait for 1 us;
+
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      for i in 0 to len-1 loop
+        hread(L, word);
+        DINEN <= '1';
+        DIN   <= word;
+        wait until rising_edge(CLK);
+      end loop;  -- i 
+      DINEN   <= '0';
+      wait until rising_edge(CLK) and EVENTDONE = '1';  -- artificial wait
+
+
+    end loop;
+
+  end process datainput;
+
+  -- output verify
+  output_verify    : process
+    file resp_file : text open read_mode is "server_response.txt";
+    variable L     : line;
+    variable len   : integer := 0;
+    variable word  : std_logic_vector(15 downto 0);
+    variable pos   : integer := 0;
+
+  begin
+    while true loop
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK) and ARM = '1';
+      readline(resp_file, L);
+      read(L, len);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      GRANT             <= '1';
+      pos := 0;
+      wait until rising_edge(CLK);
+      GRANT             <= '0';
+      wait until rising_edge(CLK) and DOEN = '1';
+      while DOEN = '1' loop
+        if pos < len then
+          hread(L, word);
+          data_expected <= word;
+          if word /= DOUT then
+            data_error  <= '1';
+          else
+            data_error  <= '0';
+          end if;
+        end if;
+
+        pos := pos + 1;
+        wait until rising_edge(CLK);
+
+      end loop;
+    end loop;
+  end process output_verify;
+
+  process(CLK)
+  begin
+    if rising_edge(CLK) then
+      data_dout <= DOUT;
+    end if;
+  end process;
+
+
+
+  --ecycle generation
+  -- ecycle generation
+  ecycle_gen : process(CLK)
+  begin
+    if rising_edge(CLK) then
+      if epos = 999 then
+        epos <= 0;
+      else
+        epos <= epos + 1;
+      end if;
+
+      if epos = 999 then
+        ECYCLE <= '1';
+      else
+        ECYCLE <= '0';
+      end if;
+
+    end if;
+  end process;
+
+  -- event verify
+  process
+  begin
+    
+    wait for 1 us;
+    eventverifyreset <= '0';
+
+  end process;
+
 
 end Behavioral;
