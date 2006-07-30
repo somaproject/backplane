@@ -144,9 +144,10 @@ architecture Behavioral of eventrxtest is
   signal eventposout      : integer   := 0;
   signal eventverifyreset : std_logic := '1';
 
-  signal datagram_ecnt : integer := 0;
+  signal datagram_ecnt     : integer := 0;
   signal datagram_totalcnt : integer := 0;
-  
+
+
 
 begin  -- Behavioral
   MYMAC <= X"00095BE0F790";
@@ -240,7 +241,7 @@ begin  -- Behavioral
       end loop;  -- i 
       DINEN             <= '0';
       wait until rising_edge(CLK) and EVENTDONE = '1';  -- artificial wait
-      wait for 5 us;
+      wait for 15 us;
 
 
     end loop;
@@ -274,24 +275,24 @@ begin  -- Behavioral
         if pos < len then
           hread(L, word);
           data_expected <= word;
-          if pos = 22 then              -- skip success
-            if word(0) = '0' then       -- failure, invalidate these evnts
+          if pos = 23 then              -- skip success
+            if DOUT(0) = '0' then       -- failure, invalidate these evnts
               for i in 0 to datagram_ecnt -1 loop
-                wait for 1 ns;
+                wait for 0.1 ns;
+                invclk  <= '0';
+                wait for 0.1 ns;
+                invnum  <= datagram_totalcnt + i;
+                wait for 0.1 ns;
+                invclk <= '1';
+                wait for 0.1 ns;
+                wait for 0.1 ns;
                 invclk <= '0';
-                wait for 1 ns;
-                invnum <= datagram_totalcnt + i;
-                wait for 1 ns;
-                --invclk <= '1';
-                wait for 1 ns;
-                wait for 1 ns;
-                invclk <= '0';
-                
+
               end loop;  -- i
-              
+
             end if;
             datagram_totalcnt <= datagram_totalcnt + datagram_ecnt;
-            
+
           else
             if word /= DOUT then
               data_error <= '1';
@@ -347,5 +348,14 @@ begin  -- Behavioral
 
   end process;
 
+  -- wait to finish
+  process(CLK)
+    begin
+      if rising_edge(CLK) then
+        if eventposout = 2047 then
+          --report "End of Simulation" severity Failure;
+        end if;
+      end if;
+    end process; 
 
 end Behavioral;

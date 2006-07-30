@@ -7,7 +7,6 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity retxresponse is
-
   port (
     CLK       : in  std_logic;
     -- IO interface

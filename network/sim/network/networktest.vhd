@@ -10,7 +10,7 @@ use UNISIM.vcomponents.all;
 library WORK;
 use WORK.networkstack;
 use WORK.somabackplane.all;
-use Work.somabackplane; 
+use Work.somabackplane;
 
 entity networktest is
 
@@ -21,6 +21,7 @@ architecture Behavioral of networktest is
   component network
     port (
       CLK          : in  std_logic;
+      MEMCLK       : in  std_logic;
       RESET        : in  std_logic;
       -- config
       MYIP         : in  std_logic_vector(31 downto 0);
@@ -44,7 +45,16 @@ architecture Behavioral of networktest is
       EDTX    : in  std_logic_vector(7 downto 0)
 
       -- data bus
-      --                                  -- none at the moment;
+      DIENA   : in    std_logic;
+      DINA    : in    std_logic_vector(7 downto 0);
+      DIENB   : in    std_logic;
+      DINB    : in    std_logic_vector(7 downto 0);
+      -- memory interface
+      RAMDQ   : inout std_logic_vector(15 downto 0);
+      RAMWE   : out   std_logic;
+      RAMADDR : out   std_logic_vector(16 downto 0);
+      RAMCLK  : out   std_logic
+
       );
   end component;
 
@@ -97,29 +107,29 @@ begin  -- Behavioral
       EATX         => EATX,
       EDRX         => EDRX,
       EDSELRX      => EDSELRX,
-      EDTX         => EDTX); 
-  
+      EDTX         => EDTX);
+
   CLK   <= not CLK after 10 ns;
   RESET <= '0'     after 20 ns;
 
   -- configuration fields for device identity
   -- 
-  myip <= X"C0a80002";                  -- 192.168.0.2
+  myip    <= X"C0a80002";               -- 192.168.0.2
   mybcast <= X"C0a000FF";
-  mymac <= X"DEADBEEF1234"; 
+  mymac   <= X"DEADBEEF1234";
 
-  main: process
-    begin
-      wait for 2 us;
-      networkstack.writepkt("arpquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
-      wait for 2 us;
+  main : process
+  begin
+    wait for 2 us;
+    networkstack.writepkt("arpquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+    wait for 2 us;
 
-      networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
-      networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
-      
-      wait; 
+    networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+    networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
 
-    end process main; 
+    wait;
+
+  end process main;
 
 
 end Behavioral;

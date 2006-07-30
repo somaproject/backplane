@@ -14,23 +14,19 @@ entity eventtx is
   port (
     CLK : in std_logic;
     -- header fields
-
     MYMAC : in std_logic_vector(47 downto 0);
     MYIP  : in std_logic_vector(31 downto 0);
     MYBCAST : in std_logic_vector(31 downto 0); 
     -- event interface
-
     ECYCLE : in std_logic;
     EDTX   : in std_logic_vector(7 downto 0);
     EATX   : in std_logic_vector(somabackplane.N-1 downto 0);
-
     -- tx IF
     DOUT  : out std_logic_vector(15 downto 0);
     DOEN  : out std_logic;
     GRANT : in  std_logic;
     ARM   : out std_logic
     );
-
 end eventtx;
 
 architecture Behavioral of eventtx is

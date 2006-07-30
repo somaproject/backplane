@@ -13,14 +13,15 @@ use WORK.networkstack;
 entity txmux is
   port (
     CLK      : in  std_logic;
-    DEN      : in  std_logic_vector(4 downto 0);
+    DEN      : in  std_logic_vector(5 downto 0);
     DIN0      : in  std_logic_vector(15 downto 0);
     DIN1      : in  std_logic_vector(15 downto 0);
     DIN2      : in  std_logic_vector(15 downto 0);
     DIN3      : in  std_logic_vector(15 downto 0);
     DIN4      : in  std_logic_vector(15 downto 0);
-    GRANT    : out std_logic_vector(4 downto 0);
-    ARM      : in  std_logic_vector(4 downto 0);
+    DIN5 : in std_logic_vector(15 downto 0); 
+    GRANT    : out std_logic_vector(5 downto 0);
+    ARM      : in  std_logic_vector(5 downto 0);
     DOUT     : out std_logic_vector(15 downto 0);
     NEWFRAME : out std_logic
     );
@@ -34,8 +35,8 @@ architecture Behavioral of txmux is
    signal dinmux : std_logic_vector(15 downto 0) := (others => '0');
    signal denmux : std_logic                     := '0';
 
-   signal lchan, chan  : integer range 0 to 4         := 0;
-   signal arml  : std_logic_vector(4 downto 0) := (others => '0');
+   signal lchan, chan  : integer range 0 to 5         := 0;
+   signal arml  : std_logic_vector(5 downto 0) := (others => '0');
    signal orarml : std_logic := '0';
   
    signal grantmux : std_logic := '0';
@@ -50,7 +51,8 @@ begin  -- Behavioral
             DIN1 when chan = 1 else
             DIN2 when chan = 2 else
             DIN3 when chan = 3 else
-            DIN4; 
+            DIN4 when chan = 4 else
+            DIN5; 
             
    denmux <= DEN(chan);
 
@@ -60,9 +62,10 @@ begin  -- Behavioral
             2 when arml(2) = '1' else
             3 when arml(3) = '1' else
             4 when arml(4) = '1' else
+            5 when arml(5) = '1' else
             0; 
   
-   orarml <= arml(0) or arml(1) or arml(2) or arml(3) or arml(4); 
+   orarml <= arml(0) or arml(1) or arml(2) or arml(3) or arml(4) or arm(5); 
   
    setregs : for i in 0 to networkstack.N-1 generate
      process (CLK)

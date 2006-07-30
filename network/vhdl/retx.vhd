@@ -50,7 +50,7 @@ architecture Behavioral of retxresponse is
 begin  -- Behavioral
 
 
-  buffer : RAMB16_S18_S18
+  rambuffer : RAMB16_S18_S18
     generic map (
       SIM_COLLISION_CHECK => "NONE")
     port map (

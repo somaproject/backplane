@@ -21,10 +21,10 @@ entity eventrxverify is
     -- invalidate interface
     INVNUM        : in  integer;
     INVCLK        : in  std_logic;
-
     -- output status
-    EVTERROR    : out std_logic;
-    EVENTPOSOUT : out integer
+    EVTERROR      : out std_logic;
+    EVENTPOSOUT   : out integer;
+    DONE          : out std_logic
     );
 
 end eventrxverify;
@@ -51,7 +51,7 @@ architecture Behavioral of eventrxverify is
   --signal eventpos : integer                       := 0;
 
 begin  -- Behavioral
-  --EVENTPOSOUT <= eventpos;
+  --
 
 
   event_acquire       : process
@@ -99,8 +99,8 @@ begin  -- Behavioral
   begin
     if falling_edge(RESET) then
       file_open(event_file, EVENTFILENAME, read_mode);
-      eventpos := 0;
-
+      eventpos                     := 0;
+      DONE <= '0';
       while not endfile(event_file) loop
         readline(event_file, L);
         hread(L, addrin);
@@ -119,7 +119,7 @@ begin  -- Behavioral
             & datain(i*16 + 15 downto i*16 + 8);
         end loop;  -- i 
 
-        eventpos                   := eventpos + 1;
+        eventpos := eventpos + 1;
       end loop;
 
       -- clear the remaining ones
@@ -135,13 +135,14 @@ begin  -- Behavioral
       if ecyclepos = 48 then
         while not eventarray(eventpos).valid and eventpos < BUFSIZE -1 loop
           eventpos := eventpos + 1;
+          EVENTPOSOUT <= eventpos;
         end loop;
       end if;
 
       if ecyclepos = 49 then
         eaddrbus_expected(77 downto 0) <=
           eventarray(eventpos).eaddr(77 downto 0);
-        edatabus_expected <= eventarray(eventpos).edata; 
+        edatabus_expected              <= eventarray(eventpos).edata;
       end if;
 
       if ecyclepos = 50 then            -- wait for some time to stabilize 
@@ -157,6 +158,8 @@ begin  -- Behavioral
             report "Error reading event bytes" severity error;
 
           eventpos := eventpos + 1;
+          EVENTPOSOUT <= eventpos;
+
         end if;
       end if;
 

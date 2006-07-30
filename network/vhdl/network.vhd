@@ -17,31 +17,38 @@ use UNISIM.vcomponents.all;
 
 entity network is
   port (
-    CLK          : in  std_logic;
-    RESET        : in  std_logic;
+    CLK          : in    std_logic;
+    MEMCLK       : in    std_logic;
+    RESET        : in    std_logic;
     -- config
-    MYIP         : in  std_logic_vector(31 downto 0);
-    MYMAC        : in  std_logic_vector(47 downto 0);
-    MYBCAST      : in  std_logic_vector(31 downto 0);
+    MYIP         : in    std_logic_vector(31 downto 0);
+    MYMAC        : in    std_logic_vector(47 downto 0);
+    MYBCAST      : in    std_logic_vector(31 downto 0);
     -- input
-    NICNEXTFRAME : out std_logic;
-    NICDINEN     : in  std_logic;
-    NICDIN       : in  std_logic_vector(15 downto 0);
+    NICNEXTFRAME : out   std_logic;
+    NICDINEN     : in    std_logic;
+    NICDIN       : in    std_logic_vector(15 downto 0);
     -- output
-    DOUT         : out std_logic_vector(15 downto 0);
-    NEWFRAME     : out std_logic;
-    IOCLOCK      : out std_logic;
-
+    DOUT         : out   std_logic_vector(15 downto 0);
+    NEWFRAME     : out   std_logic;
+    IOCLOCK      : out   std_logic;
     -- event bus
-    ECYCLE  : in  std_logic;
-    EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
-    EDRX    : out std_logic_vector(7 downto 0);
-    EDSELRX : in  std_logic_vector(3 downto 0);
-    EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-    EDTX    : in  std_logic_vector(7 downto 0)
-
+    ECYCLE       : in    std_logic;
+    EARX         : out   std_logic_vector(somabackplane.N -1 downto 0);
+    EDRX         : out   std_logic_vector(7 downto 0);
+    EDSELRX      : in    std_logic_vector(3 downto 0);
+    EATX         : in    std_logic_vector(somabackplane.N -1 downto 0);
+    EDTX         : in    std_logic_vector(7 downto 0)
     -- data bus
-    --                                  -- none at the moment;
+    DIENA        : in    std_logic;
+    DINA         : in    std_logic_vector(7 downto 0);
+    DIENB        : in    std_logic;
+    DINB         : in    std_logic_vector(7 downto 0);
+    -- memory interface
+    RAMDQ        : inout std_logic_vector(15 downto 0);
+    RAMWE        : out   std_logic;
+    RAMADDR      : out   std_logic_vector(16 downto 0);
+    RAMCLK       : out   std_logic
     );
 end network;
 
@@ -84,8 +91,9 @@ architecture Behavioral of network is
       DIN2     : in  std_logic_vector(15 downto 0);
       DIN3     : in  std_logic_vector(15 downto 0);
       DIN4     : in  std_logic_vector(15 downto 0);
-      GRANT    : out std_logic_vector(4 downto 0);
-      ARM      : in  std_logic_vector(4 downto 0);
+      DIN5     : in  std_logic_vector(15 downto 0);
+      GRANT    : out std_logic_vector(5 downto 0);
+      ARM      : in  std_logic_vector(5 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
       NEWFRAME : out std_logic
       );
@@ -126,6 +134,101 @@ architecture Behavioral of network is
       DOEN      : out std_logic);
   end component;
 
+  component eventtx
+    port (
+      CLK     : in  std_logic;
+      -- header fields
+      MYMAC   : in  std_logic_vector(47 downto 0);
+      MYIP    : in  std_logic_vector(31 downto 0);
+      MYBCAST : in  std_logic_vector(31 downto 0);
+      -- event interface
+      ECYCLE  : in  std_logic;
+      EDTX    : in  std_logic_vector(7 downto 0);
+      EATX    : in  std_logic_vector(somabackplane.N-1 downto 0);
+      -- tx IF
+      DOUT    : out std_logic_vector(15 downto 0);
+      DOEN    : out std_logic;
+      GRANT   : in  std_logic;
+      ARM     : out std_logic
+      );
+  end component;
+
+  component data
+    port (
+      CLK      : in    std_logic;
+      MEMCLK   : in    std_logic;
+      ECYCLE   : in    std_logic;
+      -- input
+      DIENA    : in    std_logic;
+      DINA     : in    std_logic_vector(7 downto 0);
+      DIENB    : in    std_logic;
+      DINB     : in    std_logic_vector(7 downto 0);
+      -- memory
+      RAMDQ    : inout std_logic_vector(15 downto 0);
+      RAMWE    : out   std_logic;
+      RAMADDR  : out   std_logic_vector(16 downto 0);
+      -- tx output
+      DOUT     : out   std_logic_vector(15 downto 0);
+      DOEN     : out   std_logic;
+      ARM      : out   std_logic;
+      GRANT    : in    std_logic;
+      -- retx interface
+      RETXDOUT : out   std_logic_vector(15 downto 0);
+      RETXADDR : out   std_logic_vector(8 downto 0);
+      RETXWE   : out   std_logic;
+      RETXREQ  : in    std_logic;
+      RETXDONE : out   std_logic;
+      RETXSRC  : in    std_logic_vector(5 downto 0);
+      RETXTYPE : in    std_logic_vector(1 downto 0);
+      RETXID   : in    std_logic_vector(31 downto 0)
+      );
+  end component;
+
+  component retxresponse
+    port (
+      CLK       : in  std_logic;
+      -- IO interface
+      START     : in  std_logic;
+      DONE      : out std_logic;
+      INPKTDATA : in  std_logic_vector(15 downto 0);
+      INPKTADDR : out std_logic_vector(9 downto 0);
+      -- retx interface
+      RETXDIN   : in  std_logic_vector(15 downto 0);
+      RETXADDR  : in  std_logic_vector(8 downto 0);
+      RETXWE    : in  std_logic;
+      RETXREQ   : out std_logic;
+      RETXDONE  : in  std_logic;
+      RETXSRC   : out std_logic_vector(5 downto 0);
+      RETXTYP   : out std_logic_vector(1 downto 0);
+      RETXID    : out std_logic_vector(31 downto 0);
+      -- output
+      ARM       : out std_logic;
+      GRANT     : in  std_logic;
+      DOUT      : out std_logic_vector(15 downto 0);
+      DOEN      : out std_logic);
+  end component;
+
+  component eventrx
+    port (
+      CLK       : in  std_logic;
+      INPKTADDR : out std_logic_vector(9 downto 0);
+      INPKTDATA : in  std_logic_vector(15 downto 0);
+      START     : in  std_logic;
+      DONE      : out std_logic;
+      -- input parameters
+      MYMAC     : in  std_logic_vector(47 downto 0);
+      MYIP      : in  std_logic_vector(31 downto 0);
+      -- Event interface
+      ECYCLE    : in  std_logic;
+      EARX      : out std_logic_vector(somabackplane.N -1 downto 0);
+      EDRX      : out std_logic_vector(7 downto 0);
+      EDSELRX   : in  std_logic_vector(3 downto 0);
+      -- output to TX interface
+      DOUT      : out std_logic_vector(15 downto 0);
+      DOEN      : out std_logic;
+      ARM       : out std_logic;
+      GRANT     : in  std_logic);
+  end component;
 
   -- input if
 
@@ -149,15 +252,26 @@ architecture Behavioral of network is
 
   -- output
 
-  signal den  : std_logic_vector(4 downto 0)  := (others => '0');
+  signal den  : std_logic_vector(5 downto 0)  := (others => '0');
   signal din0 : std_logic_vector(15 downto 0) := (others => '0');
   signal din1 : std_logic_vector(15 downto 0) := (others => '0');
   signal din2 : std_logic_vector(15 downto 0) := (others => '0');
   signal din3 : std_logic_vector(15 downto 0) := (others => '0');
   signal din4 : std_logic_vector(15 downto 0) := (others => '0');
+  signal din5 : std_logic_vector(15 downto 0) := (others => '0');
 
-  signal grant : std_logic_vector(4 downto 0) := (others => '0');
-  signal arm   : std_logic_vector(4 downto 0) := (others => '0');
+  signal grant : std_logic_vector(5 downto 0) := (others => '0');
+  signal arm   : std_logic_vector(5 downto 0) := (others => '0');
+
+  -- retx interface
+  signal retxdout : std_logic_vector(15 downto 0) := (others => '0');
+  signal retxaddr : std_logic_vector(8 downto 0)  := (others => '0');
+  signal retxwe   : std_logic                     := '0';
+
+  signal retxreq, retxdone : std_logic                     := '0';
+  signal retxsrc           : std_logic_vector(5 downto 0)  := (others => '0');
+  signal retxtype          : std_logic(1 downto 0)         := (others => '0');
+  signal retxid            : std_logic_vector(31 downto 0) := (others => '0');
 
 
 begin  -- Behavioral
@@ -193,6 +307,7 @@ begin  -- Behavioral
       DIN2     => din2,
       DIN3     => din3,
       DIN4     => din4,
+      DIN5     => din5,
       GRANT    => grant,
       ARM      => arm,
       DOUT     => dout,
@@ -223,13 +338,86 @@ begin  -- Behavioral
       DONE      => pingindone,
       INPKTDATA => pktdata,
       INPKTADDR => pinginaddr,
-      ARM       => arm(3),
-      GRANT     => grant(3),
-      DOUT      => din3,
-      DOEN      => den(3));
+      ARM       => arm(5),
+      GRANT     => grant(5),
+      DOUT      => din5,
+      DOEN      => den(5));
 
-  din0 <= (others => '0');
-  din1 <= (others => '0');
-  din2 <= (others => '0');
+  eventtx_inst : eventtx
+    port map (
+      CLK     => CLK,
+      MYMAC   => MYMAC,
+      MYIP    => MYIP,
+      MYBCAST => MYBCAST,
+      ECYCLE  => ECYCLE,
+      EDTX    => EDTX,
+      EATX    => EATX,
+      DOUT    => din0,
+      DOEN    => den(0),
+      ARM     => arm(0),
+      GRANT   => grant(0));
+
+  data_inst : data
+    port map (
+      CLK      => CLK,
+      MEMCLK   => MEMCLK,
+      ECYCLE   => ECYCLE,
+      DIENA    => DIENA,
+      DINA     => DINA,
+      DIENB    => DIENB,
+      DINB     => DINB,
+      RAMDQ    => RAMDQ,
+      RAMWE    => RAMWE,
+      RAMADDR  => RAMADDR,
+      DOUT     => din1,
+      DOEN     => den(1),
+      ARM      => arm(1),
+      GRANT    => grant(1),
+      RETXDOUT => retxdout,
+      RETXADDR => retxaddr,
+      RETXWE   => retxwe,
+      RETXREQ  => retxreq,
+      RETXDONE => retxdone,
+      RETXSRC  => retxsrc,
+      RETXTYPE => retxtype,
+      RETXID   => retxid);
+
+  retxresponse_inst : retxresponse
+    port map (
+      CLK       => CLK,
+      START     => retxinstart,
+      DONE      => retxindone,
+      INPKTDATA => pktdata,
+      INPKTADDR => retxinaddr,
+      RETXDIN   => retxdin,
+      RETXADDR  => retxaddr,
+      RETXWE    => retxwe,
+      RETXREQ   => retxreq,
+      RETXDONE  => retxdone,
+      RETXsrc   => retxsrc,
+      RETXTYP   => retxtyp,
+      RETXID    => retxid,
+      ARM       => arm(2),
+      GRANT     => grant(2),
+      DOUT      => din2,
+      DOEN      => den(2));
+
+  eventrx_inst : eventrx
+    port map (
+      CLK       => CLK,
+      INPKTADDR => eventinaddr,
+      INPKTDATA => pktdata,
+      START     => eventinstart,
+      DONE      => eventindone,
+      MYMAC     => MYMAC,
+      MYIP      => MYIP,
+      ECYCLE    => ECYCLE,
+      EARX      => EARX,
+      EDRX      => EDRX,
+      EDSELRX   => EDSELRX,
+      DOUT      => din3,
+      DOEN      => den(3),
+      ARM       => arm(3),
+      GRANT     => grant(3));
 
 end Behavioral;
