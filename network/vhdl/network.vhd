@@ -38,7 +38,7 @@ entity network is
     EDRX         : out   std_logic_vector(7 downto 0);
     EDSELRX      : in    std_logic_vector(3 downto 0);
     EATX         : in    std_logic_vector(somabackplane.N -1 downto 0);
-    EDTX         : in    std_logic_vector(7 downto 0)
+    EDTX         : in    std_logic_vector(7 downto 0);
     -- data bus
     DIENA        : in    std_logic;
     DINA         : in    std_logic_vector(7 downto 0);
@@ -158,6 +158,9 @@ architecture Behavioral of network is
       CLK      : in    std_logic;
       MEMCLK   : in    std_logic;
       ECYCLE   : in    std_logic;
+      MYMAC    : in    std_logic_vector(47 downto 0);
+      MYIP     : in    std_logic_vector(31 downto 0);
+      MYBCAST  : in    std_logic_vector(31 downto 0);
       -- input
       DIENA    : in    std_logic;
       DINA     : in    std_logic_vector(7 downto 0);
@@ -179,7 +182,7 @@ architecture Behavioral of network is
       RETXREQ  : in    std_logic;
       RETXDONE : out   std_logic;
       RETXSRC  : in    std_logic_vector(5 downto 0);
-      RETXTYPE : in    std_logic_vector(1 downto 0);
+      RETXTYP  : in    std_logic_vector(1 downto 0);
       RETXID   : in    std_logic_vector(31 downto 0)
       );
   end component;
@@ -270,7 +273,7 @@ architecture Behavioral of network is
 
   signal retxreq, retxdone : std_logic                     := '0';
   signal retxsrc           : std_logic_vector(5 downto 0)  := (others => '0');
-  signal retxtype          : std_logic(1 downto 0)         := (others => '0');
+  signal retxtyp           : std_logic_vector(1 downto 0)  := (others => '0');
   signal retxid            : std_logic_vector(31 downto 0) := (others => '0');
 
 
@@ -361,6 +364,9 @@ begin  -- Behavioral
     port map (
       CLK      => CLK,
       MEMCLK   => MEMCLK,
+      MYIP     => MYIP,
+      MYBCAST  => MYBCAST,
+      MYMAC    => MYMAC,
       ECYCLE   => ECYCLE,
       DIENA    => DIENA,
       DINA     => DINA,
@@ -379,7 +385,7 @@ begin  -- Behavioral
       RETXREQ  => retxreq,
       RETXDONE => retxdone,
       RETXSRC  => retxsrc,
-      RETXTYPE => retxtype,
+      RETXTYP  => retxtyp,
       RETXID   => retxid);
 
   retxresponse_inst : retxresponse
@@ -389,7 +395,7 @@ begin  -- Behavioral
       DONE      => retxindone,
       INPKTDATA => pktdata,
       INPKTADDR => retxinaddr,
-      RETXDIN   => retxdin,
+      RETXDIN   => retxdout,
       RETXADDR  => retxaddr,
       RETXWE    => retxwe,
       RETXREQ   => retxreq,

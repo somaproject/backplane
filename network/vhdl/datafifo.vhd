@@ -14,12 +14,13 @@ entity datafifo is
     DIN      : in  std_logic_vector(15 downto 0);
     FIFOFULL : out std_logic;
     ADDRIN   : in  std_logic_vector(8 downto 0);
-    WE       : in  std_logic;
+    WEIN       : in  std_logic;
     INDONE   : in  std_logic;
     -- output interface
     CLK      : in  std_logic;
     DOEN     : out std_logic;
     ARM      : out std_logic;
+    DOUT : out std_logic_vector(15 downto 0); 
     GRANT    : in  std_logic);
 
 end datafifo;
@@ -42,7 +43,13 @@ architecture Behavioral of datafifo is
   type states is (none, armw, outwrw, dones);
   signal cs, ns : states := none;
 
+  signal bcntinc : std_logic := '0';
 
+  signal wea : std_logic := '0';
+  
+  signal dob : std_logic_vector(15 downto 0) := (others => '0');
+  
+  
 begin  -- Behavioral
 
   addra <= bpin & ADDRIN;
@@ -54,6 +61,7 @@ begin  -- Behavioral
               (BPIN = "10" and BPOUT = "11") else
               '0';
 
+  DOUT <= dob;
   
   main_memclk : process(MEMCLK)
   begin
@@ -70,23 +78,23 @@ begin  -- Behavioral
 
       cs <= ns;
       
-      if bitinc = '1' then
+      if bcntinc = '1' then
         bcnt <= bcnt + 1;
       end if;
       
-      DOEN <= bitinc; 
+      DOEN <= bcntinc; 
 
       if cs = dones then
         bpout <= bpout + 1; 
       end if;
 
       if bcnt = "000000000" then
-        len <= dout(10 downto 1); 
+        len <= dob(10 downto 1); 
       end if;
 
       
     end if;
-  end process main_memclk;
+  end process main_clk;
 
   fsm: process(len, addrb, cs, bpinl, bpout, GRANT, bcnt)
     begin
@@ -137,15 +145,15 @@ begin  -- Behavioral
       SIM_COLLISION_CHECK => "NONE")
       port map (
       DOA => open, 
-      DOB => DOUT(15 downto 8) ,
+      DOB => dob(15 downto 8) ,
       ADDRA => addra,
       ADDRB => addrb,
       CLKA => MEMCLK,
       CLKB => CLK, 
       DIA => DIN(15 downto 8),
-      DIB => X"0000",     
-      DIPA => "00",   
-      DIPB => "00",   
+      DIB => X"00",     
+      DIPA => "0",   
+      DIPB => "0",   
       ENA => '1',     
       ENB => '1',     
       SSRA => '0', 
@@ -159,15 +167,15 @@ begin  -- Behavioral
       SIM_COLLISION_CHECK => "NONE")
       port map (
       DOA => open, 
-      DOB => DOUT(7 downto 0) ,
+      DOB => dob(7 downto 0) ,
       ADDRA => addra,
       ADDRB => addrb,
       CLKA => MEMCLK,
       CLKB => CLK, 
       DIA => DIN(7 downto 0),
-      DIB => X"0000",     
-      DIPA => "00",   
-      DIPB => "00",   
+      DIB => X"00",     
+      DIPA => "0",   
+      DIPB => "0",   
       ENA => '1',     
       ENB => '1',     
       SSRA => '0', 

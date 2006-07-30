@@ -11,6 +11,9 @@ entity data is
     CLK      : in    std_logic;
     MEMCLK   : in    std_logic;
     ECYCLE   : in    std_logic;
+    MYIP     : in    std_logic_vector(31 downto 0);
+    MYMAC    : in    std_logic_vector(47 downto 0);
+    MYBCAST  : in    std_logic_vector(31 downto 0);
     -- input
     DIENA    : in    std_logic;
     DINA     : in    std_logic_vector(7 downto 0);
@@ -32,7 +35,7 @@ entity data is
     RETXREQ  : in    std_logic;
     RETXDONE : out   std_logic;
     RETXSRC  : in    std_logic_vector(5 downto 0);
-    RETXTYPE : in    std_logic_vector(1 downto 0);
+    RETXTYP : in    std_logic_vector(1 downto 0);
     RETXID   : in    std_logic_vector(31 downto 0)
     );
 end data;
@@ -129,11 +132,12 @@ architecture Behavioral of data is
       DIN      : in  std_logic_vector(15 downto 0);
       FIFOFULL : out std_logic;
       ADDRIN   : in  std_logic_vector(8 downto 0);
-      WE       : in  std_logic;
+      WEIN     : in  std_logic;
       INDONE   : in  std_logic;
       -- output interface
       CLK      : in  std_logic;
       DOEN     : out std_logic;
+      DOUT     : out std_logic_vector(15 downto 0);
       ARM      : out std_logic;
       GRANT    : in  std_logic);
   end component;
@@ -157,7 +161,7 @@ begin  -- Behavioral
       DIN    => DINB,
       DIEN   => DIENB,
       DOUT   => dpdatab,
-      ADDR   => dpaddrbb,
+      ADDR   => dpaddrb,
       LEN    => dplenb);
 
   datapacketgen_inst : datapacketgen
@@ -209,11 +213,12 @@ begin  -- Behavioral
       DIN      => txfdin,
       FIFOFULL => txfull,
       ADDRIN   => txfaddr,
-      WE       => txfwe,
+      WEIN     => txfwe,
       INDONE   => txfdone,
       CLK      => CLK,
       DOEN     => DOEN,
       ARM      => ARM,
+      DOUT     => DOUT,
       GRANT    => GRANT);
 
 end Behavioral;

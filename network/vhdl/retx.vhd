@@ -45,7 +45,8 @@ architecture Behavioral of retxresponse is
 
   signal cs, ns : states := none;
 
-
+  signal bcntinc : std_logic := '0';
+  
 
 begin  -- Behavioral
 
@@ -125,21 +126,21 @@ begin  -- Behavioral
           end if;
 
         when getsrctyp =>
-          INPKTADDR <= "000010010"; 
+          INPKTADDR <= "0000010010"; 
           ARM <= '0';
           RETXREQ <= '0';
           bcntinc <= '0';
           ns <= getidh; 
 
         when getidh =>
-          INPKTADDR <= "000010011"; 
+          INPKTADDR <= "0000010011"; 
           ARM <= '0';
           RETXREQ <= '0';
           bcntinc <= '0';
           ns <= getidl; 
 
         when getidl =>
-          INPKTADDR <= "000010100"; 
+          INPKTADDR <= "0000010100"; 
           ARM <= '0';
           RETXREQ <= '0';
           bcntinc <= '0';

@@ -42,7 +42,7 @@ architecture Behavioral of networktest is
       EDRX    : out std_logic_vector(7 downto 0);
       EDSELRX : in  std_logic_vector(3 downto 0);
       EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX    : in  std_logic_vector(7 downto 0)
+      EDTX    : in  std_logic_vector(7 downto 0);
 
       -- data bus
       DIENA   : in    std_logic;
@@ -61,6 +61,8 @@ architecture Behavioral of networktest is
 
 
   signal CLK          : std_logic                     := '0';
+  signal memclk : std_logic := '0';
+  
   signal RESET        : std_logic                     := '1';
   -- config
   signal MYIP         : std_logic_vector(31 downto 0) := (others => '0');
@@ -86,12 +88,25 @@ architecture Behavioral of networktest is
 
   signal EDTX : std_logic_vector(7 downto 0) := (others => '0');
 
+  -- ram
+  signal RAMCLK : std_logic := '0';
+  signal RAMADDR : std_logic_vector(16 downto 0) := (others => '0');
+  signal RAMWE : std_logic := '1';
+  signal RAMDQ : std_logic_vector(15 downto 0) := (others => 'Z');
+
+  -- data bus
+  signal dina, dinb : std_logic_vector(15 downto 0) := (others => '0');
+  signal diena, dienb : std_logic := '0';
+
+  
+  
 
 begin  -- Behavioral
 
   network_uut : network
     port map (
       CLK          => CLK,
+      MEMCLK => MEMCLK,
       RESET        => RESET,
       MYIP         => MYIP,
       MYMAC        => MYMAC,
@@ -99,15 +114,27 @@ begin  -- Behavioral
       NICNEXTFRAME => NICNEXTFRAME,
       NICDINEN     => NICDINEN,
       NICDIN       => NICDIN,
+
       DOUT         => DOUT,
       NEWFRAME     => NEWFRAME,
       IOCLOCK      => IOCLOCK,
+
       ECYCLE       => ECYCLE,
       EARX         => EARX,
       EATX         => EATX,
       EDRX         => EDRX,
       EDSELRX      => EDSELRX,
-      EDTX         => EDTX);
+      EDTX         => EDTX,
+
+      DIENA => DIENA,
+      DINA => DINA,
+      DIENB => DIENB,
+      DINB => DINB,
+
+      RAMDQ => RAMDQ,
+      RAMWE => RAMWE,
+      RAMADDR => RAMADDR,
+      RAMCLK => RAMCLK);
 
   CLK   <= not CLK after 10 ns;
   RESET <= '0'     after 20 ns;
