@@ -122,7 +122,7 @@ begin  -- Behavioral
       SRCIP  => MYIP,
       DESTIP => MYBCAST,
       DESTMAC => X"FFFFFFFFFFFF", 
-      DESTPORT => X"1338", 
+      DESTPORT => X"1388", 
       START => hdrstart,
       WLEN  => datalen,
       DOUT  => douthdr,

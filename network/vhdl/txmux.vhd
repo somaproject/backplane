@@ -131,7 +131,7 @@ begin  -- Behavioral
          end if;
 
        when grantw =>
-         grantmux <= '1';
+         grantmux <= '0';
          if denmux = '0' then
            ns     <= start; 
          else

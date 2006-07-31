@@ -60,16 +60,28 @@ architecture Behavioral of networktest is
       );
   end component;
 
-  component datavalidate
+  component datareceiver
+    generic (
+      typ       :     integer := 0;
+      src       :     integer := 0);
     port (
       CLK       : in  std_logic;
       DIN       : in  std_logic_vector(15 downto 0);
       NEWFRAME  : in  std_logic;
-      NOMATCH   : out  std_logic;
-      DATAERROR : out std_logic;
-      DATADONE  : out std_logic);
+      RXGOOD    : out std_logic;
+      RXCNT     : out integer;
+      RXMISSING : out std_logic);
   end component;
 
+  component eventreceiver
+    port (
+      CLK       : in  std_logic;
+      DIN       : in  std_logic_vector(15 downto 0);
+      NEWFRAME  : in  std_logic;
+      RXGOOD    : out std_logic := '0';
+      RXCNT     : out integer   := 0;
+      RXMISSING : out std_logic := '0');
+  end component;
 
   signal CLK    : std_logic := '0';
   signal memclk : std_logic := '0';
@@ -117,11 +129,26 @@ architecture Behavioral of networktest is
   signal ramaddrl, ramaddrll : std_logic_vector(16 downto 0)
                                          := (others => '0');
 
-  signal datavalidate_nomatch                          : std_logic := '0';
-  signal datavalidate_dataerror, datavalidate_datadone : std_logic := '0';
+  signal data_rxgood    : std_logic_vector(63 downto 0) := (others => '0');
+  signal data_rxmissing : std_logic_vector(63 downto 0) := (others => '0');
+  type rxcntarray is array (0 to 63) of integer;
+  signal data_rxcnt     : rxcntarray                    := (others => 0);
 
+  signal event_rxgood : std_logic := '0';
+  signal event_rxmissing : std_logic := '0';
+  signal event_rxcnt : integer := 0;
+
+-- event signals
+  type eventarray is array (0 to 5) of std_logic_vector(15 downto 0);
+
+  type events is array (0 to somabackplane.N-1) of eventarray;
+
+  signal eventinputs : events := (others => (others => X"0000"));
+
+  signal eazeros : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
 
 begin  -- Behavioral
+
 
   network_uut : network
     port map (
@@ -156,18 +183,13 @@ begin  -- Behavioral
       RAMADDR => RAMADDR,
       RAMCLK  => RAMCLK);
 
-
-  datavalidate_inst: datavalidate
-    port map (
-      CLK       => CLK,
-      DIN       => DOUT,
-      NEWFRAME  => NEWFRAME,
-      NOMATCH   => datavalidate_nomatch,
-      DATAERROR => datavalidate_dataerror,
-      DATADONE  => datavalidate_datadone); 
-
-  CLK    <= not CLK after 10 ns;
-  MEMCLK <= not CLK after 5 ns;
+  MEMCLK  <= not MEMCLK after 5 ns;
+  process(MEMCLK)
+  begin
+    if rising_edge(MEMCLK) then
+      CLK <= not CLK;
+    end if;
+  end process;
 
   RESET      <= '0' after 20 ns;
   -- ecycle generation
@@ -268,6 +290,64 @@ begin  -- Behavioral
 
   -- retx request and verify
 
+  datareceivers       : for i in 0 to 63 generate
+    datareceiver_inst : datareceiver
+      generic map (
+        typ       => 0,
+        src       => i)
+      port map (
+        CLK       => CLK,
+        DIN       => DOUT,
+        NEWFRAME  => NEWFRAME,
+        RXGOOD    => data_rxgood(i),
+        RXCNT     => data_rxcnt(i),
+        RXMISSING => data_rxmissing(i));
+  end generate datareceivers; 
+  
+  eventreceiver_inst: eventreceiver
+    port map (
+      CLK       => CLK,
+      DIN       => DOUT,
+      NEWFRAMe  => NEWFRAME,
+      RXGOOD    => event_rxgood,
+      RXCNt     => event_rxcnt,
+      RXMISSING => event_rxmissing); 
+    
+  event_packet_generation : process
+  begin
 
+    while true loop
 
+      wait until rising_edge(CLK) and epos = 47;
+      -- now we send the events
+      for i in 0 to somabackplane.N -1 loop
+        -- output the event bytes
+        for j in 0 to 5 loop
+          EDTX <= eventinputs(i)(j)(15 downto 8);
+          wait until rising_edge(CLK);
+          EDTX <= eventinputs(i)(j)(7 downto 0);
+          wait until rising_edge(CLK);
+        end loop;  -- j
+      end loop;  -- i
+    end loop;
+
+  end process;
+
+  EATX <= (others => '1');
+  
+  -- time stamp event
+  ts_eventgen             : process(CLK)
+    variable eventtimepos : std_logic_vector(47 downto 0) := (others => '0');
+  begin
+    if rising_edge(CLK) then
+      if ECYCLE = '1' then
+        eventinputs(0)(0) <= X"1000";
+        eventinputs(0)(1) <= eventtimepos(47 downto 32);
+        eventinputs(0)(2) <= eventtimepos(31 downto 16);
+        eventinputs(0)(3) <= eventtimepos(15 downto 0);
+
+        eventtimepos := eventtimepos + 1;
+      end if;
+    end if;
+  end process;
 end Behavioral;

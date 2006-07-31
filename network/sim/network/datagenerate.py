@@ -38,14 +38,14 @@ class DataPacketGen(object):
     def __init__(self):
         self.ids = n.zeros((4, 2**6), dtype=n.uint32)
 
-    def generatePacket(self, N = 0, src = 0, typ = 0):
+    def generatePacket(self, N = 0, src = -1, typ = -1):
         if N == 0:
             N = int(round(n.rand()*290)*2) # max length is two 
         
-        if src == 0:
+        if src < 0:
             src = int(round(n.rand() * (2**6-1)))
 
-        if typ == 0:
+        if typ < 0:
             typ = int(round(n.rand() * (2**2-1)))
         
         id = self.ids[typ, src]
@@ -95,14 +95,16 @@ if __name__ == "__main__":
     datapackets = []
     for i in range(pktsets):
         for src in range(64):
-            N = 32*4 + 20 + (src % 4) * 2
-            N = 2; 
-            
-            p = dpg.generatePacket(N = N)
+            N = 280
+            p = dpg.generatePacket(N = N, src = src, typ = 0)
             datapackets.append(p)
 
     pktcnt = len(datapackets)
-    
+
+    propfid= file('dataprops.txt', 'w')
+    for d in datapackets:
+        propfid.write('%d %d %d %d\n' % (d.id, d.src, d.typ, len(d.data)))
+                      
     # write them in the event cycles:
 
     pos = 0

@@ -34,3 +34,41 @@ and the like.
 
 
 data validate -- is this a broadcast packet? is it IP? UDP? 
+
+
+New plan: 
+What are the questions we want to ask ?
+1. Can we handle our requested bandwidth of whatevers? 
+2. Under ADVERSE inputs, can we maintain our desired outputs? 
+
+
+So to do this we generate a total of N events for each of the 64
+source types. Then we create a "consumer" for each that will expect to
+recive:
+
+1. incremental IDs
+2. a data packet that is dependent upon ID, typ, src. 
+
+Note that each of these consumers is -unable- to send a retx
+request. Each of these containers throws up a "error" if it receives
+ID N+1 but did not receive ID N.
+
+there are four status signals: 
+rxcnt
+rxgood
+rxmissing
+rxerror
+
+------------------------------------------------------------------
+Event Receiver
+------------------------------------------------------------------ 
+
+At ALL times we place a full complement of events into the event bus.
+The first event is the timer event, and we use this to check if we are
+properly receiving the events. 
+
+This is event 0x10 from source 0x00. 
+
+Thus, we will make the (stupid?) assumption that all events are of the form:
+
+len: somabackplane.N - 1, and then somabackplane.N * 6 bytes of data

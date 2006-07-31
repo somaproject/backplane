@@ -99,7 +99,7 @@ begin  -- Behavioral
         when none  =>
           ADDRINC <= '0';
           -- WEOUT <= '0';
-          if START = '0' then
+          if START = '1' then
             ns <= bpcheck;
           else
             ns <= none; 

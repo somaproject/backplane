@@ -203,9 +203,9 @@ begin  -- Behavioral
         end if;
       end if;
 
-      addrl <= addr + "000010110";
+      addrl <= addr + "000011000";
 
-      if addr = "000000000" then
+      if addr = "000000001" then
         src <= di(5 downto 0);
         typ <= di(9 downto 8);
       end if;

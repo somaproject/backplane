@@ -85,13 +85,16 @@ hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR
 
 comp: 
 
-$(WORKDIR)/datavalidate/_behavioral.var: datavalidate.vhd
-	$(VHDLC) datavalidate.vhd
+$(WORKDIR)/datareceiver/_behavioral.var: datareceiver.vhd
+	$(VHDLC) datareceiver.vhd
 
-$(WORKDIR)/networktest/_behavioral.var: datavalidate.vhd networktest.vhd
+$(WORKDIR)/eventreceiver/_behavioral.var: datareceiver.vhd eventreceiver.vhd
+	$(VHDLC) eventreceiver.vhd
+
+$(WORKDIR)/networktest/_behavioral.var: datareceiver.vhd eventreceiver.vhd networktest.vhd
 	$(VHDLC) networktest.vhd
 
-sim: $(WORKDIR)/datavalidate/_behavioral.var $(WORKDIR)/networktest/_behavioral.var 
+sim: $(WORKDIR)/datareceiver/_behavioral.var $(WORKDIR)/eventreceiver/_behavioral.var $(WORKDIR)/networktest/_behavioral.var 
 runsim: all
 	$(VHDLS) networktest
 
