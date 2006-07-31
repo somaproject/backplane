@@ -19,7 +19,7 @@ entity datamempktinput is
     -- ram interface
     
     RAMWE     : out std_logic;
-    RAMADDR   : out std_logic_vector(16 downto 0);
+    RAMADDR   : out std_logic_vector(16 downto 0) := (others => '0');
     RAMDOUT : out std_logic_vector(15 downto 0);
     -- fifo properti
     SRC : out std_logic_vector(5 downto 0);

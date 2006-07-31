@@ -19,7 +19,7 @@ entity datamempkttx is
     DONE      : out std_logic;
     -- ram interface
     
-    RAMADDR   : out std_logic_vector(16 downto 0);
+    RAMADDR   : out std_logic_vector(16 downto 0) := (others => '0'); 
     RAMDIN : in std_logic_vector(15 downto 0);
     BP : in std_logic_vector(7 downto 0)
     ); 

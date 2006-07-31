@@ -3,8 +3,6 @@ import numpy as n
 from socket import *
 import struct
 
-N = 80
-
 class DataPacket(object):
     def __init__(self, src, typ, id, data = None, N = 0):
         if data == None:
@@ -14,25 +12,23 @@ class DataPacket(object):
         self.id = id
 
     def getInputData(self):
-        data = n.zeros(len(self.data) + 2,  dtype=n.uint16)
+        data = n.zeros(len(self.data) + 1,  dtype=n.uint16)
 
-        data[0] = self.typ
-        data[1] = self.src
+        data[0] = (self.typ << 8) | self.src
         
         for i in range(len(self.data)):
-            data[i+2] = self.data[i]
+            data[i+1] = self.data[i]
         
         return data
 
     def getAllData(self):
-        data = n.zeros(len(self.data) + 4,  dtype=n.uint16)
+        data = n.zeros(len(self.data) + 3,  dtype=n.uint16)
         data[0] = self.id >> 16
         data[1] = self.id  & 0xFFFF
-        data[2] = self.typ
-        data[3] = self.src
+        data[2] = (self.typ << 8) | self.src
         
         for i in range(len(self.data)):
-            data[i+4] = self.data[i]
+            data[i+3] = self.data[i]
         
         return data
         
@@ -43,7 +39,8 @@ class DataPacketGen(object):
         self.ids = n.zeros((4, 2**6), dtype=n.uint32)
 
     def generatePacket(self, N = 0, src = 0, typ = 0):
-        N = int(round(n.rand()*290)*2) # max length is two 
+        if N == 0:
+            N = int(round(n.rand()*290)*2) # max length is two 
         
         if src == 0:
             src = int(round(n.rand() * (2**6-1)))
@@ -98,7 +95,10 @@ if __name__ == "__main__":
     datapackets = []
     for i in range(pktsets):
         for src in range(64):
-            p = dpg.generatePacket(N = 32*4 + 20 + (src % 4) * 2)
+            N = 32*4 + 20 + (src % 4) * 2
+            N = 2; 
+            
+            p = dpg.generatePacket(N = N)
             datapackets.append(p)
 
     pktcnt = len(datapackets)
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     # then write the actual data out:
     pktfid = file('data.txt', 'w')
     for i in datapackets:
-        pktfid.write("%d %8.8X %2.2X %2.2X " % (len(i.data),
+        pktfid.write("%d %8.8X %d %d " % (len(i.data),
                                                 i.id, i.src, i.typ))
         for j in i.getAllData():
             pktfid.write("%4.4X " % j)

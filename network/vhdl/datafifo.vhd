@@ -14,13 +14,13 @@ entity datafifo is
     DIN      : in  std_logic_vector(15 downto 0);
     FIFOFULL : out std_logic;
     ADDRIN   : in  std_logic_vector(8 downto 0);
-    WEIN       : in  std_logic;
+    WEIN     : in  std_logic;
     INDONE   : in  std_logic;
     -- output interface
     CLK      : in  std_logic;
     DOEN     : out std_logic;
     ARM      : out std_logic;
-    DOUT : out std_logic_vector(15 downto 0); 
+    DOUT     : out std_logic_vector(15 downto 0);
     GRANT    : in  std_logic);
 
 end datafifo;
@@ -46,23 +46,23 @@ architecture Behavioral of datafifo is
   signal bcntinc : std_logic := '0';
 
   signal wea : std_logic := '0';
-  
+
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
-  
-  
+
+
 begin  -- Behavioral
 
   addra <= bpin & ADDRIN;
   addrb <= bpout & bcnt;
 
-  FIFOFULL   <= '1' when (BPIN = "11" and BPOUT = "00") or
+  FIFOFULL <= '1' when (BPIN = "11" and BPOUT = "00") or
               (BPIN = "00" and BPOUT = "01") or
               (BPIN = "01" and BPOUT = "10") or
               (BPIN = "10" and BPOUT = "11") else
               '0';
 
   DOUT <= dob;
-  
+
   main_memclk : process(MEMCLK)
   begin
     if rising_edge(MEMCLK) then
@@ -77,111 +77,118 @@ begin  -- Behavioral
     if rising_edge(CLK) then
 
       cs <= ns;
-      
-      if bcntinc = '1' then
-        bcnt <= bcnt + 1;
+
+      bpinl <= bpin;
+
+      if cs = none then
+        bcnt   <= (others => '0');
+      else
+        if bcntinc = '1' then
+          bcnt <= bcnt + 1;
+        end if;
       end if;
-      
-      DOEN <= bcntinc; 
+
+
+      DOEN <= bcntinc;
 
       if cs = dones then
-        bpout <= bpout + 1; 
+        bpout <= bpout + 1;
       end if;
 
       if bcnt = "000000000" then
-        len <= dob(10 downto 1); 
+        len <= dob(10 downto 1);
       end if;
 
-      
+
     end if;
   end process main_clk;
 
-  fsm: process(len, addrb, cs, bpinl, bpout, GRANT, bcnt)
-    begin
-      case cs is
-        when none =>
-          ARM <= '0';
-          bcntinc <= '0';
-          if bpinl /= bpout then
-            ns <= armw;
-          else
-            ns <= none; 
-          end if;
-          
-        when armw =>
-          ARM <= '1';
-          bcntinc <= '0';
-          if GRANT = '1' then
-            ns <= outwrw;
-          else
-            ns <= armw;  
-          end if;
-          
-        when outwrw =>
-          ARM <= '0';
-          bcntinc <= '1';
-          if bcnt = len(8 downto 0) then
-            ns <= dones;
-          else
-            ns <= outwrw;  
-          end if;
+  fsm : process(len, addrb, cs, bpinl, bpout, GRANT, bcnt)
+  begin
+    case cs is
+      when none =>
+        ARM     <= '0';
+        bcntinc <= '0';
+        if bpinl /= bpout then
+          ns    <= armw;
+        else
+          ns    <= none;
+        end if;
 
-        when dones =>
-          ARM <= '0';
-          bcntinc <= '0';
-          ns <= none;
-          
-        when others =>
-          ARM <= '0';
-          bcntinc <= '0';
-          ns <= none; 
+      when armw =>
+        ARM     <= '1';
+        bcntinc <= '0';
+        if GRANT = '1' then
+          ns    <= outwrw;
+        else
+          ns    <= armw;
+        end if;
 
-      end case;
-    end process fsm; 
+      when outwrw =>
+        ARM     <= '0';
+        bcntinc <= '1';
+        if bcnt = len(8 downto 0) then
+          ns    <= dones;
+        else
+          ns    <= outwrw;
+        end if;
+
+      when dones =>
+        ARM     <= '0';
+        bcntinc <= '0';
+        ns      <= none;
+
+      when others =>
+        ARM     <= '0';
+        bcntinc <= '0';
+        ns      <= none;
+
+    end case;
+  end process fsm;
 
 
-    buffer_high : RAMB16_S9_S9
-   generic map (
+  buffer_high : RAMB16_S9_S9
+    generic map (
       SIM_COLLISION_CHECK => "NONE")
-      port map (
-      DOA => open, 
-      DOB => dob(15 downto 8) ,
-      ADDRA => addra,
-      ADDRB => addrb,
-      CLKA => MEMCLK,
-      CLKB => CLK, 
-      DIA => DIN(15 downto 8),
-      DIB => X"00",     
-      DIPA => "0",   
-      DIPB => "0",   
-      ENA => '1',     
-      ENB => '1',     
-      SSRA => '0', 
-      SSRB => '0',   
-      WEA => WEIN,     
-      WEB => '0'      
-   );
-    
-    buffer_low : RAMB16_S9_S9
-   generic map (
+    port map (
+      DOA                 => open,
+      DOB                 => dob(15 downto 8),
+      ADDRA               => addra,
+      ADDRB               => addrb,
+      CLKA                => MEMCLK,
+      CLKB                => CLK,
+      DIA                 => DIN(15 downto 8),
+      DIB                 => X"00",
+      DIPA                => "0",
+      DIPB                => "0",
+      ENA                 => '1',
+      ENB                 => '1',
+      SSRA                => '0',
+      SSRB                => '0',
+      WEA                 => WEIN,
+      WEB                 => '0'
+      );
+
+  buffer_low : RAMB16_S9_S9
+    generic map (
       SIM_COLLISION_CHECK => "NONE")
-      port map (
-      DOA => open, 
-      DOB => dob(7 downto 0) ,
-      ADDRA => addra,
-      ADDRB => addrb,
-      CLKA => MEMCLK,
-      CLKB => CLK, 
-      DIA => DIN(7 downto 0),
-      DIB => X"00",     
-      DIPA => "0",   
-      DIPB => "0",   
-      ENA => '1',     
-      ENB => '1',     
-      SSRA => '0', 
-      SSRB => '0',   
-      WEA => WEIN,     
-      WEB => '0'      
-   );
+    port map (
+      DOA                 => open,
+      DOB                 => dob(7 downto 0),
+      ADDRA               => addra,
+      ADDRB               => addrb,
+      CLKA                => MEMCLK,
+      CLKB                => CLK,
+      DIA                 => DIN(7 downto 0),
+      DIB                 => X"00",
+      DIPA                => "0",
+      DIPB                => "0",
+      ENA                 => '1',
+      ENB                 => '1',
+      SSRA                => '0',
+      SSRB                => '0',
+      WEA                 => WEIN,
+      WEB                 => '0'
+      );
 
 end Behavioral;

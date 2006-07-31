@@ -60,11 +60,20 @@ architecture Behavioral of networktest is
       );
   end component;
 
+  component datavalidate
+    port (
+      CLK       : in  std_logic;
+      DIN       : in  std_logic_vector(15 downto 0);
+      NEWFRAME  : in  std_logic;
+      NOMATCH   : out  std_logic;
+      DATAERROR : out std_logic;
+      DATADONE  : out std_logic);
+  end component;
 
 
-  signal CLK          : std_logic                     := '0';
+  signal CLK    : std_logic := '0';
   signal memclk : std_logic := '0';
-  
+
   signal RESET        : std_logic                     := '1';
   -- config
   signal MYIP         : std_logic_vector(31 downto 0) := (others => '0');
@@ -91,30 +100,33 @@ architecture Behavioral of networktest is
   signal EDTX : std_logic_vector(7 downto 0) := (others => '0');
 
   -- ram
-  signal RAMCLK : std_logic := '0';
+  signal RAMCLK  : std_logic                     := '0';
   signal RAMADDR : std_logic_vector(16 downto 0) := (others => '0');
-  signal RAMWE : std_logic := '1';
-  signal RAMDQ : std_logic_vector(15 downto 0) := (others => 'Z');
+  signal RAMWE   : std_logic                     := '1';
+  signal RAMDQ   : std_logic_vector(15 downto 0) := (others => 'Z');
 
   -- data bus
-  signal dina, dinb : std_logic_vector(7 downto 0) := (others => '0');
-  signal diena, dienb : std_logic := '0';
+  signal dina, dinb   : std_logic_vector(7 downto 0) := (others => '0');
+  signal diena, dienb : std_logic                    := '0';
 
 -- simulated eventbus
   signal epos : integer := 0;
 
 -- memory signals
-  signal ramwel, ramwell     : std_logic := '0';
+  signal ramwel, ramwell     : std_logic := '1';
   signal ramaddrl, ramaddrll : std_logic_vector(16 downto 0)
                                          := (others => '0');
-  
+
+  signal datavalidate_nomatch                          : std_logic := '0';
+  signal datavalidate_dataerror, datavalidate_datadone : std_logic := '0';
+
 
 begin  -- Behavioral
 
   network_uut : network
     port map (
       CLK          => CLK,
-      MEMCLK => MEMCLK,
+      MEMCLK       => MEMCLK,
       RESET        => RESET,
       MYIP         => MYIP,
       MYMAC        => MYMAC,
@@ -123,31 +135,41 @@ begin  -- Behavioral
       NICDINEN     => NICDINEN,
       NICDIN       => NICDIN,
 
-      DOUT         => DOUT,
-      NEWFRAME     => NEWFRAME,
-      IOCLOCK      => IOCLOCK,
+      DOUT     => DOUT,
+      NEWFRAME => NEWFRAME,
+      IOCLOCK  => IOCLOCK,
 
-      ECYCLE       => ECYCLE,
-      EARX         => EARX,
-      EATX         => EATX,
-      EDRX         => EDRX,
-      EDSELRX      => EDSELRX,
-      EDTX         => EDTX,
+      ECYCLE  => ECYCLE,
+      EARX    => EARX,
+      EATX    => EATX,
+      EDRX    => EDRX,
+      EDSELRX => EDSELRX,
+      EDTX    => EDTX,
 
       DIENA => DIENA,
-      DINA => DINA,
+      DINA  => DINA,
       DIENB => DIENB,
-      DINB => DINB,
+      DINB  => DINB,
 
-      RAMDQ => RAMDQ,
-      RAMWE => RAMWE,
+      RAMDQ   => RAMDQ,
+      RAMWE   => RAMWE,
       RAMADDR => RAMADDR,
-      RAMCLK => RAMCLK);
+      RAMCLK  => RAMCLK);
 
-  CLK   <= not CLK after 10 ns;
+
+  datavalidate_inst: datavalidate
+    port map (
+      CLK       => CLK,
+      DIN       => DOUT,
+      NEWFRAME  => NEWFRAME,
+      NOMATCH   => datavalidate_nomatch,
+      DATAERROR => datavalidate_dataerror,
+      DATADONE  => datavalidate_datadone); 
+
+  CLK    <= not CLK after 10 ns;
   MEMCLK <= not CLK after 5 ns;
-  
-  RESET <= '0'     after 20 ns;
+
+  RESET      <= '0' after 20 ns;
   -- ecycle generation
   ecycle_gen : process(CLK)
   begin
@@ -165,7 +187,7 @@ begin  -- Behavioral
       end if;
 
     end if;
-  end process; 
+  end process;
   -- configuration fields for device identity
   -- 
   myip    <= X"C0a80002";               -- 192.168.0.2
@@ -175,11 +197,11 @@ begin  -- Behavioral
   main : process
   begin
     wait for 2 us;
---    networkstack.writepkt("arpquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+-- networkstack.writepkt("arpquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
     wait for 2 us;
 
---    networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
---    networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+-- networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+-- networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
 
     wait;
 
@@ -212,9 +234,9 @@ begin  -- Behavioral
       wait until rising_edge(CLK);
 
     end loop;
-    assert False report "End of Simulation" severity failure;
+    assert false report "End of Simulation" severity failure;
 
-    
+
   end process datainput;
 
   memoryinst : process(MEMCLK, ramwel)
@@ -245,5 +267,7 @@ begin  -- Behavioral
   end process memoryinst;
 
   -- retx request and verify
+
+
 
 end Behavioral;

@@ -10,9 +10,9 @@ entity datamemarbit is
   port (
     CLK : in std_logic;
     -- RAM
-    RAMWE      : out   std_logic;
-    RAMADDR    : out   std_logic_vector(16 downto 0);
-    RAMDQ      : inout std_logic_vector(15 downto 0);
+    RAMWE      : out   std_logic := '1';
+    RAMADDR    : out   std_logic_vector(16 downto 0) := (others => '0');
+    RAMDQ      : inout std_logic_vector(15 downto 0) := (others => '0');
     -- memory packet input
     FIFODIN    : in    std_logic_vector(15 downto 0);
     FIFOADDR   : out   std_logic_vector(8 downto 0);
@@ -38,7 +38,7 @@ end datamemarbit;
 
 architecture Behavioral of datamemarbit is
 
-  signal lramwe   : std_logic                     := '0';
+  signal lramwe   : std_logic                     := '1';
   signal lramaddr : std_logic_vector(16 downto 0) := (others => '0');
   signal lts, ts  : std_logic                     := '0';
   signal ramdin   : std_logic_vector(15 downto 0) := (others => '0');

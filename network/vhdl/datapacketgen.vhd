@@ -51,7 +51,7 @@ architecture Behavioral of datapacketgen is
   signal cs, ns : states := none;
 
   -- header-related signals
-  signal len     : std_logic_vector(9 downto 0)  := (others => '0');
+  signal len, tlen     : std_logic_vector(9 downto 0)  := (others => '0');
   signal hdraddr : std_logic_vector(9 downto 0)  := (others => '0');
   signal hdrwe   : std_logic                     := '0';
   signal hdrdout : std_logic_vector(15 downto 0) := (others => '0');
@@ -110,13 +110,15 @@ begin  -- Behavioral
       DESTMAC => X"FFFFFFFFFFFF", 
       DESTPORT => destport,
       START    => hdrstart,
-      WLEN     => len,
+      WLEN     => tlen,
       DOUT     => hdrdout,
       WEOUT    => hdrwe,
       ADDR     => hdraddr,
       DONE     => hdrdone);
 
   -- input muxes
+  tlen <= len + 2;
+  
   len <= LENA(9 downto 0) when bsel = '0' else
          LENB(9 downto 0);
   di  <= DIA                      when bsel = '0' else DIB;
@@ -203,7 +205,7 @@ begin  -- Behavioral
 
       addrl <= addr + "000010110";
 
-      if addrl = "000011000" then
+      if addr = "000000000" then
         src <= di(5 downto 0);
         typ <= di(9 downto 8);
       end if;
