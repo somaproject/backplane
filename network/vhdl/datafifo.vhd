@@ -38,7 +38,7 @@ architecture Behavioral of datafifo is
   signal bpout : std_logic_vector(1 downto 0)  := (others => '0');
   signal addrb : std_logic_vector(10 downto 0) := (others => '0');
 
-  signal len : std_logic_vector(8 downto 0) := (others => '0');
+  signal len : std_logic_vector(9 downto 0) := (others => '0');
 
   type states is (none, armw, outwrw, dones);
   signal cs, ns : states := none;
@@ -120,7 +120,7 @@ begin  -- Behavioral
         when outwrw =>
           ARM <= '0';
           bcntinc <= '1';
-          if bcnt = len then
+          if bcnt = len(8 downto 0) then
             ns <= dones;
           else
             ns <= outwrw;  

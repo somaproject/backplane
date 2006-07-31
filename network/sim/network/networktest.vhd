@@ -1,8 +1,10 @@
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
+use std.textio.all;
+use ieee.std_logic_textio.all;
+use IEEE.numeric_std.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -95,10 +97,16 @@ architecture Behavioral of networktest is
   signal RAMDQ : std_logic_vector(15 downto 0) := (others => 'Z');
 
   -- data bus
-  signal dina, dinb : std_logic_vector(15 downto 0) := (others => '0');
+  signal dina, dinb : std_logic_vector(7 downto 0) := (others => '0');
   signal diena, dienb : std_logic := '0';
 
-  
+-- simulated eventbus
+  signal epos : integer := 0;
+
+-- memory signals
+  signal ramwel, ramwell     : std_logic := '0';
+  signal ramaddrl, ramaddrll : std_logic_vector(16 downto 0)
+                                         := (others => '0');
   
 
 begin  -- Behavioral
@@ -137,8 +145,27 @@ begin  -- Behavioral
       RAMCLK => RAMCLK);
 
   CLK   <= not CLK after 10 ns;
+  MEMCLK <= not CLK after 5 ns;
+  
   RESET <= '0'     after 20 ns;
+  -- ecycle generation
+  ecycle_gen : process(CLK)
+  begin
+    if rising_edge(CLK) then
+      if epos = 999 then
+        epos <= 0;
+      else
+        epos <= epos + 1;
+      end if;
 
+      if epos = 999 then
+        ECYCLE <= '1';
+      else
+        ECYCLE <= '0';
+      end if;
+
+    end if;
+  end process; 
   -- configuration fields for device identity
   -- 
   myip    <= X"C0a80002";               -- 192.168.0.2
@@ -148,15 +175,75 @@ begin  -- Behavioral
   main : process
   begin
     wait for 2 us;
-    networkstack.writepkt("arpquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+--    networkstack.writepkt("arpquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
     wait for 2 us;
 
-    networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
-    networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+--    networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
+--    networkstack.writepkt("pingquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
 
     wait;
 
   end process main;
 
+  datainput                   : process
+    file datafilea, datafileb : text;
+    variable L                : line;
+    variable doen             : std_logic                    := '0';
+    variable data             : std_logic_vector(7 downto 0) := (others => '0');
+
+  begin
+    file_open(datafilea, "dataa.txt");
+    file_open(datafileb, "datab.txt");
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    while not endfile(datafilea) loop
+
+      readline(datafilea, L);
+      read(L, doen);
+      hread(L, data);
+      DINA  <= data;
+      DIENA <= doen;
+
+      readline(datafileb, L);
+      read(L, doen);
+      hread(L, data);
+      DINB  <= data;
+      DIENB <= doen;
+      wait until rising_edge(CLK);
+
+    end loop;
+    assert False report "End of Simulation" severity failure;
+
+    
+  end process datainput;
+
+  memoryinst : process(MEMCLK, ramwel)
+    -- memory construct
+    type ramdata is array ( 0 to 131071)
+    of std_logic_vector(15 downto 0);
+
+    variable memory : ramdata := (others => X"0000");
+
+  begin
+    if ramwel = '0' then
+      RAMDQ   <= (others => 'Z');
+    end if;
+    if rising_edge(MEMCLK) then
+      ramwel  <= RAMWE;
+      ramwell <= ramwel;
+
+      ramaddrl  <= RAMADDR;
+      ramaddrll <= ramaddrl;
+
+      if ramwell = '0' then
+        memory(TO_INTEGER(unsigned(ramaddrll))) := RAMDQ;
+      else
+        RAMDQ <= memory(TO_INTEGER(unsigned(ramaddrll)));
+      end if;
+
+    end if;
+  end process memoryinst;
+
+  -- retx request and verify
 
 end Behavioral;

@@ -60,6 +60,9 @@ $(WORKDIR)/datamempktretx/_behavioral.var: ../../vhdl/datamempktretx.vhd
 $(WORKDIR)/datamempkttx/_behavioral.var: ../../vhdl/datamempkttx.vhd
 	$(VHDLC) ../../vhdl/datamempkttx.vhd
 
+$(WORKDIR)/datamempktinput/_behavioral.var: ../../vhdl/datamempktinput.vhd
+	$(VHDLC) ../../vhdl/datamempktinput.vhd
+
 $(WORKDIR)/datapacketgen/_behavioral.var: ../../vhdl/datapacketgen.vhd
 	$(VHDLC) ../../vhdl/datapacketgen.vhd
 
@@ -78,7 +81,7 @@ $(WORKDIR)/data/_behavioral.var: ../../vhdl/data.vhd
 $(WORKDIR)/network/_behavioral.var: ../../vhdl/network.vhd
 	$(VHDLC) ../../vhdl/network.vhd
 
-hw: $(WORKDIR)/networkstack/_networkstack.var $(WORKDIR)/somabackplane/_somabackplane.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/arpresponse/_behavioral.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/pingicmpwriter/_behavioral.var $(WORKDIR)/pingipwriter/_behavioral.var $(WORKDIR)/pingresponse/_behavioral.var $(WORKDIR)/txmux/_behavioral.var $(WORKDIR)/retxresponse/_behavioral.var $(WORKDIR)/retx/_behavioral.var $(WORKDIR)/eventrxbusoutput/_behavioral.var $(WORKDIR)/eventrxresponsewr/_behavioral.var $(WORKDIR)/eventrx/_behavioral.var $(WORKDIR)/datamempktretx/_behavioral.var $(WORKDIR)/datamempkttx/_behavioral.var $(WORKDIR)/datapacketgen/_behavioral.var $(WORKDIR)/datamemarbit/_behavioral.var $(WORKDIR)/datafifo/_behavioral.var $(WORKDIR)/dataacquire/_behavioral.var $(WORKDIR)/data/_behavioral.var $(WORKDIR)/network/_behavioral.var 
+hw: $(WORKDIR)/networkstack/_networkstack.var $(WORKDIR)/somabackplane/_somabackplane.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/arpresponse/_behavioral.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/pingicmpwriter/_behavioral.var $(WORKDIR)/pingipwriter/_behavioral.var $(WORKDIR)/pingresponse/_behavioral.var $(WORKDIR)/txmux/_behavioral.var $(WORKDIR)/retxresponse/_behavioral.var $(WORKDIR)/retx/_behavioral.var $(WORKDIR)/eventrxbusoutput/_behavioral.var $(WORKDIR)/eventrxresponsewr/_behavioral.var $(WORKDIR)/eventrx/_behavioral.var $(WORKDIR)/datamempktretx/_behavioral.var $(WORKDIR)/datamempkttx/_behavioral.var $(WORKDIR)/datamempktinput/_behavioral.var $(WORKDIR)/datapacketgen/_behavioral.var $(WORKDIR)/datamemarbit/_behavioral.var $(WORKDIR)/datafifo/_behavioral.var $(WORKDIR)/dataacquire/_behavioral.var $(WORKDIR)/data/_behavioral.var $(WORKDIR)/network/_behavioral.var 
 
 comp: 
 

@@ -9,7 +9,6 @@ use UNISIM.vcomponents.all;
 
 
 entity retxresponse is
-
   port (
     CLK       : in  std_logic;
     -- IO interface
@@ -35,7 +34,7 @@ end retxresponse;
 
 architecture Behavioral of retxresponse is
 
-  signal len  : std_logic_vector(8 downto 0) := (others => '0');
+  signal len  : std_logic_vector(9 downto 0) := (others => '0');
   signal bcnt : std_logic_vector(9 downto 0) := (others => '0');
 
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
@@ -46,18 +45,21 @@ architecture Behavioral of retxresponse is
   signal cs, ns : states := none;
 
   signal bcntinc : std_logic := '0';
+
+  signal addra : std_logic_vector(9 downto 0) := (others => '0');
   
 
 begin  -- Behavioral
 
-
+  addra <= '0' & RETXADDR;
+  
   rambuffer : RAMB16_S18_S18
     generic map (
       SIM_COLLISION_CHECK => "NONE")
     port map (
       DOA                 => open,
       DOB                 => dob,
-      ADDRA               => RETXADDR,
+      ADDRA               => addra,
       ADDRB               => bcnt,
       CLKA                => CLK,
       CLKB                => CLK,
@@ -180,7 +182,7 @@ begin  -- Behavioral
           ARM <= '0';
           RETXREQ <= '0';
           bcntinc <= '1';
-          if bcnt(8 downto 0) = len  then
+          if bcnt(8 downto 0) = len(8 downto 0)  then
             ns <= dones;
           else
             ns <= outwrw; 

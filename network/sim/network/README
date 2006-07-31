@@ -2,3 +2,32 @@ Overview of the entire network subsystem -- can we synthesize, run, etc.
 
 We will first try a full arp/ping query cycle
 
+Here's what we want to test: 
+
+Can we handle, in one millisecond: 
+  64 data packets of full size (560 bytes)
+  50 full-size (80-event) event packets? 
+  10 inbound event packets, and their responses
+  10 retransmission requests
+  
+
+and sustain this over several MS? 
+  Our goal here is to: 
+    1. correctly receive all of our data. There should -never- be a dropped data packet or a fifo overflow
+    2. Correctly receive all outbount event packets.
+    3. correctly receive all of our event retx requests
+
+To test this we generate the relevant packets with our virtual ETH0
+device.
+
+What do we really care about? buffering and timing; thus the exact
+packet data isn't so important. 
+
+1. generate data-packets of data, complete with different start times
+and the like.
+
+2. for output comparison, we'll create several data consumers: 
+  1. data verify -- is the output packet the one we're looking for? complete with proper UDP header checking and the like
+  2. event verify -- is the output event packet the one we're looking for? 
+
+
