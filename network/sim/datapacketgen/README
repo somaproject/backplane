@@ -14,8 +14,9 @@ DENA DATA
 datab.txt
 DENB DATAB
 
-It will also TX ethernet data, which you can capture with: 
+It will also TX ethernet data, with the assumption that you have a device on your system with IP 192.168.0.2 and subnet mask 255.255.255.0. 
 
+You can capture this data using tcpdump if you're running as root and: 
  tcpdump -p src host 192.168.0.2 and  udp -t -xx -s 2000 > data.tcpdump
 
 
@@ -24,5 +25,4 @@ Then run dumpparse.py which will:
   2. normalize the IP header: remove the sequence number and set the checksum to zero
   3. clear the UDP checksum
   4. packetize it in a format that we can read / validate in vhdl
-
 

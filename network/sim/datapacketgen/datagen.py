@@ -12,8 +12,9 @@ class DataPacketGen(object):
     def __init__(self):
         self.ids = n.zeros((4, 2**6), dtype=n.uint32)
 
-    def generatePacket(self):
-        N = int(round(n.rand()*290)*2) # max length is two 
+    def generatePacket(self, N = 0):
+        if N == 0:
+            N = int(round(n.rand()*290)*2) # max length is two 
         src = int(round(n.rand() * (2**6-1)))
         typ = int(round(n.rand() * (2**2-1)))
         
@@ -33,9 +34,9 @@ class DataPacketGen(object):
 
         # random data
         for i in range(N):
-            data[i+6] = (i+typ+src) % 256
+            data[i+6] = int(n.rand() * 255)
 
-        return data
+        return (src, typ, data)
     
         
         
@@ -64,10 +65,14 @@ def sendDataPacket(dp):
 
 def writePacket(fid, packet):
     """ randomly writes the packet at some random location inside
-    of the event cycle and fills in the other cycles
-    """
+    of the event cycle and fills in the other cycles.
 
-    N = len(packet)
+    We use an offset of 4 to strip off the calculated ids.
+    
+    """
+    os = 4
+    
+    N = len(packet)-os
     M = 980
     startrange = M - N
     p = int(n.rand()*startrange)
@@ -77,7 +82,7 @@ def writePacket(fid, packet):
     for i in range(p):
         fid.write("0 00\n")
 
-    for i in packet:
+    for i in packet[os:]:
         fid.write("1 %2.2X\n" % i)
 
     for i in range(s):
@@ -96,9 +101,21 @@ if __name__ == "__main__":
     dpg = DataPacketGen()
     datapackets = []
     N = 1000
+    propsfid = file('dataprops.txt', 'w')
+    
+    for i in range(1, 5):
+        (src, typ, data) = dpg.generatePacket(N=i*2)
+        propsfid.write("%d %d %d\n" % (src, typ, len(data)) ) 
+        datapackets.append(data)
+    
     for i in range(N):
-        p = dpg.generatePacket()
-        datapackets.append(p)
+        (src, typ, data) = dpg.generatePacket()
+        propsfid.write("%d %d %d\n" % (src, typ, len(data)) ) 
+
+        datapackets.append(data)
+
+    pktcnt = len(datapackets)
+
         
     # write them in the event cycles:
 
@@ -107,7 +124,7 @@ if __name__ == "__main__":
     fida = file('dataa.txt', 'w')
     fidb = file('datab.txt', 'w')
     
-    while pos < N:
+    while pos < pktcnt:
         # flip two coins, for tx on A and B;
         asend = n.rand() > 0.2
         if asend :
@@ -118,7 +135,7 @@ if __name__ == "__main__":
 
         bsend = n.rand() > 0.2
 
-        if pos != N:
+        if pos != pktcnt:
             if bsend :
                 writePacket(fidb, datapackets[pos])
                 pos += 1
