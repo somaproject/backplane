@@ -142,7 +142,7 @@ architecture Behavioral of networktest is
   signal diena, dienb : std_logic                    := '0';
 
 -- simulated eventbus
-  signal epos : integer := 0;
+  signal epos : integer := 900;
 
 -- memory signals
   signal ramwel, ramwell     : std_logic := '1';
@@ -386,10 +386,8 @@ begin  -- Behavioral
   process
   begin
     for j in 1 to 4 loop
-
-
       for i in 0 to 9 loop
-        wait until rising_edge(CLK) and data_rxcnt(i*6) = j;
+        wait until rising_edge(CLK) and data_rxcnt(i*6) >= j;
         wait until rising_edge(CLK);
         retx_src <= i * 6;
         retx_typ <= 0;
@@ -399,7 +397,6 @@ begin  -- Behavioral
         wait until rising_edge(CLK);
         retx_req <= '0';
         wait until rising_edge(CLK) and retx_done = '1';
-
       end loop;  -- i
     end loop;  -- j
   end process;

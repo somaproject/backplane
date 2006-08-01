@@ -58,7 +58,7 @@ architecture Behavioral of datamempktretx is
   signal bpout : std_logic_vector(7 downto 0) := (others => '0');
   
   type states is (none, pendchk, addrst, addrw,
-                  extraw, retxdones, dones);
+                  extraw, retxdones, retxdones2,  dones);
   
   signal cs, ns : states := none;
 
@@ -70,11 +70,11 @@ begin  -- Behavioral
   ADDROUT <= addrsreg5; 
   WEOUT <= wesreg(4); 
   RAMADDR <= bpout & addr; 
-  DONE <= '1' when cs = dones else '0';
+  DONE <= '1' when cs = dones  else '0';
   DOUT <= RAMDIN; 
   lutaddrb <= (SRC & TYP & ID(2 downto 0));
 
-  retxrst <= '1' when cs = retxdones else '0'; 
+  retxrst <= '1' when cs = retxdones or cs = retxdones2 else '0'; 
   RETXDONE <= retxrst; 
   
   main: process(CLK)
@@ -147,7 +147,7 @@ begin  -- Behavioral
         when dones  =>
           ADDRINC <= '0';
           --WEOUT <= '0';
-          ns <= none; 
+          ns <= none;
           
         when addrst  =>
           ADDRINC <= '1';
@@ -177,6 +177,11 @@ begin  -- Behavioral
           end if;
           
         when retxdones  =>
+          ADDRINC <= '0';
+          --WEOUT <= '0';
+          ns <= retxdones2;
+          
+        when retxdones2  =>
           ADDRINC <= '0';
           --WEOUT <= '0';
           ns <= dones; 
