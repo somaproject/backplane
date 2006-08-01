@@ -33,10 +33,11 @@ architecture Behavioral of networktest is
       NICNEXTFRAME : out std_logic;
       NICDINEN     : in  std_logic;
       NICDIN       : in  std_logic_vector(15 downto 0);
+
       -- output
-      DOUT         : out std_logic_vector(15 downto 0);
-      NEWFRAME     : out std_logic;
-      IOCLOCK      : out std_logic;
+      NICDOUT     : out std_logic_vector(15 downto 0);
+      NICNEWFRAME : out std_logic;
+      NICIOCLK    : out std_logic;
 
       -- event bus
       ECYCLE  : in  std_logic;
@@ -61,10 +62,9 @@ architecture Behavioral of networktest is
   end component;
 
   component datareceiver
-    generic (
-      typ       :     integer := 0;
-      src       :     integer := 0);
     port (
+      typ       :     integer := 0;
+      src       :     integer := 0;
       CLK       : in  std_logic;
       DIN       : in  std_logic_vector(15 downto 0);
       NEWFRAME  : in  std_logic;
@@ -83,6 +83,26 @@ architecture Behavioral of networktest is
       RXMISSING : out std_logic := '0');
   end component;
 
+  component retxreq
+    port (
+      CLK       : in  std_logic;
+      NEXTFRAME : in  std_logic;
+      DOEN      : out std_logic;
+      DOUT      : out std_logic_vector(15 downto 0);
+      REQ       : in  std_logic;
+      SRC       : in  integer;
+      TYP       : in  integer;
+      ID        : in  std_logic_vector(31 downto 0);
+      DONE      : out std_logic);
+  end component;
+
+  signal retx_req           : std_logic                     := '0';
+  signal retx_src, retx_typ : integer                       := 0;
+  signal retx_id            : std_logic_vector(31 downto 0) := (others => '0');
+  signal retx_done          : std_logic                     := '0';
+
+
+
   signal CLK    : std_logic := '0';
   signal memclk : std_logic := '0';
 
@@ -96,9 +116,9 @@ architecture Behavioral of networktest is
   signal NICDINEN     : std_logic                     := '0';
   signal NICDIN       : std_logic_vector(15 downto 0) := (others => '0');
   -- output
-  signal DOUT         : std_logic_vector(15 downto 0) := (others => '0');
-  signal NEWFRAME     : std_logic                     := '0';
-  signal IOCLOCK      : std_logic                     := '0';
+  signal NICDOUT      : std_logic_vector(15 downto 0) := (others => '0');
+  signal NICNEWFRAME  : std_logic                     := '0';
+  signal NICIOCLK     : std_logic                     := '0';
 
   -- event bus
   signal ECYCLE : std_logic := '0';
@@ -134,9 +154,9 @@ architecture Behavioral of networktest is
   type rxcntarray is array (0 to 63) of integer;
   signal data_rxcnt     : rxcntarray                    := (others => 0);
 
-  signal event_rxgood : std_logic := '0';
+  signal event_rxgood    : std_logic := '0';
   signal event_rxmissing : std_logic := '0';
-  signal event_rxcnt : integer := 0;
+  signal event_rxcnt     : integer   := 0;
 
 -- event signals
   type eventarray is array (0 to 5) of std_logic_vector(15 downto 0);
@@ -162,9 +182,9 @@ begin  -- Behavioral
       NICDINEN     => NICDINEN,
       NICDIN       => NICDIN,
 
-      DOUT     => DOUT,
-      NEWFRAME => NEWFRAME,
-      IOCLOCK  => IOCLOCK,
+      NICDOUT     => NICDOUT,
+      NICNEWFRAME => NICNEWFRAME,
+      NICIOCLK    => NICIOCLK,
 
       ECYCLE  => ECYCLE,
       EARX    => EARX,
@@ -292,32 +312,29 @@ begin  -- Behavioral
 
   datareceivers       : for i in 0 to 63 generate
     datareceiver_inst : datareceiver
-      generic map (
-        typ       => 0,
-        src       => i)
       port map (
-        CLK       => CLK,
-        DIN       => DOUT,
-        NEWFRAME  => NEWFRAME,
+        typ       => 0,
+        src       => i,
+        CLK       => NICIOCLK,
+        DIN       => NICDOUT,
+        NEWFRAME  => NICNEWFRAME,
         RXGOOD    => data_rxgood(i),
         RXCNT     => data_rxcnt(i),
         RXMISSING => data_rxmissing(i));
-  end generate datareceivers; 
-  
-  eventreceiver_inst: eventreceiver
+  end generate datareceivers;
+
+  eventreceiver_inst : eventreceiver
     port map (
-      CLK       => CLK,
-      DIN       => DOUT,
-      NEWFRAMe  => NEWFRAME,
+      CLK       => NICIOCLK,
+      DIN       => NICDOUT,
+      NEWFRAMe  => NICNEWFRAME,
       RXGOOD    => event_rxgood,
       RXCNt     => event_rxcnt,
-      RXMISSING => event_rxmissing); 
-    
+      RXMISSING => event_rxmissing);
+
   event_packet_generation : process
   begin
-
     while true loop
-
       wait until rising_edge(CLK) and epos = 47;
       -- now we send the events
       for i in 0 to somabackplane.N -1 loop
@@ -330,11 +347,10 @@ begin  -- Behavioral
         end loop;  -- j
       end loop;  -- i
     end loop;
-
   end process;
 
   EATX <= (others => '1');
-  
+
   -- time stamp event
   ts_eventgen             : process(CLK)
     variable eventtimepos : std_logic_vector(47 downto 0) := (others => '0');
@@ -349,5 +365,42 @@ begin  -- Behavioral
         eventtimepos := eventtimepos + 1;
       end if;
     end if;
+  end process;
+
+-----------------------------------------------------------------------------
+-- RETRANSMISSION REQESTS
+-----------------------------------------------------------------------------
+
+  retxreq_inst : retxreq
+    port map (
+      CLK       => NICIOCLK,
+      NEXTFRAME => NICNEXTFRAME,
+      DOEN      => NICDINEN,
+      DOUT      => NICDIN,
+      REQ       => retx_req,
+      SRC       => retx_src,
+      TYP       => retx_typ,
+      ID        => retx_id,
+      DONE      => retx_done);
+
+  process
+  begin
+    for j in 1 to 4 loop
+
+
+      for i in 0 to 9 loop
+        wait until rising_edge(CLK) and data_rxcnt(i*6) = j;
+        wait until rising_edge(CLK);
+        retx_src <= i * 6;
+        retx_typ <= 0;
+        retx_id  <= std_logic_vector(TO_UNSIGNED(data_rxcnt(i*6) - 1, 32)); 
+        wait until rising_edge(CLK);
+        retx_req <= '1';
+        wait until rising_edge(CLK);
+        retx_req <= '0';
+        wait until rising_edge(CLK) and retx_done = '1';
+
+      end loop;  -- i
+    end loop;  -- j
   end process;
 end Behavioral;

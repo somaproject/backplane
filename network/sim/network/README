@@ -32,19 +32,19 @@ and the like.
 
 
 
-
-data validate -- is this a broadcast packet? is it IP? UDP? 
-
-
 New plan: 
 What are the questions we want to ask ?
 1. Can we handle our requested bandwidth of whatevers? 
 2. Under ADVERSE inputs, can we maintain our desired outputs? 
 
+------------------------------------------------------------------
+Data Receivers
+------------------------------------------------------------------ 
 
 So to do this we generate a total of N events for each of the 64
-source types. Then we create a "consumer" for each that will expect to
-recive:
+sources, all type 0. The datareciver is the consumer that checks all
+inbound packets and makes sure we receive the correct UDP port, src,
+typ, and ID. We have 64 of these in an array. 
 
 1. incremental IDs
 2. a data packet that is dependent upon ID, typ, src. 
@@ -72,3 +72,17 @@ This is event 0x10 from source 0x00.
 Thus, we will make the (stupid?) assumption that all events are of the form:
 
 len: somabackplane.N - 1, and then somabackplane.N * 6 bytes of data
+
+
+------------------------------------------------------------------
+Retransmit request engine...
+------------------------------------------------------------------ 
+
+We wait until src N has received packet i, and then we send a
+retransmit request M ecycles later, and wait to make sure that we have
+received that packet.
+
+Ideally we want to handle 10 of these per ms. We've got a
+retransmit-request engine that generates retransmission requests, and
+then we use a datareceiver to try and capture the packet again.
+

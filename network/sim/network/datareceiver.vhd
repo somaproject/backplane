@@ -16,10 +16,9 @@ use Work.somabackplane;
 
 
 entity datareceiver is
-  generic (
-    typ       :     integer   := 0;
-    src       :     integer   := 0);
   port (
+    typ       : in  integer   := 0;
+    src       : in  integer   := 0;
     CLK       : in  std_logic;
     DIN       : in  std_logic_vector(15 downto 0);
     NEWFRAME  : in  std_logic;
@@ -36,22 +35,22 @@ architecture Behavioral of datareceiver is
   -- RXMISSING : oops, we missed one
   -- RXERROR : valid packet, invalid data
 
-  signal rxcntint   : integer   := 0;
-  signal newframel  : std_logic := '0';
-  signal maybegood  : std_logic := '0';
-  signal bytepos    : integer   := 0;
-  signal id_pending : integer   := 0;
-  signal id_input : std_logic_vector(31 downto 0) := (others => '0');
+  signal rxcntint   : integer                       := 0;
+  signal newframel  : std_logic                     := '0';
+  signal maybegood  : std_logic                     := '0';
+  signal bytepos    : integer                       := 0;
+  signal id_pending : integer                       := 0;
+  signal id_input   : std_logic_vector(31 downto 0) := (others => '0');
 
 begin  -- Behavioral
   RXCNT <= rxcntint;
-  
+
   process(CLK)
     variable id : std_logic_vector(31 downto 0) := (others => '0');
   begin
     if rising_edge(CLK) then
       newframel <= NEWFRAME;
-      id := std_logic_vector(TO_UNSIGNED(id_pending, 32)); 
+      id                                        := std_logic_vector(TO_UNSIGNED(id_pending, 32));
       if NEWFRAME = '0' then
         bytepos <= 0;
       elsif NEWFRAME = '1' and newframel = '0' then
@@ -61,36 +60,36 @@ begin  -- Behavioral
       end if;
 
       if newframe = '1' and newframel = '0' then
-        maybegood       <= '1';
+        maybegood                  <= '1';
       else
         case bytepos is
           when 1  => when 2 => when 3 =>
             if DIN /= X"FFFF" then
-              maybegood <= '0';
+              maybegood            <= '0';
             end if;
           when 19 =>
             if DIN /= std_logic_vector(TO_UNSIGNED(4000 + typ * 64 + src, 16))
             then
-              maybegood <= '0';
+              maybegood            <= '0';
             end if;
           when 22 =>
-            id_input(31 downto 16) <= DIN; 
+            id_input(31 downto 16) <= DIN;
           when 23 =>
-            id_input(15 downto 0) <= DIN; 
+            id_input(15 downto 0)  <= DIN;
           when 24 =>
-            if TO_INTEGER(UNSIGNED(id_input)) = id_pending then
-              RXMISSING <= '0';
-            elsif TO_INTEGER(UNSIGNED(id_input)) > id_pending then
-              RXMISSING <= '1';
-              maybegood <= '0'; 
+            if TO_INTEGER(unsigned(id_input)) = id_pending then
+              RXMISSING            <= '0';
+            elsif TO_INTEGER(unsigned(id_input)) > id_pending then
+              RXMISSING            <= '1';
+              maybegood            <= '0';
             else
-              maybegood <= '0'; 
+              maybegood            <= '0';
             end if;
             if DIN /= std_logic_vector(TO_UNSIGNED(typ, 8)) &
               std_logic_vector(TO_UNSIGNED(src, 8)) then
-              maybegood <= '0';
+              maybegood            <= '0';
             end if;
-            
+
           when others =>
             null;
         end case;

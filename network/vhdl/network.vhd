@@ -29,9 +29,9 @@ entity network is
     NICDINEN     : in    std_logic;
     NICDIN       : in    std_logic_vector(15 downto 0);
     -- output
-    DOUT         : out   std_logic_vector(15 downto 0);
-    NEWFRAME     : out   std_logic;
-    IOCLOCK      : out   std_logic;
+    NICDOUT      : out   std_logic_vector(15 downto 0);
+    NICNEWFRAME  : out   std_logic;
+    NICIOCLK     : out   std_logic;
     -- event bus
     ECYCLE       : in    std_logic;
     EARX         : out   std_logic_vector(somabackplane.N -1 downto 0);
@@ -249,9 +249,9 @@ architecture Behavioral of network is
   signal pinginaddr  : std_logic_vector(9 downto 0) := (others => '0');
   signal pingindone  : std_logic                    := '0';
 
-  signal retxinstart : std_logic                    := '0';
-  signal retxinaddr  : std_logic_vector(9 downto 0) := (others => '0');
-  signal retxindone  : std_logic                    := '0';
+  signal retxinstart             : std_logic                    := '0';
+  signal retxinaddr              : std_logic_vector(9 downto 0) := (others => '0');
+  signal retxindone, retxindone2 : std_logic                    := '0';
 
   -- output
 
@@ -313,10 +313,10 @@ begin  -- Behavioral
       DIN5     => din5,
       GRANT    => grant,
       ARM      => arm,
-      DOUT     => dout,
-      NEWFRAME => newframe);
+      DOUT     => NICDOUT,
+      NEWFRAME => NICNEWFRAME);
 
-  IOCLOCK <= CLK;
+  NICIOCLK <= CLK;
 
   arpresponse_inst : arpresponse
     port map (

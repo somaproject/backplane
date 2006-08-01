@@ -32,38 +32,40 @@ end retxresponse;
 
 architecture Behavioral of retxresponse is
 
-  signal len  : std_logic_vector(8 downto 0) := (others => '0');
-  signal bcnt : std_logic_vector(9 downto 0) := (others => '0');
-signal lretxreq : std_logic := '0';
+  signal len      : std_logic_vector(8 downto 0) := (others => '0');
+  signal bcnt     : std_logic_vector(9 downto 0) := (others => '0');
+  signal lretxreq : std_logic                    := '0';
 
-  
+
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
 
   signal bcntinc : std_logic := '0';
 
-  
+
   type states is (none, getsrctyp, getidh, getidl,
                   retxst, retxw, armw, outwrw, dones);
 
   signal cs, ns : states := none;
 
   signal addra : std_logic_vector(9 downto 0) := (others => '0');
-  
+
 
 
 begin  -- Behavioral
 
   addra <= '0' & RETXADDR;
-  DOUT <= dob;
+  DOUT  <= dob;
 
-  DONE <= '1' when cs = dones else '0'; 
+
+  DONE <= '1' when cs = dones else '0';
+
   buffer_inst : RAMB16_S18_S18
     generic map (
       SIM_COLLISION_CHECK => "NONE")
     port map (
       DOA                 => open,
       DOB                 => dob,
-      ADDRA               => addra,       
+      ADDRA               => addra,
       ADDRB               => bcnt,
       CLKA                => CLK,
       CLKB                => CLK,
@@ -85,7 +87,7 @@ begin  -- Behavioral
 
       cs <= ns;
 
-      RETXREQ <= lretxreq; 
+      RETXREQ   <= lretxreq;
       if cs = getidh then
         RETXSRC <= INPKTDATA(5 downto 0);
         RETXTYP <= INPKTDATA(9 downto 8);
@@ -110,102 +112,102 @@ begin  -- Behavioral
       DOEN <= bcntinc;
 
       if bcnt(8 downto 0) = "000000000" then
-        len <= dob(9 downto 1); 
+        len <= dob(9 downto 1);
       end if;
 
-      
+
     end if;
   end process main;
 
 
-  fsm: process(cs, START, RETXDONE, GRANT, bcnt, len)
-    begin
-      case cs is
-        when none =>
-          INPKTADDR <= (others => '0');
-          ARM <= '0';
-          lretxreq <= '0';
-          bcntinc <= '0';
-          if START = '1' then
-            ns <= getsrctyp;
-          else
-            ns <= none;  
-          end if;
+  fsm : process(cs, START, RETXDONE, GRANT, bcnt, len)
+  begin
+    case cs is
+      when none              =>
+        INPKTADDR <= (others => '0');
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        if START = '1' then
+          ns      <= getsrctyp;
+        else
+          ns      <= none;
+        end if;
 
-        when getsrctyp =>
-          INPKTADDR <= "0000010110"; 
-          ARM <= '0';
-          lretxreq <= '0';
-          bcntinc <= '0';
-          ns <= getidh; 
+      when getsrctyp =>
+        INPKTADDR <= "0000010110";
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        ns        <= getidh;
 
-        when getidh =>
-          INPKTADDR <= "0000010111"; 
-          ARM <= '0';
-          lretxreq <= '0';
-          bcntinc <= '0';
-          ns <= getidl; 
+      when getidh =>
+        INPKTADDR <= "0000010111";
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        ns        <= getidl;
 
-        when getidl =>
-          INPKTADDR <= "0000011000"; 
-          ARM <= '0';
-          lretxreq <= '0';
-          bcntinc <= '0';
-          ns <= retxst;
-          
-        when retxst =>
-          INPKTADDR <= (others => '0'); 
-          ARM <= '0';
-          lretxreq <= '1';
-          bcntinc <= '0';
-          ns <= retxw; 
+      when getidl =>
+        INPKTADDR <= "0000011000";
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        ns        <= retxst;
 
-        when retxw =>
-          INPKTADDR <= (others => '0'); 
-          ARM <= '0';
-          lretxreq <= '0';
-          bcntinc <= '0';
-          if RETXDONE = '1' then
-            ns <= armw;
-          else
-            ns <= retxw; 
-          end if;
+      when retxst            =>
+        INPKTADDR <= (others => '0');
+        ARM       <= '0';
+        lretxreq  <= '1';
+        bcntinc   <= '0';
+        ns        <= retxw;
 
-        when armw =>
-          INPKTADDR <= (others => '0'); 
-          ARM <= '1';
-          lretxreq <= '0';
-          bcntinc <= '0';
-          if GRANT = '1' then
-            ns <= outwrw;
-          else
-            ns <= armw; 
-          end if;
+      when retxw             =>
+        INPKTADDR <= (others => '0');
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        if RETXDONE = '1' then
+          ns      <= armw;
+        else
+          ns      <= retxw;
+        end if;
 
-        when outwrw =>
-          INPKTADDR <= (others => '0'); 
-          ARM <= '0';
-          lretxreq <= '0';
-          bcntinc <= '1';
-          if bcnt(8 downto 0) = len -1  then
-            ns <= dones;
-          else
-            ns <= outwrw; 
-          end if;
+      when armw              =>
+        INPKTADDR <= (others => '0');
+        ARM       <= '1';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        if GRANT = '1' then
+          ns      <= outwrw;
+        else
+          ns      <= armw;
+        end if;
 
-        when dones=>
-          INPKTADDR <= (others => '0'); 
-          ARM <= '0';
-          lretxreq <= '0';
-          bcntinc <= '0';
-          ns <= none; 
-          
-        when others=>
-          INPKTADDR <= (others => '0'); 
-          ARM <= '0';
-          lretxreq <= '0';
-          bcntinc <= '0';
-          ns <= none; 
-      end case;
-    end process fsm; 
+      when outwrw            =>
+        INPKTADDR <= (others => '0');
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '1';
+        if bcnt(8 downto 0) = len -1 then
+          ns      <= dones;
+        else
+          ns      <= outwrw;
+        end if;
+
+      when dones             =>
+        INPKTADDR <= (others => '0');
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        ns        <= none;
+
+      when others            =>
+        INPKTADDR <= (others => '0');
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        ns        <= none;
+    end case;
+  end process fsm;
 end Behavioral;
