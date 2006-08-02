@@ -1,9 +1,6 @@
-This is a test of our transmit mux. 
+This is a test of our transmit mux. We care that prioritization,
+exclusive access, and DEN 1->0 ending all function.
 
-We first have a simple port 0 test
 
-then we arm all the ports and read
-0 
-1
-2, but reassert 0
-0
+1. We test a simple arm/grant cycle with port 0
+2. We then arm all interfaces and check that they are serviced in the proper order. 
