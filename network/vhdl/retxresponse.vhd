@@ -22,7 +22,7 @@ entity retxresponse is
     RETXDONE  : in  std_logic;
     RETXSRC   : out std_logic_vector(5 downto 0);
     RETXTYP   : out std_logic_vector(1 downto 0);
-    RETXID    : out std_logic_vector(31 downto 0);
+    RETXSEQ    : out std_logic_vector(31 downto 0);
     -- output
     ARM       : out std_logic;
     GRANT     : in  std_logic;
@@ -42,7 +42,7 @@ architecture Behavioral of retxresponse is
   signal bcntinc : std_logic := '0';
 
 
-  type states is (none, getsrctyp, getidh, getidl,
+  type states is (none, getsrctyp, getseqh, getseql,
                   retxst, retxw, armw, outwrw, dones);
 
   signal cs, ns : states := none;
@@ -88,17 +88,17 @@ begin  -- Behavioral
       cs <= ns;
 
       RETXREQ   <= lretxreq;
-      if cs = getidh then
+      if cs = getseqh then
         RETXSRC <= INPKTDATA(5 downto 0);
         RETXTYP <= INPKTDATA(9 downto 8);
       end if;
 
-      if cs = getidl then
-        RETXID(31 downto 16) <= INPKTDATA;
+      if cs = getseql then
+        RETXSEQ(31 downto 16) <= INPKTDATA;
       end if;
 
       if cs = retxst then
-        RETXID(15 downto 0) <= INPKTDATA;
+        RETXSEQ(15 downto 0) <= INPKTDATA;
       end if;
 
       if cs = none then
@@ -139,16 +139,16 @@ begin  -- Behavioral
         ARM       <= '0';
         lretxreq  <= '0';
         bcntinc   <= '0';
-        ns        <= getidh;
+        ns        <= getseqh;
 
-      when getidh =>
+      when getseqh =>
         INPKTADDR <= "0000010111";
         ARM       <= '0';
         lretxreq  <= '0';
         bcntinc   <= '0';
-        ns        <= getidl;
+        ns        <= getseql;
 
-      when getidl =>
+      when getseql =>
         INPKTADDR <= "0000011000";
         ARM       <= '0';
         lretxreq  <= '0';

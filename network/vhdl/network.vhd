@@ -183,7 +183,7 @@ architecture Behavioral of network is
       RETXDONE : out   std_logic;
       RETXSRC  : in    std_logic_vector(5 downto 0);
       RETXTYP  : in    std_logic_vector(1 downto 0);
-      RETXID   : in    std_logic_vector(31 downto 0)
+      RETXSEQ   : in    std_logic_vector(31 downto 0)
       );
   end component;
 
@@ -203,7 +203,7 @@ architecture Behavioral of network is
       RETXDONE  : in  std_logic;
       RETXSRC   : out std_logic_vector(5 downto 0);
       RETXTYP   : out std_logic_vector(1 downto 0);
-      RETXID    : out std_logic_vector(31 downto 0);
+      RETXSEQ    : out std_logic_vector(31 downto 0);
       -- output
       ARM       : out std_logic;
       GRANT     : in  std_logic;
@@ -274,7 +274,7 @@ architecture Behavioral of network is
   signal retxreq, retxdone : std_logic                     := '0';
   signal retxsrc           : std_logic_vector(5 downto 0)  := (others => '0');
   signal retxtyp           : std_logic_vector(1 downto 0)  := (others => '0');
-  signal retxid            : std_logic_vector(31 downto 0) := (others => '0');
+  signal retxseq            : std_logic_vector(31 downto 0) := (others => '0');
 
 
 begin  -- Behavioral
@@ -386,7 +386,7 @@ begin  -- Behavioral
       RETXDONE => retxdone,
       RETXSRC  => retxsrc,
       RETXTYP  => retxtyp,
-      RETXID   => retxid);
+      RETXSEQ   => retxseq);
 
   retxresponse_inst : retxresponse
     port map (
@@ -402,7 +402,7 @@ begin  -- Behavioral
       RETXDONE  => retxdone,
       RETXsrc   => retxsrc,
       RETXTYP   => retxtyp,
-      RETXID    => retxid,
+      RETXSEQ    => retxseq,
       ARM       => arm(2),
       GRANT     => grant(2),
       DOUT      => din2,

@@ -24,8 +24,8 @@ entity datamempktinput is
     -- fifo properti
     SRC : out std_logic_vector(5 downto 0);
     TYP : out std_logic_vector(1 downto 0);
-    ID : out std_logic_vector(31 downto 0);
-    IDWE : out std_logic;
+    SEQ : out std_logic_vector(31 downto 0);
+    SEQWE : out std_logic;
     BP : out std_logic_vector(7 downto 0)
     ); 
 
@@ -89,11 +89,11 @@ begin  -- Behavioral
       end if;
 
       if bufaddr =  "000010111" then
-        ID(31 downto 16) <= DIN; 
+        SEQ(31 downto 16) <= DIN; 
       end if;
 
       if bufaddr =  "000011000" then
-        ID(15 downto 0) <= DIN; 
+        SEQ(15 downto 0) <= DIN; 
       end if;
 
       if bufaddr =  "000000001" then
@@ -111,7 +111,7 @@ begin  -- Behavioral
         when none  =>
           bufaddrinc <= '0';
           ramwe <= '1';
-          idwe <= '0';
+          seqwe <= '0';
           if START = '1' then
             ns <= chkvalid;
           else
@@ -121,7 +121,7 @@ begin  -- Behavioral
         when chkvalid  =>
           bufaddrinc <= '0';
           ramwe <= '1';
-          idwe <= '0';
+          seqwe <= '0';
           if FIFOVALID = '1' then
             ns <= startwr; 
           else
@@ -131,13 +131,13 @@ begin  -- Behavioral
         when startwr  =>
           bufaddrinc <= '1';
           ramwe <= '1';
-          idwe <= '0';
+          seqwe <= '0';
           ns <= wrwait; 
           
         when wrwait  =>
           bufaddrinc <= '1';
           ramwe <= '0';
-          idwe <= '0';
+          seqwe <= '0';
           if bufaddr = len then
             ns <= addrwe;
           else
@@ -147,19 +147,19 @@ begin  -- Behavioral
         when addrwe  =>
           bufaddrinc <= '1';
           ramwe <= '0';
-          idwe <= '1';
+          seqwe <= '1';
           ns <= donewr;
           
         when donewr  =>
           bufaddrinc <= '0';
           ramwe <= '1';
-          idwe <= '0';
+          seqwe <= '0';
           ns <= none; 
                    
         when others  =>
           bufaddrinc <= '0';
           ramwe <= '1';
-          idwe <= '0';
+          seqwe <= '0';
           ns <= none; 
       end case;
     end process fsm;

@@ -26,7 +26,7 @@ entity datamemarbit is
     RETXDONE   : out   std_logic;
     RETXSRC    : in    std_logic_vector(5 downto 0);
     RETXTYP    : in    std_logic_vector(1 downto 0);
-    RETXID     : in    std_logic_vector(31 downto 0);
+    RETXSEQ     : in    std_logic_vector(31 downto 0);
     -- packet transmission
     TXDOUT     : out   std_logic_vector(15 downto 0);
     TXFIFOFULL : in    std_logic;
@@ -47,8 +47,8 @@ architecture Behavioral of datamemarbit is
   -- internal IO
   signal src : std_logic_vector(5 downto 0) := (others => '0');
   signal typ : std_logic_vector(1 downto 0) := (others => '0');
-  signal id : std_logic_vector(31 downto 0) := (others => '0');
-  signal idwe : std_logic := '0';
+  signal seq : std_logic_vector(31 downto 0) := (others => '0');
+  signal seqwe : std_logic := '0';
   signal bp : std_logic_vector(7 downto 0) := (others => '0');
   
   
@@ -94,8 +94,8 @@ architecture Behavioral of datamemarbit is
       -- fifo properti
       SRC       : out std_logic_vector(5 downto 0);
       TYP       : out std_logic_vector(1 downto 0);
-      ID        : out std_logic_vector(31 downto 0);
-      IDWE      : out std_logic;
+      SEQ        : out std_logic_vector(31 downto 0);
+      SEQWE      : out std_logic;
       BP        : out std_logic_vector(7 downto 0)
       );
   end component;
@@ -112,12 +112,12 @@ architecture Behavioral of datamemarbit is
       RETXDONE : out std_logic;
       SRCRETX  : in  std_logic_vector(5 downto 0);
       TYPRETX  : in  std_logic_vector(1 downto 0);
-      IDRETX   : in  std_logic_vector(31 downto 0);
+      SEQRETX   : in  std_logic_vector(31 downto 0);
       -- input parameters
       SRC      : in  std_logic_vector(5 downto 0);
       TYP      : in  std_logic_vector(1 downto 0);
-      ID       : in  std_logic_vector(31 downto 0);
-      IDWE     : in  std_logic;
+      SEQ       : in  std_logic_vector(31 downto 0);
+      SEQWE     : in  std_logic;
       BP       : in  std_logic_vector(7 downto 0);
 -- ram interface
       RAMADDR  : out std_logic_vector(16 downto 0);
@@ -190,8 +190,8 @@ begin  -- Behavioral
         RAMDOUT => indout, 
         SRC => src,
         TYP => typ,
-        ID => id,
-        IDWE => idwe,
+        SEQ => seq,
+        SEQWE => seqwe,
         BP => bp);
 
   datamempktretx_inst: datamempktretx
@@ -206,11 +206,11 @@ begin  -- Behavioral
       RETXDONE => RETXDONE,
       SRCRETX  => RETXSRC,
       TYPRETX  => RETXTYP,
-      IDRETX   => RETXID,
+      SEQRETX   => RETXSEQ,
       SRC      => src,
       TYP      => typ,
-      ID       => id,
-      IDWE     => idwe,
+      SEQ       => seq,
+      SEQWE     => seqwe,
       BP       => bp,
       RAMADDR  => retaddr,
       RAMDIN   => ramdin); 

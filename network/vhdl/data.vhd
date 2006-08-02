@@ -36,7 +36,7 @@ entity data is
     RETXDONE : out   std_logic;
     RETXSRC  : in    std_logic_vector(5 downto 0);
     RETXTYP : in    std_logic_vector(1 downto 0);
-    RETXID   : in    std_logic_vector(31 downto 0)
+    RETXSEQ   : in    std_logic_vector(31 downto 0)
     );
 end data;
 
@@ -116,7 +116,7 @@ architecture Behavioral of data is
       RETXDONE   : out   std_logic;
       RETXSRC    : in    std_logic_vector(5 downto 0);
       RETXTYP    : in    std_logic_vector(1 downto 0);
-      RETXID     : in    std_logic_vector(31 downto 0);
+      RETXSEQ     : in    std_logic_vector(31 downto 0);
       -- packet transmission
       TXDOUT     : out   std_logic_vector(15 downto 0);
       TXFIFOFULL : in    std_logic;
@@ -200,7 +200,7 @@ begin  -- Behavioral
       RETXDONE   => RETXDONE,
       RETXSRC    => RETXSRC,
       RETXTYP    => RETXTYP,
-      RETXID     => RETXID,
+      RETXSEQ     => RETXSEQ,
       TXDOUT     => txfdin,
       TXFIFOFULL => txfull,
       TXFIFOADDR => txfaddr,

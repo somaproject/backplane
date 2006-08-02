@@ -22,13 +22,13 @@ entity datamempktretx is
 
     SRCRETX : in std_logic_vector(5 downto 0);
     TYPRETX: in std_logic_vector(1 downto 0);
-    IDRETX : in std_logic_vector(31 downto 0);
+    SEQRETX : in std_logic_vector(31 downto 0);
     
     -- input parameters
     SRC : in std_logic_vector(5 downto 0);
     TYP : in std_logic_vector(1 downto 0);
-    ID : in std_logic_vector(31 downto 0); 
-    IDWE : in std_logic;
+    SEQ : in std_logic_vector(31 downto 0); 
+    SEQWE : in std_logic;
     BP : in std_logic_vector(7 downto 0);
     
 -- ram interface
@@ -72,7 +72,7 @@ begin  -- Behavioral
   RAMADDR <= bpout & addr; 
   DONE <= '1' when cs = dones  else '0';
   DOUT <= RAMDIN; 
-  lutaddrb <= (SRC & TYP & ID(2 downto 0));
+  lutaddrb <= (SRC & TYP & SEQ(2 downto 0));
 
   retxrst <= '1' when cs = retxdones or cs = retxdones2 else '0'; 
   RETXDONE <= retxrst; 
@@ -107,7 +107,7 @@ begin  -- Behavioral
 
       --
       if RETXREQ = '1' then
-        lutaddra <= srcretx & typretx & idretx(2 downto 0);
+        lutaddra <= srcretx & typretx & seqretx(2 downto 0);
         
       end if;
 
@@ -212,7 +212,7 @@ begin  -- Behavioral
       SSRA  => '0',
       SSRB  => '0',
       WEA   => '0',
-      WEB   => IDWE
+      WEB   => SEQWE
       );
 
 

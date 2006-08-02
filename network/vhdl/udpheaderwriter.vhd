@@ -10,10 +10,10 @@ use work.somabackplane;
 entity udpheaderwriter is
   port (
     CLK      : in  std_logic;
-    SRCMAC    : in  std_logic_vector(47 downto 0);
-    SRCIP     : in  std_logic_vector(31 downto 0);
-    DESTMAC : in std_logic_vector(47 downto 0); 
-    DESTIP  : in  std_logic_vector(31 downto 0);
+    SRCMAC   : in  std_logic_vector(47 downto 0);
+    SRCIP    : in  std_logic_vector(31 downto 0);
+    DESTMAC  : in  std_logic_vector(47 downto 0);
+    DESTIP   : in  std_logic_vector(31 downto 0);
     DESTPORT : in  std_logic_vector(15 downto 0);
     START    : in  std_logic;
     WLEN     : in  std_logic_vector(9 downto 0);
@@ -26,7 +26,7 @@ end udpheaderwriter;
 
 architecture Behavioral of udpheaderwriter is
 
-  signal dmux                    : integer range 0 to 14        := 0;
+  signal dmux                    : integer range 0 to 14         := 0;
   signal udplen, iplen, framelen : std_logic_vector(15 downto 0) := (others => '0');
 
   signal cdin : std_logic_vector(15 downto 0) := (others => '0');
@@ -43,7 +43,7 @@ architecture Behavioral of udpheaderwriter is
   type states is (none, desmacwh, desmacwm, desmacwl,
                   srcmacwh, srcmacwm, srcmacwl,
                   srcipwh, srcipwl, destipwh, destipwl,
-                  udpportw,             udplenw, iplenw, framelw, chksumw);
+                  udpportw, udplenw, iplenw, framelw, chksumw);
 
   signal cs, ns : states := none;
 
@@ -71,19 +71,19 @@ begin  -- Behavioral
   iplen            <= ain + X"001c";
   framelen         <= ain + X"002c";
 
-  doutint <= DESTMAC(47 downto 32) when dmux = 0 else
-             DESTMAC(31 downto 16) when dmux = 1 else
-             DESTMAC(15 downto 0) when dmux = 2 else 
-             SRCMAC(47 downto 32)   when dmux = 3  else
-             SRCMAC(31 downto 16)   when dmux = 4  else
-             SRCMAC(15 downto 0)    when dmux = 5  else
-             SRCIP(31 downto 16)    when dmux = 6  else
-             SRCIP(15 downto 0)     when dmux = 7  else
-             DESTIP(31 downto 16) when dmux = 8  else
-             DESTIP(15 downto 0)  when dmux = 9  else
-             DESTPORT              when dmux = 10  else
-             udplen                when dmux = 11  else
-             iplen                 when dmux = 12  else
+  doutint <= DESTMAC(47 downto 32) when dmux = 0  else
+             DESTMAC(31 downto 16) when dmux = 1  else
+             DESTMAC(15 downto 0)  when dmux = 2  else
+             SRCMAC(47 downto 32)  when dmux = 3  else
+             SRCMAC(31 downto 16)  when dmux = 4  else
+             SRCMAC(15 downto 0)   when dmux = 5  else
+             SRCIP(31 downto 16)   when dmux = 6  else
+             SRCIP(15 downto 0)    when dmux = 7  else
+             DESTIP(31 downto 16)  when dmux = 8  else
+             DESTIP(15 downto 0)   when dmux = 9  else
+             DESTPORT              when dmux = 10 else
+             udplen                when dmux = 11 else
+             iplen                 when dmux = 12 else
              framelen              when dmux = 13 else
              csum;
   DOUT    <= doutint;

@@ -46,7 +46,7 @@ architecture Behavioral of datapacketgen is
 
 
   type states is (none, datachk, nextdata, datas,
-                  dataw, datadone, headers, headerw, idwl, idwh, nextfifo);
+                  dataw, datadone, headers, headerw, seqwl, seqwh, nextfifo);
 
   signal cs, ns : states := none;
 
@@ -63,9 +63,9 @@ architecture Behavioral of datapacketgen is
   signal src : std_logic_vector(5 downto 0)  := (others => '0');
   signal typ : std_logic_vector(1 downto 0)  := (others => '0');
 
-  signal ida : std_logic_vector(8 downto 0) := (others => '0');
+  signal seqa : std_logic_vector(8 downto 0) := (others => '0');
 
-  signal idwe : std_logic := '0';
+  signal seqwe : std_logic := '0';
 
   signal destport : std_logic_vector(15 downto 0) := (others => '0');
 
@@ -74,7 +74,7 @@ architecture Behavioral of datapacketgen is
   signal fdin  : std_logic_vector(15 downto 0) := (others => '0');
   signal faddr : std_logic_vector(10 downto 0) := (others => '0');
 
-  signal iddo, iddi : std_logic_vector(31 downto 0) := (others => '0');
+  signal seqdo, seqdi : std_logic_vector(31 downto 0) := (others => '0');
 
   -- output signals
   signal addroutint : std_logic_vector(10 downto 0) := (others => '0');
@@ -139,20 +139,20 @@ begin  -- Behavioral
 
   fdin <= di                 when dsel = 0 else
           hdrdout            when dsel = 1 else
-          iddo(31 downto 16) when dsel = 2 else
-          iddo(15 downto 0);
+          seqdo(31 downto 16) when dsel = 2 else
+          seqdo(15 downto 0);
 
-  iddi <= iddo + 1;
+  seqdi <= seqdo + 1;
 
-  idwe <= '1' when cs = nextfifo else '0';
+  seqwe <= '1' when cs = nextfifo else '0';
 
   hdrstart <= '1' when cs = headers else '0';
 
-  ida <= "0" & typ & src;
+  seqa <= "0" & typ & src;
 
-  destport <= X"0fa0" + ("000000" & ida);
+  destport <= X"0fa0" + ("000000" & seqa);
   
-  ID_buffer : RAMB16_S36
+  SEQ_buffer : RAMB16_S36
     generic map (
       INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
       INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
@@ -175,14 +175,14 @@ begin  -- Behavioral
       INIT_12 => X"0000000000000000000000000000000000000000000000000000000000000000"
       )
     port map (
-      DO      => iddo,
-      ADDR    => ida,
+      DO      => seqdo,
+      ADDR    => seqa,
       CLK     => CLK,
-      DI      => iddi,
+      DI      => seqdi,
       DIP     => "0000",
       EN      => '1',
       SSR     => '0',
-      WE      => idwe
+      WE      => seqwe
       );
 
   main : process(CLK)
@@ -361,16 +361,16 @@ begin  -- Behavioral
         addrinc <= '0';
         datawe  <= '0';
         if hdrdone = '1' then
-          ns    <= idwl;
+          ns    <= seqwl;
         end if;
 
-      when idwl =>
+      when seqwl =>
         dsel    <= 2;
         addrinc <= '0';
         datawe  <= '0';
-        ns      <= idwh;
+        ns      <= seqwh;
 
-      when idwh =>
+      when seqwh =>
         dsel    <= 3;
         addrinc <= '0';
         datawe  <= '0';

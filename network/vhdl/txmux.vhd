@@ -56,7 +56,7 @@ begin  -- Behavioral
             
    denmux <= DEN(chan);
 
-  
+  -- priority encoder
    lchan <= 0 when arml(0) = '1' else
             1 when arml(1) = '1' else
             2 when arml(2) = '1' else
