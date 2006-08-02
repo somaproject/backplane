@@ -1,0 +1,36 @@
+\section{Overview}
+
+The Soma Network Stack is a high-bandwidth low-latency IP-based
+network stack which implements the Soma Network Protocol and several
+convenince routines. The implementation interacts with the Soma Event
+Bus, the Soma Data Bus, and the Soma Network Interface.
+
+To comply with the soma Network Protocol the Network Stack supports 
+\begin{itemize}
+\item Broadcast of variable-length UDP datagrams containing Data Bus data. 
+\item Broadcastof variable-length UDP datagrams containing Event Bus events
+\item Retransmission of lost Data Bus datagrams via unicast requests 
+\item Reception of inbound event datagrams. 
+\end{itemize}
+
+and additionally provides 
+\item{itemize}
+\item ARP who-has query response
+\item ICMP echo-response (ping) for diagnostics
+\item{itemize}
+
+\subsection{Bandwidth}
+A data packet is going to be at most 280 ticks (560 bytes) long, and a
+event packet is going to be at most 550 ticks (1100 bytes) long.
+
+This means that we can transmit one event and 1.6 data packets per
+ecycle, or 50 event packets and 80 data packets per ms.
+
+
+\subsection{Limitations}
+The Stack does not support IP fragmentation, and has no internal ARP
+cache to allow transmission of new packets to arbitrary hosts. This is
+normally not a problem as all data transmission will be either in
+response to an incoming packet or broadcast to all hosts on the
+subnet.
+
