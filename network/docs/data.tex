@@ -1,0 +1,38 @@
+\section{Data Transmission}
+
+To transmit data packets from the event bus, the network stack must
+acquire the variable length packets, place them into larger udp
+datagrams, set the metadata fields, and transmit them. However, we
+must also save a copy of each packet (for possible retransmission),
+and respond to a retransmission request should one occur during the
+normal stream of data transmission.
+
+To enable retransmission we have a packet TX FIFO with space for 256
+1024-byte packets; a data packet should never exceed 600 bytes. This
+FIFO also gives us headroom should the TX Fifo fill due to
+insufficient access to the TX Mux interface. Note that, on average, we
+have more than enough TX bandwidth -- but in the short run it is
+possible to fill the TX fifo and thus need to buffer packets in the
+in-memory FIFO.
+
+This interface is heavily pipelined, as data bus packet transmission
+is not viewed as an event-critical process.
+
+We have various FIFOs and synchronization interfaces to guarantee our
+goal of, within an ECYCLE, being able to service:
+
+\begin{itemize}
+\item The arrival of two new data bus packets and their subsequent
+  memory writes to the fifo.
+\item The placement of two packets in the memory fifo into the output
+  FIFO for transmission
+\item The retrieval of one packet for retransmission
+\end{itemize}
+
+\subsection{Data Bus Acquire}
+
+\subsection{Data Bus Packet Gen}
+
+\subsection{Memory Arbitration}
+
+\subsection{Data TX  FIFO}
