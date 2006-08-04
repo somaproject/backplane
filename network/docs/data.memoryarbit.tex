@@ -1,0 +1,27 @@
+\section{Memory Arbitration} 
+
+The memory arbitration interface must, each ECYCLE (1000 ticks, or 4000 bytes):
+
+\begin{enumerate}
+\item write up to 2 packets into memory
+\item fill the output fifo with up to 2 new packets
+\item respond to one retx request. 
+\end{enumerate}
+
+The memory arbitration interface's interface to, well, everything is via address, data, and write-enable lines. 
+
+THe memory arbitration interface is composed of three submodules. Each interface is simply muxed access to the RAM, so each interface must have a good model of the relevant latencies that occur externally due to the ZBT SRAM and interface. 
+
+
+\subsection{Memory Packet Writer}
+The memory packet writer interfaces with the DAta bus packet generator and is responsible for reading out up to two packets each event cycle and writing them 
+to the RAM interface. It also keeps track of the base pointer for the current packet. 
+
+AT the assertion of DONE, BP points to the next empty slot in the FIFO. 
+
+In the event of a packet being written, at some point during the cycle SRC, ID, TYPE, and IDWE will be asserted to inform the ReTX module of the written location of the packet with these parameters. 
+
+\subsection{Memory Packet Transmission} 
+The TX interface waits until TXFIFOFULL is not asserted and then writes into the tx buffer, asserting TXDONE to indicate it is, in fact, done. 
+
+\section{Output FIFO} 

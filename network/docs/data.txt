@@ -44,60 +44,7 @@ packet? It is the responsibility of the ReTX device to make sure that
 this is the correct (src, type, id) and transmit an "unavailable"
 response if that's not the case.
 
-\section{Data Bus Acquire}
 
-The data bus acquire interface takes a data bus packet and: 
-
-1. event-cycle aligns it, so it is guaranteed to be available on the
-   next ecycle.
-2. converts it to a 16-bit-wide packet
-3. measures the length
-
-It uses a double-fifo. On the cycle following ecycle-assertion, LEN
-contains the length of the packet in bytes, not words; if LEN =0 then
-there is no packet.
-
-\section{Data Bus Packet Generation} 
-
-1. query A|B for LEN > 0
-2. copy data into current packet
-3. Write header
-4. write sequence
-5. commit to FIFO
-
-The data bus packet generator generates one or two events every ecycle, which are ready for processing at the end of the event cycle. It uses a four-deep fifo such that the packets can be read out on the subsequent ecycle. 
-
-Note that the fifo output stage runs at the Memory Clock speed (100 MHz). 
-
-The data bus packet gen interface is such that: 
-1. when FIFOVALID is asserted, ADDR and DOUT can be used to read the contents of the current packet, with a one-cycle (blockram-like) read latency
-2. when the reader is done with the current packet, it asserts FIFONEXT for one tick to advance the internal fifo pointer. 
-
-\section{Memory Arbitration} 
-
-The memory arbitration interface must, each ECYCLE (1000 ticks, or 4000 bytes):
-
-1. write up to 2 packets into memory
-2. fill the output fifo with up to 2 new packets
-3. respond to one retx request. 
-
-The memory arbitration interface's interface to, well, everything is via address, data, and write-enable lines. 
-
-THe memory arbitration interface is composed of three submodules. Each interface is simply muxed access to the RAM, so each interface must have a good model of the relevant latencies that occur externally due to the ZBT SRAM and interface. 
-
-
-\subsection{Memory Packet Writer}
-The memory packet writer interfaces with the DAta bus packet generator and is responsible for reading out up to two packets each event cycle and writing them 
-to the RAM interface. It also keeps track of the base pointer for the current packet. 
-
-AT the assertion of DONE, BP points to the next empty slot in the FIFO. 
-
-In the event of a packet being written, at some point during the cycle SRC, ID, TYPE, and IDWE will be asserted to inform the ReTX module of the written location of the packet with these parameters. 
-
-\subsection{Memory Packet Transmission} 
-The TX interface waits until TXFIFOFULL is not asserted and then writes into the tx buffer, asserting TXDONE to indicate it is, in fact, done. 
-
-\section{Output FIFO} 
 
 The output fifo is a simple three-deep fifo which handles talking to
 the TX mux and clock domain conversion.
