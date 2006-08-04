@@ -6,11 +6,12 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="overview.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/network/docs"
-   inkscape:version="0.44"
+   sodipodi:docbase="/home/jonas/soma/backplane/network/docs"
+   inkscape:version="0.44+devel"
    sodipodi:version="0.32"
    id="svg1996"
    height="703.125"
@@ -66,9 +67,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="221.49189"
-     inkscape:cx="186.17089"
-     inkscape:zoom="0.50407609"
+     inkscape:cy="443.26737"
+     inkscape:cx="190.58599"
+     inkscape:zoom="1.4257425"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -430,13 +431,18 @@
        d="M 62.5,380.62502 L 62.5,443.12502 L 65.625,443.12502 L 62.5,449.37502 L 59.375,443.12502 L 62.5,443.12502"
        id="path10616"
        sodipodi:nodetypes="cccccc" />
-    <rect
-       style="fill:#e5e6ff;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:4;stroke-opacity:1"
-       id="rect8117"
-       width="81.25"
-       height="271.875"
-       x="15.625"
-       y="449.375" />
+    <a
+       id="a2351"
+       transform="matrix(1,0,0,-1,0,1170.625)"
+       xlink:href="eventtx.svg">
+      <rect
+         y="449.375"
+         x="15.625"
+         height="271.875"
+         width="81.25"
+         id="rect8117"
+         style="fill:#e5e6ff;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:4;stroke-opacity:1" />
+    </a>
     <rect
        style="fill:white;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect8119"

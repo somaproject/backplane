@@ -9,41 +9,42 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="eventtx.fsm.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/network"
-   inkscape:version="0.44"
+   sodipodi:docbase="/home/jonas/soma/backplane/network/docs"
+   inkscape:version="0.44+devel"
    sodipodi:version="0.32"
    id="svg1996"
-   height="792.00000pt"
-   width="612.00000pt">
+   height="390.625"
+   width="562.5"
+   version="1.0">
   <defs
      id="defs3">
     <marker
        inkscape:stockid="TriangleInM"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="TriangleInM"
-       style="overflow:visible;">
+       style="overflow:visible">
       <path
          sodipodi:nodetypes="cccc"
          id="path1545"
-         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
-         transform="scale(-0.4)" />
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z "
+         style="fill-rule:evenodd;stroke:black;stroke-width:1pt;marker-start:none"
+         transform="scale(-0.4,-0.4)" />
     </marker>
     <marker
        inkscape:stockid="TriangleOutM"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="TriangleOutM"
-       style="overflow:visible;">
+       style="overflow:visible">
       <path
          sodipodi:nodetypes="cccc"
          id="path1698"
-         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
-         transform="scale(0.4)" />
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z "
+         style="fill-rule:evenodd;stroke:black;stroke-width:1pt;marker-start:none"
+         transform="scale(0.4,0.4)" />
     </marker>
   </defs>
   <sodipodi:namedview
@@ -62,9 +63,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="860.14352"
-     inkscape:cx="404.328"
-     inkscape:zoom="1.979899"
+     inkscape:cy="298.01447"
+     inkscape:cx="460.93196"
+     inkscape:zoom="0.70000001"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -88,13 +89,14 @@
   <g
      id="layer1"
      inkscape:groupmode="layer"
-     inkscape:label="Layer 1">
+     inkscape:label="Layer 1"
+     transform="translate(0,-599.375)">
     <path
        id="path2889"
-       d="M 168.75000,43.125000 L 168.75000,43.125000"
-       style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-opacity:1.0000000" />
+       d="M 75,683.75 L 75,683.75"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-opacity:1" />
     <path
-       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,338.6632,134.3102)"
+       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,244.9132,774.9352)"
        sodipodi:open="true"
        d="M 180.21352,107.48374 A 12.5,12.5 0 1 1 168.62925,90.000583"
        sodipodi:end="4.7027288"
@@ -107,21 +109,21 @@
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;marker-start:url(#TriangleInM);marker-end:none"
        sodipodi:type="arc" />
     <text
-       sodipodi:linespacing="100.00000%"
+       sodipodi:linespacing="100%"
        id="text3558"
-       y="16.545723"
-       x="184.97278"
-       style="font-size:7.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100.00000%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.2500000;font-family:Bitstream Vera Sans"
+       y="657.17072"
+       x="91.222778"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.25;font-family:Bitstream Vera Sans"
        xml:space="preserve"><tspan
          id="tspan3559">else</tspan></text>
     <path
        id="path1654"
-       d="M 168.75,52.5 L 234.375,52.5"
+       d="M 75,693.125 L 140.625,693.125"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#TriangleOutM);stroke-opacity:1"
        sodipodi:nodetypes="cc" />
     <g
        id="g2858"
-       transform="translate(9.375,90.625)">
+       transform="translate(-84.375,731.25)">
       <g
          transform="translate(-75,0)"
          id="g2851">
@@ -156,7 +158,7 @@
     </g>
     <g
        id="g7749"
-       transform="translate(140.625,90.625)">
+       transform="translate(46.875,731.25)">
       <g
          transform="translate(-75,0)"
          id="g7751">
@@ -192,32 +194,32 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="199.82324"
-       y="49.375"
+       x="106.07324"
+       y="690"
        id="text7761"
        sodipodi:linespacing="121%"><tspan
          sodipodi:role="line"
          id="tspan7763"
-         x="199.82324"
-         y="49.375">EBDONE=1</tspan></text>
+         x="106.07324"
+         y="690">EBDONE=1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="246.875"
-       y="83.75"
+       x="153.125"
+       y="724.375"
        id="text7765"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
-         x="246.875"
-         y="83.75"
+         x="153.125"
+         y="724.375"
          id="tspan7769">NEXTBUF=0</tspan><tspan
          sodipodi:role="line"
-         x="246.875"
-         y="92.75"
+         x="153.125"
+         y="733.375"
          id="tspan2828">OSEL=1</tspan></text>
     <g
        id="g2573"
-       transform="translate(315.625,90.625)">
+       transform="translate(221.875,731.25)">
       <g
          transform="translate(-75,0)"
          id="g2575">
@@ -253,49 +255,49 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="421.875"
-       y="83.75"
+       x="328.125"
+       y="724.375"
        id="text2585"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
-         x="421.875"
-         y="83.75"
+         x="328.125"
+         y="724.375"
          id="tspan2587">NEXTBUF=0</tspan><tspan
          sodipodi:role="line"
-         x="421.875"
-         y="92.75"
+         x="328.125"
+         y="733.375"
          id="tspan4381">HDRSTART=1</tspan><tspan
          sodipodi:role="line"
-         x="421.875"
-         y="101.75"
+         x="328.125"
+         y="742.375"
          id="tspan2830">OSEL=0</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 300,52.5 L 409.375,52.5"
+       d="M 206.25,693.125 L 315.625,693.125"
        id="path2589"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="318.75"
-       y="40"
+       x="225"
+       y="680.625"
        id="text3488"
        sodipodi:linespacing="121%"><tspan
          sodipodi:role="line"
          id="tspan3490"
-         x="318.75"
-         y="40">ECNT=5</tspan><tspan
+         x="225"
+         y="680.625">ECNT=5</tspan><tspan
          sodipodi:role="line"
-         x="318.75"
-         y="48.47"
+         x="225"
+         y="689.095"
          id="tspan3492">or DATAADDR &gt; 100</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 268.75,33.75 L 268.75,15 C 268.75,15 268.75,2.5 253.125,2.5 C 237.5,2.5 150,2.5 150,2.5 C 150,2.5 137.5,2.5 137.5,15 C 137.5,27.5 137.5,30.625 137.5,30.625"
+       d="M 175,674.375 L 175,655.625 C 175,655.625 175,643.125 159.375,643.125 C 143.75,643.125 56.25,643.125 56.25,643.125 C 56.25,643.125 43.75,643.125 43.75,655.625 C 43.75,668.125 43.75,671.25 43.75,671.25"
        id="path3494" />
     <g
        id="g4383"
-       transform="translate(431.25,90.625)">
+       transform="translate(337.5,731.25)">
       <g
          transform="translate(-75,0)"
          id="g4385">
@@ -331,32 +333,32 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="537.5"
-       y="83.75"
+       x="443.75"
+       y="724.375"
        id="text4395"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
-         x="537.5"
-         y="83.75"
+         x="443.75"
+         y="724.375"
          id="tspan4397">NEXTBUF=0</tspan><tspan
          sodipodi:role="line"
-         x="537.5"
-         y="92.75"
+         x="443.75"
+         y="733.375"
          id="tspan4399">HDRSTART=0</tspan><tspan
          sodipodi:role="line"
-         x="537.5"
-         y="101.75"
+         x="443.75"
+         y="742.375"
          id="tspan2832">OSEL=0</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 475,52.5 L 525,52.5"
+       d="M 381.25,693.125 L 431.25,693.125"
        id="path4401" />
     <path
        id="path4403"
-       d="M 590.62503,43.125 L 590.62503,43.125"
+       d="M 496.87503,683.75 L 496.87503,683.75"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-opacity:1" />
     <path
-       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,760.5382,134.3102)"
+       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,666.7882,774.9352)"
        sodipodi:open="true"
        d="M 180.21352,107.48374 A 12.5,12.5 0 1 1 168.62925,90.000583"
        sodipodi:end="4.7027288"
@@ -371,14 +373,14 @@
     <text
        sodipodi:linespacing="100%"
        id="text4407"
-       y="21.25"
-       x="607.10254"
+       y="661.875"
+       x="513.35254"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.25;font-family:Bitstream Vera Sans"
        xml:space="preserve"><tspan
          id="tspan4409">else</tspan></text>
     <g
        id="g4411"
-       transform="translate(265.625,196.875)">
+       transform="translate(171.875,837.5)">
       <g
          transform="translate(-75,0)"
          id="g4413">
@@ -414,52 +416,52 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="371.875"
-       y="190"
+       x="278.125"
+       y="830.625"
        id="text4423"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
-         x="371.875"
-         y="190"
+         x="278.125"
+         y="830.625"
          id="tspan4425">NEXTBUF=1</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 590.625,52.5 L 612.5,52.5 C 612.5,52.5 625,52.5 625,65 C 625,77.5 625,146.25 625,146.25 C 625,146.25 625,158.75 612.5,158.75 C 600,158.75 428.125,158.75 428.125,158.75"
+       d="M 496.875,693.125 L 518.75,693.125 C 518.75,693.125 531.25,693.125 531.25,705.625 C 531.25,718.125 531.25,786.875 531.25,786.875 C 531.25,786.875 531.25,799.375 518.75,799.375 C 506.25,799.375 334.375,799.375 334.375,799.375"
        id="path4427"
        sodipodi:nodetypes="ccscsc" />
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 362.5,158.75 L 150,158.75 C 150,158.75 137.5,158.75 137.5,146.25 C 137.5,133.75 137.5,74.375 137.5,74.375"
+       d="M 268.75,799.375 L 56.25,799.375 C 56.25,799.375 43.75,799.375 43.75,786.875 C 43.75,774.375 43.75,715 43.75,715"
        id="path4429" />
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="80.625"
-       y="-628.125"
+       x="721.25"
+       y="-534.375"
        id="text5316"
        sodipodi:linespacing="121%"
        transform="matrix(0,1,-1,0,0,0)"><tspan
          sodipodi:role="line"
-         x="80.625"
-         y="-628.125"
+         x="721.25"
+         y="-534.375"
          id="tspan5320">HDRDONE=1</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:20;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121%;writing-mode:lr;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="105.05587"
-       y="-22.172853"
+       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="11.30587"
+       y="618.45215"
        id="text7248"
        sodipodi:linespacing="121%"><tspan
          sodipodi:role="line"
          id="tspan7250"
-         x="105.05587"
-         y="-22.172853">Input FSM</tspan></text>
+         x="11.30587"
+         y="618.45215">Input FSM</tspan></text>
     <path
        id="path7252"
-       d="M 175,305.625 L 175,305.625"
+       d="M 81.25,946.25 L 81.25,946.25"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-opacity:1" />
     <path
-       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,344.9132,396.8102)"
+       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,251.1632,1037.435)"
        sodipodi:open="true"
        d="M 180.21352,107.48374 A 12.5,12.5 0 1 1 168.62925,90.000583"
        sodipodi:end="4.7027288"
@@ -473,12 +475,12 @@
        sodipodi:type="arc" />
     <path
        id="path7260"
-       d="M 175,315 L 240.625,315"
+       d="M 81.25,955.625 L 146.875,955.625"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#TriangleOutM);stroke-opacity:1"
        sodipodi:nodetypes="cc" />
     <g
        id="g7262"
-       transform="translate(15.625,353.125)">
+       transform="translate(-78.125,993.75)">
       <g
          transform="translate(-75,0)"
          id="g7264">
@@ -513,7 +515,7 @@
     </g>
     <g
        id="g7274"
-       transform="translate(146.875,353.125)">
+       transform="translate(53.125,993.75)">
       <g
          transform="translate(-75,0)"
          id="g7276">
@@ -549,17 +551,17 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="206.07324"
-       y="311.875"
+       x="112.32324"
+       y="952.5"
        id="text7286"
        sodipodi:linespacing="121%"><tspan
          sodipodi:role="line"
          id="tspan7288"
-         x="206.07324"
-         y="311.875">NEXTBUF</tspan></text>
+         x="112.32324"
+         y="952.5">NEXTBUF</tspan></text>
     <g
        id="g7294"
-       transform="translate(287.5,353.125)">
+       transform="translate(193.75,993.75)">
       <g
          transform="translate(-75,0)"
          id="g7296">
@@ -594,30 +596,30 @@
     </g>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 306.25,315 L 381.25,315"
+       d="M 212.5,955.625 L 287.5,955.625"
        id="path7312"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="325"
-       y="311.875"
+       x="231.25"
+       y="952.5"
        id="text7314"
        sodipodi:linespacing="121%"><tspan
          sodipodi:role="line"
-         x="325"
-         y="311.875"
+         x="231.25"
+         y="952.5"
          id="tspan7318">GRANT=1</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 446.875,315 L 496.875,315"
+       d="M 353.125,955.625 L 403.125,955.625"
        id="path7340" />
     <path
        id="path7342"
-       d="M 446.87503,305.625 L 446.87503,305.625"
+       d="M 353.12503,946.25 L 353.12503,946.25"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-opacity:1" />
     <path
-       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,616.7882,396.8102)"
+       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,523.0382,1037.435)"
        sodipodi:open="true"
        d="M 180.21352,107.48374 A 12.5,12.5 0 1 1 168.62925,90.000583"
        sodipodi:end="4.7027288"
@@ -632,14 +634,14 @@
     <text
        sodipodi:linespacing="100%"
        id="text7346"
-       y="283.75"
-       x="463.35254"
+       y="924.375"
+       x="369.60254"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.25;font-family:Bitstream Vera Sans"
        xml:space="preserve"><tspan
          id="tspan7348">else</tspan></text>
     <g
        id="g7350"
-       transform="translate(403.125,353.125)">
+       transform="translate(309.375,993.75)">
       <g
          transform="translate(-75,0)"
          id="g7352">
@@ -675,20 +677,20 @@
     <text
        xml:space="preserve"
        style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="111.30587"
-       y="240.32715"
+       x="17.55587"
+       y="880.95215"
        id="text7374"
        sodipodi:linespacing="121%"><tspan
          sodipodi:role="line"
          id="tspan7376"
-         x="111.30587"
-         y="240.32715">Output FSM</tspan></text>
+         x="17.55587"
+         y="880.95215">Output FSM</tspan></text>
     <path
        id="path7378"
-       d="M 306.25003,305.625 L 306.25003,305.625"
+       d="M 212.50003,946.25 L 212.50003,946.25"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-opacity:1" />
     <path
-       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,476.1632,396.8102)"
+       transform="matrix(-0.999935,1.145556e-2,-1.145556e-2,-0.999935,382.4132,1037.435)"
        sodipodi:open="true"
        d="M 180.21352,107.48374 A 12.5,12.5 0 1 1 168.62925,90.000583"
        sodipodi:end="4.7027288"
@@ -703,26 +705,26 @@
     <text
        sodipodi:linespacing="100%"
        id="text7382"
-       y="283.75"
-       x="322.72754"
+       y="924.375"
+       x="228.97754"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.25;font-family:Bitstream Vera Sans"
        xml:space="preserve"><tspan
          id="tspan7384">else</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 531.25,296.25 L 531.25,271.25 C 531.25,271.25 531.25,258.75 518.75,258.75 C 506.25,258.75 156.25,258.75 156.25,258.75 C 156.25,258.75 143.75,258.75 143.75,271.25 C 143.75,283.75 143.75,293.125 143.75,293.125"
+       d="M 437.5,936.875 L 437.5,911.875 C 437.5,911.875 437.5,899.375 425,899.375 C 412.5,899.375 62.5,899.375 62.5,899.375 C 62.5,899.375 50,899.375 50,911.875 C 50,924.375 50,933.75 50,933.75"
        id="path7394"
        sodipodi:nodetypes="ccscsc" />
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="456.25"
-       y="311.875"
+       x="362.5"
+       y="952.5"
        id="text2446"
        sodipodi:linespacing="121%"><tspan
          sodipodi:role="line"
-         x="456.25"
-         y="311.875"
+         x="362.5"
+         y="952.5"
          id="tspan2448">OLEN=</tspan></text>
   </g>
 </svg>
