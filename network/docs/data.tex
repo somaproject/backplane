@@ -40,7 +40,7 @@ The data bus acquire interface takes a data bus packet and:
 \subsubsection{Interface and Implementation} 
 
 It uses a double-buffer approach. On the cycle following
-\signal{ECYCLE}-assertion, \signal{LEN[9:0}} contains the length of
+\signal{ECYCLE}-assertion, \signal{LEN[9:0]} contains the length of
 the packet in words, not bytes; if \signal{LEN[9:0]} =0 then there is
 no packet awaiting transmission.
 

@@ -30,7 +30,7 @@ stored words, which appear on \signal{PKTDATA[15:0]} one cycle later
 allowing the acquisition of another inbound frame.
 
 The operation of the other \signal{RETXSTART}, \signal{ARPSTART}, and
-\sigal{EVENTSTART} interfaces are analogous.
+\signal{EVENTSTART} interfaces are analogous.
 
 \subsection{Implementation} 
 
@@ -50,8 +50,8 @@ results.
   IP protocol type, and port number.
 \end{itemize}
 
-Packet analysis begins in \state{NONE}, and terminates in the
-\state{NEXTPKT} state, the latter repeated in Figure
+Packet analysis begins in \signal{NONE}, and terminates in the
+\signal{NEXTPKT} state, the latter repeated in Figure
 \ref{inputcontrol.fsm} for clarity.
 
 \begin{figure}
@@ -66,7 +66,7 @@ Packet analysis begins in \state{NONE}, and terminates in the
 \begin{centering}
 \includegraphics[scale=0.8]{inputcontrol.fsm.svg}
 \end{centering}
-\caption{Input Control FSM. Note that the termiating \state{NEXTPKT} state is repeated for the purpose of clarity. }
+\caption{Input Control FSM. Note that the termiating \signal{NEXTPKT} state is repeated for the purpose of clarity. }
 \label{inputcontrol.fsm}
 \end{figure}
 
