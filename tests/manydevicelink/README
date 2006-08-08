@@ -1,15 +1,31 @@
-This is an attempt to synthesize and then test the device link of all
+This is an attempt to synthesize and then test the DeviceLink of all
 the external devices.
-
-Since we have limited output diagnostic information we will use the
-network data pins as our tests.
 
 Our test bitstream will send 0-255 in 8b/10b-encoded streams, with a
 k28.5 header. We will attempt to RX the same stream as well; the
 device can simply implement a loopback if it so wishes.
 
-The "link valid" pins are sent to DIN0-15 and DOUT0-15
+We will use the USER registers of the JTAG interface to output the
+status of the device. For each device we read out an 8-bit number
+(8*20 bits in total) being the number of time units the device has
+been running with lock HIGH. If lock is low, this is 0. In general,
+this will be "seconds"
+
+This is designed to be used with
+backplane/deviceio/tests/deviceloopback
+
+Currently it will work with any device on the bus. 
 
 
-The first 16 TX devices are DSPboards 0-15, which are the only ones we
-care about at the moment.
+-- time measurement 
+
+Associated with each device is a counter in the
+uptimearray array. When UPTIMETICK goes high (~1sec) it is
+incremented.
+
+-- jtag readout
+
+These are all read out in a block. We use the USER1 instruction, and
+we read out the number of seconds each channel has been "up". Note
+this obviously wraps at 256.
+
