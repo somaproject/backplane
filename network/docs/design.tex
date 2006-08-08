@@ -34,17 +34,15 @@ build up its response. The packet processing module only releases
 control back to the Input Control module when it has completed
 transmission of its internal packet.
 
-\subsection{Event Packet Processing Modules}
 Soma Event Bus transmission is handled via the \textbf{Event Bus
   Transmission} packet processing module, which aggregates inbound
 events according to the Soma Network Protocol. The resulting broadcast
 frames can be up to 1100 bytes in length.
 
-Event reception, handled by the \textbf{Event Receive} module, is
-somewhat more complex due to the request-response nature of inbound
-events in the network protocol. 
+Event reception, handled by the \textbf{Event Receive} packet
+processing module, is somewhat more complex due to the
+request-response nature of inbound events in the network protocol.
 
-\subsection{Data Packet Processing Modules} 
 The importance of error-free data transmission to the soma system
 motivated the design of the \textbf{Data Bus Packet Transmission}
 packet processing module. Here we use a 512 kB buffer to store
@@ -56,7 +54,6 @@ retransmission and asks the Data Bus Packet Transmission module to
 retrieve that packet. If the packet is still in the buffer, it is
 transmitted out the interface.
 
-\subsection{Miscellaneous Modules}
-\textbf{arp Response}
-\textbf{ICMP Echo response}
+The necessity of answering Address Resolution Protocol (ARP) queries motivated the simple \textbf{ARP Who-Has Query Response } Packet Processing Module. The need for diagnostic response tools lead to the creation of the \textbf{ICMP Echo Response} Packet Processing Module. 
+
 

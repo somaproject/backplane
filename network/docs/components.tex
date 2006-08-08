@@ -12,11 +12,11 @@ This module performs the IP Header checksum over a range of input words.
 
 The IP header checksum is defined by RFC 791 as
 
-\begin{blockquote}
+\begin{quote}
       The checksum field is the 16 bit one's complement of the one's
 complement sum of all 16 bit words in the header.  For purposes of
 computing the checksum, the value of the checksum field is zero.
-\end{blockquote}
+\end{quote}
 
 Ones-complement arithmetic can be implemented on twos-complement
 hardware by adding the carry bit to the LSB.
@@ -55,7 +55,7 @@ The input signals are
 \item \signal{DESTIP[31:0]} : Destination IP address
 \item \signal{SRCMAC[47:0]} : Source MAC address
 \item \signal{SRCIP[31:0]} : Source IP address
-\item \siganl{DESTPORT[15:0]} : Destination UDP port. 
+\item \signal{DESTPORT[15:0]} : Destination UDP port. 
 \item \signal{WLEN[8:0]} : the 16-bit word length of the UDP datagram's body. 
 \end{itemize}
 

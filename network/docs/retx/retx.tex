@@ -1,6 +1,10 @@
-\section{Retransmission Response Packet Processing MOdule} 
+\section{Retransmission Response Packet Processing Module} 
 
-The Retransmission Request Packet Processing module....
+The Retransmission Request Packet Processing module takes an input
+retransmit request and attempts to acquire that packet. It then sends
+that packet out to the interface. Note that the packet retrieved from
+the FIFO may not be the packet requested, if the FIFO has since
+wrapped around.
 
 \begin{figure}
 \begin{centering}

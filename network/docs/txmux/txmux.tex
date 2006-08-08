@@ -18,16 +18,16 @@ The TX input mux selects among armed inputs. To send a packet, a
 device asserts the \signal{ARM} signal and waits for the assertion of
 the corresponding \signal{GRANT}.
 
-Note that ARM should be deasserted by the source once GRANT has been
+Note that \signal{ARM} should be deasserted by the source once \signal{GRANT} has been
 asserted to prevent multiple-triggering.
 
-When GRANT is asserted, that port is given the exclusive control of
-the output to the NIC. The DEN and and DIN are passed through with
+When \signal{GRANT} is asserted, that port is given the exclusive control of
+the output to the NIC. The \signal{DEN} and and \signal{DIN[15:0]} are passed through with
 one-cycle latency.
 
 The transition of \signal{DEN} from high to low on a given port
 indicates the completion of that port's transmission needs, and the
-multiplexer will then query the ARM status of the next device.
+multiplexer will then query the \signal{ARM} status of the next device.
 
 
 \subsection{Implementation}
