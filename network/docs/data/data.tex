@@ -29,6 +29,15 @@ goal of, within an ECYCLE, being able to service:
 \item The retrieval of one packet for retransmission
 \end{itemize}
 
+ \begin{figure}
+\begin{centering}
+\includegraphics[scale=0.7]{data.svg}
+\end{centering}
+\caption{Data Transmission Interface}
+\label{data}
+\end{figure}
+
+
 \subsection{Data Bus Acquire}
 The data bus acquire interface takes a data bus packet and: 
 
@@ -38,15 +47,21 @@ The data bus acquire interface takes a data bus packet and:
 3. measures the length
 
 \subsubsection{Interface and Implementation} 
+ \begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{data.acquire.svg}
+\end{centering}
+\caption{Data Bus Acquire.}
+\label{data.acquire}
+\end{figure}
 
 It uses a double-buffer approach. On the cycle following
 \signal{ECYCLE}-assertion, \signal{LEN[9:0]} contains the length of
 the packet in words, not bytes; if \signal{LEN[9:0]} =0 then there is
 no packet awaiting transmission.
 
-\signal{BSEL} selects which buffer. 
-
-\signal{ADDR[8:0]} selects the output word. 
+\signal{BSEL} selects which buffer. \signal{ADDR[8:0]} selects the
+output word.
 
 \subsection{Data Bus Packet Gen}
 The data bus packet generator generates one or two datagrams every
@@ -61,6 +76,22 @@ The data bus packet generator also assigns the 32-bit sequence ID to
 each packet based upon packet source and type.
 
 \subsubsection{Interface}
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{data.packetgen.svg}
+\end{centering}
+\caption{Data Bus Transmission packet generation.}
+\label{data.packetgen}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{data.packetgen.fsm.svg}
+\end{centering}
+\caption{Data Bus Transmission packet generation finite state machine.}
+\label{data.packetgen.fsm}
+\end{figure}
+
 The input interface interoperates with the Data Bus Acquire module.
 The output interface runs at 100 MHz. 
 
@@ -93,6 +124,22 @@ fifo pointer (registered as \signal{FIFONUM}) is different from the
 output fifo pointer and asserts \signal{FIFOVALID} if so.
 
 \subsection{Memory Arbitration}
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{data.memarbit.svg}
+\end{centering}
+\caption{Data Bus Transmission memory arbitration interface}
+\label{data.memarbit}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{data.memarbit.fsm.svg}
+\end{centering}
+\caption{Data Bus Transmission memory arbitration interface finate state machine.}
+\label{data.memarbit.fsm}
+\end{figure}
+
 The data memory arbitration module controls access to the NoBL-based
 RAM used as a pacet FIFO. Each component has exclusive access to the
 memory pending the arbitrator's assertion of the associated
@@ -120,6 +167,22 @@ There are three primary modules:
 \end{enumerate}
 
 \subsubsection{Memory Packet Input}
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{memarbit.pktinput.svg}
+\end{centering}
+\caption{Data Bus Transmission memory arbitration interface packet input module.}
+\label{memarbit.pktinput}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{memarbit.pktinput.fsm.svg}
+\end{centering}
+\caption{Data Bus Transmission memory arbitration interface packet input module finate state machine} 
+\label{memarbit.pktinput.fsm}
+\end{figure}
+
 Assertion of \signal{START} instructs the memory packet input to
 determine if the contents of the upstream FIFO are valid
 (\signal{FIFOVALID} is asserted). If so, the packet is read out, with
@@ -135,6 +198,22 @@ packet metadata and fifo location are written to the Retransmission
 Lookup module via the assertion of \signal{IDWE}.
 
 \subsubsection{Memory Packet Retransmission Lookup} 
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{memarbit.retx.svg}
+\end{centering}
+\caption{Data Bus Transmission memory arbitration interface retransmission lookup.}
+\label{memarbit.retx}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{memarbit.retx.fsm.svg}
+\end{centering}
+\caption{Data Bus Transmission memory arbitration interface retransmission lookup finite state machine.}
+\label{memarbit.retx.fsm}
+\end{figure}
+
 When servicing a retransmission request, this module has an internal
 lookup where it stores the BP locations for the eight most recent
 packets of a given (source, type). Of course, the FIFO can't actually
@@ -167,6 +246,22 @@ registers are used to assert that the values written to the ReTx
 Packet Processing Module are correctly aligned.
 
 \subsubsection{Memory Packet Transmission}
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{memarbit.pktoutput.svg}
+\end{centering}
+\caption{Data Bus Transmission memory arbitration interface retransmission lookup.}
+\label{memarbit.retx}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{memarbit.pktoutput.fsm.svg}
+\end{centering}
+\caption{Data Bus Transmission memory arbitration interface retransmission lookup finite state machine.}
+\label{memarbit.retx.fsm}
+\end{figure}
+
 Structurally this module is very similar to the Retransmission Lookup
 module, except that it contains an internal BP (called
 \signal{BASEADDR[7:0]}) which is compared to the input
@@ -180,3 +275,10 @@ this write process.
 \subsection{Data Output FIFO}
 The output fifo simple blah blah cross-clock-domain TX-mux interface blah. 
 
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{data.outputfifo.svg}
+\end{centering}
+\caption{Data Bus Transmission output FIFO.}
+\label{data.outputfifo}
+\end{figure}

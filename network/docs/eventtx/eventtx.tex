@@ -15,6 +15,21 @@ To meet these parameters, we send an event datagram whenever:
 \end{enumerate} 
 
 \subsection{Implementation}
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{eventtx.svg}
+\end{centering}
+\caption{Event transmission implementation}
+\label{eventtx}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{eventtx.fsm.svg}
+\end{centering}
+\caption{Event transmission implementation FSM.}
+\label{eventtx.fsm}
+\end{figure}
 
 We use two BlockRAM devices to create a double-buffered system where we can acquire new events and transmit old ones simultaneously. Each buffer can hold 2048 bytes, enough for a full-MTU datagram. 
 
@@ -27,6 +42,21 @@ these per cycle.
 Our implementation uses separate FSMs to write the relevant bits for the IP/UDP headers and the. 
 
 \subsection{Event Body Writer}
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{eventtx.eventbody.svg}
+\end{centering}
+\caption{Event transmission event body writer}
+\label{eventtx.eventbody}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{eventtx.eventbody.fsm.svg}
+\end{centering}
+\caption{Event transmission event body writer}
+\label{eventtx.eventbody.fsm}
+\end{figure}
 
 The eventbodywriter receives events via an Event Port and: 
 
