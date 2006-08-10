@@ -133,7 +133,7 @@ begin  -- Behavioral
         addrinc <= '1';
         WEOUT <= '1';
         dmux <= 1; 
-        if DATALEN(9 downto 0) = pktlen then
+        if DATALEN(9 downto 0) = pktlen then  
           ns <= chkwr;
           else
             ns <= datawait; 

@@ -85,7 +85,7 @@ architecture Behavioral of network is
   component txmux
     port (
       CLK      : in  std_logic;
-      DEN      : in  std_logic_vector(4 downto 0);
+      DEN      : in  std_logic_vector(5 downto 0);
       DIN0     : in  std_logic_vector(15 downto 0);
       DIN1     : in  std_logic_vector(15 downto 0);
       DIN2     : in  std_logic_vector(15 downto 0);
@@ -93,7 +93,7 @@ architecture Behavioral of network is
       DIN4     : in  std_logic_vector(15 downto 0);
       DIN5     : in  std_logic_vector(15 downto 0);
       GRANT    : out std_logic_vector(5 downto 0);
-      ARM      : in  std_logic_vector(5 downto 0);
+     ARM      : in  std_logic_vector(5 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
       NEWFRAME : out std_logic
       );

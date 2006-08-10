@@ -53,6 +53,8 @@ architecture Behavioral of inputcontrol is
   signal mode : integer range 0 to 4 := 0;
 
   signal start : std_logic := '0';
+
+  signal len : std_logic_vector(11 downto 0) := (others => '0');
   
 
   -- fsm
@@ -63,8 +65,22 @@ architecture Behavioral of inputcontrol is
                   echoreq, icmpstart, pingwait);
   signal cs, ns : states := none;
 
+-------------------------------------------------------------------------------
+-- DEBUG
+-------------------------------------------------------------------------------
+component jtagsimpleout 
+    generic (
+    JTAG_CHAIN : integer := 0;
+    JTAGN : integer := 32);
+  port (
+    CLK : in std_logic;
+    DIN : in std_logic_vector(JTAGN-1 downto 0));
+end component; 
 
+signal jtagin : std_logic_vector(127 downto 0) := (others => '0');
+signal statedebug : std_logic_vector(7 downto 0) := (others => '0');
 
+-------------------------------------------------------------------------------
 
 
 begin  -- Behavioral
@@ -102,6 +118,14 @@ begin  -- Behavioral
            eventaddr       when mode = 4 else
            "0000000000";
 
+  -- DEBUGGING
+  
+  jtagin(63 downto 0) <= X"12345678" & X"0" &  LEN & X"00" & statedebug;
+  jtagin(79 downto 64) <= "000000" & addrb;
+  
+
+
+  -----------------------------------------------------------------------------
   main : process(CLK, RESET)
   begin
     if RESET = '1' then
@@ -123,6 +147,11 @@ begin  -- Behavioral
           end if;
         end if;
 
+
+        if wea = '1' and addra = "00000000000" then
+          len <= dinl(11 downto 0); 
+        end if;
+        
         if start = '1' and mode = 1 then
           PINGSTART <= '1';
         else
@@ -156,6 +185,7 @@ begin  -- Behavioral
   begin
     case CS is
       when none =>
+        statedebug <= X"00"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -163,6 +193,7 @@ begin  -- Behavioral
         ns         <= dinst;
 
       when dinst =>
+        statedebug <= X"01"; 
         lnextframe <= '1';
         mode       <= 0;
         start      <= '0';
@@ -174,17 +205,20 @@ begin  -- Behavioral
         end if;
 
       when dinw =>
+        statedebug <= X"02"; 
         lnextframe <= '1';
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"07";
-        if wea = '0' then
+--        if wea = '0' and addra >= len(11 downto 1) then  -- DEBUGGING
+        if wea = '0' and addra >= "0000001000" then
           ns       <= fstart;
         else
           ns       <= dinw;
         end if;
 
       when fstart =>
+        statedebug <= X"03"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -198,6 +232,7 @@ begin  -- Behavioral
         end if;
 
       when nextpkt =>
+        statedebug <= X"04"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -205,6 +240,7 @@ begin  -- Behavioral
         ns         <= none;
 
       when arppkt =>
+        statedebug <= X"05"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -212,6 +248,7 @@ begin  -- Behavioral
         ns         <= arpopchk;
 
       when arpopchk =>
+        statedebug <= X"06"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -223,6 +260,7 @@ begin  -- Behavioral
         end if;
 
       when arpqstart =>
+        statedebug <= X"07"; 
         lnextframe <= '0';
         mode       <= 3;
         start      <= '1';
@@ -230,6 +268,7 @@ begin  -- Behavioral
         ns         <= arpwait;
 
       when arpwait =>
+        statedebug <= X"08"; 
         lnextframe <= '0';
         mode       <= 3;
         start      <= '0';
@@ -245,6 +284,7 @@ begin  -- Behavioral
         -- IP Check path
         -------------------------------------------------------------------
       when ipchka =>
+        statedebug <= X"09"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -252,6 +292,7 @@ begin  -- Behavioral
         ns         <= icmpchk;
 
       when icmpchk =>
+        statedebug <= X"0A"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -265,6 +306,7 @@ begin  -- Behavioral
         end if;
 
       when echoreq =>
+        statedebug <= X"0B"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -276,6 +318,7 @@ begin  -- Behavioral
         end if;
 
       when icmpstart =>
+        statedebug <= X"0C"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '1';
@@ -283,6 +326,7 @@ begin  -- Behavioral
         ns         <= pingwait;
 
       when pingwait =>
+        statedebug <= X"0D"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -298,6 +342,7 @@ begin  -- Behavioral
         -----------------------------------------------------------------------
 
       when udpporta =>
+        statedebug <= X"0E"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -305,6 +350,7 @@ begin  -- Behavioral
         ns         <= udpchk;
         
       when udpchk =>
+        statedebug <= X"0F"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -319,6 +365,7 @@ begin  -- Behavioral
         end if;
         
       when retxstarts =>
+        statedebug <= X"10"; 
         lnextframe <= '0';
         mode       <= 2;
         start      <= '1';
@@ -326,6 +373,7 @@ begin  -- Behavioral
         ns <= retxwait;
         
       when retxwait =>
+        statedebug <= X"11"; 
         lnextframe <= '0';
         mode       <= 2;
         start      <= '0';
@@ -337,6 +385,7 @@ begin  -- Behavioral
         end if;
         
       when evtstart =>
+        statedebug <= X"12"; 
         lnextframe <= '0';
         mode       <= 4;
         start      <= '1';
@@ -344,6 +393,7 @@ begin  -- Behavioral
         ns <= evtwait;
         
       when evtwait =>
+        statedebug <= X"13"; 
         lnextframe <= '0';
         mode       <= 4;
         start      <= '0';
@@ -355,6 +405,7 @@ begin  -- Behavioral
         end if;
         
       when others =>
+        statedebug <= X"14"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';

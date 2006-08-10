@@ -25,7 +25,8 @@ entity pingresponse is
     ARM   : out std_logic;
     GRANT : in  std_logic;
     DOUT  : out std_logic_vector(15 downto 0);
-    DOEN  : out std_logic);
+    DOEN  : out std_logic
+    );
 end pingresponse;
 
 architecture Behavioral of pingresponse is
@@ -92,7 +93,34 @@ architecture Behavioral of pingresponse is
 
   end component;
 
+-------------------------------------------------------------------------------
+-- DEBUG
+-------------------------------------------------------------------------------
+component jtagsimpleout 
+    generic (
+    JTAG_CHAIN : integer := 0;
+    JTAGN : integer := 32);
+  port (
+    CLK : in std_logic;
+    DIN : in std_logic_vector(JTAGN-1 downto 0));
+end component; 
+
+signal jtagin : std_logic_vector(39 downto 0) := (others => '0');
+signal DEBUG :  std_logic_vector(7 downto 0) := (others => '0'); 
+-------------------------------------------------------------------------------
+
 begin  -- Behavioral
+
+  jtagin(7 downto 0) <= DEBUG;
+  jtagin(39 downto 8) <= X"ABCDEF78";
+  
+    jtag_Debug: jtagsimpleout
+    generic map (
+      JTAG_CHAIN => 2,
+      JTAGN      => 40)
+    port map (
+      CLK => CLK,
+      DIN => jtagin);
 
   pingipwriter_inst : pingipwriter
     port map (
@@ -132,7 +160,9 @@ begin  -- Behavioral
   ipstart   <= '1' when cs = ipstarts   else '0';
   pingstart <= '1' when cs = pingstarts else '0';
 
-  ARM <= '1' when cs = armout else '0'; 
+  --ARM <= '1' when cs = armout else '0'; DEBUGGING
+  ARM <= '1' when cs = armout or cs = grantw else '0';
+  
 
   main : process(CLK)
   begin
@@ -157,6 +187,7 @@ begin  -- Behavioral
   begin
     case cs is
       when none =>
+        DEBUG(7 downto 0) <= X"00"; 
         insel <= '0';
 
         if START = '1' then
@@ -166,12 +197,14 @@ begin  -- Behavioral
         end if;
 
       when ipstarts =>
+        DEBUG(7 downto 0) <= X"01"; 
         insel <= '0';
         ns    <= ipwait;
 
       when ipwait =>
+        DEBUG(7 downto 0) <= X"02"; 
         insel <= '0';
-        if ABORT = '1' then
+        if abort = '1' then
           ns  <= pktdone;
         elsif ipdone = '1' then
           ns  <= pingstarts;
@@ -180,10 +213,12 @@ begin  -- Behavioral
         end if;
 
       when pingstarts =>
+        DEBUG(7 downto 0) <= X"03"; 
         insel <= '1';
         ns    <= pingwait;
 
       when pingwait =>
+        DEBUG(7 downto 0) <= X"04"; 
         insel <= '1';
         if pingdone = '1' then
           ns  <= armout;
@@ -192,10 +227,12 @@ begin  -- Behavioral
         end if;
 
       when armout =>
+        DEBUG(7 downto 0) <= X"05"; 
         insel <= '1';
         ns    <= grantw;
 
       when grantw =>
+        DEBUG(7 downto 0) <= X"06"; 
         insel <= '1';
         if GRANT = '1' then
           ns  <= pktout;
@@ -203,20 +240,22 @@ begin  -- Behavioral
           ns  <= grantw;
         end if;
 
-
       when pktout =>
+        DEBUG(7 downto 0) <= X"07"; 
         insel <= '1';
-        if addrb = datalen + "0000010010" then
+        if addrb >= datalen + "0000010010" then
           ns  <= pktdone;
         else
           ns  <= pktout;
         end if;
 
       when pktdone =>
+        DEBUG(7 downto 0) <= X"08"; 
         insel <= '1';
         ns    <= none;
 
       when others =>
+        DEBUG(7 downto 0) <= X"09"; 
         insel <= '1';
         ns    <= none;
 

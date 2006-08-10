@@ -17,9 +17,11 @@ that module exclusive access to its internal buffer.
 
 
 \subsection{Interface}
-To acquire a frame from the NIC \signal{NEXTFRAME} is asserted; the
-deassertion of \signal{DINEN} indicates the complete reception of a
-packet.
+To acquire a frame from the NIC \signal{NEXTFRAME} is asserted.  The
+data is valid during the assertion of \signal{DOEN}. The first word
+transmitted will be the packet length in bytes. We need to wait until
+we have received that amount of data before deasserting
+\signal{NEXTFRAME} and interacting with the packet.
 
 The assertion of, for example, \signal{PINGSTART} tells the ICMP Echo
 Reply processing module that the frame stored within should be
