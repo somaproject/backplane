@@ -80,7 +80,9 @@ begin  -- Behavioral
             if TO_INTEGER(unsigned(id_input)) = id_pending then
               RXMISSING            <= '0';
             elsif TO_INTEGER(unsigned(id_input)) > id_pending then
-              RXMISSING            <= '1';
+              if maybegood = '1' then
+                RXMISSING            <= '1';
+              end if;
               maybegood            <= '0';
             else
               maybegood            <= '0';

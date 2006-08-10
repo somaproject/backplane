@@ -211,7 +211,7 @@ begin  -- Behavioral
     end if;
   end process;
 
-  RESET      <= '0' after 20 ns;
+  RESET      <= '0' after 100 ns;
   -- ecycle generation
   ecycle_gen : process(CLK)
   begin
@@ -281,7 +281,7 @@ begin  -- Behavioral
 
   end process datainput;
 
-  memoryinst : process(MEMCLK, ramwel)
+  memoryinst : process(RAMCLK, ramwel)
     -- memory construct
     type ramdata is array ( 0 to 131071)
     of std_logic_vector(15 downto 0);
@@ -292,7 +292,7 @@ begin  -- Behavioral
     if ramwel = '0' then
       RAMDQ   <= (others => 'Z');
     end if;
-    if rising_edge(MEMCLK) then
+    if rising_edge(RAMCLK) then
       ramwel  <= RAMWE;
       ramwell <= ramwel;
 
