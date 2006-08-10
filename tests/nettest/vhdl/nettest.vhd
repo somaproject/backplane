@@ -14,28 +14,33 @@ use UNISIM.VComponents.all;
 
 entity nettest is
   port (
-    CLKIN       : in  std_logic;
-    SERIALBOOT  : out std_logic_vector(19 downto 0);
-    SDOUT       : out std_logic;
-    SDIN        : in  std_logic;
-    SCLK        : out std_logic;
-    SCS         : out std_logic;
-    LEDPOWER    : out std_logic;
-    LEDEVENT    : out std_logic;
-    NICFCLK     : out std_logic;
-    NICFDIN     : out std_logic;
-    NICFPROG    : out std_logic;
-    NICSCLK     : out std_logic;
-    NICSIN      : in  std_logic;
-    NICSOUT     : out std_logic;
-    NICSCS      : out std_logic;
-    NICDOUT     : out std_logic_vector(15 downto 0);
-    NICNEWFRAME : out std_logic;
-    NICDIN    : in std_logic_vector(15 downto 0);
-    NICNEXTFRAME : out std_logic;
-    NICDINEN : in std_logic; 
-    NICCLK      : out std_logic;
-    DEBUG : out std_logic_vector(3 downto 0)
+    CLKIN        : in    std_logic;
+    SERIALBOOT   : out   std_logic_vector(19 downto 0);
+    SDOUT        : out   std_logic;
+    SDIN         : in    std_logic;
+    SCLK         : out   std_logic;
+    SCS          : out   std_logic;
+    LEDPOWER     : out   std_logic;
+    LEDEVENT     : out   std_logic;
+    NICFCLK      : out   std_logic;
+    NICFDIN      : out   std_logic;
+    NICFPROG     : out   std_logic;
+    NICSCLK      : out   std_logic;
+    NICSIN       : in    std_logic;
+    NICSOUT      : out   std_logic;
+    NICSCS       : out   std_logic;
+    NICDOUT      : out   std_logic_vector(15 downto 0);
+    NICNEWFRAME  : out   std_logic;
+    NICDIN       : in    std_logic_vector(15 downto 0);
+    NICNEXTFRAME : out   std_logic;
+    NICDINEN     : in    std_logic;
+    NICCLK       : out   std_logic;
+    DEBUG        : out   std_logic_vector(3 downto 0);
+    RAMDQ        : inout std_logic_vector(15 downto 0);
+    RAMWE        : out   std_logic;
+    RAMADDR      : out   std_logic_vector(16 downto 0);
+    RAMCLK       : out   std_logic
+
     );
 end nettest;
 
@@ -161,33 +166,41 @@ architecture Behavioral of nettest is
 
   component network
     port (
-      CLK       : in  std_logic;
-      RESET : in std_logic; 
+      CLK          : in    std_logic;
+      MEMCLK       : in    std_logic;
+      RESET        : in    std_logic;
       -- config
-      MYIP      : in  std_logic_vector(31 downto 0);
-      MYMAC     : in  std_logic_vector(47 downto 0);
-      MYBCAST   : in  std_logic_vector(31 downto 0);
+      MYIP         : in    std_logic_vector(31 downto 0);
+      MYMAC        : in    std_logic_vector(47 downto 0);
+      MYBCAST      : in    std_logic_vector(31 downto 0);
       -- input
-      NICNEXTFRAME : out std_logic;
-      NICDINEN     : in  std_logic;
-      NICDIN       : in  std_logic_vector(15 downto 0);
+      NICNEXTFRAME : out   std_logic;
+      NICDINEN     : in    std_logic;
+      NICDIN       : in    std_logic_vector(15 downto 0);
       -- output
-      DOUT      : out std_logic_vector(15 downto 0);
-      NEWFRAME  : out std_logic;
-      IOCLOCK   : out std_logic;
-
+      NICDOUT      : out   std_logic_vector(15 downto 0);
+      NICNEWFRAME  : out   std_logic;
+      NICIOCLK     : out   std_logic;
       -- event bus
-      ECYCLE  : in std_logic;
-      EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX    : in  std_logic_vector(7 downto 0)
-
+      ECYCLE       : in    std_logic;
+      EARX         : out   std_logic_vector(somabackplane.N -1 downto 0);
+      EDRX         : out   std_logic_vector(7 downto 0);
+      EDSELRX      : in    std_logic_vector(3 downto 0);
+      EATX         : in    std_logic_vector(somabackplane.N -1 downto 0);
+      EDTX         : in    std_logic_vector(7 downto 0);
       -- data bus
-      --                                  -- none at the moment;
+      DIENA        : in    std_logic;
+      DINA         : in    std_logic_vector(7 downto 0);
+      DIENB        : in    std_logic;
+      DINB         : in    std_logic_vector(7 downto 0);
+      -- memory interface
+      RAMDQ        : inout std_logic_vector(15 downto 0);
+      RAMWE        : out   std_logic;
+      RAMADDR      : out   std_logic_vector(16 downto 0);
+      RAMCLK       : out   std_logic
       );
   end component;
+
 
   component pingdump
     port (
@@ -195,6 +208,7 @@ architecture Behavioral of nettest is
       DOUT     : out std_logic_vector(15 downto 0);
       NEWFRAME : out std_logic);        -- (others => '0')
   end component;
+
 
   signal ECYCLE : std_logic := '0';
 
@@ -209,23 +223,15 @@ architecture Behavioral of nettest is
 
   signal clk, clkint   : std_logic := '0';
   signal clkf, clkfint : std_logic := '0';
+  signal memclk : std_logic := '0';
 
-  -- jtag signal test
-  signal jtagcapture : std_logic := '0';
-  signal jtagdrck    : std_logic := '0';
-  signal jtagreset   : std_logic := '0';
-  signal jtagsel     : std_logic := '0';
-  signal jtagshift   : std_logic := '0';
-  signal jtagtdi     : std_logic := '0';
-  signal jtagupdate  : std_logic := '0';
-  signal jtagtdo     : std_logic := '0';
-
-  signal testout : std_logic_vector(31 downto 0) := X"00000001";
+  signal nicclkint : std_logic := '0';
+  
 
 -- nic config signals
   signal myip, mybcast : std_logic_vector(31 downto 0) := (others => '0');
-  signal mymac : std_logic_vector(47 downto 0) := (others => '0');
-  
+  signal mymac         : std_logic_vector(47 downto 0) := (others => '0');
+
   signal nicnextframeint : std_logic := '0';
 begin  -- Behavioral
 
@@ -326,36 +332,8 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
-
-  BSCAN_VIRTEX4_inst : BSCAN_VIRTEX4
-    generic map (
-      JTAG_CHAIN => 2)
-    port map (
-      CAPTURE    => jtagcapture,
-      DRCK       => jtagdrck,
-      reset      => jtagreset,
-      SEL        => jtagsel,
-      SHIFT      => jtagshift,
-      TDI        => jtagtdi,
-      UPDATE     => jtagupdate,
-      TDO        => jtagtdo);
-
-  LEDEVENT <= jtagshift;
-
-  jtagtdo         <= testout(0);
-  process(jtagsel, jtagdrck, jtagupdate)
-  begin
-    if jtagupdate = '1' then
-      testout     <= X"87654321";
-    else
-      if rising_edge(jtagdrck) then
-        if jtagsel = '1' and jtagshift = '1' then
-          testout <= testout(0) & testout(31 downto 1);
-        end if;
-      end if;
-    end if;
-  end process;
-
+  LEDEVENT <= '1';
+  
   jtagsend_inst : jtagesend
     generic map (
       JTAG_CHAIN => 1)
@@ -405,53 +383,57 @@ begin  -- Behavioral
     end if;
   end process;
 
---  NETCLK <= clk;
+-- NETCLK <= clk;
 
 
 
---  pingdump_inst : pingdump
---    port map (
---      CLK      => clk,
---      DOUT     => NETDOUT,
---      NEWFRAME => NETNEWFRAME);
-
-  myip <= X"C0a80002";                  -- 192.168.0.2
+  myip    <= X"C0a80002";               -- 192.168.0.2
   mybcast <= X"C0a000FF";
-  
-  mymac <= X"DEADBEEF1234"; 
-           
+
+  mymac <= X"DEADBEEF1234";
+
+  NICCLK <= not nicclkint; 
   network_inst : network
     port map (
-      CLK       => CLK,
-      RESET => RESET,
-      MYIP      => myip,
-      MYMAC     => mymac,
-      MYBCAST   => mybcast,
-      NICNEXTFRAME => nicnextframeint, 
+      CLK          => CLK,
+      MEMCLK       => MEMCLK,
+      RESET        => RESET,
+      MYIP         => myip,
+      MYMAC        => mymac,
+      MYBCAST      => mybcast,
+      NICNEXTFRAME => nicnextframeint,
       NICDINEN     => NICDINEN,
       NICDIN       => NICDIN,
-      DOUT      => NICDOUT,
-      NEWFRAME  => NICNEWFRAME,
-      IOCLOCK   => NICCLK,
-      ECYCLE    => ecycle,
-      EARX      => earx(3),
-      EDRX      => edrx(3),
-      EDSELRX   => edselrx,
-      EATX      => eatx(3),
-      EDTX      => edtx);
+      NICDOUT      => NICDOUT,
+      NICNEWFRAME  => NICNEWFRAME,
+      NICIOCLK     => nicclkint,
+      ECYCLE       => ecycle,
+      EARX         => earx(3),
+      EDRX         => edrx(3),
+      EDSELRX      => edselrx,
+      EATX         => eatx(3),
+      EDTX         => edtx,
+      DIENA        => '0',
+      DIENB        => '0',
+      DINA         => X"00",
+      DINB         => X"00",
+      RAMDQ        => RAMDQ,
+      RAMWE        => RAMWE,
+      RAMADDR      => RAMADDR,
+      RAMCLK       => RAMCLK);
 
-  NICNEXTFRAME <= nicnextframeint; 
-  testrx: process (CLK)
+  NICNEXTFRAME <= nicnextframeint;
+  testrx            : process (CLK)
     variable niccnt : std_logic_vector(23 downto 0) := (others => '0');
-    begin
-      if rising_edge(CLK) then
-        niccnt := niccnt + 1;
-        DEBUG(0) <= NICDINEN;
-        DEBUG(1) <= nicnextframeint; 
-        DEBUG(2) <= NICDIN(0);
-        DEBUG(3) <= NICDIN(1);
-        
-      end if;
-    end process testrx;
+  begin
+    if rising_edge(CLK) then
+      niccnt                                        := niccnt + 1;
+      DEBUG(0) <= NICDINEN;
+      DEBUG(1) <= nicnextframeint;
+      DEBUG(2) <= NICDIN(0);
+      DEBUG(3) <= NICDIN(1);
+
+    end if;
+  end process testrx;
 
 end Behavioral;
