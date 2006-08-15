@@ -1,0 +1,27 @@
+
+14 August 2006. 
+
+Our first test is "can we make the xilinx IOBs perform in a way which we expect?" I've not worked with the DDR IOBs, and the presence of the data strobe means that this part of the interface is going to be a bit tricky. 
+
+
+Pin count: 
+
+2 VRP/VRN
+2 CK/CK#
+4 CAS/RAS/WE/CS
+2 LDM/UDM
+2 BA0/BA1
+13 Address
+8 Data
+2 DQS/DQS#
+
+Total: 
+2 LVDS Pair
+31 single-ended
+
+"if this was Bank of America DRAM, you'd have to share the address and data bus except on sundays and mexican holidays, whene everything is doen serially over the reset pin" -- Vimal
+
+The DQS/DQS# strobe is asserted on the -edge- of the inbound data,
+which somewhat sucks. So we need to use the IDELAY primitives and
+perform an edge-capture to align ourselves. This is similar to the
+method discussed in XAPP701(1.3) 

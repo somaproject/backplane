@@ -1,0 +1,13 @@
+This is our test to make sure we understand how to properly use and
+place the Virtex-4 DDR IOBs.
+
+For DDR2 DRAM we drive out a differential CLK at 150 MHz and we also use a bidirectional differential Data Strobe (DQS/DQS#). 
+
+My question here is, can I simulate/understand the : 
+1. IDDR IOB with strobe
+2. ODDR IOB with strobe
+3. Switching between the two. 
+
+
+Primitives: OBUFDS (p. 231) Differential input-output buffer that's tristateable
+

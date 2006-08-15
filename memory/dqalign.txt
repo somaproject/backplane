@@ -1,0 +1,14 @@
+The DQalign interface works in a manner similar t that described by
+XAPP701. We measure the position of the DQS strobe during a burst-read
+cycle by varying the input delay and looking for edge transitions.
+
+Then we properly advance the IDELAY associated with the data registers. 
+
+We begin the measurement cycle by asserting START at the
+rough-beginning of a burst-read, which will read out 512 words. The
+increment-delay-measure cycle should take <5 ticks so we should have
+time to make a full sweep during the single burst.
+
+Testing will be performed via a testbench that varies the input delay
+to see if we properly lock.
+
