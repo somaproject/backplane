@@ -1,0 +1,30 @@
+The boot module takes care of all necessary initlaization requirements. 
+
+The steps are as follows:
+
+1. For 200 us, apply NOP and keep CKE high
+2. wait 400 ns, apply PRECHARGE ALL
+3. LOAD MODE to EMR(2)
+4. LOAD MODE to EMR(3)
+5. LOAD MODE to EMR to enable DLL
+6. LOAD MODE to EMR to reset DLL
+7. PRECHARGE ALL
+8. >= 2 REFRESH commands
+9. dummy WRITE
+10. LOAD MODE with LOW to A8 to initialize operation
+11. LOAD MODE to EMR to enable OCD
+12. LOAD MODE to EMR to enable OCD exit
+
+Parameters we care about: 
+
+CASL[2:0] : CAS latency
+WR[2:0] : Write recovery
+ODF[1:0]: one-die termination
+ODS: output rive strength
+CASAL[2:0] : posted CAS additive latency
+
+
+The operation here is of a giant state machine with lclke, lcas, lras,
+lcs, lwe, and laddr all set by states. There's a counter, BCNT, that
+we use for delay.
+

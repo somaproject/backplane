@@ -4,6 +4,21 @@
 Our first test is "can we make the xilinx IOBs perform in a way which we expect?" I've not worked with the DDR IOBs, and the presence of the data strobe means that this part of the interface is going to be a bit tricky. 
 
 
+What sort of bandwidth are we looking at? 
+at 32x150MHz... 600 MB/sec == 600 b/usec and we need
+
+600*20 = 12k b/ecycle
+
+2 data writes
+2 data reads
+1 retx read
+1 event write
+1 event read
+
+There's really no way here to make this work...we're going to have to
+allow for a length request
+
+
 Pin count: 
 
 2 VRP/VRN
@@ -25,3 +40,43 @@ The DQS/DQS# strobe is asserted on the -edge- of the inbound data,
 which somewhat sucks. So we need to use the IDELAY primitives and
 perform an edge-capture to align ourselves. This is similar to the
 method discussed in XAPP701(1.3) 
+
+
+For general interfacing, both assume they are connected to a block ram. 
+
+Our main process works as follows: 
+1. initialize
+2. issue a dummy read, to get the RAM to generate DQSs that we can then lock onto. We assert "NOTERMINATE" for the read module so it continues to cycle its reads. 
+
+3. WE start this read
+4. we start the align
+5. we wait for the align to finish
+6. we wait for the read to finish
+7. refresh/check/go cycle. 
+
+
+
+-----------------------------------------------------------------------------
+WRITE INTERFACE:
+------------------------------------------------------------------------------
+CLK
+ROWTGT[14:0] : row target, that is, the position of 1024-consecutive bytes that we're going to IF with. 
+WADDR[7:0] : output for data address
+WDATA[31:0] :  input for data, two cycles delayed from WADDR (i.e. block-ram + reg)
+START : begin this operation
+DONE : this operation has finished
+
+------------------------------------------------------------------------------
+READ INTERFACE: 
+------------------------------------------------------------------------------
+CLK
+ROWTGT[14:0] : row target, that is, the position of 1024-consecutive bytes that we're going to IF with. 
+RADDR[7:0] : output for data address
+RDATA[31:0] :  out for data, two cycles delayed from WADDR (i.e. block-ram + reg)
+RWE : output write enable
+START : begin this operation
+DONE : this operation has finished
+
+
+if each interface is capable of reading or writing a single row in burst-mode, that's 1024 bytes. 
+

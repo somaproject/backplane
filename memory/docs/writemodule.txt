@@ -1,0 +1,8 @@
+The write module is responsible for: 
+
+1. activating the relevant row
+2. cycling through and issuing the relevant addr-line-based write burst commands, keeping them pipelined, and asserting TS at the correct time. 
+3. extracing out the data from the two-tick write module. 
+4. calling it DONE. 
+
+
