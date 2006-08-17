@@ -106,7 +106,7 @@ begin  -- Behavioral
         CE             => dqce,
         I              => dqi(i),
         INC            => dqinc,
-        RST            => inrst
+        RST            => '0'
         );
 
     IDDR_dq : IDDR
@@ -121,7 +121,7 @@ begin  -- Behavioral
         C            => CLK,
         CE           => '1',
         D            => dqdelay(i),
-        R            => inrst,
+        R            => '0',
         S            => '0'
         );
 
@@ -136,7 +136,7 @@ begin  -- Behavioral
         CE           => '1',
         D1           => DIN(i+8),
         D2           => DIN(i),
-        R            => inrst,
+        R            => '0',
         S            => '0'
         );
   end generate iogen;
@@ -157,7 +157,7 @@ begin  -- Behavioral
       C            => CLK,
       CE           => '1',
       D            => dqsdelay,
-      R            => inrst,
+      R            => '0',
       S            => '0'
       );
 
@@ -169,11 +169,11 @@ begin  -- Behavioral
       -- dqs components
       if dqsamp = '1' then
 
-        dqsq1ll  <= dqsq1l;
-        dqsq2ll  <= dqsq2l;
+        dqsq1l  <= dqsq1;
+        dqsq2l  <= dqsq2;
       end if;
-      dqsq1l     <= dqsq1;
-      dqsq2l     <= dqsq2;
+      --dqsq1l     <= dqsq1;
+      --dqsq2l     <= dqsq2;
 
       if inrst = '1' then
         dqscnt   <= (others => '0');
@@ -220,7 +220,7 @@ begin  -- Behavioral
   end process main;
 
 
-  fsm : process(cs, START, dqsq1l, dqsq2l, dqsq1ll, dqcnt, dqscnt)
+  fsm : process(cs, START, dqsq1l, dqsq2l, dqsq1, dqcnt, dqscnt)
   begin
     case cs is
       when none =>
@@ -306,7 +306,7 @@ begin  -- Behavioral
         dqsce  <= '0';
         dqinc  <= '0';
         dqce   <= '0';
-        if dqsq1l /= dqsq1ll then
+        if dqsq1 /= dqsq1l then
           ns   <= datainc;
         else
           ns   <= nexttick;
