@@ -38,6 +38,7 @@ architecture Behavioral of dqalign is
   signal dqsamp       : std_logic := '0';
 
   signal dqsq1l, dqsq2l : std_logic := '0';
+  signal dqsq1ll, dqsq2ll : std_logic := '0';
 
   -- data signals
   signal dqdelay              : std_logic_vector(7 downto 0) := (others => '0');
@@ -110,7 +111,7 @@ begin  -- Behavioral
 
     IDDR_dq : IDDR
       generic map (
-        DDR_CLK_EDGE => "OPPOSITE_EDGE",
+        DDR_CLK_EDGE => "SAME_EDGE_PIPELINED",
         INIT_Q1      => '0',
         INIT_Q2      => '0',
         SRTYPE       => "SYNC")
@@ -146,7 +147,7 @@ begin  -- Behavioral
 
   dqs_dq : IDDR
     generic map (
-      DDR_CLK_EDGE => "OPPOSITE_EDGE",
+      DDR_CLK_EDGE => "SAME_EDGE_PIPELINED",
       INIT_Q1      => '0',
       INIT_Q2      => '0',
       SRTYPE       => "SYNC")
@@ -167,9 +168,12 @@ begin  -- Behavioral
 
       -- dqs components
       if dqsamp = '1' then
-        dqsq1l <= dqsq1;
-        dqsq2l <= dqsq2;
+
+        dqsq1ll  <= dqsq1l;
+        dqsq2ll  <= dqsq2l;
       end if;
+      dqsq1l     <= dqsq1;
+      dqsq2l     <= dqsq2;
 
       if inrst = '1' then
         dqscnt   <= (others => '0');
@@ -216,7 +220,7 @@ begin  -- Behavioral
   end process main;
 
 
-  fsm : process(cs, START, dqsq1, dqsq2, dqsq1l, dqcnt, dqscnt)
+  fsm : process(cs, START, dqsq1l, dqsq2l, dqsq1ll, dqcnt, dqscnt)
   begin
     case cs is
       when none =>
@@ -302,7 +306,7 @@ begin  -- Behavioral
         dqsce  <= '0';
         dqinc  <= '0';
         dqce   <= '0';
-        if dqsq1 /= dqsq1l then
+        if dqsq1l /= dqsq1ll then
           ns   <= datainc;
         else
           ns   <= nexttick;

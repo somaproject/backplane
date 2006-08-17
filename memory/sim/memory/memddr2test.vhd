@@ -83,7 +83,8 @@ architecture Behavioral of memddr2test is
     generic (
       TimingCheckFlag :       boolean                       := true;
       PUSCheckFlag    :       boolean                       := false;
-      Part_Number     :       PART_NUM_TYPE                 := B400);
+      Part_Number     :       PART_NUM_TYPE                 := B400;
+      odelay          :       time                          := 0 ps);
     port ( DQ         : inout std_logic_vector(15 downto 0) := (others => 'Z');
            LDQS       : inout std_logic                     := 'Z';
            LDQSB      : inout std_logic                     := 'Z';
@@ -150,7 +151,8 @@ begin  -- Behavioral
     generic map (
       TimingCheckFlag => true,
       PUSCheckFlag    => true,
-      PArt_number     => B400)
+      PArt_number     => B400,
+      odelay => 1000 ps)
     port map (
       DQ              => DQ,
       LDQS            => DQSL,
@@ -207,7 +209,7 @@ begin  -- Behavioral
   CLK90N <= not CLK90;
 
   RESET <= '0' after 50 ns;
-  
+
   -- fake write memory
   wrmem              : process(CLK)
     variable wraddrl : std_logic_vector(7 downto 0) := (others => '0');

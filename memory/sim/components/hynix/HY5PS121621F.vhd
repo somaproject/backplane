@@ -25,7 +25,8 @@ Entity HY5PS121621F Is
   generic (
      TimingCheckFlag : boolean := TRUE;
      PUSCheckFlag : boolean := FALSE;
-     Part_Number : PART_NUM_TYPE := B400);
+     Part_Number : PART_NUM_TYPE := B400;
+     odelay : time := 0 ps);
   Port (  DQ    :  inout   std_logic_vector(15 downto 0) := (others => 'Z');
           LDQS  :  inout   std_logic := 'Z';
           LDQSB :  inout   std_logic := 'Z';
@@ -1287,8 +1288,8 @@ DQS_OPERATION : process(DQS_S, ExtModeRegister.OCD_PGM)
 begin
   if (ExtModeRegister.QOFF = '0') then
     if (ExtModeRegister.OCD_PGM'event and ExtModeRegister.OCD_PGM = DRIVE0) then
-      UDQS <= '0';
-      LDQS <= '0';
+      UDQS <= '0' after odelay;
+      LDQS <= '0' after odelay;
       if (ExtModeRegister.DQSB_ENB = '1') then
         UDQSB <= '1';
         LDQSB <= '1';
@@ -1297,8 +1298,8 @@ begin
         LDQSB <= 'Z';
       end if;
     elsif (ExtModeRegister.OCD_PGM'event and ExtModeRegister.OCD_PGM = DRIVE1) then
-      UDQS <= '1';
-      LDQS <= '1';
+      UDQS <= '1' after odelay;
+      LDQS <= '1' after odelay;
       if (ExtModeRegister.DQSB_ENB = '1') then
         UDQSB <= '0';
         LDQSB <= '0';
@@ -1312,8 +1313,8 @@ begin
       UDQSB <= 'Z';
       LDQSB <= 'Z';
     elsif (DQS_S'event and DQS_S = '1') then
-      UDQS <= '1';
-      LDQS <= '1';
+      UDQS <= '1' after odelay;
+      LDQS <= '1' after odelay;
       if (ExtModeRegister.DQSB_ENB = '0') then
         UDQSB <= '0';
         LDQSB <= '0';
@@ -1322,8 +1323,8 @@ begin
         LDQSB <= 'Z';
       end if;
     elsif (DQS_S'event and DQS_S = '0') then
-      UDQS <= '0';
-      LDQS <= '0';
+      UDQS <= '0' after odelay;
+      LDQS <= '0' after odelay; 
       if (ExtModeRegister.DQSB_ENB = '0') then
         UDQSB <= '1';
         LDQSB <= '1';
