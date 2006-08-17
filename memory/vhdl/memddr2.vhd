@@ -12,6 +12,7 @@ entity memddr2 is
     CLK90  : in    std_logic;
     CLK180 : in    std_logic;
     CLK270 : in    std_logic;
+    RESET : in std_logic; 
     -- RAM!
     CKE    : out   std_logic := '0';
     CAS    : out   std_logic;
@@ -140,7 +141,7 @@ architecture Behavioral of memddr2 is
   signal wba   : std_logic_vector(1 downto 0)  := (others => '0');
 
   signal noterm : std_logic := '0';
-  
+
 
   component readddr2
     port (
@@ -194,6 +195,8 @@ architecture Behavioral of memddr2 is
 
   signal alstart : std_logic := '0';
   signal aldone  : std_logic := '0';
+  signal aldonel  : std_logic := '0';
+  signal aldoneh  : std_logic := '0';
 
 
   signal dout : std_logic_vector(31 downto 0) := (others => '0');
@@ -203,22 +206,22 @@ architecture Behavioral of memddr2 is
   signal ts : std_logic := '0';
 
   type states is (none, boot, dumbread, aligns, alignw, drw,
-                  refresh, read,readdone,  inchk, write, writedone);
+                  refresh, read, readdone, inchk, write, writedone);
   signal ocs, ons : states := none;
 
-  signal dinl, dinh : std_logic_vector(15 downto 0) := (others => '0');
+  signal dinl, dinh   : std_logic_vector(15 downto 0) := (others => '0');
   signal doutl, douth : std_logic_vector(15 downto 0) := (others => '0');
-  
+
 
 begin  -- Behavioral
 
-  din(15 downto 0) <= dinh(7 downto 0) & dinl(7 downto 0);
+  din(15 downto 0)  <= dinh(7 downto 0) & dinl(7 downto 0);
   din(31 downto 16) <= dinh(15 downto 8) & dinl(15 downto 8);
-  
+
 
   doutl <= dout(23 downto 16) & dout(7 downto 0);
   douth <= dout(31 downto 24) & dout(15 downto 8);
-  
+
   refreshddr2_inst : refreshddr2
     port map (
       CLK   => CLK,
@@ -292,9 +295,9 @@ begin  -- Behavioral
       DQ           => DQ(7 downto 0),
       TS           => ts,
       DIN          => doutl,
-      DOUT         => dinl, 
+      DOUT         => dinl,
       START        => alstart,
-      DONE         => aldone,
+      DONE         => aldonel,
       LATENCYEXTRA => open);
 
   dqalign_inst_high : dqalign
@@ -306,12 +309,13 @@ begin  -- Behavioral
       DQS          => DQSH,
       DQ           => DQ(15 downto 8),
       TS           => ts,
-      DIN          => douth, 
-      DOUT         => dinh, 
+      DIN          => douth,
+      DOUT         => dinh,
       START        => alstart,
-      DONE         => aldone,
+      DONE         => aldoneh,
       LATENCYEXTRA => open);
 
+  aldone <= aldonel and aldoneh; 
 
   lcas <= refcas  when dsel = 0 else
           bootcas when dsel = 1 else
@@ -342,25 +346,29 @@ begin  -- Behavioral
          bootba when dsel = 1 else
          wba    when dsel = 2 else
          rba;
-  mr <= "0010000110010";
-  emr <= "0000001000100"; 
+  mr  <= "0010000110010";
+  emr <= "0000001000100";
 
-  DONE <= '1' when ocs = readdone or ocs = writedone else '0'; 
+  DONE <= '1' when ocs = readdone or ocs = writedone else '0';
 
   main : process(CLK)
   begin
-    if rising_edge(CLK) then
+    if reset = '1' then
+      ocs <= none;
+    else
+      if rising_edge(CLK) then
 
-      ocs <= ons;
+        ocs <= ons;
 
 
-      CKE  <= lcke;
-      RAS  <= lras;
-      CAS  <= lcas;
-      CS   <= lcs;
-      WE   <= lwe;
-      ADDR <= laddr;
-      BA   <= lba;
+        CKE  <= lcke;
+        RAS  <= lras;
+        CAS  <= lcas;
+        CS   <= lcs;
+        WE   <= lwe;
+        ADDR <= laddr;
+        BA   <= lba;
+      end if;
     end if;
   end process main;
 
@@ -493,7 +501,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-          ons     <= refresh;
+        ons       <= refresh;
 
       when write =>
         dsel      <= 2;
@@ -517,7 +525,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-          ons     <= refresh;
+        ons       <= refresh;
 
       when others =>
         dsel      <= 0;
@@ -527,7 +535,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        ons        <= none;
+        ons       <= none;
     end case;
 
   end process fsm;

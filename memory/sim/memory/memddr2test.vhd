@@ -21,6 +21,7 @@ architecture Behavioral of memddr2test is
       CLK90  : in    std_logic;
       CLK180 : in    std_logic;
       CLK270 : in    std_logic;
+      RESET  : in    std_logic;
       -- RAM!
       CKE    : out   std_logic;
       CAS    : out   std_logic;
@@ -47,33 +48,36 @@ architecture Behavioral of memddr2test is
       );
   end component;
 
-  signal CLK, CLKN     : std_logic                     := '0';
-  signal CLK90, CLK90N : std_logic                     := '0';
-  signal CLK180        : std_logic                     := '0';
-  signal CLK270        : std_logic                     := '0';
+  signal CLK, CLKN     : std_logic := '0';
+  signal CLK90, CLK90N : std_logic := '0';
+  signal CLK180        : std_logic := '0';
+  signal CLK270        : std_logic := '0';
+  signal RESET         : std_logic := '1';
+
+
   -- RAM!
-  signal CKE           : std_logic                     := '0';
-  signal CAS           : std_logic                     := '1';
-  signal RAS           : std_logic                     := '1';
-  signal CS            : std_logic                     := '1';
-  signal WE            : std_logic                     := '1';
-  signal ADDR          : std_logic_vector(12 downto 0) := (others => '0');
-  signal BA            : std_logic_vector(1 downto 0)  := (others => '0');
-  signal DQSH          : std_logic                     := '0';
-  signal DQSL          : std_logic                     := '0';
-  signal DQ            : std_logic_vector(15 downto 0) := (others => '0');
+  signal CKE    : std_logic                     := '0';
+  signal CAS    : std_logic                     := '1';
+  signal RAS    : std_logic                     := '1';
+  signal CS     : std_logic                     := '1';
+  signal WE     : std_logic                     := '1';
+  signal ADDR   : std_logic_vector(12 downto 0) := (others => '0');
+  signal BA     : std_logic_vector(1 downto 0)  := (others => '0');
+  signal DQSH   : std_logic                     := '0';
+  signal DQSL   : std_logic                     := '0';
+  signal DQ     : std_logic_vector(15 downto 0) := (others => '0');
   -- interface
-  signal START         : std_logic                     := '0';
-  signal RW            : std_logic                     := '0';
-  signal DONE          : std_logic                     := '0';
+  signal START  : std_logic                     := '0';
+  signal RW     : std_logic                     := '0';
+  signal DONE   : std_logic                     := '0';
   -- write interface
-  signal ROWTGT        : std_logic_vector(14 downto 0) := (others => '0');
-  signal WRADDR        : std_logic_vector(7 downto 0)  := (others => '0');
-  signal WRDATA        : std_logic_vector(31 downto 0) := (others => '0');
+  signal ROWTGT : std_logic_vector(14 downto 0) := (others => '0');
+  signal WRADDR : std_logic_vector(7 downto 0)  := (others => '0');
+  signal WRDATA : std_logic_vector(31 downto 0) := (others => '0');
   -- read interface
-  signal RDADDR        : std_logic_vector(7 downto 0)  := (others => '0');
-  signal RDDATA        : std_logic_vector(31 downto 0) := (others => '0');
-  signal RDWE          : std_logic                     := '0';
+  signal RDADDR : std_logic_vector(7 downto 0)  := (others => '0');
+  signal RDDATA : std_logic_vector(31 downto 0) := (others => '0');
+  signal RDWE   : std_logic                     := '0';
 
   component HY5PS121621F
     generic (
@@ -119,6 +123,7 @@ begin  -- Behavioral
       CLK90  => CLK90,
       CLK180 => CLK180,
       CLK270 => CLK270,
+      RESET  => RESET,
       CKE    => CKE,
       CAS    => CAS,
       RAS    => RAS,
@@ -201,6 +206,8 @@ begin  -- Behavioral
   CLKN   <= not CLK;
   CLK90N <= not CLK90;
 
+  RESET <= '0' after 50 ns;
+  
   -- fake write memory
   wrmem              : process(CLK)
     variable wraddrl : std_logic_vector(7 downto 0) := (others => '0');
@@ -237,13 +244,13 @@ begin  -- Behavioral
       RW    <= '0';
       wait for 5 us;
       --report "Finished with Row" severity Note;
-      
-      burstcnt <= burstcnt + 1; 
-      ROWTGT <= ROWTGT + 1; 
+
+      burstcnt <= burstcnt + 1;
+      ROWTGT   <= ROWTGT + 1;
     end loop;  -- i
 
-    report "End of Simulation" severity Failure;
-    
+    report "End of Simulation" severity failure;
+
     wait;
 
   end process main;

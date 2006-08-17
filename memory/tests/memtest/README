@@ -1,0 +1,16 @@
+This is a test to see if we can actually read and write memory properly. 
+
+It's also a verification of whether we can synthesize this thing or not. 
+
+We have a simple interface which, in a ping-pong fashion:
+
+1. writes a burst pattern to a row; 
+2. reads a burst pattern from a row; 
+
+we compare what was written and what we read back and: 
+1. if there's an error, we flash a LED
+2. for each bit in error we increment a counter that is read out via jtag
+
+
+We generate the primary clock from the input 50 MHz clock, tripling it to 150 MHz and then passing that output through a phase-adjusting DLL. 
+
