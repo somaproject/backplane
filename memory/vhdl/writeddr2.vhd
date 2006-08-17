@@ -43,31 +43,32 @@ architecture Behavioral of writeddr2 is
 
   signal acnt    : std_logic_vector(7 downto 0) := (others => '0');
   signal incacnt : std_logic                    := '0';
-  signal asel : std_logic := '0';
+  signal asel    : std_logic                    := '0';
 
-  
 
-  type states is (none, act, write, nop1, nop2, nop3, dones);
+
+  type states is (none, act, write, nop1, nop2, nop3, prenopw,
+                  doneprec, dones);
   signal ocs, ons : states := none;
 
   type doutsreg_t is array (10 downto 0) of std_logic_vector(31 downto 0);
   signal doutsreg : doutsreg_t := (others => (others => '0'));
 
-  signal tssreg : std_logic_vector(10 downto 0);
+  signal tssreg : std_logic_vector(10 downto 0) := (others => '1');
 
 
 begin  -- Behavioral
 
-  laddr <= ("00000" &  acnt) when asel = '1' else rowtgt(12 downto 0);
-  lba <= rowtgt(14 downto 13);
+  laddr <= ("0" & acnt(7) & "0" & acnt(6 downto 0) & "000") when asel = '1' else rowtgt(12 downto 0);
+  lba   <= rowtgt(14 downto 13);
 
-  lts <= tssreg(7);
-  ldout <= doutsreg(7);
+  lts   <= tssreg(3);
+
 
   DONE <= '1' when ocs = dones else '0';
 
-  
-  
+  WADDR <= acnt;
+
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -77,7 +78,7 @@ begin  -- Behavioral
       BA   <= lba;
       ADDR <= laddr;
       TS   <= lts;
-      DOUT <= ldout;
+      DOUT <= doutsreg(0); 
       CS   <= lcs;
       RAS  <= lras;
       CAS  <= lcas;
@@ -92,98 +93,124 @@ begin  -- Behavioral
       end if;
 
       -- shift regitsrs
-      tssreg <= tssreg(9 downto 0) & incacnt;
+      tssreg   <= tssreg(9 downto 0) & (not incacnt);
       doutsreg <= doutsreg(9 downto 0) & WDATA;
-      
+
+      DOUT <= doutsreg(1);
+
+      ADDR <= laddr;
+
     end if;
   end process main;
 
-  fsm: process(ocs, start, acnt)
-    begin
-      case ocs is
-        when none =>
-          incacnt <= '0';
-          asel <= '0';
-          lcs <= '0';
-          lras <= '1';
-          lcas <= '1';
-          lwe <= '1';
-          if START = '1' then
-            ons <= act;
-          else
-            ons <= none; 
-          end if;
+  fsm : process(ocs, start, acnt)
+  begin
+    case ocs is
+      when none =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        if START = '1' then
+          ons   <= act;
+        else
+          ons   <= none;
+        end if;
 
-          
-        when act =>
-          incacnt <= '0';
-          asel <= '0';
-          lcs <= '0';
-          lras <= '0';
-          lcas <= '1';
-          lwe <= '1';
-          ons <= write; 
-          
-        when write =>
-          incacnt <= '1';
-          asel <= '1';
-          lcs <= '0';
-          lras <= '1';
-          lcas <= '0';
-          lwe <= '0';
-          ons <= nop1; 
-          
-        when nop1 =>
-          incacnt <= '1';
-          asel <= '1';
-          lcs <= '0';
-          lras <= '1';
-          lcas <= '1';
-          lwe <= '1';
-          ons <= nop2;
-          
-        when nop2 =>
-          incacnt <= '1';
-          asel <= '1';
-          lcs <= '0';
-          lras <= '1';
-          lcas <= '1';
-          lwe <= '1';
-          ons <= nop3;
-          
-        when nop3 =>
-          incacnt <= '1';
-          asel <= '1';
-          lcs <= '0';
-          lras <= '1';
-          lcas <= '1';
-          lwe <= '1';
-          if acnt = X"FF" then
-            ons <= dones;
-          else
-            ons <= write; 
-          end if;
-          
-        when dones =>
-          incacnt <= '1';
-          asel <= '1';
-          lcs <= '0';
-          lras <= '1';
-          lcas <= '1';
-          lwe <= '1';
-          ons <= none; 
-          
-        when others =>
-          incacnt <= '1';
-          asel <= '1';
-          lcs <= '0';
-          lras <= '1';
-          lcas <= '1';
-          lwe <= '1';
-          ons <= none; 
-          
-      end case;
 
-    end process fsm; 
+      when act =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '0';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= write;
+
+      when write =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '0';
+        lwe     <= '0';
+        ons     <= nop1;
+
+      when nop1 =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= nop2;
+
+      when nop2 =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= nop3;
+
+      when nop3 =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        if acnt = X"FF" then
+          ons   <= prenopw;
+        else
+          ons   <= write;
+        end if;
+
+      when prenopw =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        if acnt = X"10" then
+          ons <= doneprec;
+        else
+          ons <= prenopw; 
+        end if;
+
+      when doneprec =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '0';
+        lcas    <= '1';
+        lwe     <= '0';
+        ons     <= dones;
+
+      when dones =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= none;
+
+      when others =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= none;
+
+    end case;
+
+  end process fsm;
 
 end Behavioral;

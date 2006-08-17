@@ -76,7 +76,7 @@ RDATA[31:0] :  out for data, two cycles delayed from WADDR (i.e. block-ram + reg
 RWE : output write enable
 START : begin this operation
 DONE : this operation has finished
-
+NOTERMINATE: don't stop the read cycle
 
 if each interface is capable of reading or writing a single row in burst-mode, that's 1024 bytes. 
 

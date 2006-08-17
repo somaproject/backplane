@@ -9,18 +9,18 @@ use UNISIM.vcomponents.all;
 entity dqalign is
 
   port (
-    CLK    : in    std_logic;
-    CLK90  : in    std_logic;
-    CLK180 : in    std_logic;
-    CLK270 : in    std_logic;
-    DQS    : inout std_logic;
-    DQ     : inout std_logic_vector(7 downto 0);
-    TS     : in    std_logic;
-    DIN    : in    std_logic_vector(15 downto 0);
-    DOUT   : out   std_logic_vector(15 downto 0);
-    START  : in    std_logic;
-    DONE   : out   std_logic;
-    LATENCYEXTRA: out std_logic
+    CLK          : in    std_logic;
+    CLK90        : in    std_logic;
+    CLK180       : in    std_logic;
+    CLK270       : in    std_logic;
+    DQS          : inout std_logic;
+    DQ           : inout std_logic_vector(7 downto 0);
+    TS           : in    std_logic;
+    DIN          : in    std_logic_vector(15 downto 0);
+    DOUT         : out   std_logic_vector(15 downto 0);
+    START        : in    std_logic;
+    DONE         : out   std_logic;
+    LATENCYEXTRA : out   std_logic
 
     );
 
@@ -40,12 +40,12 @@ architecture Behavioral of dqalign is
   signal dqsq1l, dqsq2l : std_logic := '0';
 
   -- data signals
-  signal dqdelay      : std_logic_vector(7 downto 0) := (others => '0');
-  signal ddq1, ddq2   : std_logic_vector(7 downto 0) := (others => '0');
+  signal dqdelay              : std_logic_vector(7 downto 0) := (others => '0');
+  signal ddq1, ddq2           : std_logic_vector(7 downto 0) := (others => '0');
   signal ddq1l, ddq2l, ddq2ll : std_logic_vector(7 downto 0) := (others => '0');
-  signal dinddr       : std_logic_vector(7 downto 0) := (others => '0');
-  signal dqinc        : std_logic                    := '0';
-  signal dqce         : std_logic                    := '0';
+  signal dinddr               : std_logic_vector(7 downto 0) := (others => '0');
+  signal dqinc                : std_logic                    := '0';
+  signal dqce                 : std_logic                    := '0';
 
   signal ince : std_logic                    := '1';
   signal dqi  : std_logic_vector(7 downto 0) := (others => '0');
@@ -63,15 +63,15 @@ architecture Behavioral of dqalign is
   signal cs, ns : states := none;
 
   signal osel : std_logic := '0';
-  
+
   signal dqsin : std_logic := '0';
 
   constant PPOS : integer := 22;
-  
+
 
 begin  -- Behavioral
 
-  LATENCYEXTRA <= osel ; 
+  LATENCYEXTRA <= osel;
 
   IDELAY_dqs : IDELAY
     generic map (
@@ -88,10 +88,10 @@ begin  -- Behavioral
 
   IOBUF_inst : IOBUF
     port map (
-      O  => dqsin,                      -- Buffer output
-      IO => DQS,                        -- Buffer inout port (connect directly to top-level port)
-      I  => CLK270,                     -- Buffer input
-      T  => TS                          -- 3-state enable input 
+      O  => dqsin,
+      IO => DQS,
+      I  => CLK90,
+      T  => TS
       );
 
   iogen       : for i in 0 to 7 generate
@@ -110,7 +110,7 @@ begin  -- Behavioral
 
     IDDR_dq : IDDR
       generic map (
-        DDR_CLK_EDGE => "OPPOSITE_EDGE", 
+        DDR_CLK_EDGE => "OPPOSITE_EDGE",
         INIT_Q1      => '0',
         INIT_Q2      => '0',
         SRTYPE       => "SYNC")
@@ -133,8 +133,8 @@ begin  -- Behavioral
         Q            => dinddr(i),
         C            => CLK,
         CE           => '1',
-        D1           => DIN(2*i),
-        D2           => DIN(2*i+1),
+        D1           => DIN(i+8),
+        D2           => DIN(i),
         R            => inrst,
         S            => '0'
         );
@@ -194,21 +194,21 @@ begin  -- Behavioral
         ddq2l <= ddq2;
       end if;
 
-      ddq2ll <= ddq2l; 
+      ddq2ll              <= ddq2l;
       if osel = '1' then
         DOUT(15 downto 8) <= ddq1l;
-        DOUT(7 downto 0) <= ddq2l;
-        
+        DOUT(7 downto 0)  <= ddq2l;
+
       else
         DOUT(15 downto 8) <= ddq2ll;
-        DOUT(7 downto 0) <= ddq1l;
+        DOUT(7 downto 0)  <= ddq1l;
       end if;
 
       if cs = propw4 then
         if dqscnt >= PPOS then
           osel <= '0';
         else
-          osel <= '1'; 
+          osel <= '1';
         end if;
       end if;
 
@@ -317,7 +317,7 @@ begin  -- Behavioral
         dqce   <= '0';
         ns     <= propw1;
 
-      when datainc =>
+      when datainc  =>
         inrst  <= '0';
         dqsamp <= '0';
         dqsinc <= '0';
@@ -377,7 +377,7 @@ begin  -- Behavioral
         O  => dqi(i),                   -- Buffer output
         IO => dq(i),                    -- Buffer inout port (connect directly to top-level port)
         I  => dinddr(i),                -- Buffer input
-        T  => TS                          -- 3-state enable input 
+        T  => TS                        -- 3-state enable input 
         );
 
   end generate out_gen;

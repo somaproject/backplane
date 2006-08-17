@@ -9,31 +9,218 @@ use UNISIM.vcomponents.all;
 
 entity readddr2 is
   port (
-    CLK    : in  std_logic;
-    START  : in  std_logic;
-    DONE   : out std_logic;
+    CLK         : in  std_logic;
+    START       : in  std_logic;
+    DONE        : out std_logic;
     -- ram interface
-    CS     : out std_logic;
-    RAS    : out std_logic;
-    CAS    : out std_logic;
-    WE     : out std_logic;
-    ADDR   : out std_logic_vector(12 downto 0);
-    BA     : out std_logic_vector(1 downto 0);
-    DIN : in std_logic_vector(31 downto 0); 
+    CS          : out std_logic;
+    RAS         : out std_logic;
+    CAS         : out std_logic;
+    WE          : out std_logic;
+    ADDR        : out std_logic_vector(12 downto 0);
+    BA          : out std_logic_vector(1 downto 0);
+    DIN         : in  std_logic_vector(31 downto 0);
     -- input data interface
-    ROWTGT : in  std_logic_vector(14 downto 0);
-    RADDR  : out std_logic_vector(7 downto 0);
-    RDATA  : out  std_logic_vector(31 downto 0);
-    RWE : out std_logic;
-    NOTERMINATE: in std_logic
+    ROWTGT      : in  std_logic_vector(14 downto 0);
+    RADDR       : out std_logic_vector(7 downto 0);
+    RDATA       : out std_logic_vector(31 downto 0);
+    RWE         : out std_logic;
+    NOTERMINATE : in  std_logic
     );
 end readddr2;
 
 architecture Behavioral of readddr2 is
 
-begin  -- Behavioral
-  
+  signal lcs   : std_logic                     := '0';
+  signal lras  : std_logic                     := '1';
+  signal lcas  : std_logic                     := '1';
+  signal lwe   : std_logic                     := '1';
+  signal laddr : std_logic_vector(12 downto 0) := (others => '0');
 
-  
+  signal lba : std_logic_vector(1 downto 0) := (others => '0');
+
+  signal lts   : std_logic                     := '0';
+  signal ldout : std_logic_vector(31 downto 0) := (others => '0');
+
+  signal acnt    : std_logic_vector(7 downto 0) := (others => '0');
+  signal incacnt : std_logic                    := '0';
+  signal asel    : std_logic                    := '0';
+
+
+
+  type states is (none, act, actw1, actw2, actw3,
+                  read, nop1, nop2, nop3, doneprec, dones);
+  signal ocs, ons : states := none;
+
+  type raddrsreg_t is array (10 downto 0) of std_logic_vector(7 downto 0);
+  signal raddrsreg : raddrsreg_t := (others => (others => '0'));
+
+  signal rwesreg : std_logic_vector(10 downto 0);
+
+
+begin  -- Behavioral
+
+  laddr <= ("0" & acnt(7) & "0" & acnt(6 downto 0) & "000") when asel = '1' else rowtgt(12 downto 0);
+  lba   <= rowtgt(14 downto 13);
+
+  DONE <= '1' when ocs = dones else '0';
+
+  main : process(CLK)
+  begin
+    if rising_edge(CLK) then
+
+      ocs <= ons;
+
+      BA   <= lba;
+      ADDR <= laddr;
+      CS   <= lcs;
+      RAS  <= lras;
+      CAS  <= lcas;
+      WE   <= lwe;
+
+      if ocs = none then
+        acnt   <= (others => '0');
+      else
+        if incacnt = '1' then
+          acnt <= acnt + 1;
+        end if;
+      end if;
+
+      -- shift regitsrs
+      rwesreg   <= rwesreg(9 downto 0) & incacnt;
+      raddrsreg <= raddrsreg(9 downto 0) & acnt;
+
+      RWE   <= rwesreg(6);
+      RADDR <= raddrsreg(6);
+
+      RDATA <= DIN;
+
+    end if;
+  end process main;
+
+  fsm : process(ocs, start, acnt)
+  begin
+    case ocs is
+      when none =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        if START = '1' then
+          ons   <= act;
+        else
+          ons   <= none;
+        end if;
+
+
+      when act =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '0';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= actw1;
+
+      when actw1 =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= actw2;
+
+      when actw2 =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= actw3;
+
+      when actw3 =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= read;
+
+      when read =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '0';
+        lwe     <= '1';
+        ons     <= nop1;
+
+      when nop1 =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= nop2;
+
+      when nop2 =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= nop3;
+
+      when nop3 =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        if acnt = X"FF" and NOTERMINATE = '0' then
+          ons   <= doneprec;
+        else
+          ons   <= read;
+        end if;
+
+      when doneprec =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '0';
+        lcas    <= '1';
+        lwe     <= '0';
+        ons     <= dones;
+
+      when dones =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= none;
+
+      when others =>
+        incacnt <= '1';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= none;
+
+    end case;
+
+  end process fsm;
 
 end Behavioral;
+

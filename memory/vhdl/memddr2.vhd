@@ -203,7 +203,7 @@ architecture Behavioral of memddr2 is
   signal ts : std_logic := '0';
 
   type states is (none, boot, dumbread, aligns, alignw, drw,
-                  refresh, read, inchk, write);
+                  refresh, read,readdone,  inchk, write, writedone);
   signal ocs, ons : states := none;
 
 
@@ -282,8 +282,8 @@ begin  -- Behavioral
       DQS          => DQSL,
       DQ           => DQ(7 downto 0),
       TS           => ts,
-      DIN          => din(15 downto 0),
-      DOUT         => dout(15 downto 0),
+      DIN          => dout(15 downto 0),
+      DOUT         => din(15 downto 0),
       START        => alstart,
       DONE         => aldone,
       LATENCYEXTRA => open);
@@ -297,8 +297,8 @@ begin  -- Behavioral
       DQS          => DQSH,
       DQ           => DQ(15 downto 8),
       TS           => ts,
-      DIN          => din(31 downto 16),
-      DOUT         => dout(31 downto 16),
+      DIN          => dout(31 downto 16),
+      DOUT         => din(31 downto 16),
       START        => alstart,
       DONE         => aldone,
       LATENCYEXTRA => open);
@@ -333,7 +333,10 @@ begin  -- Behavioral
          bootba when dsel = 1 else
          wba    when dsel = 2 else
          rba;
+  mr <= "0010001000011";
+  emr <= "0000001000100"; 
 
+  DONE <= '1' when ocs = readdone or ocs = writedone else '0'; 
 
   main : process(CLK)
   begin
@@ -352,11 +355,11 @@ begin  -- Behavioral
     end if;
   end process main;
 
-  fsm : process(ocs, bootdone, aldone, rdone, refdone, start, rw)
+  fsm : process(ocs, bootdone, aldone, rdone, wdone, refdone, start, rw)
   begin
     case ocs is
       when none =>
-        dsel      <= 0;
+        dsel      <= 1;
         bootstart <= '0';
         refstart  <= '0';
         rstart    <= '0';
@@ -366,7 +369,7 @@ begin  -- Behavioral
         ons       <= boot;
 
       when boot =>
-        dsel      <= 0;
+        dsel      <= 1;
         bootstart <= '1';
         refstart  <= '0';
         rstart    <= '0';
@@ -385,7 +388,7 @@ begin  -- Behavioral
         refstart  <= '0';
         rstart    <= '1';
         wstart    <= '0';
-        noterm    <= '0';
+        noterm    <= '1';
         alstart   <= '0';
         ons       <= aligns;
 
@@ -395,7 +398,7 @@ begin  -- Behavioral
         refstart  <= '0';
         rstart    <= '0';
         wstart    <= '0';
-        noterm    <= '0';
+        noterm    <= '1';
         alstart   <= '1';
         ons       <= alignw;
 
@@ -468,10 +471,20 @@ begin  -- Behavioral
         noterm    <= '0';
         alstart   <= '0';
         if rdone = '1' then
-          ons     <= refresh;
+          ons     <= readdone;
         else
           ons     <= read;
         end if;
+
+      when readdone =>
+        dsel      <= 3;
+        bootstart <= '0';
+        refstart  <= '0';
+        rstart    <= '0';
+        wstart    <= '0';
+        noterm    <= '0';
+        alstart   <= '0';
+          ons     <= refresh;
 
       when write =>
         dsel      <= 2;
@@ -482,10 +495,20 @@ begin  -- Behavioral
         noterm    <= '0';
         alstart   <= '0';
         if wdone = '1' then
-          ons     <= refresh;
+          ons     <= writedone;
         else
           ons     <= write;
         end if;
+
+      when writedone =>
+        dsel      <= 3;
+        bootstart <= '0';
+        refstart  <= '0';
+        rstart    <= '0';
+        wstart    <= '0';
+        noterm    <= '0';
+        alstart   <= '0';
+          ons     <= refresh;
 
       when others =>
         dsel      <= 0;

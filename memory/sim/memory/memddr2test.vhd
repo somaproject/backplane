@@ -48,7 +48,7 @@ architecture Behavioral of memddr2test is
   end component;
 
   signal CLK, CLKN : std_logic                     := '0';
-  signal CLK90     : std_logic                     := '0';
+  signal CLK90, CLK90N     : std_logic                     := '0';
   signal CLK180    : std_logic                     := '0';
   signal CLK270    : std_logic                     := '0';
   -- RAM!
@@ -146,16 +146,16 @@ begin  -- Behavioral
       LDQS            => DQSL,
       UDQS            => DQSH,
       WEB             => WE,
-      LDM             => '1',
-      UDM             => '1',
+      LDM             => '0',
+      UDM             => '0',
       CASB            => CAS,
       RASB            => RAS,
       CSB             => CS,
       BA              => BA,
       ADDR            => ADDR,
       CKE             => CKE,
-      CLK             => CLK,
-      CLKB            => CLKN);
+      CLK             => CLK90,
+      CLKB            => CLK90N);
 
   process(mainclk)
   begin
@@ -194,8 +194,45 @@ begin  -- Behavioral
 
 
   CLKN <= not CLK;
+  CLK90N <= not CLK90; 
 
+  -- fake write memory
+  wrmem: process(CLK)
+    variable wraddrl : std_logic_vector(7 downto 0) := (others => '0');
+    
+    begin
+      if rising_edge(CLK) then
+        WRDATA <= ( wraddrl & wraddrl &  wraddrl & wraddrl);
+        wraddrl := WRADDR; 
+      end if;
+    end process wrmem; 
 
+  main: process
+    begin
+      wait for 300 us;
+      wait until rising_edge(CLK);
+      
+      START <= '1'; 
+      RW <= '1';
+      wait until rising_edge(CLK) and DONE = '1';
 
+      START <= '0'; 
+      RW <= '1';
+      wait for 50 us;
+      
+      wait until rising_edge(CLK);
+      
+      START <= '1'; 
+      RW <= '0';
+      wait until rising_edge(CLK) and DONE = '1';
+
+      START <= '0'; 
+      RW <= '0';
+      wait for 50 us;
+
+      
+      wait; 
+
+    end process main; 
 
 end Behavioral;

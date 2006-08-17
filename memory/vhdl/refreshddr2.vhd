@@ -46,7 +46,7 @@ begin  -- Behavioral
         CAS <= lcas;
         WE <= lwe;
         
-        if ocs = none then
+        if ocs = none or ocs = dones then
           bcnt <= 0;
         else
           bcnt <= bcnt + 1;

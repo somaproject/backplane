@@ -40,12 +40,12 @@ architecture Behavioral of bootddr2 is
   signal laddr : std_logic_vector(15 downto 0) := (others => '0');
   signal lBA   : std_logic_vector(1 downto 0)  := (others => '0');
 
-  type states is ( none, resetall, startw1, startw2,
+  type states is ( none, resetall, ckewait,  startw1, startw2,
                    startw3, propw1, propw2, propw3, prewait, 
                    propw4, nexttick, datainc, propdone, bootnop,
                    loademr2, loademr3, lemrden, lmrdrst, dlllckw, preall,
                    ref1w, ref1, ref2, ref2w, dww, dw, dww2, loadmr,
-                   loadmrw,
+                   loadmrw, loademr2w, loademr3w, lemrdenw, 
                    lemrex0, lemrex0w, lemren0, lemren0w, 
                    dones ); 
 
@@ -83,7 +83,7 @@ begin  -- Behavioral
   begin
     case ocs is
       when none          =>
-        lcke  <= '1';
+        lcke  <= '0';
         lcas  <= '0';
         lras  <= '0';
         lcs   <= '0';
@@ -91,9 +91,23 @@ begin  -- Behavioral
         laddr <= (others => '0');
         lba   <= "00";
         if START = '1' then
-          ons  <= bootnop;
+          ons  <= ckewait;
         else
           ons  <= none;
+        end if;
+        
+      when ckewait       =>
+        lcke  <= '0';
+        lcs   <= '0';
+        lras  <= '1';
+        lcas  <= '1';
+        lwe   <= '1';
+        laddr <= (others => '0');
+        lba   <= "00";
+        if bcnt = 30 then
+          ons  <= bootnop;
+        else
+          ons  <= ckewait; 
         end if;
 
       when bootnop       =>
@@ -115,14 +129,10 @@ begin  -- Behavioral
         lcs   <= '0';
         lras  <= '0';
         lcas  <= '1';
-        lwe   <= '1';
-        laddr <= X"0200";
+        lwe   <= '0';
+        laddr <= X"0400";
         lba   <= "00";
-       if bcnt = 32000 then
-          ons  <= loademr2; 
-        else
-          ons  <= prewait;
-        end if;
+        ons <= loademr2; 
 
       when loademr2 =>
         lcke  <= '1';
@@ -130,6 +140,16 @@ begin  -- Behavioral
         lras  <= '0';
         lcas  <= '0';
         lwe   <= '0';
+        laddr <= X"0000";
+        lba   <= "10";
+        ons    <= loademr2w;
+
+      when loademr2w =>
+        lcke  <= '1';
+        lcs   <= '0';
+        lras  <= '1';
+        lcas  <= '1';
+        lwe   <= '1';
         laddr <= X"0000";
         lba   <= "10";
         ons    <= loademr3;
@@ -142,6 +162,16 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0000";
         lba   <= "11";
+        ons    <= loademr3w;
+
+      when loademr3w =>
+        lcke  <= '1';
+        lcs   <= '0';
+        lras  <= '1';
+        lcas  <= '1';
+        lwe   <= '1';
+        laddr <= X"0000";
+        lba   <= "11";
         ons    <= lemrden;
 
       when lemrden =>
@@ -152,6 +182,16 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0000";
         lba   <= "01";
+        ons    <= lemrdenw;
+
+      when lemrdenw =>
+        lcke  <= '1';
+        lcs   <= '0';
+        lras  <= '1';
+        lcas  <= '1';
+        lwe   <= '1';
+        laddr <= X"0000";
+        lba   <= "01";
         ons    <= lmrdrst;
 
       when lmrdrst =>
@@ -160,7 +200,7 @@ begin  -- Behavioral
         lras  <= '0';
         lcas  <= '0';
         lwe   <= '0';
-        laddr <= X"0100";
+        laddr <= X"0743";
         lba   <= "00";
         ons    <= dlllckw;
 
@@ -184,7 +224,7 @@ begin  -- Behavioral
         lras  <= '0';
         lcas  <= '1';
         lwe   <= '0';
-        laddr <= X"0200";
+        laddr <= X"0400";
         lba   <= "00";
         ons    <= ref1w;
 
@@ -234,7 +274,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons    <= dww;
+        ons    <= dww2;
 
       when dww =>
         lcke  <= '1';
