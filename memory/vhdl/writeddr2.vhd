@@ -59,10 +59,10 @@ architecture Behavioral of writeddr2 is
 
 begin  -- Behavioral
 
-  laddr <= ("0" & acnt(7) & "0" & acnt(6 downto 0) & "000") when asel = '1' else rowtgt(12 downto 0);
+  laddr <= ("0000" & acnt(7 downto 1) & "00") when asel = '1' else rowtgt(12 downto 0);
   lba   <= rowtgt(14 downto 13);
 
-  lts   <= tssreg(3);
+  lts   <= tssreg(2);
 
 
   DONE <= '1' when ocs = dones else '0';
@@ -78,7 +78,7 @@ begin  -- Behavioral
       BA   <= lba;
       ADDR <= laddr;
       TS   <= lts;
-      DOUT <= doutsreg(0); 
+
       CS   <= lcs;
       RAS  <= lras;
       CAS  <= lcas;
@@ -96,7 +96,7 @@ begin  -- Behavioral
       tssreg   <= tssreg(9 downto 0) & (not incacnt);
       doutsreg <= doutsreg(9 downto 0) & WDATA;
 
-      DOUT <= doutsreg(1);
+      DOUT <= WDATA; 
 
       ADDR <= laddr;
 
@@ -136,7 +136,7 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '0';
         lwe     <= '0';
-        ons     <= nop1;
+        ons     <= nop3;                -- debugging
 
       when nop1 =>
         incacnt <= '1';

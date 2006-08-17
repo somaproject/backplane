@@ -206,10 +206,18 @@ architecture Behavioral of memddr2 is
                   refresh, read,readdone,  inchk, write, writedone);
   signal ocs, ons : states := none;
 
+  signal dinl, dinh : std_logic_vector(15 downto 0) := (others => '0');
+  signal doutl, douth : std_logic_vector(15 downto 0) := (others => '0');
+  
 
 begin  -- Behavioral
 
+  dinl <= din(23 downto 16) & din(7 downto 0);
+  dinh <= din(31 downto 24) & din(15 downto 8);
 
+  doutl <= dout(23 downto 16) & dout(7 downto 0);
+  douth <= dout(31 downto 24) & dout(15 downto 8);
+  
   refreshddr2_inst : refreshddr2
     port map (
       CLK   => CLK,
@@ -282,8 +290,8 @@ begin  -- Behavioral
       DQS          => DQSL,
       DQ           => DQ(7 downto 0),
       TS           => ts,
-      DIN          => dout(15 downto 0),
-      DOUT         => din(15 downto 0),
+      DIN          => doutl,
+      DOUT         => dinl, 
       START        => alstart,
       DONE         => aldone,
       LATENCYEXTRA => open);
@@ -297,8 +305,8 @@ begin  -- Behavioral
       DQS          => DQSH,
       DQ           => DQ(15 downto 8),
       TS           => ts,
-      DIN          => dout(31 downto 16),
-      DOUT         => din(31 downto 16),
+      DIN          => douth, 
+      DOUT         => dinh, 
       START        => alstart,
       DONE         => aldone,
       LATENCYEXTRA => open);
@@ -333,7 +341,7 @@ begin  -- Behavioral
          bootba when dsel = 1 else
          wba    when dsel = 2 else
          rba;
-  mr <= "0010001000011";
+  mr <= "0010000110010";
   emr <= "0000001000100"; 
 
   DONE <= '1' when ocs = readdone or ocs = writedone else '0'; 

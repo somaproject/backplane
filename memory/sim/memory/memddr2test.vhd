@@ -107,7 +107,8 @@ architecture Behavioral of memddr2test is
 
 begin  -- Behavioral
 
-
+  DQSH <= 'L';
+  DQSL <= 'L'; 
   memddr2_uut: memddr2
     port map (
       CLK    => CLK,
@@ -202,7 +203,7 @@ begin  -- Behavioral
     
     begin
       if rising_edge(CLK) then
-        WRDATA <= ( wraddrl & wraddrl &  wraddrl & wraddrl);
+        WRDATA <= ( (X"00" & wraddrl) &  (not (X"00" & wraddrl) )); 
         wraddrl := WRADDR; 
       end if;
     end process wrmem; 

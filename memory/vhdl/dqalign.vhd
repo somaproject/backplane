@@ -126,7 +126,7 @@ begin  -- Behavioral
 
     ODDR_dq : ODDR
       generic map(
-        DDR_CLK_EDGE => "OPPOSITE_EDGE",
+        DDR_CLK_EDGE => "SAME_EDGE",
         INIT         => '0',
         SRTYPE       => "SYNC")
       port map (
