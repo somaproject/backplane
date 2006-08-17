@@ -212,8 +212,9 @@ architecture Behavioral of memddr2 is
 
 begin  -- Behavioral
 
-  dinl <= din(23 downto 16) & din(7 downto 0);
-  dinh <= din(31 downto 24) & din(15 downto 8);
+  din(15 downto 0) <= dinh(7 downto 0) & dinl(7 downto 0);
+  din(31 downto 16) <= dinh(15 downto 8) & dinl(15 downto 8);
+  
 
   doutl <= dout(23 downto 16) & dout(7 downto 0);
   douth <= dout(31 downto 24) & dout(15 downto 8);

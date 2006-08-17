@@ -47,33 +47,33 @@ architecture Behavioral of memddr2test is
       );
   end component;
 
-  signal CLK, CLKN : std_logic                     := '0';
-  signal CLK90, CLK90N     : std_logic                     := '0';
-  signal CLK180    : std_logic                     := '0';
-  signal CLK270    : std_logic                     := '0';
+  signal CLK, CLKN     : std_logic                     := '0';
+  signal CLK90, CLK90N : std_logic                     := '0';
+  signal CLK180        : std_logic                     := '0';
+  signal CLK270        : std_logic                     := '0';
   -- RAM!
-  signal CKE       : std_logic                     := '0';
-  signal CAS       : std_logic                     := '1';
-  signal RAS       : std_logic                     := '1';
-  signal CS        : std_logic                     := '1';
-  signal WE        : std_logic                     := '1';
-  signal ADDR      : std_logic_vector(12 downto 0) := (others => '0');
-  signal BA        : std_logic_vector(1 downto 0)  := (others => '0');
-  signal DQSH      : std_logic                     := '0';
-  signal DQSL      : std_logic                     := '0';
-  signal DQ        : std_logic_vector(15 downto 0) := (others => '0');
+  signal CKE           : std_logic                     := '0';
+  signal CAS           : std_logic                     := '1';
+  signal RAS           : std_logic                     := '1';
+  signal CS            : std_logic                     := '1';
+  signal WE            : std_logic                     := '1';
+  signal ADDR          : std_logic_vector(12 downto 0) := (others => '0');
+  signal BA            : std_logic_vector(1 downto 0)  := (others => '0');
+  signal DQSH          : std_logic                     := '0';
+  signal DQSL          : std_logic                     := '0';
+  signal DQ            : std_logic_vector(15 downto 0) := (others => '0');
   -- interface
-  signal START     : std_logic                     := '0';
-  signal RW        : std_logic                     := '0';
-  signal DONE      : std_logic                     := '0';
+  signal START         : std_logic                     := '0';
+  signal RW            : std_logic                     := '0';
+  signal DONE          : std_logic                     := '0';
   -- write interface
-  signal ROWTGT    : std_logic_vector(14 downto 0) := (others => '0');
-  signal WRADDR    : std_logic_vector(7 downto 0)  := (others => '0');
-  signal WRDATA    : std_logic_vector(31 downto 0) := (others => '0');
+  signal ROWTGT        : std_logic_vector(14 downto 0) := (others => '0');
+  signal WRADDR        : std_logic_vector(7 downto 0)  := (others => '0');
+  signal WRDATA        : std_logic_vector(31 downto 0) := (others => '0');
   -- read interface
-  signal RDADDR    : std_logic_vector(7 downto 0)  := (others => '0');
-  signal RDDATA    : std_logic_vector(31 downto 0) := (others => '0');
-  signal RDWE      : std_logic                     := '0';
+  signal RDADDR        : std_logic_vector(7 downto 0)  := (others => '0');
+  signal RDDATA        : std_logic_vector(31 downto 0) := (others => '0');
+  signal RDWE          : std_logic                     := '0';
 
   component HY5PS121621F
     generic (
@@ -105,11 +105,15 @@ architecture Behavioral of memddr2test is
 
   signal clk_period : time := 6.6666 ns;
 
+  signal wrdcnt : integer := 0;
+
+  signal burstcnt : std_logic_vector(7 downto 0) := (others => '0');
+
 begin  -- Behavioral
 
   DQSH <= 'L';
-  DQSL <= 'L'; 
-  memddr2_uut: memddr2
+  DQSL <= 'L';
+  memddr2_uut : memddr2
     port map (
       CLK    => CLK,
       CLK90  => CLK90,
@@ -122,7 +126,7 @@ begin  -- Behavioral
       WE     => WE,
       ADDR   => ADDR,
       BA     => BA,
-      DQSH    => DQSH,
+      DQSH   => DQSH,
       DQSL   => DQSL,
       DQ     => DQ,
       START  => START,
@@ -133,8 +137,8 @@ begin  -- Behavioral
       WRDATA => WRDATA,
       RDADDR => RDADDR,
       RDDATA => RDDATA,
-      RDWE   => RDWE); 
-    
+      RDWE   => RDWE);
+
   mainclk <= not mainclk after (clk_period / 8);
 
   memory_inst : HY5PS121621F
@@ -194,46 +198,79 @@ begin  -- Behavioral
   end process;
 
 
-  CLKN <= not CLK;
-  CLK90N <= not CLK90; 
+  CLKN   <= not CLK;
+  CLK90N <= not CLK90;
 
   -- fake write memory
-  wrmem: process(CLK)
+  wrmem              : process(CLK)
     variable wraddrl : std_logic_vector(7 downto 0) := (others => '0');
+
+  begin
+    if rising_edge(CLK) then
+      WRDATA <= ( (burstcnt & wraddrl) & (not (burstcnt & wraddrl) ));
+      wraddrl := WRADDR;
+
+    end if;
+  end process wrmem;
+
+  main : process
+  begin
+    wait for 300 us;
+    wait until rising_edge(CLK);
+
+    for i in 0 to 255 loop
+      START <= '1';
+      RW    <= '1';
+      wait until rising_edge(CLK) and DONE = '1';
+
+      START <= '0';
+      RW    <= '1';
+      wait for 5 us;
+
+      wait until rising_edge(CLK);
+
+      START <= '1';
+      RW    <= '0';
+      wait until rising_edge(CLK) and DONE = '1';
+
+      START <= '0';
+      RW    <= '0';
+      wait for 5 us;
+      --report "Finished with Row" severity Note;
+      
+      burstcnt <= burstcnt + 1; 
+      ROWTGT <= ROWTGT + 1; 
+    end loop;  -- i
+
+    report "End of Simulation" severity Failure;
     
-    begin
-      if rising_edge(CLK) then
-        WRDATA <= ( (X"00" & wraddrl) &  (not (X"00" & wraddrl) )); 
-        wraddrl := WRADDR; 
+    wait;
+
+  end process main;
+
+
+  -- reader
+  read_verify : process
+
+  begin
+    -- wait for read to start
+    wrdcnt <= 0;
+
+    wait until rising_edge(CLK) and START = '1' and RW = '0';
+    while DONE /= '1' loop
+      if RDWE = '1' then
+        if rddata = ((burstcnt & rdaddr) & (not (burstcnt & rdaddr))) then
+          wrdcnt <= wrdcnt + 1;
+        else
+
+          report "error reading back data" severity error;
+        end if;
       end if;
-    end process wrmem; 
-
-  main: process
-    begin
-      wait for 300 us;
       wait until rising_edge(CLK);
-      
-      START <= '1'; 
-      RW <= '1';
-      wait until rising_edge(CLK) and DONE = '1';
 
-      START <= '0'; 
-      RW <= '1';
-      wait for 50 us;
-      
-      wait until rising_edge(CLK);
-      
-      START <= '1'; 
-      RW <= '0';
-      wait until rising_edge(CLK) and DONE = '1';
-
-      START <= '0'; 
-      RW <= '0';
-      wait for 50 us;
-
-      
-      wait; 
-
-    end process main; 
-
+    end loop;
+    if wrdcnt /= 256 then
+      report "Read less than 256 words" severity failure;
+    end if;
+  end process read_verify;
 end Behavioral;

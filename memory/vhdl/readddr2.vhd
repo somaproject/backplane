@@ -49,7 +49,8 @@ architecture Behavioral of readddr2 is
 
 
   type states is (none, act, actw1, actw2, actw3,
-                  read, nop1, nop2, nop3, doneprec, dones);
+                  read, nop1, nop2, nop3, doneprec, donewait,
+                  dones);
   signal ocs, ons : states := none;
 
   type raddrsreg_t is array (10 downto 0) of std_logic_vector(7 downto 0);
@@ -90,15 +91,15 @@ begin  -- Behavioral
       rwesreg   <= rwesreg(9 downto 0) & incacnt;
       raddrsreg <= raddrsreg(9 downto 0) & acnt;
 
-      RWE   <= rwesreg(6);
-      RADDR <= raddrsreg(6);
+      RWE   <= rwesreg(7);
+      RADDR <= raddrsreg(7);
 
       RDATA <= DIN;
 
     end if;
   end process main;
 
-  fsm : process(ocs, start, acnt)
+  fsm : process(ocs, start, acnt, rwesreg)
   begin
     case ocs is
       when none =>
@@ -192,16 +193,30 @@ begin  -- Behavioral
         end if;
 
       when doneprec =>
-        incacnt <= '1';
+        incacnt <= '0';
         asel    <= '1';
         lcs     <= '0';
         lras    <= '0';
         lcas    <= '1';
         lwe     <= '0';
-        ons     <= dones;
+        ons <= donewait; 
+          
+
+      when donewait  =>
+        incacnt <= '0';
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        if  rwesreg(7) = '0' then       -- wait for all reads to finish
+          ons <= dones;
+        else
+          ons <= donewait; 
+        end if; 
 
       when dones =>
-        incacnt <= '1';
+        incacnt <= '0';
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
