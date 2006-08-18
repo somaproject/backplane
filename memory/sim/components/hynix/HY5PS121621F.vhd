@@ -25,8 +25,8 @@ Entity HY5PS121621F Is
   generic (
      TimingCheckFlag : boolean := TRUE;
      PUSCheckFlag : boolean := FALSE;
-     Part_Number : PART_NUM_TYPE := B400;
-     odelay : time := 0 ps);
+     Part_Number : PART_NUM_TYPE := B400);
+  
   Port (  DQ    :  inout   std_logic_vector(15 downto 0) := (others => 'Z');
           LDQS  :  inout   std_logic := 'Z';
           LDQSB :  inout   std_logic := 'Z';
@@ -42,7 +42,8 @@ Entity HY5PS121621F Is
           CKE   :  in      std_logic;
           CLK   :  in      std_logic;
           CLKB  :  in      std_logic;
-          UDM   :  in      std_logic );
+          UDM   :  in      std_logic;
+          odelay : in  time := 0 ps);
 End HY5PS121621F;
 
 -----------------------------------------------------------------------------------------------------

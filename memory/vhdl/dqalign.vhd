@@ -84,7 +84,7 @@ begin  -- Behavioral
       CE             => dqsce,
       I              => dqsin,
       INC            => dqsinc,
-      RST            => inrst
+      RST            => '0'
       );
 
   IOBUF_inst : IOBUF
@@ -96,6 +96,16 @@ begin  -- Behavioral
       );
 
   iogen       : for i in 0 to 7 generate
+
+    IOBUF_dq : IOBUF
+      port map (
+        O  => dqi(i),                   -- Buffer output
+        IO => dq(i),                    -- Buffer inout port (connect directly to top-level port)
+        I  => dinddr(i),                -- Buffer input
+        T  => TS                        -- 3-state enable input 
+        );
+
+
     IDELAY_dq : IDELAY
       generic map (
         IOBDELAY_TYPE  => "VARIABLE",
@@ -376,13 +386,5 @@ begin  -- Behavioral
 
 
   out_gen      : for i in 0 to 7 generate
-    IOBUF_inst : IOBUF
-      port map (
-        O  => dqi(i),                   -- Buffer output
-        IO => dq(i),                    -- Buffer inout port (connect directly to top-level port)
-        I  => dinddr(i),                -- Buffer input
-        T  => TS                        -- 3-state enable input 
-        );
-
   end generate out_gen;
 end Behavioral;

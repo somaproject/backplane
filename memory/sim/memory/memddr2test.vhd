@@ -83,24 +83,25 @@ architecture Behavioral of memddr2test is
     generic (
       TimingCheckFlag :       boolean                       := true;
       PUSCheckFlag    :       boolean                       := false;
-      Part_Number     :       PART_NUM_TYPE                 := B400;
-      odelay          :       time                          := 0 ps);
-    port ( DQ         : inout std_logic_vector(15 downto 0) := (others => 'Z');
-           LDQS       : inout std_logic                     := 'Z';
-           LDQSB      : inout std_logic                     := 'Z';
-           UDQS       : inout std_logic                     := 'Z';
-           UDQSB      : inout std_logic                     := 'Z';
-           LDM        : in    std_logic;
-           WEB        : in    std_logic;
-           CASB       : in    std_logic;
-           RASB       : in    std_logic;
-           CSB        : in    std_logic;
-           BA         : in    std_logic_vector(1 downto 0);
-           ADDR       : in    std_logic_vector(12 downto 0);
-           CKE        : in    std_logic;
-           CLK        : in    std_logic;
-           CLKB       : in    std_logic;
-           UDM        : in    std_logic );
+      Part_Number     :       PART_NUM_TYPE                 := B400);
+    port
+      ( DQ            : inout std_logic_vector(15 downto 0) := (others => 'Z');
+        LDQS          : inout std_logic                     := 'Z';
+        LDQSB         : inout std_logic                     := 'Z';
+        UDQS          : inout std_logic                     := 'Z';
+        UDQSB         : inout std_logic                     := 'Z';
+        LDM           : in    std_logic;
+        WEB           : in    std_logic;
+        CASB          : in    std_logic;
+        RASB          : in    std_logic;
+        CSB           : in    std_logic;
+        BA            : in    std_logic_vector(1 downto 0);
+        ADDR          : in    std_logic_vector(12 downto 0);
+        CKE           : in    std_logic;
+        CLK           : in    std_logic;
+        CLKB          : in    std_logic;
+        UDM           : in    std_logic;
+        odelay        : in    time                          := 0 ps);
   end component;
 
   signal mainclk : std_logic := '0';
@@ -113,6 +114,8 @@ architecture Behavioral of memddr2test is
   signal wrdcnt : integer := 0;
 
   signal burstcnt : std_logic_vector(7 downto 0) := (others => '0');
+
+  signal odelay : time := 0 ps;
 
 begin  -- Behavioral
 
@@ -151,8 +154,7 @@ begin  -- Behavioral
     generic map (
       TimingCheckFlag => true,
       PUSCheckFlag    => true,
-      PArt_number     => B400,
-      odelay => 1000 ps)
+      PArt_number     => B400)
     port map (
       DQ              => DQ,
       LDQS            => DQSL,
@@ -167,7 +169,8 @@ begin  -- Behavioral
       ADDR            => ADDR,
       CKE             => CKE,
       CLK             => CLK90,
-      CLKB            => CLK90N);
+      CLKB            => CLK90N,
+      odelay          => odelay);
 
   process(mainclk)
   begin
@@ -208,7 +211,7 @@ begin  -- Behavioral
   CLKN   <= not CLK;
   CLK90N <= not CLK90;
 
-  RESET <= '0' after 50 ns;
+
 
   -- fake write memory
   wrmem              : process(CLK)
@@ -224,32 +227,45 @@ begin  -- Behavioral
 
   main : process
   begin
-    wait for 300 us;
-    wait until rising_edge(CLK);
 
-    for i in 0 to 255 loop
-      START <= '1';
-      RW    <= '1';
-      wait until rising_edge(CLK) and DONE = '1';
 
-      START <= '0';
-      RW    <= '1';
-      wait for 5 us;
+    for tpos in 0 to 20 loop
+      RESET <= '1';
+      wait for 50 ns;
+
+      RESET <= '0';
+      wait for 300 us;
+
+      odelay <= 107 ps * tpos;
+
 
       wait until rising_edge(CLK);
 
-      START <= '1';
-      RW    <= '0';
-      wait until rising_edge(CLK) and DONE = '1';
+      for i in 0 to 10 loop
+        START <= '1';
+        RW    <= '1';
+        wait until rising_edge(CLK) and DONE = '1';
 
-      START <= '0';
-      RW    <= '0';
-      wait for 5 us;
-      --report "Finished with Row" severity Note;
+        START <= '0';
+        RW    <= '1';
+        wait for 5 us;
 
-      burstcnt <= burstcnt + 1;
-      ROWTGT   <= ROWTGT + 1;
-    end loop;  -- i
+        wait until rising_edge(CLK);
+
+        START <= '1';
+        RW    <= '0';
+        wait until rising_edge(CLK) and DONE = '1';
+
+        START <= '0';
+        RW    <= '0';
+        wait for 5 us;
+        --report "Finished with Row" severity Note;
+
+        burstcnt <= burstcnt + 1;
+        ROWTGT   <= ROWTGT + 1;
+      end loop;  -- i
+
+    end loop;  -- tpos
 
     report "End of Simulation" severity failure;
 
@@ -263,23 +279,39 @@ begin  -- Behavioral
 
   begin
     -- wait for read to start
-    wrdcnt <= 0;
 
-    wait until rising_edge(CLK) and START = '1' and RW = '0';
-    while DONE /= '1' loop
-      if RDWE = '1' then
-        if rddata = ((burstcnt & rdaddr) & (not (burstcnt & rdaddr))) then
-          wrdcnt <= wrdcnt + 1;
-        else
 
-          report "error reading back data" severity error;
+    wait until falling_edge(RESET);
+
+    ---------------------------------------------------------------------------
+    -- READ AND VERIFY 10 BURSTS
+    ---------------------------------------------------------------------------
+
+    -- we wait for  the first write to get into the read-verification
+    -- code so that we avoid the dqdelay lock read burst
+
+    wait until rising_edge(CLK) and START = '1' and RW = '1';
+
+    for i in 0 to 10 loop
+      wrdcnt <= 0;
+      wait until rising_edge(CLK) and START = '1' and RW = '0';
+
+      while DONE /= '1' loop
+        if RDWE = '1' then
+          if rddata = ((burstcnt & rdaddr) & (not (burstcnt & rdaddr))) then
+            wrdcnt <= wrdcnt + 1;
+          else
+            report "error reading back data" severity error;
+          end if;
         end if;
-      end if;
-      wait until rising_edge(CLK);
+        wait until rising_edge(CLK);
 
-    end loop;
-    if wrdcnt /= 256 then
-      report "Read less than 256 words" severity failure;
-    end if;
+      end loop;
+      if wrdcnt /= 256 then
+        report "Read less than 256 words" severity error;
+      end if;
+    end loop;  -- i
+
+
   end process read_verify;
 end Behavioral;

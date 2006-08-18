@@ -54,7 +54,7 @@ architecture Behavioral of bootddr2 is
 
 begin  -- Behavioral
 
-  DONE <= '1' when ocs = dones else '0';
+  DONE <= '1' when ocs = lemrex0w  else '0';
   
   main : process(CLK)
   begin
@@ -84,10 +84,10 @@ begin  -- Behavioral
     case ocs is
       when none          =>
         lcke  <= '0';
-        lcas  <= '0';
-        lras  <= '0';
-        lcs   <= '0';
-        lwe   <= '0';
+        lcas  <= '1';
+        lras  <= '1';
+        lcs   <= '1';
+        lwe   <= '1';
         laddr <= (others => '0');
         lba   <= "00";
         if START = '1' then
@@ -98,7 +98,7 @@ begin  -- Behavioral
         
       when ckewait       =>
         lcke  <= '0';
-        lcs   <= '0';
+        lcs   <= '1';
         lras  <= '1';
         lcas  <= '1';
         lwe   <= '1';
@@ -384,7 +384,12 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons    <= dones;
+        if START = '1' then
+          ons <= none;
+        else
+          ons    <= dones;                  
+        end if;
+
 
       when others =>
         lcke  <= '1';
