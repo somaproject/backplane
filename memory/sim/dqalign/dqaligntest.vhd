@@ -162,6 +162,9 @@ begin  -- Behavioral
       end loop;  -- i
     end loop;  -- t
 
+    report "End of Simulation" severity Failure;
+
+    
   end process;
 end Behavioral;
 

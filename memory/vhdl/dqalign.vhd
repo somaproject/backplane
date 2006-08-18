@@ -84,7 +84,7 @@ begin  -- Behavioral
       CE             => dqsce,
       I              => dqsin,
       INC            => dqsinc,
-      RST            => '0'
+      RST            => inrst
       );
 
   IOBUF_inst : IOBUF
@@ -116,12 +116,12 @@ begin  -- Behavioral
         CE             => dqce,
         I              => dqi(i),
         INC            => dqinc,
-        RST            => '0'
+        RST            => inrst
         );
 
     IDDR_dq : IDDR
       generic map (
-        DDR_CLK_EDGE => "SAME_EDGE_PIPELINED",
+        DDR_CLK_EDGE => "OPPOSITE_EDGE",
         INIT_Q1      => '0',
         INIT_Q2      => '0',
         SRTYPE       => "SYNC")
@@ -157,7 +157,7 @@ begin  -- Behavioral
 
   dqs_dq : IDDR
     generic map (
-      DDR_CLK_EDGE => "SAME_EDGE_PIPELINED",
+      DDR_CLK_EDGE => "OPPOSITE_EDGE",
       INIT_Q1      => '0',
       INIT_Q2      => '0',
       SRTYPE       => "SYNC")
@@ -182,8 +182,6 @@ begin  -- Behavioral
         dqsq1l  <= dqsq1;
         dqsq2l  <= dqsq2;
       end if;
-      --dqsq1l     <= dqsq1;
-      --dqsq2l     <= dqsq2;
 
       if inrst = '1' then
         dqscnt   <= (others => '0');
@@ -385,6 +383,4 @@ begin  -- Behavioral
   end process fsm;
 
 
-  out_gen      : for i in 0 to 7 generate
-  end generate out_gen;
 end Behavioral;

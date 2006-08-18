@@ -236,7 +236,7 @@ begin  -- Behavioral
       RESET <= '0';
       wait for 300 us;
 
-      odelay <= 107 ps * tpos;
+      --odelay <= 107 ps * tpos;
 
 
       wait until rising_edge(CLK);

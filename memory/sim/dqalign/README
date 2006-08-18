@@ -1,6 +1,7 @@
-THis is our unit test for our alignment. 
+THis is our unit test for our DQS-alignment locking interface. 
 
-
-We loop through providing the DQS signal relative to the input clock
-and then try and recover the data.
+We repeatedly shift DQS relative to the CLK and attempt to acquire the
+lock. To test our center-ing ability, we drive the DQ lines only in
+the -exact center- of the period +/- some tiny (100s of ps) window. If
+we fail to align properly, we'll read in the Zs and trigger an error.
 
