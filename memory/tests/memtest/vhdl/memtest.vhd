@@ -9,7 +9,8 @@ use UNISIM.vcomponents.all;
 entity memtest is
   port (
     CLKIN    : in    std_logic;
-    CLKOUT   : out   std_logic;
+    CLKOUT_P   : out   std_logic;
+    CLKOUT_N : out std_logic; 
     CKE      : out   std_logic;
     CAS      : out   std_logic;
     RAS      : out   std_logic;
@@ -84,7 +85,8 @@ architecture Behavioral of memtest is
 
   signal wraddrl : std_logic_vector(7 downto 0) := (others => '0');
 
-
+  signal clkout : std_logic := '0';
+  
   type states is (none, writestart, writedone, readstart, readdone);
   signal ocs, ons : states := none;
 
@@ -204,8 +206,17 @@ begin
       O => clk270,
       I => clk270int);
 
-  CLKOUT <= clk90 when reset = '0' else 'Z'; 
-  
+  CLKOUT <= clk90; 
+
+    TXIO_obufds : OBUFDS
+    generic map (
+      IOSTANDARD => "DEFAULT")
+    port map (
+      O          => CLKOUT_P,
+      OB         => CLKOUT_N,
+      I          => clkout
+      );
+
   main : process(CLK)
   begin
     if rising_edge(CLK) then
