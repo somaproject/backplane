@@ -12,7 +12,7 @@ entity memddr2 is
     CLK90  : in    std_logic;
     CLK180 : in    std_logic;
     CLK270 : in    std_logic;
-    RESET : in std_logic; 
+    RESET  : in    std_logic;
     -- RAM!
     CKE    : out   std_logic := '0';
     CAS    : out   std_logic;
@@ -105,8 +105,8 @@ architecture Behavioral of memddr2 is
   signal bootwe   : std_logic                     := '0';
   signal bootaddr : std_logic_vector(12 downto 0) := (others => '0');
   signal bootba   : std_logic_vector(1 downto 0)  := (others => '0');
-  signal bootcke : std_logic := '0';
-  
+  signal bootcke  : std_logic                     := '0';
+
   signal emr, mr : std_logic_vector(12 downto 0) := (others => '0');
 
   -- write module
@@ -196,8 +196,8 @@ architecture Behavioral of memddr2 is
 
   signal alstart : std_logic := '0';
   signal aldone  : std_logic := '0';
-  signal aldonel  : std_logic := '0';
-  signal aldoneh  : std_logic := '0';
+  signal aldonel : std_logic := '0';
+  signal aldoneh : std_logic := '0';
 
 
   signal dout : std_logic_vector(31 downto 0) := (others => '0');
@@ -213,52 +213,52 @@ architecture Behavioral of memddr2 is
   signal dinl, dinh   : std_logic_vector(15 downto 0) := (others => '0');
   signal doutl, douth : std_logic_vector(15 downto 0) := (others => '0');
 
-component memcontmux
-  port (
-    CLK      : in  std_logic;
-    DSEL     : in  integer range 0 to 3;
-    -- RAM!
-    CKE      : out std_logic := '0';
-    CAS      : out std_logic;
-    RAS      : out std_logic;
-    CS       : out std_logic;
-    WE       : out std_logic;
-    ADDR     : out std_logic_vector(12 downto 0);
-    BA       : out std_logic_vector(1 downto 0);
-    -- Boot module interface
-    BOOTCKE  : in  std_logic := '0';
-    BOOTCAS  : in  std_logic;
-    BOOTRAS  : in  std_logic;
-    BOOTCS   : in  std_logic;
-    BOOTWE   : in  std_logic;
-    BOOTADDR : in  std_logic_vector(12 downto 0);
-    BOOTBA   : in  std_logic_vector(1 downto 0);
-    -- Refresh module interface
-    REFCKE   : in  std_logic := '0';
-    REFCAS   : in  std_logic;
-    REFRAS   : in  std_logic;
-    REFCS    : in  std_logic;
-    REFWE    : in  std_logic;
-    REFADDR  : in  std_logic_vector(12 downto 0);
-    REFBA    : in  std_logic_vector(1 downto 0);
-    -- write module interface
-    WCKE     : in  std_logic := '0';
-    WCAS     : in  std_logic;
-    WRAS     : in  std_logic;
-    WCS      : in  std_logic;
-    WWE      : in  std_logic;
-    WADDR    : in  std_logic_vector(12 downto 0);
-    WBA      : in  std_logic_vector(1 downto 0);
-    -- read module interface
-    RCKE     : in  std_logic := '0';
-    RCAS     : in  std_logic;
-    RRAS     : in  std_logic;
-    RCS      : in  std_logic;
-    RWE      : in  std_logic;
-    RADDR    : in  std_logic_vector(12 downto 0);
-    RBA      : in  std_logic_vector(1 downto 0)
-    );
-end component;
+  component memcontmux
+    port (
+      CLK      : in  std_logic;
+      DSEL     : in  integer range 0 to 3;
+      -- RAM!
+      CKE      : out std_logic := '0';
+      CAS      : out std_logic;
+      RAS      : out std_logic;
+      CS       : out std_logic;
+      WE       : out std_logic;
+      ADDR     : out std_logic_vector(12 downto 0);
+      BA       : out std_logic_vector(1 downto 0);
+      -- Boot module interface
+      BOOTCKE  : in  std_logic := '0';
+      BOOTCAS  : in  std_logic;
+      BOOTRAS  : in  std_logic;
+      BOOTCS   : in  std_logic;
+      BOOTWE   : in  std_logic;
+      BOOTADDR : in  std_logic_vector(12 downto 0);
+      BOOTBA   : in  std_logic_vector(1 downto 0);
+      -- Refresh module interface
+      REFCKE   : in  std_logic := '0';
+      REFCAS   : in  std_logic;
+      REFRAS   : in  std_logic;
+      REFCS    : in  std_logic;
+      REFWE    : in  std_logic;
+      REFADDR  : in  std_logic_vector(12 downto 0);
+      REFBA    : in  std_logic_vector(1 downto 0);
+      -- write module interface
+      WCKE     : in  std_logic := '0';
+      WCAS     : in  std_logic;
+      WRAS     : in  std_logic;
+      WCS      : in  std_logic;
+      WWE      : in  std_logic;
+      WADDR    : in  std_logic_vector(12 downto 0);
+      WBA      : in  std_logic_vector(1 downto 0);
+      -- read module interface
+      RCKE     : in  std_logic := '0';
+      RCAS     : in  std_logic;
+      RRAS     : in  std_logic;
+      RCS      : in  std_logic;
+      RWE      : in  std_logic;
+      RADDR    : in  std_logic_vector(12 downto 0);
+      RBA      : in  std_logic_vector(1 downto 0)
+      );
+  end component;
 
 begin  -- Behavioral
 
@@ -362,10 +362,10 @@ begin  -- Behavioral
       DONE         => aldoneh,
       LATENCYEXTRA => open);
 
-  
-  aldone <= aldonel and aldoneh; 
 
-  memcontmux_inst: memcontmux
+  aldone <= aldonel and aldoneh;
+
+  memcontmux_inst : memcontmux
     port map (
       CLK      => CLK,
       DSEL     => dsel,
@@ -383,28 +383,28 @@ begin  -- Behavioral
       BOOTWE   => bootwe,
       BOOTADDR => bootaddr,
       BOOTBA   => bootba,
-      REFCKE   => refcke,
+      REFCKE   => '1',
       REFCAS   => refcas,
       REFRAS   => refras,
       REFCS    => REFcs,
-      REFADDR =>  "0000000000000", 
+      REFADDR  => "0000000000000",
       REFWE    => refwe,
-      REFBA    => "00", 
-      WCKE     => wcke, 
+      REFBA    => "00",
+      WCKE     => '1',
       WCAS     => wcas,
       WRAS     => wras,
       WCS      => wcs,
       WWE      => wwe,
       WADDR    => waddr,
       WBA      => wba,
-      RCKE     => rcke,
+      RCKE     => '1',
       RCAS     => rcas,
       RRAS     => rras,
       RCS      => rcs,
       RWE      => rwe,
       RADDR    => raddr,
-      RBA      => rba); 
-    
+      RBA      => rba);
+
 
 
   mr  <= "0010000110010";

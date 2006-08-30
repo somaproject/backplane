@@ -18,10 +18,13 @@ $(WORKDIR)/refreshddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootdd
 $(WORKDIR)/writeddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd
 	$(VHDLC) ../../vhdl/writeddr2.vhd
 
-$(WORKDIR)/memddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/memddr2.vhd
+$(WORKDIR)/memcontmux/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/memcontmux.vhd
+	$(VHDLC) ../../vhdl/memcontmux.vhd
+
+$(WORKDIR)/memddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/memcontmux.vhd ../../vhdl/memddr2.vhd
 	$(VHDLC) ../../vhdl/memddr2.vhd
 
-hw: $(WORKDIR)/dqalign/_behavioral.var $(WORKDIR)/bootddr2/_behavioral.var $(WORKDIR)/readddr2/_behavioral.var $(WORKDIR)/refreshddr2/_behavioral.var $(WORKDIR)/writeddr2/_behavioral.var $(WORKDIR)/memddr2/_behavioral.var 
+hw: $(WORKDIR)/dqalign/_behavioral.var $(WORKDIR)/bootddr2/_behavioral.var $(WORKDIR)/readddr2/_behavioral.var $(WORKDIR)/refreshddr2/_behavioral.var $(WORKDIR)/writeddr2/_behavioral.var $(WORKDIR)/memcontmux/_behavioral.var $(WORKDIR)/memddr2/_behavioral.var 
 
 comp: 
 

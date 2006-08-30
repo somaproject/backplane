@@ -51,13 +51,14 @@ entity memcontmux is
     RADDR    : in  std_logic_vector(12 downto 0);
     RBA      : in  std_logic_vector(1 downto 0)
     );
-end memddr2;
+end memcontmux;
 
-architecture Behavioral of memddr2 is
+architecture Behavioral of memcontmux is
 
   
   signal lcke  : std_logic                     := '0';
   signal lras  : std_logic                     := '1';
+  signal lcas  : std_logic                     := '1';
   signal lcs   : std_logic                     := '1';
   signal lwe   : std_logic                     := '1';
   signal laddr : std_logic_vector(12 downto 0) := (others => '0');
@@ -65,6 +66,11 @@ architecture Behavioral of memddr2 is
 
 begin  -- Behavioral
 
+
+  lcke <= refcke  when dsel = 0 else
+          bootcke when dsel = 1 else
+          wcke    when dsel = 2 else
+          rcke;
 
   lcas <= refcas  when dsel = 0 else
           bootcas when dsel = 1 else

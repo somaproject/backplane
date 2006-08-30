@@ -1,0 +1,44 @@
+\section{Overview}
+
+The DDR2 Memory Interface presents a block-based interface to the DDR2
+DRAM that's used as a packet buffer. Memory is transferred in blocks
+of 256 4-byte words via an interface optimized for interface with FPGA
+BlockRAMs.
+
+
+\subsection{Interface}
+The primary interface runs at 150 MHz, and requires all four 90-degree
+clock phases as input. A block transfer begins with the assertion of
+\signal{START} and terminates with the assertion of \signal{DONE}. The
+requested row block is indicated by \signal{ROWTGT[14:0]}.
+
+The write interface consists of \signal{WRADDR[7:0]} and
+\signal{WRDATA[31:0]}. Througout the course of the transaction
+\signal{WRADDR[7:0]} will change to request a data word, which must be
+present on \signal{WRDATA}{31:0} two ticks later. This will most
+commonly be implemented via a BlockRAM and a pipeline register.
+
+The \signal{RDWE} signal on the read interface writes the read block
+into the output RAM buffer. Again, this will be most commonly
+implemented with a block ram.
+
+\subsection{Implementation} 
+DRAM's complexity is greater than NoBL/ZBT SRAM due to its
+burst-orientated nature and need for bank precharge, activation, and
+refresh commands. DDR2 DRAM exacerbates these challenges by both using
+double-data-rate transfer and being fundamentally source-synchronous.
+
+The DRAM control signals are controlled by a large control multiplexer, which selects between the following modules for activity:
+
+\begin{itemize}
+\item Boot Configuration: Handles start-up, register writing, and configuration of the RAM. 
+\item Refresh Module: Provides the periodic refresh command and delay required by the DRAM. 
+\item Write Module: Performs a 1024-byte burst write to a given DRAM row. 
+\item REad Module: reads a 1024-byte burst from the DRAM and writes it to the output buffer. 
+\end{itemize}
+
+In addition, we use two DQAlign modules to delay the input data from
+the RAM DQ lines to be properly aligned with our internal
+\signal{CLK}. This is done using the Xilinx IOB Delay element and
+locking on to the input DQSL/DQSH signals.
+
