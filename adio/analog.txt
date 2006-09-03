@@ -1,9 +1,39 @@
-Our new design calls for being able to tristate the output of the DACs. Now, 0-5V at 14 bit gives an LSB of 300 uV. We're using the AD5392BST-5. 
+Analog component identification. 
 
 
-This is unfortunate, because the RON flatness of the ADG802 at 5V in normal temp ranges is 0.05 ohm, meaning that if the target is sinking 10 mA, we see a voltage difference of potentially 500 uV. So we're essentially losing our LSB in INL (?). 
+I no longer feel that we can rely on AD to use distributors which
+allow low-quantity purchases, whereas LT and TI seem to do so quite
+happily.
 
-In any case, these muxes are needed because they are by far the superior solution.  
+For Analog out and in, assuming one event per ecycle, we have ~500 kB
+of bandwidth, which works out to 250 kSPS of 16-bit words.
 
-The ADC needs a 2.5V reference, but the DACs have internal references. 
 
+Requirements identification: 
+
+DAC: 
+  12-16 bits, 8 channel, output buffers that we can tristate, ideally internal reference. ~200 ksps total, but flexible. 
+
+DAC8554 from TI: New part, quad-channel, 16TSSOP, has pin-compat siblings, available from avnet, digikey, mouser. 
+
+ADC: 
+  12-16 Bits, 8 channels, at least 0-5V range. On one hand, I'd love for this to be bipolar, but the power requirements
+
+The LTC1857/8/9 series looks ideal for our ADC, with a SPI interface,
+althoug at 100 kHz it's a bit slow. The variable input ranges are nice
+though. One thought is that we'd rather interface with esoteric
+voltages than have a fast converter. If ultimately we just end up
+being able to do 12.5 kHz/chan, oh well. Or they could pick two
+channels and do 100 kSPS.
+
+
+
+
+Power configuration: We can't really do bipolar without involving some
+sort of inverting converter, and it's not compelling enough to really
+do that. but we can deliver 12 V of stepping power and then use an LDO to step that down to 10 V, and use that. 
+
+ADC input amps:
+
+We'll use the LTC6242
+ 
