@@ -1,0 +1,54 @@
+The goal behind this interface is to allow the display of diagnostic
+and metadata information.
+
+At 15 updates per second, the 320x240*8 screen would
+require... hmm. It's not obvious how to handle a large event influx
+-and- blit out the necessary pixels.
+
+What do we want to display on the screen: 
+
+1. current timestamp [always]
+2. current network flow, system errors, etc. 
+3. current error stats: 
+4. system boot status
+5. how many devices are plugged in right now? 
+6. Event tx/rx statistics by device
+
+
+How to actually handle this? 
+
+FPGA as a character-generator-to-lcd converter? 
+
+How many characters? 127? what is the size of a character? Some sort of ROM table? 
+
+We can store an 80x24 array of 10-bit characters via a single BlockRAM. This potentially gives us 8 character tables of 127 characters. 
+
+
+We use the 8051 to paint this array of characters based on metadata it
+retreives from SFUs which are acquired from the FPGA fabric. 
+
+Okay, this'll work and requires basically no "real" work. 
+
+
+---------------------------------------------------------------------------
+LCD selection: 
+---------------------------------------------------------------------------
+
+Concerns: 
+1. visibility
+2. parts availability
+3. cost
+4. difficulty in providing power
+
+T-51750GD065J-FW-AA: Optrex 6.5" one
+
+
+Connector: DF9B-31S-1V or DF9B-31P-1V
+
+Inverters: 
+The lamp needs 320 Vrms with a current of 6.0 mA, with a start vltage of 520 Vrms. 
+
+er
+The digikey-recomended ones are: BXA-12565-6M, and BXA-24529. these look to be single-output. THe first is 12 V, the second 24. 
+
+
