@@ -5,7 +5,7 @@
 -- File       : serdesloop.vhd
 -- Author     : Eric Jonas  <jonas@soma.mit.edu>
 -- Company    : 
--- Last update: 2006/04/06
+-- Last update: 2006/08/07
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: Loopback test for serdes
@@ -79,6 +79,8 @@ architecture Behavioral of dlloop is
   
   signal pcnt : std_logic_vector(21 downto 0) := (others => '0');
   signal decodeerrint : std_logic := '0';
+
+  
 begin  -- Behavioral
 
   

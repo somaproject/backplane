@@ -4,14 +4,12 @@ with the devicelink to the backplane.
 We do not attempt to explain the protocol in detail here, that is done
 in the actual backplane documentation.
 
-
 There are essentially three components: 
 
 1. devicelink: The physical/link layer
 
 2. A more complex dual-link interface module to handle the higher
 layer operations and allow simple event/data interface modules
-
 
 The directories are organized as follows:
 

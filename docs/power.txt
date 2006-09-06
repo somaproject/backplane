@@ -1,0 +1,94 @@
+Backplane power design and considerations
+
+We are using a conventional ATX power supply, which provides: 
+5V
+3.3V
+12V
+
+Estimated power consumption is as follows. For our purposes we assume that all devices use a negligable amount of power on the 5V rail, and thus everything is at 3.3V
+
+DSP Board: if each BF is ~0.5W and the RAM is 0.2W and then the FPGA
+is 0.5W we're looking at 4*.7 + 0.5 = 3.5W per DSP board, or ~56W
+total, which at 3.3V is ~16 A. 
+
+
+There exist lots of external, ~100W supplies out there if you know
+where to look. TR100 Switching supply, model TR100A120, 12V @ 8.33A.
+in stock at mouser We can safely assume we're not pulling in 20 W
+through a connector, so we'll need to generate 3.3V, 5V, 1.2V, 2.8V,
+and 1.8V.
+
+We've  selected  TI's  new  T2  generation  of  point-of-load  voltage
+regulators.  PTH08T220W  and  PTH08T240W  have identical  pinouts  and
+accept  wide input  voltage  ranges,  with the  former  being the  16A
+version and the latter 10A.
+
+The EBS (-WAH) component is the through-hole one. 
+
+Additionally we could look at the PTH12010W (EUH is through-hole, EUJ is smd)
+
+
+For each of the above, we're going to identify the possible capacitor values: 
+
+PTH08T240W: 
+
+Input: At least 220 uF input electrolytic, with 700 mArms ripple for Vo < 3 and and 240 mArms for Vo > 3.0 V. Must have < 100mOhm ESR. Also 22 uF X5R/X7R for input. 
+
+Output: at least 220 uF for output of al, poly-al, or tantalum. More specifics are determined by TurboTrans requirements. 
+
+PTH12010W:
+
+INput: at least 560 uF / 800 mArms. Optional 10 uF X5R/X7R.  ESR < 100 mOhm. 
+
+Output: 330 uF aluminum electrolytic, ESR > 4 mOhm
+
+PTH08T220W: 
+
+INput: at least 330 uF / 950 mA RMS. (1500 mArms when Vo > 2.0 and Io > 11A). ESR < 100 mOhm. 
+
+Output: 220 uF al alectorlytic, optional 10uF ceramic. 
+
+ 
+Possible capacitors: 
+
+APXA160ARA331MJC0G 330 uF, 14 mOhm ESR,  5050 mArms ripple, 16V. NPcap-PXA series. JCO size. Could use 2. 
+
+
+
+
+Now, the decision: because digikey has Multiple Vendors for the
+PTH12010WA we're going with it. Sorry, TI, your sexy little tiny ones
+are cute and all, but multi-vendor sourcing trumps all. The SMD versions are available from many sources. 
+
+PTH12010W:
+
+Input: at least 560 uF / 800 mArms. Optional 10 uF X5R/X7R.  ESR < 100 mOhm. 
+
+EEV-FK1V681Q: 680 uF / 35 V / 1100 mA rms, ESR ~ 60 mOhm. H13
+EEE-FK1v331P: 330 uF / 35 V / 880 mA rms / 80 mOhm ESR. Size G. 
+
+Output: 330 uF aluminum electrolytic, ESR > 4 mOhm. Also works here. 
+
+We plan to use 3 of these on our board: 
+
+Primary VCC: 
+Power First 8 DSP boards, NIC, core BGA. 3.3V 
+Secondary VCC: Powers second 8 DSP boards, non-core Devices. 3.3V 
+5V: Total overkill supply of 5V power. 
+
+Other power we'll care abot: 
+2.5V : ~0.5 A for LVDS IO. 
+1.8V : ~1 A for DDR RAM
+1.2V: ~ 2.5A A for FPGA core
+
+Because we need > 1.5 A for 1.2V core, we're going to use the same
+1.2V regulator module we're using on the DSPboards. Even though the
+PTH03000W is not a POLA device, all of the similar-spec POLA devices
+suffer from poor availability.
+
+I can't find any documentation for the xilinx/SSTL18 Vref docs in
+terms of power consumption, so I'm going to assume ~100 mA and get an
+appropriately-sized LDO. We're using the TPS76201 SOT-3 100mA part which
+has wide availability and can generate the low 0.9 V voltage needed. 
+
+

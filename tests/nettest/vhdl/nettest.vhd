@@ -164,6 +164,13 @@ architecture Behavioral of nettest is
       SCS     : out std_logic);
   end component;
 
+  component udpburst
+    port (
+      CLK      : in  std_logic;
+      NEWFRAME : out std_logic;
+      DOUT     : out std_logic_vector(15 downto 0));
+  end component;
+
   component network
     port (
       CLK          : in    std_logic;
@@ -212,21 +219,21 @@ architecture Behavioral of nettest is
 
   signal ECYCLE : std_logic := '0';
 
-  signal EARX    : somabackplane.addrarray      := (others => (others => '0'));
+  signal EARX    : somabackplane.addrarray      := (others    => (others => '0'));
   signal EDRX    : somabackplane.dataarray      := (others => (others => '0'));
-  signal EDSELRX : std_logic_vector(3 downto 0) := (others => '0');
-  signal EATX    : somabackplane.addrarray      := (others => (others => '0'));
-  signal EDTX    : std_logic_vector(7 downto 0) := (others => '0');
+  signal EDSELRX : std_logic_vector(3 downto 0) := (others    => '0');
+  signal EATX    : somabackplane.addrarray      := (others    => (others => '0'));
+  signal EDTX    : std_logic_vector(7 downto 0) := (others    => '0');
   signal RESET   : std_logic                    := '0';
 
   signal lserialboot : std_logic_vector(19 downto 0) := (others => '1');
 
   signal clk, clkint   : std_logic := '0';
   signal clkf, clkfint : std_logic := '0';
-  signal memclk : std_logic := '0';
+  signal memclk        : std_logic := '0';
 
   signal nicclkint : std_logic := '0';
-  
+
 
 -- nic config signals
   signal myip, mybcast : std_logic_vector(31 downto 0) := (others => '0');
@@ -333,7 +340,7 @@ begin  -- Behavioral
   SERIALBOOT <= lserialboot;
 
   LEDEVENT <= '1';
-  
+
   jtagsend_inst : jtagesend
     generic map (
       JTAG_CHAIN => 1)
@@ -388,11 +395,11 @@ begin  -- Behavioral
 
 
   myip    <= X"C0a80002";               -- 192.168.0.2
-  mybcast <= X"C0a000FF";
+  mybcast <= X"C0a800FF";
 
   mymac <= X"DEADBEEF1234";
 
-  NICCLK <= not nicclkint; 
+  NICCLK <= nicclkint;
   network_inst : network
     port map (
       CLK          => CLK,
@@ -404,8 +411,8 @@ begin  -- Behavioral
       NICNEXTFRAME => nicnextframeint,
       NICDINEN     => NICDINEN,
       NICDIN       => NICDIN,
-      NICDOUT      => NICDOUT,
-      NICNEWFRAME  => NICNEWFRAME,
+      --NICDOUT      => NICDOUT,
+      --NICNEWFRAME  => NICNEWFRAME,
       NICIOCLK     => nicclkint,
       ECYCLE       => ecycle,
       EARX         => earx(3),
@@ -423,6 +430,7 @@ begin  -- Behavioral
       RAMCLK       => RAMCLK);
 
   NICNEXTFRAME <= nicnextframeint;
+
   testrx            : process (CLK)
     variable niccnt : std_logic_vector(23 downto 0) := (others => '0');
   begin
@@ -435,5 +443,12 @@ begin  -- Behavioral
 
     end if;
   end process testrx;
+
+  udpburst_inst: udpburst
+  port map (
+    CLK      => CLK,
+    NEWFRAME => NICNEWFRAME,
+    DOUT     => NICDOUT); 
+
 
 end Behavioral;

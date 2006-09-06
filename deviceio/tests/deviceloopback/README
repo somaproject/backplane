@@ -1,6 +1,9 @@
 DeviceLink Loopback Test
 
-This test is designed to be synthesized and run on the devices; it
-just detects the presence of a lock, and if a lock is present serves
-as a data loopback.
+This test is designed to be synthesized and run on the Soma Backplane
+Devices; it just detects the presence of a lock, and if a lock is
+present serves as a data loopback, taking in the parallel data and
+then serializing it back out.
+
+This assumes a 50 MHz input clock. 
 

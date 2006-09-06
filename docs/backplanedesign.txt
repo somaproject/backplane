@@ -88,3 +88,21 @@ So we should just be able to clock in an event at any time.
 But we're limited to one per ecycle. But we make the application deal with that. 
 At the start of an event we 
 
+----------------------------------------------------------------------------
+NIC interconnect
+----------------------------------------------------------------------------
+Concerns about the current NIC connector not properly mating have lead
+us to consider using 100-mil dual-row header with a recessed spot on
+the PCB. We need 46 signa/power pins + ground. Lots of ground. 
+
+One concern is: how standardized are these right-angle parts? 
+
+Molex 71764 series breakaway header: 
+Lower target pin is 100 mil from board top. 
+end of mating pin is 180 mil from center of corresponding pin. 
+
+Molex 10-88-3561 male header appears to have the same corresponding dimensions. 
+
+The corresponding Sullins part has: 
+Lower target pin is 70 mil from board top. 
+end of mating pin is 160 mil from center of corresponding pin. 

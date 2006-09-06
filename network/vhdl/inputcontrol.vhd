@@ -210,8 +210,7 @@ begin  -- Behavioral
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"07";
---        if wea = '0' and addra >= len(11 downto 1) then  -- DEBUGGING
-        if wea = '0' and addra >= "0000001000" then
+        if wea = '0' and addra >= len(11 downto 1) + 1 then  -- DEBUGGING
           ns       <= fstart;
         else
           ns       <= dinw;

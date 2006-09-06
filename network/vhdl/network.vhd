@@ -7,10 +7,8 @@ library WORK;
 use WORK.somabackplane.all;
 use work.somabackplane;
 
-
 use WORK.networkstack.all;
 use WORK.networkstack;
-
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -93,7 +91,7 @@ architecture Behavioral of network is
       DIN4     : in  std_logic_vector(15 downto 0);
       DIN5     : in  std_logic_vector(15 downto 0);
       GRANT    : out std_logic_vector(5 downto 0);
-     ARM      : in  std_logic_vector(5 downto 0);
+      ARM      : in  std_logic_vector(5 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
       NEWFRAME : out std_logic
       );
@@ -183,7 +181,7 @@ architecture Behavioral of network is
       RETXDONE : out   std_logic;
       RETXSRC  : in    std_logic_vector(5 downto 0);
       RETXTYP  : in    std_logic_vector(1 downto 0);
-      RETXSEQ   : in    std_logic_vector(31 downto 0)
+      RETXSEQ  : in    std_logic_vector(31 downto 0)
       );
   end component;
 
@@ -203,7 +201,7 @@ architecture Behavioral of network is
       RETXDONE  : in  std_logic;
       RETXSRC   : out std_logic_vector(5 downto 0);
       RETXTYP   : out std_logic_vector(1 downto 0);
-      RETXSEQ    : out std_logic_vector(31 downto 0);
+      RETXSEQ   : out std_logic_vector(31 downto 0);
       -- output
       ARM       : out std_logic;
       GRANT     : in  std_logic;
@@ -274,8 +272,13 @@ architecture Behavioral of network is
   signal retxreq, retxdone : std_logic                     := '0';
   signal retxsrc           : std_logic_vector(5 downto 0)  := (others => '0');
   signal retxtyp           : std_logic_vector(1 downto 0)  := (others => '0');
-  signal retxseq            : std_logic_vector(31 downto 0) := (others => '0');
+  signal retxseq           : std_logic_vector(31 downto 0) := (others => '0');
 
+
+  -- clock signals
+  signal clkf, clkfint, clk2f : std_logic := '0';
+  signal dcmlocked : std_logic := '0';
+  
 
 begin  -- Behavioral
 
@@ -316,7 +319,7 @@ begin  -- Behavioral
       DOUT     => NICDOUT,
       NEWFRAME => NICNEWFRAME);
 
-  NICIOCLK <= CLK;
+
 
   arpresponse_inst : arpresponse
     port map (
@@ -363,7 +366,7 @@ begin  -- Behavioral
   data_inst : data
     port map (
       CLK      => CLK,
-      MEMCLK   => MEMCLK,
+      MEMCLK   => clk2f,
       MYIP     => MYIP,
       MYBCAST  => MYBCAST,
       MYMAC    => MYMAC,
@@ -386,7 +389,7 @@ begin  -- Behavioral
       RETXDONE => retxdone,
       RETXSRC  => retxsrc,
       RETXTYP  => retxtyp,
-      RETXSEQ   => retxseq);
+      RETXSEQ  => retxseq);
 
   retxresponse_inst : retxresponse
     port map (
@@ -402,7 +405,7 @@ begin  -- Behavioral
       RETXDONE  => retxdone,
       RETXsrc   => retxsrc,
       RETXTYP   => retxtyp,
-      RETXSEQ    => retxseq,
+      RETXSEQ   => retxseq,
       ARM       => arm(2),
       GRANT     => grant(2),
       DOUT      => din2,
@@ -425,5 +428,36 @@ begin  -- Behavioral
       DOEN      => den(3),
       ARM       => arm(3),
       GRANT     => grant(3));
+
+  clkgen : DCM_BASE
+    generic map (
+      CLK_FEEDBACK          => "1X",
+      DCM_AUTOCALIBRATION   => true,
+      DCM_PERFORMANCE_MODE  => "MAX_SPEED",
+      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
+      DFS_FREQUENCY_MODE    => "LOW",
+      DLL_FREQUENCY_MODE    => "LOW",
+      DUTY_CYCLE_CORRECTION => true,
+      FACTORY_JF            => X"F0F0",
+      PHASE_SHIFT           => 0,
+      STARTUP_WAIT          => false)
+    port map(
+      CLKIN                 => CLK,
+      CLK0                  => clkfint,
+
+      CLKFB                 => clkf,
+      CLK2X                 => clk2f,
+      CLK180 => NICIOCLK, 
+      RST                   => RESET,
+      LOCKED                => dcmlocked
+      );
+
+  
+  clk_bufg : buFG
+    port map (
+      O => clkf,
+      I => clkfint);
+
+  RAMCLK <= clk2f;
 
 end Behavioral;

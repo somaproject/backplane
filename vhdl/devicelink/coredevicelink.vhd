@@ -27,7 +27,7 @@ entity coredevicelink is
     RXDOUT    : out std_logic_vector(7 downto 0);
     RXKOUT    : out std_logic;
     DROPLOCK  : in  std_logic;
-    LOCKED    : out std_logic;
+    LOCKED    : out std_logic
     );
 
 end coredevicelink;
