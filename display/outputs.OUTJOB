@@ -4,7 +4,7 @@ Version=1.0
 [OutputGroup1]
 Name=outputs.OUTJOB
 Description=
-TargetPrinter=CutePDF Writer
+TargetPrinter=PDFCreator
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=EDIF
 OutputName1=EDIF for PCB
@@ -145,6 +145,14 @@ OutputDocumentPath21=
 OutputVariantName21=
 OutputEnabled21=0
 OutputDefault21=0
+Configuration21_Name1=General
+Configuration21_Item1=OpenExported=False|ForceFit=False|Preview=False|TemplateFilename=|BatchMode=0|FormWidth=1356|FormHeight=982
+Configuration21_Name2=GroupOrder
+Configuration21_Item2=Value=True|LibRef=True|Footprint=True
+Configuration21_Name3=SortOrder
+Configuration21_Item3=Designator=Up|Comment=Up|Footprint=Up
+Configuration21_Name4=VisibleOrder
+Configuration21_Item4=Description=100|Designator=100|Footprint=100|LibRef=100|Quantity=100|Value=100
 OutputType22=ComponentCrossReference
 OutputName22=Component Cross Reference Report
 OutputDocumentPath22=
