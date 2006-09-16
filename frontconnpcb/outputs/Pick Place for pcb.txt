@@ -1,15 +1,24 @@
 Designator Footprint          Mid X         Mid Y         Ref X         Ref Y         Pad X         Pad Y TB      Rotation Comment   
 
-C2         TC3528-1411       3340mil       3880mil       3340mil       3880mil       3340mil   3939.055mil  T        270.00           
+C2         0603             3340mil       3880mil       3340mil       3880mil       3340mil   3913.465mil  T        270.00 CAPACITOR 
 O1         HPVL             2650mil       3290mil       2650mil       3440mil       2800mil       3440mil  T          0.00 HFBR-2528 Fiber Receiver
 O2         HPVL             3050mil       3290mil       3050mil       3440mil       3200mil       3440mil  T          0.00 HFBR-1528 Fiber Transmitter
-P1         HDR2X8           3270mil       4610mil       3620mil       4660mil       3620mil       4660mil  T        180.00 Header 8X2
+P1         MOLEX_15-91-2160       3380mil       4540mil       3380mil       4540mil       3730mil   4627.402mil  T        360.00 Header 8X2
 P2         SCDA1A1501   4285.236mil   3693.504mil       4800mil       4100mil   4539.173mil   4233.858mil  T          0.00 Header 7  
 R1         CR1608-0603       2800mil       3660mil       2800mil       3660mil       2800mil   3693.465mil  T        270.00 Res1      
 R2         CR1608-0603       2380mil       3660mil       2380mil       3660mil   2346.535mil       3660mil  T        360.00 Res1      
 R3         CR1608-0603       3200mil       3660mil       3200mil       3660mil       3200mil   3626.535mil  T         90.00 Res1      
 R4         CR1608-0603       3080mil       3660mil       3080mil       3660mil       3080mil   3626.535mil  T         90.00 Res1      
 U1         SO-G8/E2.5       3080mil       3880mil       3080mil       3880mil   2974.685mil       3955mil  T        270.00 SN75451BD 
+FID1       FIDUCIAL         4700mil       4560mil       4700mil       4560mil       4700mil       4560mil  T         90.00 FIDUCIAL  
+FID2       FIDUCIAL         2500mil       4480mil       2500mil       4480mil       2500mil       4480mil  T         90.00 FIDUCIAL  
+FID3       FIDUCIAL         3340mil       3120mil       3340mil       3120mil       3340mil       3120mil  T         90.00 FIDUCIAL  
+S1         SCREW6-32        2460mil       4020mil       2460mil       4020mil       2460mil       4020mil  T          0.00 Mounting Screw
+S2         SCREW6-32        5000mil       4300mil       5000mil       4300mil       5000mil       4300mil  T          0.00 Mounting Screw
+S3         SCREW6-32        5000mil       3600mil       5000mil       3600mil       5000mil       3600mil  T          0.00 Mounting Screw
 C1         CC1608-0603   2548.252mil       3320mil   2548.252mil       3320mil   2581.716mil       3320mil  B        180.00 Cap       
 C3         CC1608-0603       3180mil       3920mil       3180mil       3920mil       3180mil   3953.465mil  B        270.00 Cap       
+FID4       FIDUCIAL         4700mil       4560mil       4700mil       4560mil       4700mil       4560mil  B         90.00 FIDUCIAL  
+FID5       FIDUCIAL         4640mil       3120mil       4640mil       3120mil       4640mil       3120mil  B         90.00 FIDUCIAL  
+FID6       FIDUCIAL         2460mil       3700mil       2460mil       3700mil       2460mil       3700mil  B        270.00 FIDUCIAL  
 
