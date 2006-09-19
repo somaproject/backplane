@@ -20,6 +20,7 @@ From  : PCB Document [pcb.PCBDOC]
    Generated File[pcb.GP2]
    Generated File[pcb.GM5]
    Generated File[pcb.RUL]
+   Generated File[pcb.EXTREP]
    Generated File[pcb.REP]
 
 Output: NC Drill Files
@@ -30,8 +31,23 @@ From  : PCB Document [pcb.PCBDOC]
    Generated File[pcb.LDP]
    Generated File[pcb.DRR]
 
+Output: BOM.html
+Type  : ReportComponents
+From  : Project [PCB.PRJPCB]
+   Generated File[ProDA.htm]
 
-Files Generated   : 20
+Output: BOM.text
+Type  : ReportComponents
+From  : Project [PCB.PRJPCB]
+   Generated File[ProDB.txt]
+
+Output: BOM.xls
+Type  : ReportComponents
+From  : Project [PCB.PRJPCB]
+   Generated File[ProDC.xls]
+
+
+Files Generated   : 24
 Documents Printed : 0
 
-Finished Output Generation At 8:38:22 PM On 9/16/2006
+Finished Output Generation At 7:44:27 AM On 9/19/2006

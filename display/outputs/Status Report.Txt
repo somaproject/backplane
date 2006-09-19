@@ -1,3 +1,8 @@
+Output: Generates pick and place files
+Type  : Pick Place
+From  : PCB Document [display.PCBDOC]
+   Generated File[Pick Place for display.txt]
+
 Output: Gerber Files
 Type  : Gerber
 From  : PCB Document [display.PCBDOC]
@@ -15,6 +20,7 @@ From  : PCB Document [display.PCBDOC]
    Generated File[display.GP2]
    Generated File[display.GM5]
    Generated File[display.RUL]
+   Generated File[display.EXTREP]
    Generated File[display.REP]
 
 Output: NC Drill Files
@@ -25,8 +31,23 @@ From  : PCB Document [display.PCBDOC]
    Generated File[display.LDP]
    Generated File[display.DRR]
 
+Output: BOM.text
+Type  : ReportComponents
+From  : Project [display.PRJPCB]
+   Generated File[ProD5.txt]
 
-Files Generated   : 19
+Output: BOM.html
+Type  : ReportComponents
+From  : Project [display.PRJPCB]
+   Generated File[ProD6.htm]
+
+Output: BOM.xls
+Type  : ReportComponents
+From  : Project [display.PRJPCB]
+   Generated File[ProD7.xls]
+
+
+Files Generated   : 24
 Documents Printed : 0
 
-Finished Output Generation At 4:43:31 PM On 9/15/2006
+Finished Output Generation At 7:43:14 AM On 9/19/2006
