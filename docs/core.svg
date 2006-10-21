@@ -2017,7 +2017,7 @@
          sodipodi:role="line"
          id="tspan1760"
          x="646.875"
-         y="558.75">TXDOUT[7:9]</tspan></text>
+         y="558.75">TXDOUT[7:0]</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -3224,6 +3224,54 @@
          id="tspan2505"
          x="-874.375"
          y="1034.375">IOCLOCK</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="718.75"
+       y="224.375"
+       id="text1903"><tspan
+         sodipodi:role="line"
+         id="tspan1905"
+         x="718.75"
+         y="224.375">Assumptions about Event and Data Ports: </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="760"
+       y="254.50002"
+       id="text8177"><tspan
+         sodipodi:role="line"
+         id="tspan8179"
+         x="760"
+         y="254.50002">ECYCLE signals that the -following-</tspan><tspan
+         sodipodi:role="line"
+         x="760"
+         y="269.50002"
+         id="tspan8181">signals are valid. </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="759.375"
+       y="295"
+       id="text8183"><tspan
+         sodipodi:role="line"
+         x="759.375"
+         y="295"
+         id="tspan8187">Signals must be valid for the duration </tspan><tspan
+         sodipodi:role="line"
+         x="759.375"
+         y="310"
+         id="tspan8191">of the cycle, i.e. registered outputs. </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="759.875"
+       y="327.75"
+       id="text8193"><tspan
+         sodipodi:role="line"
+         x="759.875"
+         y="327.75"
+         id="tspan8197">This should eliminate the need for registering inputs</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"

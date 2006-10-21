@@ -13,7 +13,7 @@ frames, each frame corresponding to a Soma Event Cycle. The beginning
 of each frame is coincident with the beginning of an event cycle, and
 is indicated by K28.5.
 
-Event Cycles consist of broadcast messages to up to 78 different
+Event Cycles consist of broadcast messages to up to 80 different
 target devices. 
 
 
@@ -33,8 +33,6 @@ The total header duration is 11*4 + 1 = 45 bytes. The events are
 subsequently sent on the 49th byte (inclusive to the k28.5), that
 is, there are 4 full-events-worth of packets before we start. 
 
-
-
 \subsection{RX Link}
 
 Device transmit:
@@ -42,14 +40,13 @@ every device must respond with a K28.5 at the beginning of each event cycle
 
 A device may also send up to 550 bytes of data, if selected, in the following needlessly complex format
 
-to begin data, send K28.2
-to end data, send K28.3
+to begin data, send K28.6
+to end data, send K28.7
 
 Note that this requires the data be a single continuous burst. 
 
-
+= K28
 If the device has any events, it can send them any time during the event cycle, but it must first send the data packet. 
-
 
 Any time during an event cycle a device can send an event, which in
 this case is a 22-byte packet of data prefaced with a K28.4 comma
@@ -57,5 +54,12 @@ character:
   First, the 10-byte bitmask for device target selection
   Then, the 12 bytes of the data itself
 
+The first source of data sends: 
+K28.0: 
+K28.1: 
+K28.2: 
+K28.3: 
 
-
+Each MuxEventRX module has a ``clear'' line which, when asserted, will
+flush all current IO. Thus if a lock is dropped we can quickly clear
+out everything.

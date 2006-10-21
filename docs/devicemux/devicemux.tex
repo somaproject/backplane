@@ -8,4 +8,16 @@ We implement the indicated devicelink protocol, and serve as an
 interface between the ports and the link itself. This also detects the
 link-down situation and properly ignores all non-active link activity.
 
+\subsection{DeviceMux TX}
+The default transmit byte for TXDOUT is 0xBC. An ECYCLE drives
+\signal{TXKOUT} which then sends a ``K28.5'' comma word to indicate
+the start of an event packet. The subsequent word sees the
+transmission of the relevant headers. We simply use a FSM to govern
+which of the 4 device headers we're sending, walking through them via
+the \signal{HEADERPOS} counter.
 
+Once we have sent the headers, we then just passively let the data stream through. After all of it has sent, we transisiton back to NONE and wait for the next ECYCLE. 
+
+\subsection{DeviceMux RX}
+
+The deviceMUX rx module handles incoming data bursts and 

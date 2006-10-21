@@ -7,7 +7,3 @@ Event port zero has it's 12 bytes sent first, followed by event one, etc.
 
 There is no expectation that the EADDR or DGRANT will remain stable outside of the ECYCLE tick . 
 
-The devicemux needs to buffer the first N bytes in a set of shift registers
-so that we can first transmit the event headers. 
-
-We need to come up with a simple eventport as well. 
