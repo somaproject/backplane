@@ -20,15 +20,16 @@ architecture Behavioral of txmuxtest is
   component txmux
     port (
       CLK      : in  std_logic;
-      DEN      : in  std_logic_vector(5 downto 0);
+      DEN      : in  std_logic_vector(6 downto 0);
       DIN0 : in std_logic_vector(15 downto 0); 
       DIN1 : in std_logic_vector(15 downto 0); 
       DIN2 : in std_logic_vector(15 downto 0); 
       DIN3 : in std_logic_vector(15 downto 0); 
       DIN4 : in std_logic_vector(15 downto 0);
-      DIN5 : in std_logic_vector(15 downto 0); 
-      GRANT    : out std_logic_vector(5 downto 0);
-      ARM      : in  std_logic_vector(5 downto 0);
+      DIN5 : in std_logic_vector(15 downto 0);
+      DIN6 : in std_Logic_vector(15 downto 0); 
+      GRANT    : out std_logic_vector(6 downto 0);
+      ARM      : in  std_logic_vector(6 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
       NEWFRAME : out std_logic
       );
@@ -37,7 +38,7 @@ architecture Behavioral of txmuxtest is
 
   signal CLK : std_logic := '0';
 
-  signal DEN   : std_logic_vector(5 downto 0)
+  signal DEN   : std_logic_vector(6 downto 0)
                                         := (others => '0');
 
   signal DIN0 : std_logic_vector(15 downto 0) := (others => '0'); 
@@ -46,11 +47,12 @@ architecture Behavioral of txmuxtest is
   signal DIN3 : std_logic_vector(15 downto 0) := (others => '0'); 
   signal DIN4 : std_logic_vector(15 downto 0) := (others => '0'); 
   signal DIN5 : std_logic_vector(15 downto 0) := (others => '0'); 
+  signal DIN6 : std_logic_vector(15 downto 0) := (others => '0'); 
 
-  signal GRANT : std_logic_vector(5 downto 0)
+  signal GRANT : std_logic_vector(6 downto 0)
                                         := (others => '0');
 
-  signal ARM      : std_logic_vector(5 downto 0)
+  signal ARM      : std_logic_vector(6 downto 0)
                               := (others => '0');
   signal DOUT     : std_logic_vector(15 downto 0)
                               := (others => '0');
@@ -69,7 +71,8 @@ begin  -- Behavioral
       DIN2 => DIN2,
       DIN3 => DIN3,
       DIN4 => DIN4,
-      DIN5 => DIN5, 
+      DIN5 => DIN5,
+      DIN6 => DIN6, 
       GRANT    => GRANT,
       ARM      => ARM,
       DOUT     => DOUT,

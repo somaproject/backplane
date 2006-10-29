@@ -31,9 +31,7 @@ architecture Behavioral of retxresponsetest is
       RETXWE    : in  std_logic;
       RETXREQ   : out std_logic;
       RETXDONE  : in  std_logic;
-      RETXSRC   : out std_logic_vector(5 downto 0);
-      RETXTYP   : out std_logic_vector(1 downto 0);
-      RETXID    : out std_logic_vector(31 downto 0);
+      RETXID    : out std_logic_vector(13 downto 0);
       -- output
       ARM       : out std_logic;
       GRANT     : in  std_logic;
@@ -56,9 +54,7 @@ architecture Behavioral of retxresponsetest is
   signal RETXWE   : std_logic                     := '0';
   signal RETXREQ  : std_logic                     := '0';
   signal RETXDONEio : std_logic                     := '0';
-  signal RETXSRC  : std_logic_vector(5 downto 0)  := (others => '0');
-  signal RETXTYP  : std_logic_vector(1 downto 0)  := (others => '0');
-  signal RETXID   : std_logic_vector(31 downto 0) := (others => '0');
+  signal RETXID   : std_logic_vector(13 downto 0) := (others => '0');
 
   component inputcontrol
     port (
@@ -168,8 +164,6 @@ begin  -- Behavioral
       RETXWE    => RETXWE,
       RETXREQ   => RETXREQ,
       RETXDONE  => RETXDONEio,
-      RETXSRC   => RETXSRC,
-      RETXTYP   => RETXTYP,
       RETXID    => RETXID,
       ARM   => ARM,
       GRANT => GRANT,
@@ -222,11 +216,11 @@ begin  -- Behavioral
     wait until rising_edge(CLK) and RETXSTART = '1';
     wait until rising_edge(CLK) and RETXREQ = '1';
 
-    assert typin(1 downto 0) = retxtyp
+    assert typin(1 downto 0) = retxid(13 downto 12)
       report "Error in acquiring packet TYP" severity Error;
-    assert srcin(5 downto 0) = retxsrc
+    assert srcin(5 downto 0) = retxid(11 downto 6)
       report "Error in acquiring packet SRC" severity Error;
-    assert idin = retxid
+    assert idin(5 downto 0) = retxid(5 downto 0)
       report "Error in acquiring packet ID" severity Error;
 
     -- now the true test; write fake data
@@ -277,11 +271,11 @@ begin  -- Behavioral
     wait until rising_edge(CLK) and RETXSTART = '1';
     wait until rising_edge(CLK) and RETXREQ = '1';
 
-    assert typin(1 downto 0) = retxtyp
+    assert typin(1 downto 0) = retxid(13 downto 12)
       report "Error in acquiring packet TYP" severity Error;
-    assert srcin(5 downto 0) = retxsrc
+    assert srcin(5 downto 0) = retxid(11 downto 6)
       report "Error in acquiring packet SRC" severity Error;
-    assert idin = retxid
+    assert idin(5 downto 0) = retxid(5 downto 0)
       report "Error in acquiring packet ID" severity Error;
 
     -- now the true test; write fake data

@@ -1,0 +1,12 @@
+Inbound event handling
+
+Here we just read in the packet to our internal "Event TX" buffer. The problem here is that it's easy for some naive person to potentially screw this up. 
+
+Buffer size: a block ram buffer is 2048 bytes. An event has
+12 data bytes
+10 address bytes
+
+or 22 bytes total. 
+
+assuming we budget 32 bytes for an event, we can hold 64 in the buffer, and we can extend this however we want by simply cascading more of them in parallel. 
+

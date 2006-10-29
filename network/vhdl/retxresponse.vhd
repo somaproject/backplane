@@ -20,9 +20,7 @@ entity retxresponse is
     RETXWE    : in  std_logic;
     RETXREQ   : out std_logic;
     RETXDONE  : in  std_logic;
-    RETXSRC   : out std_logic_vector(5 downto 0);
-    RETXTYP   : out std_logic_vector(1 downto 0);
-    RETXSEQ    : out std_logic_vector(31 downto 0);
+    RETXID   : out std_logic_vector(13 downto 0);
     -- output
     ARM       : out std_logic;
     GRANT     : in  std_logic;
@@ -49,7 +47,12 @@ architecture Behavioral of retxresponse is
 
   signal addra : std_logic_vector(9 downto 0) := (others => '0');
 
+  signal retxsrc : std_logic_vector(5 downto 0) := (others => '0');
+  signal retxtype : std_logic_vector(1 downto 0) := (others => '0');
+  signal retxseq : std_logic_vector(31 downto 0) := (others => '0');
 
+  
+  
 
 begin  -- Behavioral
 
@@ -59,6 +62,8 @@ begin  -- Behavioral
 
   DONE <= '1' when cs = dones else '0';
 
+  RETXID <= retxtype & retxsrc & retxseq(5 downto 0);
+  
   buffer_inst : RAMB16_S18_S18
     generic map (
       SIM_COLLISION_CHECK => "NONE")
@@ -89,16 +94,16 @@ begin  -- Behavioral
 
       RETXREQ   <= lretxreq;
       if cs = getseqh then
-        RETXSRC <= INPKTDATA(5 downto 0);
-        RETXTYP <= INPKTDATA(9 downto 8);
+        retxsrc<= INPKTDATA(5 downto 0);
+        retxtype  <= INPKTDATA(9 downto 8);
       end if;
 
       if cs = getseql then
-        RETXSEQ(31 downto 16) <= INPKTDATA;
+        retxseq(31 downto 16) <= INPKTDATA;
       end if;
 
       if cs = retxst then
-        RETXSEQ(15 downto 0) <= INPKTDATA;
+        retxseq(15 downto 0) <= INPKTDATA;
       end if;
 
       if cs = none then

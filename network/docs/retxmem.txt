@@ -1,0 +1,38 @@
+The memory retransmission FIFO is a relatively simple interface to the MemDDR2 module to handle the reading and writing of memory. 
+
+Since the memddr2 interface is focused on writing 1024-byte rows, one
+at a time, we can store an entire packet in a row and thus have 32768
+spaces for packets. We split this space up evenly into two chunks, A
+and B, each of which has 16k entries.
+
+For the data packets, this lets us store a maximum of 128 packets of
+each possible source/type combo, for ~128 ms of buffer. For events,
+this works out to ~300 ms of events.
+
+The interface runs internally at 150 MHz * 32 bits == 300 MB/sec,
+which means we can complete a row transaction in under 2 us -- or
+roughly 10 row transactions per ECYCLE. This is more (!) than enough. 
+
+The mapping between some sort of unique ID and buffer position is left
+to the external interface. We had considered various advanced hashing
+schemes but ultimately decided to simply push that decision out to the
+external modules.
+
+Our interface to submodules is modeled after existing network
+interface components, and this desire to remain compatible has led to
+the interface being more opaque than I would have liked. In general,
+to write to the fifo the source performs random-acces writes (16-bits
+wide) into a write fifo using a combination of WDIN and WADDR
+lines. To signal the completion of an input packet write, WDONE is
+asserted with the packet's location in the fifo indicated by WID. This
+interface runs at 50 MHz, the system core clock speed.
+
+Internally, the interface just muxes between the four round-robin. 
+
+Because the memddr2 interface writes to a target output, we will need
+to write into one of two output fifos and then provide access from
+them. Current code expects the retx interface to write into a buffer
+as well. This double-write strategy, while inefficient, is necessary
+to provide maximum backwards compatibility, and can be rewritten
+should the need arise.
+
