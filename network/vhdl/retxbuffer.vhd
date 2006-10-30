@@ -24,6 +24,7 @@ entity retxbuffer is
     RDOUTA : out std_logic_vector(15 downto 0);
     RADDRA : out std_logic_vector(8 downto 0);
     RDONEA : out std_logic;
+    RWROUTA : out std_logic; 
 
 --buffer set B input (write) interfafe
     WIDB   : in std_logic_vector(13 downto 0);
@@ -38,13 +39,14 @@ entity retxbuffer is
     RDOUTB : out std_logic_vector(15 downto 0);
     RADDRB : out std_logic_vector(8 downto 0);
     RDONEB : out std_logic;
+    RWROUTB : out std_logic; 
 
     -- memory output interface
     MEMSTART  : out std_logic;
     MEMRW     : out std_logic;
     MEMDONE   : in  std_logic;
     MEMWRADDR : in  std_logic_vector(7 downto 0);
-    MEMWRDATA : out std_logic_vector(31 downto 0);
+    MEMWRDATA : out std_logic_vector(31 downto 0) := (others => '0');
     MEMROWTGT : out std_logic_vector(14 downto 0);
     MEMRDDATA : in  std_logic_vector(31 downto 0);
     MEMRDADDR : in  std_logic_vector(7 downto 0);
@@ -61,7 +63,7 @@ architecture Behavioral of retxbuffer is
   signal wdoneal : std_logic                     := '0';
   signal wda     : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal rena : std_logic := '0';
+  signal rena, renal : std_logic := '0';
 
 -- write B signals
   signal waddrbint : std_logic_vector(9 downto 0) := (others => '0');
@@ -81,14 +83,14 @@ architecture Behavioral of retxbuffer is
   signal rreqbl  : std_logic                     := '0';
   signal lraddrb : std_logic_vector(9 downto 0)  := "0100000000";
   signal rfweb   : std_logic                     := '0';
-  signal renb    : std_logic                     := '0';
+  signal renb, renbl   : std_logic                     := '0';
 
   signal crsta, crstb : std_logic := '0';
 
   
 -- control signals
   signal asel, rw     : std_logic := '0';
-  signal wrtgt, rdtgt : std_logic_vector(13 downto 0);
+  signal wrtgt, rdtgt : std_logic_vector(14 downto 0);
 
   signal memwraddrint : std_logic_vector(8 downto 0) := (others => '0');
   signal memrdaddrint : std_logic_vector(8 downto 0) := (others => '0');
@@ -103,11 +105,12 @@ architecture Behavioral of retxbuffer is
 begin  -- Behavioral
 
   -- main muxes
-  rdtgt     <= ridal       when asel = '1' else ridbl;
-  wrtgt     <= widal       when asel = '1' else widbl;
-  MEMROWTGT <= "1" & wrtgt when rw = '1'   else "0" & rdtgt;
+  rdtgt     <= "1" & ridal       when asel = '1' else "0" & ridbl;
+  wrtgt     <= "1" & widal       when asel = '1' else "0" & widbl;
+  MEMROWTGT <=  wrtgt when rw = '1'
+               else  rdtgt;
 
-  MEMWRDATA <= wda when asel = '1' else wdb;
+
 
   MEMRW <= rw;
 
@@ -173,6 +176,8 @@ begin  -- Behavioral
       end if;
 
 
+      
+      RWROUTA <= rena;
       --output B
       if rreqb = '1' then
         ridbl <= RIDB;
@@ -193,6 +198,15 @@ begin  -- Behavioral
           crstb <= '1';
         end if;
       end if;
+
+      RWROUTB <= renb;
+
+      if asel = '1' then
+        MEMWRDATA <= wda;
+      else
+        MEMWRDATA <= wdb; 
+      end if;
+      
     end if;
   end process himain;
 
@@ -215,6 +229,13 @@ begin  -- Behavioral
 
       RADDRA <= lraddra(8 downto 0);
 
+      renal <= rena;
+      if rena = '0' and renal = '1' then
+        RDONEA <= '1';
+      else
+        RDONEA <= '0'; 
+      end if;
+
       -- output B
       if crstB = '1' then
         lraddrb   <= (others => '0');
@@ -225,6 +246,15 @@ begin  -- Behavioral
       end if;
 
       RADDRB <= lraddrb(8 downto 0);
+      renbl <= renb;
+      
+      if renb = '0' and renbl = '1' then
+        RDONEB <= '1';
+      else
+        RDONEB <= '0'; 
+      end if;
+
+
 
     end if;
   end process main;
@@ -234,6 +264,8 @@ begin  -- Behavioral
   memrdaddrint <= '0' & MEMRDADDR;
 
   WriteFifoA : RAMB16_S18_S36
+    generic map (
+      SIM_COLLISION_CHECK => "NONE")
     port map (
       WEA   => wra,
       ENA   => '1',
@@ -255,6 +287,8 @@ begin  -- Behavioral
       DOB   => wda);
 
   WriteFifoB : RAMB16_S18_S36
+    generic map (
+      SIM_COLLISION_CHECK => "NONE")
     port map (
       WEA   => wrb,
       ENA   => '1',
@@ -276,6 +310,8 @@ begin  -- Behavioral
       DOB   => wdb);
 
   ReadFifoA : RAMB16_S18_S36
+    generic map (
+      SIM_COLLISION_CHECK => "NONE")
     port map (
       WEA   => '0',
       ENA   => '1',
@@ -297,6 +333,8 @@ begin  -- Behavioral
       DOB   => open);
 
   ReadFifoB : RAMB16_S18_S36
+    generic map (
+      SIM_COLLISION_CHECK => "NONE")
     port map (
       WEA   => '0',
       ENA   => '1',
@@ -321,7 +359,7 @@ begin  -- Behavioral
   begin
     case cs is
       when wrachk =>
-        rw       <= '1';
+        rw       <= '0';
         asel     <= '1';
         memstart <= '0';
         if wdoneal = '1' then
@@ -353,7 +391,7 @@ begin  -- Behavioral
         ns       <= wrbchk;
 
       when wrbchk =>
-        rw       <= '1';
+        rw       <= '0';
         asel     <= '0';
         memstart <= '0';
         if wdonebl = '1' then
@@ -422,7 +460,7 @@ begin  -- Behavioral
         rw       <= '0';
         asel     <= '0';
         memstart <= '0';
-        if rreqal = '1' then
+        if rreqbl = '1' then
           ns     <= rdbst;
         else
           ns     <= wrachk;
@@ -436,7 +474,7 @@ begin  -- Behavioral
 
       when rdbwait =>
         rw       <= '0';
-        asel     <= '1';
+        asel     <= '0';
         memstart <= '0';
         if MEMDONE = '1' then
           ns     <= rdbdone;
@@ -446,7 +484,7 @@ begin  -- Behavioral
 
       when rdbdone =>
         rw       <= '0';
-        asel     <= '1';
+        asel     <= '0';
         memstart <= '0';
         ns       <= wrachk;
 

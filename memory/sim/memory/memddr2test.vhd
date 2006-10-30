@@ -117,6 +117,13 @@ architecture Behavioral of memddr2test is
 
   signal odelay : time := 0 ps;
 
+
+  type outbuffer is array (0 to 1023) of std_logic_vector(15 downto 0);
+  signal outbufferA : outbuffer := (others => (others => '0'));
+
+  
+
+
 begin  -- Behavioral
 
   DQSH <= 'L';

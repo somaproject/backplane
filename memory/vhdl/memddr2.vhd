@@ -53,6 +53,8 @@ architecture Behavioral of memddr2 is
   signal lba   : std_logic_vector(1 downto 0)  := (others => '0');
   signal lts   : std_logic                     := '0';
 
+  signal startl : std_logic := '0';
+  
   -- per-module signals
 
   -- Refresh module
@@ -145,8 +147,7 @@ architecture Behavioral of memddr2 is
 
 
   component readddr2
-    port (
-      CLK         : in  std_logic;
+    port (      CLK         : in  std_logic;
       START       : in  std_logic;
       DONE        : out std_logic;
       -- ram interface
@@ -260,6 +261,8 @@ architecture Behavioral of memddr2 is
       );
   end component;
 
+
+                                    
 begin  -- Behavioral
 
   din(15 downto 0)  <= dinh(7 downto 0) & dinl(7 downto 0);
@@ -421,12 +424,20 @@ begin  -- Behavioral
 
         ocs <= ons;
 
+        if ocs = readdone or ocs = writedone then
+          startl <= '0';
+        else
+          if START = '1' then
+            startl <= '1'; 
+          end if;
+        end if;
 
       end if;
     end if;
   end process main;
 
-  fsm : process(ocs, bootdone, aldone, rdone, wdone, refdone, start, rw)
+  fsm : process(ocs, bootdone, aldone, rdone, wdone, refdone, start,
+                startl, rw)
   begin
     case ocs is
       when none =>
@@ -523,7 +534,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        if start = '1' then
+        if startl = '1' then
           if rw = '0' then
             ons   <= read;
           else

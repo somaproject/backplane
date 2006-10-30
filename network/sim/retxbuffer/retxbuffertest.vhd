@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
-
+use IEEE.numeric_std.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 library work;
@@ -20,32 +20,34 @@ architecture Behavioral of retxbuffertest is
       CLKHI : in std_logic;
 
       -- buffer set A input (write) interface
-      WIDA   : in  std_logic_vector(13 downto 0);
-      WDINA  : in  std_logic_vector(15 downto 0);
-      WADDRA : in  std_logic_vector(8 downto 0);
-      WRA    : in  std_logic;
+      WIDA   : in std_logic_vector(13 downto 0);
+      WDINA  : in std_logic_vector(15 downto 0);
+      WADDRA : in std_logic_vector(8 downto 0);
+      WRA    : in std_logic;
       WDONEA : in std_logic;
 
       -- output buffer A set B (reads) interface
-      RIDA      : in  std_logic_vector (13 downto 0);
-      RREQA     : in  std_logic;
-      RDOUTA    : out std_logic_vector(15 downto 0);
-      RADDRA    : out std_logic_vector(8 downto 0);
-      RDONEA    : out std_logic;
+      RIDA    : in  std_logic_vector (13 downto 0);
+      RREQA   : in  std_logic;
+      RDOUTA  : out std_logic_vector(15 downto 0);
+      RADDRA  : out std_logic_vector(8 downto 0);
+      RDONEA  : out std_logic;
+      RWROUTA : out std_logic;
 
       --buffer set B input (write) interfafe
-      WIDB   : in  std_logic_vector(13 downto 0);
-      WDINB  : in  std_logic_vector(15 downto 0);
-      WADDRB : in  std_logic_vector(8 downto 0);
-      WRB    : in  std_logic;
+      WIDB   : in std_logic_vector(13 downto 0);
+      WDINB  : in std_logic_vector(15 downto 0);
+      WADDRB : in std_logic_vector(8 downto 0);
+      WRB    : in std_logic;
       WDONEB : in std_logic;
 
       -- output buffer B set Rad (reads) interface
-      RIDB      : in  std_logic_vector (13 downto 0);
-      RREQB     : in  std_logic;
-      RDOUTB    : out std_logic_vector(15 downto 0);
-      RADDRB    : out std_logic_vector(8 downto 0);
-      RDONEB    : out std_logic;
+      RIDB    : in  std_logic_vector (13 downto 0);
+      RREQB   : in  std_logic;
+      RDOUTB  : out std_logic_vector(15 downto 0);
+      RADDRB  : out std_logic_vector(8 downto 0);
+      RDONEB  : out std_logic;
+      RWROUTB : out std_logic;
 
       -- memory output interface
       MEMSTART  : out std_logic;
@@ -61,22 +63,24 @@ architecture Behavioral of retxbuffertest is
   end component;
 
 
-  signal CLKNOM   : std_logic := '0';
-  signal CLKHI : std_logic := '0';
+  signal CLKNOM : std_logic := '0';
+  signal CLKHI  : std_logic := '0';
 
   -- buffer set A input (write) interface
   signal WIDA   : std_logic_vector(13 downto 0) := (others => '0');
   signal WDINA  : std_logic_vector(15 downto 0) := (others => '0');
   signal WADDRA : std_logic_vector(8 downto 0)  := (others => '0');
   signal WRA    : std_logic                     := '0';
-  signal WDONEA : std_logic                      := '0';
+  signal WDONEA : std_logic                     := '0';
 
   -- output buffer A set B (reads) interface
-  signal RIDA      : std_logic_vector (13 downto 0) := (others => '0');
-  signal RREQA     : std_logic                      := '0';
-  signal RDOUTA    : std_logic_vector(15 downto 0)  := (others => '0');
-  signal RADDRA    : std_logic_vector(8 downto 0)   := (others => '0');
-  signal RDONEA    : std_logic                      := '0';
+  signal RIDA    : std_logic_vector (13 downto 0) := (others => '0');
+  signal RREQA   : std_logic                      := '0';
+  signal RDOUTA  : std_logic_vector(15 downto 0)  := (others => '0');
+  signal RADDRA  : std_logic_vector(8 downto 0)   := (others => '0');
+  signal RDONEA  : std_logic                      := '0';
+  signal RWROUTA : std_logic                      := '0';
+
 
 --buffer set B input (write) interfafe
   signal WIDB   : std_logic_vector(13 downto 0) := (others => '0');
@@ -86,12 +90,13 @@ architecture Behavioral of retxbuffertest is
   signal WDONEB : std_logic                     := '0';
 
   -- output buffer B set Rad (reads) interface
-  signal RIDB      : std_logic_vector (13 downto 0) := (others => '0');
-  signal RREQB     : std_logic                      := '0';
-  signal RDOUTB    : std_logic_vector(15 downto 0)  := (others => '0');
-  signal RADDRB    : std_logic_vector(8 downto 0)   := (others => '0');
+  signal RIDB   : std_logic_vector (13 downto 0) := (others => '0');
+  signal RREQB  : std_logic                      := '0';
+  signal RDOUTB : std_logic_vector(15 downto 0)  := (others => '0');
+  signal RADDRB : std_logic_vector(8 downto 0)   := (others => '0');
 
-  signal RDONEB    : std_logic                      := '0';
+  signal RDONEB  : std_logic := '0';
+  signal RWROUTB : std_logic := '0';
 
   -- memory output interface
   signal MEMSTART  : std_logic                     := '0';
@@ -185,8 +190,9 @@ architecture Behavioral of retxbuffertest is
         odelay        : in    time                          := 0 ps);
   end component;
 
-  signal mainclk : std_logic := '0';
-  signal clkpos  : integer   := 0;
+  signal mainclk    : std_logic := '0';
+  signal clkpos     : integer   := 0;
+  signal clkslowpos : integer   := 0;
 
   signal clockoffset : time := 3.2 ns;
 
@@ -197,6 +203,10 @@ architecture Behavioral of retxbuffertest is
   signal burstcnt : std_logic_vector(7 downto 0) := (others => '0');
 
   signal odelay : time := 0 ps;
+
+  type outbuffer is array (0 to 511) of std_logic_vector(15 downto 0);
+  signal outbuffera : outbuffer;
+  signal outbufferb : outbuffer;
 
 begin  -- Behavioral
 
@@ -231,6 +241,7 @@ begin  -- Behavioral
       RDWE   => MEMRDWE);
 
   mainclk <= not mainclk after (clk_period / 8);
+  RESET   <= '0'         after 20 ns;
 
   memory_inst : HY5PS121621F
     generic map (
@@ -286,16 +297,30 @@ begin  -- Behavioral
       elsif clkpos = 1 then
         CLK270 <= '0';
       end if;
+
+      if clkslowpos = 11 then
+        clkslowpos <= 0;
+      else
+        clkslowpos <= clkslowpos + 1;
+      end if;
+
+      if clkslowpos = 0 then
+        CLKnom <= '1';
+      elsif clkslowpos = 6 then
+        CLKnom <= '0';
+
+      end if;
+
     end if;
   end process;
 
-
+  clkhi  <= CLK;
   CLKN   <= not CLK;
   CLK90N <= not CLK90;
 
   retxbuffer_uut : retxbuffer
     port map (
-      CLK       => CLK,
+      CLK       => CLKnom,
       CLKHI     => CLKHI,
       WIDA      => WIDA,
       WDINA     => WDINA,
@@ -307,6 +332,7 @@ begin  -- Behavioral
       RDOUTA    => RDOUTA,
       RADDRA    => RADDRA,
       RDONEA    => RDONEA,
+      RWROUTA   => RWROUTA,
       WIDB      => WIDB,
       WDINB     => WDINB,
       WADDRB    => WADDRB,
@@ -317,15 +343,136 @@ begin  -- Behavioral
       RDOUTB    => RDOUTB,
       RADDRB    => RADDRB,
       RDONEB    => RDONEB,
+      RWROUTB   => RWROUTB,
       MEMSTART  => MEMSTART,
       MEMRW     => MEMRW,
       MEMDONE   => MEMDONE,
-      MEMWRADDR => MEMWRADDR, 
+      MEMWRADDR => MEMWRADDR,
       MEMWRDATA => MEMWRDATA,
       MEMROWTGT => MEMROWTGT,
       MEMRDDATA => MEMRDDATA,
       MEMRDADDR => MEMRDADDR,
       MEMRDWE   => MEMRDWE);
+
+  -- exhausting test infrastructure
+  -- input A process
+  inputA : process
+  begin
+    wait for 320 us;
+    for i in 0 to 63 loop
+      for j in 0 to 511 loop
+        wait until rising_edge(CLKnom);
+        wdina  <= std_logic_vector(TO_UNSIGNED(i, 6))
+                 & std_logic_vector(TO_UNSIGNED(j, 10));
+        waddra <= std_logic_vector(TO_UNSIGNED(j, 9));
+        wra    <= '1';
+      end loop;  -- j
+      wait until rising_edge(CLKnom);
+      wra <= '0'; 
+      wida     <= std_logic_vector(to_UNSIGNED((i+1) * 7, 14));
+      wdonea   <= '1';
+      wait until rising_edge(CLKnom);
+      wdonea   <= '0';
+      wait for 10 us;
+
+    end loop;  -- i 
+  end process inputA;
+
+  -- output buffer capture
+  process(CLKnom)
+  begin
+    if rising_edge(CLKnom) then
+      if RWROUTA = '1' then
+        outbuffera(to_INTEGER(UNSIGNED(raddra))) <= rdouta;
+      end if;
+    end if;
+  end process;
+  -- output process A:
+  
+  outputA : process
+  begin
+    wait for 340 us;
+    for i in 0 to 63 loop
+      wait until rising_edge(CLKnom);
+      rida     <= std_logic_vector(to_UNSIGNED((i+1) * 7, 14));
+      rreqa   <= '1';
+      wait until rising_edge(CLKnom);
+      rreqa   <= '0';
+      wait until rising_edge(CLKnom) and rdonea = '1' ;
+      
+      for j in 0 to 511 loop
+        assert outbuffera(j) = std_logic_vector(TO_UNSIGNED(i, 6))
+                 & std_logic_vector(TO_UNSIGNED(j, 10))
+          report "Error in reading outputA buffer" severity Error;
+        
+      end loop;
+      wait for 10 us;
+
+    end loop;  -- i 
+    report "Finished reading A buffer sets" severity Note;
+    
+
+  end process outputA;
+
+  -- input B process
+  inputB : process
+  begin
+    wait for 320 us;
+    for i in 0 to 63 loop
+      for j in 0 to 511 loop
+        wait until rising_edge(CLKnom);
+        wdinb  <= std_logic_vector(TO_UNSIGNED(i, 6))
+                 & std_logic_vector(TO_UNSIGNED(j, 10));
+        waddrb <= std_logic_vector(TO_UNSIGNED(j, 9));
+        wrb    <= '1';
+      end loop;  -- j
+      wait until rising_edge(CLKnom);
+      wrb <= '0'; 
+      widb     <= std_logic_vector(to_UNSIGNED((i+1) * 13, 14));
+      wdoneb   <= '1';
+      wait until rising_edge(CLKnom);
+      wdoneb   <= '0';
+      wait for 10 us;
+
+    end loop;  -- i 
+  end process inputB;
+
+  -- output buffer capture
+  process(CLKnom)
+  begin
+    if rising_edge(CLKnom) then
+      if RWROUTB = '1' then
+        outbufferb(to_INTEGER(UNSIGNED(raddrb))) <= rdoutb;
+      end if;
+    end if;
+  end process;
+  -- output process A:
+  
+  outputB : process
+  begin
+    wait for 340 us;
+    for i in 0 to 63 loop
+      wait until rising_edge(CLKnom);
+      ridb     <= std_logic_vector(to_UNSIGNED((i+1) * 13, 14));
+      rreqb   <= '1';
+      wait until rising_edge(CLKnom);
+      rreqb   <= '0';
+      wait until rising_edge(CLKnom) and rdoneb = '1' ;
+      
+      for j in 0 to 511 loop
+        assert outbufferb(j) = std_logic_vector(TO_UNSIGNED(i, 6))
+                 & std_logic_vector(TO_UNSIGNED(j, 10))
+          report "Error in reading outputB buffer" severity Error;
+        
+      end loop;
+      wait for 10 us;
+
+    end loop;  -- i 
+    report "Finished reading B buffer sets" severity Note;
+
+    report "End of Simulation" severity Failure;
+
+  end process outputB;
 
 
 end Behavioral;
