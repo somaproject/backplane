@@ -5,8 +5,8 @@ at a time, we can store an entire packet in a row and thus have 32768
 spaces for packets. We split this space up evenly into two chunks, A
 and B, each of which has 16k entries.
 
-For the data packets, this lets us store a maximum of 128 packets of
-each possible source/type combo, for ~128 ms of buffer. For events,
+For the data packets, this lets us store a maximum of 64 packets of
+each possible source/type combo, for ~64 ms of buffer. For events,
 this works out to ~300 ms of events.
 
 The interface runs internally at 150 MHz * 32 bits == 300 MB/sec,
@@ -35,4 +35,12 @@ them. Current code expects the retx interface to write into a buffer
 as well. This double-write strategy, while inefficient, is necessary
 to provide maximum backwards compatibility, and can be rewritten
 should the need arise.
+
+Each Read and Write interface (4 in total) have their own clock. in
+this way we guarantee that we can read out as fast as we like.
+
+This guarantees, for example, that if we run the data input interface
+at 100 MHz, we can always put in two data packets every ecycle.
+
+
 

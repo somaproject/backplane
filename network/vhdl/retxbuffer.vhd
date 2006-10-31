@@ -17,14 +17,16 @@ entity retxbuffer is
     WADDRA : in std_logic_vector(8 downto 0);
     WRA    : in std_logic;
     WDONEA : in std_logic;
+    WCLKA  : in std_logic;
 
-    -- output buffer A set B (reads) interface
-    RIDA   : in  std_logic_vector (13 downto 0);
-    RREQA  : in  std_logic;
-    RDOUTA : out std_logic_vector(15 downto 0);
-    RADDRA : out std_logic_vector(8 downto 0);
-    RDONEA : out std_logic;
-    RWROUTA : out std_logic; 
+    -- output buffer A  (reads) interface
+    RIDA    : in  std_logic_vector (13 downto 0);
+    RREQA   : in  std_logic;
+    RDOUTA  : out std_logic_vector(15 downto 0);
+    RADDRA  : out std_logic_vector(8 downto 0);
+    RDONEA  : out std_logic;
+    RWROUTA : out std_logic;
+    RCLKA   : in  std_logic;
 
 --buffer set B input (write) interfafe
     WIDB   : in std_logic_vector(13 downto 0);
@@ -32,14 +34,16 @@ entity retxbuffer is
     WADDRB : in std_logic_vector(8 downto 0);
     WRB    : in std_logic;
     WDONEB : in std_logic;
+    WCLKB  : in std_logic;
 
     -- output buffer B set Rad (reads) interface
-    RIDB   : in  std_logic_vector (13 downto 0);
-    RREQB  : in  std_logic;
-    RDOUTB : out std_logic_vector(15 downto 0);
-    RADDRB : out std_logic_vector(8 downto 0);
-    RDONEB : out std_logic;
-    RWROUTB : out std_logic; 
+    RIDB    : in  std_logic_vector (13 downto 0);
+    RREQB   : in  std_logic;
+    RDOUTB  : out std_logic_vector(15 downto 0);
+    RADDRB  : out std_logic_vector(8 downto 0);
+    RDONEB  : out std_logic;
+    RWROUTB : out std_logic;
+    RCLKB   : in  std_logic;
 
     -- memory output interface
     MEMSTART  : out std_logic;
@@ -79,15 +83,15 @@ architecture Behavioral of retxbuffer is
   signal rfwea   : std_logic                     := '0';
 
 -- read B signals
-  signal ridbl   : std_logic_vector(13 downto 0) := (others => '0');
-  signal rreqbl  : std_logic                     := '0';
-  signal lraddrb : std_logic_vector(9 downto 0)  := "0100000000";
-  signal rfweb   : std_logic                     := '0';
-  signal renb, renbl   : std_logic                     := '0';
+  signal ridbl       : std_logic_vector(13 downto 0) := (others => '0');
+  signal rreqbl      : std_logic                     := '0';
+  signal lraddrb     : std_logic_vector(9 downto 0)  := "0100000000";
+  signal rfweb       : std_logic                     := '0';
+  signal renb, renbl : std_logic                     := '0';
 
   signal crsta, crstb : std_logic := '0';
 
-  
+
 -- control signals
   signal asel, rw     : std_logic := '0';
   signal wrtgt, rdtgt : std_logic_vector(14 downto 0);
@@ -105,10 +109,10 @@ architecture Behavioral of retxbuffer is
 begin  -- Behavioral
 
   -- main muxes
-  rdtgt     <= "1" & ridal       when asel = '1' else "0" & ridbl;
-  wrtgt     <= "1" & widal       when asel = '1' else "0" & widbl;
-  MEMROWTGT <=  wrtgt when rw = '1'
-               else  rdtgt;
+  rdtgt     <= "1" & ridal when asel = '1' else "0" & ridbl;
+  wrtgt     <= "1" & widal when asel = '1' else "0" & widbl;
+  MEMROWTGT <= wrtgt       when rw = '1'
+               else rdtgt;
 
 
 
@@ -118,6 +122,85 @@ begin  -- Behavioral
   rfwea <= asel and MEMRDWE;
   rfweb <= (not asel) and MEMRDWE;
 
+
+  write_a : process(WCLKA)
+  begin
+
+    if rising_edge(WCLKA) then
+      if WDONEA = '1' then
+        widal <= WIDA;
+      end if;
+
+    end if;
+
+  end process write_a;
+
+  write_B : process(WCLKB)
+  begin
+
+    if rising_edge(WCLKB) then
+      if WDONEB = '1' then
+        widbl <= WIDB;
+      end if;
+
+    end if;
+
+  end process write_b;
+
+  read_a : process(RCLKA)
+  begin
+
+    if rising_edge(RCLKA) then
+      -- output A
+      if crsta = '1' then
+        lraddra   <= (others => '0');
+      else
+        if rena = '1' then
+          lraddra <= lraddra + 1;
+        end if;
+      end if;
+
+      RADDRA <= lraddra(8 downto 0);
+
+      renal    <= rena;
+      if rena = '0' and renal = '1' then
+        RDONEA <= '1';
+      else
+        RDONEA <= '0';
+      end if;
+
+    end if;
+
+  end process read_a;
+
+  read_B : process(RCLKB)
+  begin
+
+    if rising_edge(RCLKB) then
+
+      -- output B
+      if crstB = '1' then
+        lraddrb   <= (others => '0');
+      else
+        if renb = '1' then
+          lraddrb <= lraddrb + 1;
+        end if;
+      end if;
+
+      RADDRB <= lraddrb(8 downto 0);
+      renbl  <= renb;
+
+      if renb = '0' and renbl = '1' then
+        RDONEB <= '1';
+      else
+        RDONEB <= '0';
+      end if;
+
+
+
+    end if;
+  end process read_B;
+
   himain : process(CLKHI)
   begin
     if rising_edge(clkhi) then
@@ -126,10 +209,6 @@ begin  -- Behavioral
 
 
       -- input A
-
-      if WDONEA = '1' then
-        widal <= WIDA;
-      end if;
 
       if cs = wradone then
         wdoneal   <= '0';
@@ -141,10 +220,6 @@ begin  -- Behavioral
 
 
       -- input B
-
-      if WDONEB = '1' then
-        widbl <= WIDB;
-      end if;
 
       if cs = wrbdone then
         wdonebl   <= '0';
@@ -176,7 +251,7 @@ begin  -- Behavioral
       end if;
 
 
-      
+
       RWROUTA <= rena;
       --output B
       if rreqb = '1' then
@@ -204,9 +279,9 @@ begin  -- Behavioral
       if asel = '1' then
         MEMWRDATA <= wda;
       else
-        MEMWRDATA <= wdb; 
+        MEMWRDATA <= wdb;
       end if;
-      
+
     end if;
   end process himain;
 
@@ -217,43 +292,6 @@ begin  -- Behavioral
   main : process(CLK)
   begin
     if rising_edge(CLK) then
-
-      -- output A
-      if crsta = '1' then
-        lraddra   <= (others => '0');
-      else
-        if rena = '1' then
-          lraddra <= lraddra + 1;
-        end if;
-      end if;
-
-      RADDRA <= lraddra(8 downto 0);
-
-      renal <= rena;
-      if rena = '0' and renal = '1' then
-        RDONEA <= '1';
-      else
-        RDONEA <= '0'; 
-      end if;
-
-      -- output B
-      if crstB = '1' then
-        lraddrb   <= (others => '0');
-      else
-        if renb = '1' then
-          lraddrb <= lraddrb + 1;
-        end if;
-      end if;
-
-      RADDRB <= lraddrb(8 downto 0);
-      renbl <= renb;
-      
-      if renb = '0' and renbl = '1' then
-        RDONEB <= '1';
-      else
-        RDONEB <= '0'; 
-      end if;
-
 
 
     end if;
@@ -267,93 +305,93 @@ begin  -- Behavioral
     generic map (
       SIM_COLLISION_CHECK => "NONE")
     port map (
-      WEA   => wra,
-      ENA   => '1',
-      SSRA  => '0',
-      CLKA  => clk,
-      ADDRA => waddraint,
-      DIA   => wdina,
-      dipa  => "00",
-      DOPA  => open,
-      DOA   => open,
-      WEB   => '0',
-      ENB   => '1',
-      SSRB  => '0',
-      CLKB  => clkhi,
-      ADDRB => memwraddrint,
-      DIB   => X"00000000",
-      DIPB  => "0000",
-      DOPB  => open,
-      DOB   => wda);
+      WEA                 => wra,
+      ENA                 => '1',
+      SSRA                => '0',
+      CLKA                => WCLKA,
+      ADDRA               => waddraint,
+      DIA                 => wdina,
+      dipa                => "00",
+      DOPA                => open,
+      DOA                 => open,
+      WEB                 => '0',
+      ENB                 => '1',
+      SSRB                => '0',
+      CLKB                => clkhi,
+      ADDRB               => memwraddrint,
+      DIB                 => X"00000000",
+      DIPB                => "0000",
+      DOPB                => open,
+      DOB                 => wda);
 
   WriteFifoB : RAMB16_S18_S36
     generic map (
       SIM_COLLISION_CHECK => "NONE")
     port map (
-      WEA   => wrb,
-      ENA   => '1',
-      SSRA  => '0',
-      CLKA  => clk,
-      ADDRA => waddrbint,
-      DIA   => wdinb,
-      dipa  => "00",
-      DOPA  => open,
-      DOA   => open,
-      WEB   => '0',
-      ENB   => '1',
-      SSRB  => '0',
-      CLKB  => clkhi,
-      ADDRB => memwraddrint,
-      DIB   => X"00000000",
-      DIPB  => "0000",
-      DOPB  => open,
-      DOB   => wdb);
+      WEA                 => wrb,
+      ENA                 => '1',
+      SSRA                => '0',
+      CLKA                => WCLKB,
+      ADDRA               => waddrbint,
+      DIA                 => wdinb,
+      dipa                => "00",
+      DOPA                => open,
+      DOA                 => open,
+      WEB                 => '0',
+      ENB                 => '1',
+      SSRB                => '0',
+      CLKB                => clkhi,
+      ADDRB               => memwraddrint,
+      DIB                 => X"00000000",
+      DIPB                => "0000",
+      DOPB                => open,
+      DOB                 => wdb);
 
   ReadFifoA : RAMB16_S18_S36
     generic map (
       SIM_COLLISION_CHECK => "NONE")
     port map (
-      WEA   => '0',
-      ENA   => '1',
-      SSRA  => '0',
-      CLKA  => clk,
-      ADDRA => lraddra,
-      DIA   => X"0000",
-      dipa  => "00",
-      DOPA  => open,
-      DOA   => RDOUTA,
-      WEB   => rfwea,
-      ENB   => '1',
-      SSRB  => '0',
-      CLKB  => clkhi,
-      ADDRB => memrdaddrint,
-      DIB   => MEMRDDATA,
-      DIPB  => "0000",
-      DOPB  => open,
-      DOB   => open);
+      WEA                 => '0',
+      ENA                 => '1',
+      SSRA                => '0',
+      CLKA                => RCLKA,
+      ADDRA               => lraddra,
+      DIA                 => X"0000",
+      dipa                => "00",
+      DOPA                => open,
+      DOA                 => RDOUTA,
+      WEB                 => rfwea,
+      ENB                 => '1',
+      SSRB                => '0',
+      CLKB                => clkhi,
+      ADDRB               => memrdaddrint,
+      DIB                 => MEMRDDATA,
+      DIPB                => "0000",
+      DOPB                => open,
+      DOB                 => open);
 
   ReadFifoB : RAMB16_S18_S36
     generic map (
       SIM_COLLISION_CHECK => "NONE")
     port map (
-      WEA   => '0',
-      ENA   => '1',
-      SSRA  => '0',
-      CLKA  => clk,
-      ADDRA => lraddrb,
-      DIA   => X"0000",
-      dipa  => "00",
-      DOPA  => open,
-      DOA   => RDOUTB,
-      WEB   => rfweb,
-      ENB   => '1',
-      SSRB  => '0',
-      CLKB  => clkhi,
-      ADDRB => memrdaddrint,
-      DIB   => MEMRDDATA,
-      DIPB  => "0000",
-      DOPB  => open,
-      DOB   => open);
+      WEA                 => '0',
+      ENA                 => '1',
+      SSRA                => '0',
+      CLKA                => RCLKB,
+      ADDRA               => lraddrb,
+      DIA                 => X"0000",
+      dipa                => "00",
+      DOPA                => open,
+      DOA                 => RDOUTB,
+      WEB                 => rfweb,
+      ENB                 => '1',
+      SSRB                => '0',
+      CLKB                => clkhi,
+      ADDRB               => memrdaddrint,
+      DIB                 => MEMRDDATA,
+      DIPB                => "0000",
+      DOPB                => open,
+      DOB                 => open);
 
   fsm : process(cs, wdoneal, wdonebl, rreqal, rreqbl, memdone)
   begin

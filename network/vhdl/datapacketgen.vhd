@@ -22,11 +22,10 @@ entity datapacketgen is
     LENB      : in  std_logic_vector(9 downto 0);
     DIB       : in  std_logic_vector(15 downto 0);
     -- output interface at 100 MHz
-    MEMCLK    : in  std_logic;
     DOUT      : out std_logic_vector(15 downto 0);
-    ADDROUT   : in  std_logic_vector(8 downto 0);
-    FIFOVALID : out std_logic;
-    FIFONEXT  : in  std_logic
+    ADDROUT   : out std_logic_vector(8 downto 0);
+    FWE : out std_logic;
+    FIFONEXT  : out  std_logic
     );
 
 end datapacketgen;
@@ -125,7 +124,7 @@ begin  -- Behavioral
 
   nbsel <= not bsel;
 
-  faddr(8 downto 0) <= addrl               when dsel = 0 else
+  ADDROUT(8 downto 0) <= addrl               when dsel = 0 else
                        hdraddr(8 downto 0) when dsel = 1 else
                        "000010110"         when dsel = 2 else
                        "000010111";
@@ -142,6 +141,8 @@ begin  -- Behavioral
           seqdo(31 downto 16) when dsel = 2 else
           seqdo(15 downto 0);
 
+  DOUT <= fdin;
+  
   seqdi <= seqdo + 1;
 
   seqwe <= '1' when cs = nextfifo else '0';
@@ -211,89 +212,15 @@ begin  -- Behavioral
       end if;
 
       if cs = nextfifo then
-        faddr(10 downto 9) <= faddr(10 downto 9) + 1;
+        FIFONEXT <= '1';
+      else
+        FIFONEXT <= '0'; 
       end if;
 
     end if;
   end process main;
 
-  FIFOVALID <= '1' when addroutint(10 downto 9)  /= fifonum else '0';
 
-  addroutint(8 downto 0) <= ADDROUT;
-
-  -- memory output clock
-  memproc : process(MEMCLK)
-  begin
-    if rising_edge(MEMCLK) then
-      fifonum <= faddr(10 downto 9);
-
-      if FIFONEXT = '1' then
-        addroutint(10 downto 9) <= addroutint(10 downto 9) + 1;
-      end if;
-
-    end if;
-
-  end process memproc;
-
-
-  FIFO_BufferA_inst : RAMB16_S9_S9
-    generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
-      -- Address 0 to 255
-      INIT_00             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00" ,       
-      INIT_10             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00",        
-      INIT_20             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00" ,       
-      INIT_30             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00"        
-      )
-
-    port map (
-      DOA   => open,
-      DOB   => DOUT(15 downto 8),
-      ADDRA => faddr,
-      ADDRB => addroutint,
-      CLKA  => CLK,
-      CLKB  => MEMCLK,
-      DIA   => fdin(15 downto 8),
-      DIB   => X"00",
-      DIPA  => "0",
-      DIPB  => "0",
-      ENA   => '1',
-      ENB   => '1',
-      SSRA  => '0',
-      SSRB  => '0',
-      WEA   => fwe,
-      WEB   => '0'
-      );
-
-
-  FIFO_BufferB_inst : RAMB16_S9_S9
-    generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
-      -- Address 0 to 255
-      INIT_00             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
-      INIT_10             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
-      INIT_20             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
-      INIT_30             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00"
-      )
-
-    port map (
-      DOA   => open,
-      DOB   => DOUT(7 downto 0),
-      ADDRA => faddr,
-      ADDRB => addroutint,
-      CLKA  => CLK,
-      CLKB  => MEMCLK,
-      DIA   => fdin(7 downto 0),
-      DIB   => X"00",
-      DIPA  => "0",
-      DIPB  => "0",
-      ENA   => '1',
-      ENB   => '1',
-      SSRA  => '0',
-      SSRB  => '0',
-      WEA   => fwe,
-      WEB   => '0'
-      );
 
   fsm : process(cs, ECYCLE, len, addr, hdrdone)
   begin

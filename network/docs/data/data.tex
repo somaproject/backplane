@@ -66,14 +66,10 @@ output word.
 \subsection{Data Bus Packet Gen}
 The data bus packet generator generates one or two datagrams every
 event cycle, which are ready for processing at the end of the event
-cycle. It uses a four-deep fifo such that the packets can be read out
-on the subsequent event cycle.
-
-To interface with the memory bus arbitration interface at 100 MHz we
-pass the packets into the output FIFO which is running at the 100 MHz.
-
+cycle.
 The data bus packet generator also assigns the 32-bit sequence ID to
 each packet based upon packet source and type.
+
 
 \subsubsection{Interface}
 \begin{figure}
@@ -93,13 +89,8 @@ each packet based upon packet source and type.
 \end{figure}
 
 The input interface interoperates with the Data Bus Acquire module.
-The output interface runs at 100 MHz. 
+Output packets are simply written to the downstaream FIFO. 
 
-When \signal{FIFOVALID} is asserted, \signal{ADDROUT[8:0]} and
-\signal{DOUT[15:0]} can be used to read the contents of the current
-packet, with a one-cycle (BlockRAM-like) read latency. When the reader
-is done with the current packet, it asserts \signal{FIFONEXT} for one
-tick to advance the internal fifo pointer.
 
 
 \subsubsection{implementation}
@@ -273,7 +264,17 @@ this write process.
 
 
 \subsection{Data Output FIFO}
-The output fifo simple blah blah cross-clock-domain TX-mux interface blah. 
+The data output fifo is the fifo that buffers data packets to be
+transmitted to deal with the fact that while our Data TX hit rate is
+only 64 packets out of every 100 slots (1 ms) we could have them all
+bunch up, and that would be, in the words of T-Rex ``most
+unfortunate''.
+
+The fifo is constrained to -always- take input from the packet
+generator, and presents a series of 1k-deep packet interfaces.
+
+
+
 
 \begin{figure}
 \begin{centering}

@@ -5,6 +5,7 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
+
 library work;
 use WORK.HY5PS121621F_PACK.all;
 
@@ -25,6 +26,7 @@ architecture Behavioral of retxbuffertest is
       WADDRA : in std_logic_vector(8 downto 0);
       WRA    : in std_logic;
       WDONEA : in std_logic;
+      WCLKA  : in std_logic;
 
       -- output buffer A set B (reads) interface
       RIDA    : in  std_logic_vector (13 downto 0);
@@ -33,6 +35,8 @@ architecture Behavioral of retxbuffertest is
       RADDRA  : out std_logic_vector(8 downto 0);
       RDONEA  : out std_logic;
       RWROUTA : out std_logic;
+      RCLKA   : in  std_logic;
+
 
       --buffer set B input (write) interfafe
       WIDB   : in std_logic_vector(13 downto 0);
@@ -40,6 +44,7 @@ architecture Behavioral of retxbuffertest is
       WADDRB : in std_logic_vector(8 downto 0);
       WRB    : in std_logic;
       WDONEB : in std_logic;
+      WCLKB  : in std_logic;
 
       -- output buffer B set Rad (reads) interface
       RIDB    : in  std_logic_vector (13 downto 0);
@@ -48,6 +53,7 @@ architecture Behavioral of retxbuffertest is
       RADDRB  : out std_logic_vector(8 downto 0);
       RDONEB  : out std_logic;
       RWROUTB : out std_logic;
+      RCLKB   : in  std_logic;
 
       -- memory output interface
       MEMSTART  : out std_logic;
@@ -327,23 +333,27 @@ begin  -- Behavioral
       WADDRA    => WADDRA,
       WRA       => WRA,
       WDONEA    => WDONEA,
+      WCLKA     => CLKnom,
       RIDA      => RIDA,
       RREQA     => RREQA,
       RDOUTA    => RDOUTA,
       RADDRA    => RADDRA,
       RDONEA    => RDONEA,
       RWROUTA   => RWROUTA,
+      RCLKA     => CLKnom,
       WIDB      => WIDB,
       WDINB     => WDINB,
       WADDRB    => WADDRB,
       WRB       => WRB,
       WDONEB    => WDONEB,
+      WCLKB     => CLKnom,
       RIDB      => RIDB,
       RREQB     => RREQB,
       RDOUTB    => RDOUTB,
       RADDRB    => RADDRB,
       RDONEB    => RDONEB,
       RWROUTB   => RWROUTB,
+      RCLKB     => CLKnom,
       MEMSTART  => MEMSTART,
       MEMRW     => MEMRW,
       MEMDONE   => MEMDONE,
@@ -363,12 +373,12 @@ begin  -- Behavioral
       for j in 0 to 511 loop
         wait until rising_edge(CLKnom);
         wdina  <= std_logic_vector(TO_UNSIGNED(i, 6))
-                 & std_logic_vector(TO_UNSIGNED(j, 10));
+                  & std_logic_vector(TO_UNSIGNED(j, 10));
         waddra <= std_logic_vector(TO_UNSIGNED(j, 9));
         wra    <= '1';
       end loop;  -- j
       wait until rising_edge(CLKnom);
-      wra <= '0'; 
+      wra      <= '0';
       wida     <= std_logic_vector(to_UNSIGNED((i+1) * 7, 14));
       wdonea   <= '1';
       wait until rising_edge(CLKnom);
@@ -383,34 +393,34 @@ begin  -- Behavioral
   begin
     if rising_edge(CLKnom) then
       if RWROUTA = '1' then
-        outbuffera(to_INTEGER(UNSIGNED(raddra))) <= rdouta;
+        outbuffera(to_INTEGER(unsigned(raddra))) <= rdouta;
       end if;
     end if;
   end process;
   -- output process A:
-  
+
   outputA : process
   begin
     wait for 340 us;
     for i in 0 to 63 loop
       wait until rising_edge(CLKnom);
-      rida     <= std_logic_vector(to_UNSIGNED((i+1) * 7, 14));
-      rreqa   <= '1';
+      rida  <= std_logic_vector(to_UNSIGNED((i+1) * 7, 14));
+      rreqa <= '1';
       wait until rising_edge(CLKnom);
-      rreqa   <= '0';
-      wait until rising_edge(CLKnom) and rdonea = '1' ;
-      
+      rreqa <= '0';
+      wait until rising_edge(CLKnom) and rdonea = '1';
+
       for j in 0 to 511 loop
         assert outbuffera(j) = std_logic_vector(TO_UNSIGNED(i, 6))
-                 & std_logic_vector(TO_UNSIGNED(j, 10))
-          report "Error in reading outputA buffer" severity Error;
-        
+          & std_logic_vector(TO_UNSIGNED(j, 10))
+          report "Error in reading outputA buffer" severity error;
+
       end loop;
       wait for 10 us;
 
     end loop;  -- i 
-    report "Finished reading A buffer sets" severity Note;
-    
+    report "Finished reading A buffer sets" severity note;
+
 
   end process outputA;
 
@@ -422,12 +432,12 @@ begin  -- Behavioral
       for j in 0 to 511 loop
         wait until rising_edge(CLKnom);
         wdinb  <= std_logic_vector(TO_UNSIGNED(i, 6))
-                 & std_logic_vector(TO_UNSIGNED(j, 10));
+                  & std_logic_vector(TO_UNSIGNED(j, 10));
         waddrb <= std_logic_vector(TO_UNSIGNED(j, 9));
         wrb    <= '1';
       end loop;  -- j
       wait until rising_edge(CLKnom);
-      wrb <= '0'; 
+      wrb      <= '0';
       widb     <= std_logic_vector(to_UNSIGNED((i+1) * 13, 14));
       wdoneb   <= '1';
       wait until rising_edge(CLKnom);
@@ -442,35 +452,35 @@ begin  -- Behavioral
   begin
     if rising_edge(CLKnom) then
       if RWROUTB = '1' then
-        outbufferb(to_INTEGER(UNSIGNED(raddrb))) <= rdoutb;
+        outbufferb(to_INTEGER(unsigned(raddrb))) <= rdoutb;
       end if;
     end if;
   end process;
   -- output process A:
-  
+
   outputB : process
   begin
     wait for 340 us;
     for i in 0 to 63 loop
       wait until rising_edge(CLKnom);
-      ridb     <= std_logic_vector(to_UNSIGNED((i+1) * 13, 14));
-      rreqb   <= '1';
+      ridb  <= std_logic_vector(to_UNSIGNED((i+1) * 13, 14));
+      rreqb <= '1';
       wait until rising_edge(CLKnom);
-      rreqb   <= '0';
-      wait until rising_edge(CLKnom) and rdoneb = '1' ;
-      
+      rreqb <= '0';
+      wait until rising_edge(CLKnom) and rdoneb = '1';
+
       for j in 0 to 511 loop
         assert outbufferb(j) = std_logic_vector(TO_UNSIGNED(i, 6))
-                 & std_logic_vector(TO_UNSIGNED(j, 10))
-          report "Error in reading outputB buffer" severity Error;
-        
+          & std_logic_vector(TO_UNSIGNED(j, 10))
+          report "Error in reading outputB buffer" severity error;
+
       end loop;
       wait for 10 us;
 
     end loop;  -- i 
-    report "Finished reading B buffer sets" severity Note;
+    report "Finished reading B buffer sets" severity note;
 
-    report "End of Simulation" severity Failure;
+    report "End of Simulation" severity failure;
 
   end process outputB;
 

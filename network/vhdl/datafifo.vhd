@@ -10,33 +10,31 @@ use UNISIM.vcomponents.all;
 entity datafifo is
 
   port (
-    MEMCLK   : in  std_logic;
-    DIN      : in  std_logic_vector(15 downto 0);
-    FIFOFULL : out std_logic;
-    ADDRIN   : in  std_logic_vector(8 downto 0);
-    WEIN     : in  std_logic;
-    INDONE   : in  std_logic;
+    CLK    : in  std_logic;
+    -- input interfaces
+    DIN    : in  std_logic_vector(15 downto 0);
+    ADDRIN : in  std_logic_vector(8 downto 0);
+    WEIN   : in  std_logic;
+    INDONE : in  std_logic;
     -- output interface
-    CLK      : in  std_logic;
-    DOEN     : out std_logic;
-    ARM      : out std_logic;
-    DOUT     : out std_logic_vector(15 downto 0);
-    GRANT    : in  std_logic);
+    DOEN   : out std_logic;
+    ARM    : out std_logic;
+    DOUT   : out std_logic_vector(15 downto 0);
+    GRANT  : in  std_logic);
 
 end datafifo;
 
-
 architecture Behavioral of datafifo is
   -- input signals
-  signal addra : std_logic_vector(10 downto 0) := (others => '0');
-  signal bpin  : std_logic_vector(1 downto 0)  := (others => '0');
+  signal addra : std_logic_vector(13 downto 0) := (others => '0');
+  signal bpin  : std_logic_vector(4 downto 0)  := (others => '0');
 
-  signal bpinl : std_logic_vector(1 downto 0) := (others => '0');
+  signal bpinl : std_logic_vector(4 downto 0) := (others => '0');
 
   -- output signals
   signal bcnt  : std_logic_vector(8 downto 0)  := (others => '0');
-  signal bpout : std_logic_vector(1 downto 0)  := (others => '0');
-  signal addrb : std_logic_vector(10 downto 0) := (others => '0');
+  signal bpout : std_logic_vector(4 downto 0)  := (others => '0');
+  signal addrb : std_logic_vector(13 downto 0) := (others => '0');
 
   signal len : std_logic_vector(9 downto 0) := (others => '0');
 
@@ -49,34 +47,45 @@ architecture Behavioral of datafifo is
 
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
 
+  component bigmem
+    port (
+      CLK     : in  std_logic;
+      DIN     : in  std_logic_vector(15 downto 0);
+      WEIN    : in  std_logic;
+      ADDRIN  : in  std_logic_vector(13 downto 0);
+      DOUT    : out std_logic_vector(15 downto 0);
+      ADDROUT : in  std_logic_vector(13 downto 0)
+      );
+  end component;
+
 
 begin  -- Behavioral
 
+  mem: bigmem
+    port map (
+      CLK     => CLK,
+      DIN     => DIN,
+      WEIN    => WEIN,
+      ADDRIN  => addra,
+      DOUT    => dob,
+      ADDROUT => addrb);
+  
+    
   addra <= bpin & ADDRIN;
   addrb <= bpout & bcnt;
 
-  FIFOFULL <= '1' when (BPIN = "11" and BPOUT = "00") or
-              (BPIN = "00" and BPOUT = "01") or
-              (BPIN = "01" and BPOUT = "10") or
-              (BPIN = "10" and BPOUT = "11") else
-              '0';
-
   DOUT <= dob;
-
-  main_memclk : process(MEMCLK)
-  begin
-    if rising_edge(MEMCLK) then
-      if INDONE = '1' then
-        bpin <= bpin + 1;
-      end if;
-    end if;
-  end process main_memclk;
 
   main_clk : process(CLK)
   begin
     if rising_edge(CLK) then
 
       cs <= ns;
+
+      if INDONE = '1' then
+        bpin <= bpin + 1;
+      end if;
+
 
       bpinl <= bpin;
 
@@ -98,7 +107,6 @@ begin  -- Behavioral
       if bcnt = "000000000" then
         len <= dob(10 downto 1);
       end if;
-
 
     end if;
   end process main_clk;
