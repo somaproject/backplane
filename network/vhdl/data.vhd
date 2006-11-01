@@ -8,35 +8,29 @@ use UNISIM.vcomponents.all;
 
 entity data is
   port (
-    CLK      : in    std_logic;
-    MEMCLK   : in    std_logic;
-    ECYCLE   : in    std_logic;
-    MYIP     : in    std_logic_vector(31 downto 0);
-    MYMAC    : in    std_logic_vector(47 downto 0);
-    MYBCAST  : in    std_logic_vector(31 downto 0);
+    CLK         : in  std_logic;
+    MEMCLK      : in  std_logic;
+    ECYCLE      : in  std_logic;
+    MYIP        : in  std_logic_vector(31 downto 0);
+    MYMAC       : in  std_logic_vector(47 downto 0);
+    MYBCAST     : in  std_logic_vector(31 downto 0);
     -- input
-    DIENA    : in    std_logic;
-    DINA     : in    std_logic_vector(7 downto 0);
-    DIENB    : in    std_logic;
-    DINB     : in    std_logic_vector(7 downto 0);
-    -- memory
-    RAMDQ    : inout std_logic_vector(15 downto 0);
-    RAMWE    : out   std_logic;
-    RAMADDR  : out   std_logic_vector(16 downto 0);
+    DIENA       : in  std_logic;
+    DINA        : in  std_logic_vector(7 downto 0);
+    DIENB       : in  std_logic;
+    DINB        : in  std_logic_vector(7 downto 0);
     -- tx output
-    DOUT     : out   std_logic_vector(15 downto 0);
-    DOEN     : out   std_logic;
-    ARM      : out   std_logic;
-    GRANT    : in    std_logic;
+    DOUT        : out std_logic_vector(15 downto 0);
+    DOEN        : out std_logic;
+    ARM         : out std_logic;
+    GRANT       : in  std_logic;
     -- retx interface
-    RETXDOUT : out   std_logic_vector(15 downto 0);
-    RETXADDR : out   std_logic_vector(8 downto 0);
-    RETXWE   : out   std_logic;
-    RETXREQ  : in    std_logic;
-    RETXDONE : out   std_logic;
-    RETXSRC  : in    std_logic_vector(5 downto 0);
-    RETXTYP : in    std_logic_vector(1 downto 0);
-    RETXSEQ   : in    std_logic_vector(31 downto 0)
+    RETXID      : out std_logic_vector(13 downto 0); 
+    RETXDONE    : out std_logic;
+    RETXPENDING : in  std_logic;
+    RETXDOUT    : out std_logic_vector(15 downto 0);
+    RETXADDR    : out std_logic_vector(8 downto 0);
+    RETXWE      : out std_logic
     );
 end data;
 
@@ -53,14 +47,8 @@ architecture Behavioral of data is
 
   signal fdin   : std_logic_vector(15 downto 0) := (others => '0');
   signal faddr  : std_logic_vector(8 downto 0)  := (others => '0');
-  signal fvalid : std_logic                     := '0';
+  signal fwe : std_logic                     := '0';
   signal fnext  : std_logic                     := '0';
-
-  signal txfdin  : std_logic_vector(15 downto 0) := (others => '0');
-  signal txfaddr : std_logic_vector(8 downto 0)  := (others => '0');
-  signal txfull  : std_logic                     := '0';
-  signal txfwe   : std_logic                     := '0';
-  signal txfdone : std_logic                     := '0';
 
   -- components
   component dataacquire
@@ -88,58 +76,45 @@ architecture Behavioral of data is
       LENB      : in  std_logic_vector(9 downto 0);
       DIB       : in  std_logic_vector(15 downto 0);
       -- output interface at 100 MHz
-      MEMCLK    : in  std_logic;
       DOUT      : out std_logic_vector(15 downto 0);
-      ADDROUT   : in  std_logic_vector(8 downto 0);
-      FIFOVALID : out std_logic;
-      FIFONEXT  : in  std_logic
-      );
-  end component;
-
-  component datamemarbit
-    port (
-      CLK        : in    std_logic;
-      -- RAM
-      RAMWE      : out   std_logic;
-      RAMADDR    : out   std_logic_vector(16 downto 0);
-      RAMDQ      : inout std_logic_vector(15 downto 0);
-      -- memory packet input
-      FIFODIN    : in    std_logic_vector(15 downto 0);
-      FIFOADDR   : out   std_logic_vector(8 downto 0);
-      FIFOVALID  : in    std_logic;
-      FIFONEXT   : out   std_logic;
-      --retx request
-      RETXDOUT   : out   std_logic_vector(15 downto 0);
-      RETXADDR   : out   std_logic_vector(8 downto 0);
-      RETXWE     : out   std_logic;
-      RETXREQ    : in    std_logic;
-      RETXDONE   : out   std_logic;
-      RETXSRC    : in    std_logic_vector(5 downto 0);
-      RETXTYP    : in    std_logic_vector(1 downto 0);
-      RETXSEQ     : in    std_logic_vector(31 downto 0);
-      -- packet transmission
-      TXDOUT     : out   std_logic_vector(15 downto 0);
-      TXFIFOFULL : in    std_logic;
-      TXFIFOADDR : out   std_logic_vector(8 downto 0);
-      TXWE       : out   std_logic;
-      TXDONE     : out   std_logic
+      ADDROUT   : out  std_logic_vector(8 downto 0);
+      FWEOUT : out std_logic;
+      FIFONEXT  : out  std_logic
       );
   end component;
 
   component datafifo
     port (
-      MEMCLK   : in  std_logic;
-      DIN      : in  std_logic_vector(15 downto 0);
-      FIFOFULL : out std_logic;
-      ADDRIN   : in  std_logic_vector(8 downto 0);
-      WEIN     : in  std_logic;
-      INDONE   : in  std_logic;
+      CLK    : in  std_logic;
+      -- input interfaces
+      DIN    : in  std_logic_vector(15 downto 0);
+      ADDRIN : in  std_logic_vector(8 downto 0);
+      WEIN   : in  std_logic;
+      INDONE : in  std_logic;
       -- output interface
-      CLK      : in  std_logic;
-      DOEN     : out std_logic;
-      DOUT     : out std_logic_vector(15 downto 0);
-      ARM      : out std_logic;
-      GRANT    : in  std_logic);
+      DOEN   : out std_logic;
+      ARM    : out std_logic;
+      DOUT   : out std_logic_vector(15 downto 0);
+      GRANT  : in  std_logic);
+  end component;
+
+  component dataretxbuf
+    port (
+      CLK    : in std_logic;
+      DIN    : in std_logic_vector(15 downto 0);
+      ADDRIN : in std_logic_vector(8 downto 0);
+      WE     : in std_logic;
+      INDONE : in std_logic;
+
+      -- output
+      MEMCLK   : in  std_logic;
+      WID      : out std_logic_vector(13 downto 0);
+      WDOUT    : out std_logic_vector(15 downto 0);
+      WADDR    : out std_logic_vector(8 downto 0);
+      WROUT    : out std_logic;
+      WDONE    : out std_logic;
+      WPENDING : in  std_logic
+      );
   end component;
 
 begin  -- Behavioral
@@ -177,48 +152,36 @@ begin  -- Behavioral
       ADDRB     => dpaddrb,
       LENB      => dplenb,
       DIB       => dpdatab,
-      MEMCLK    => MEMCLK,
       DOUT      => fdin,
       ADDROUT   => faddr,
-      FIFOVALID => fvalid,
+      FWEOUT => fwe,
       FIFONEXT  => fnext);
-
-  datamemarbit_inst : datamemarbit
-    port map (
-      CLK        => MEMCLK,
-      RAMWE      => RAMWE,
-      RAMADDR    => RAMADDR,
-      RAMDQ      => RAMDQ,
-      FIFODIN    => fdin,
-      FIFOADDR   => faddr,
-      FIFOVALID  => fvalid,
-      FIFONEXT   => fnext,
-      RETXDOUT   => RETXDOUT,
-      RETXADDR   => RETXADDR,
-      RETXWE     => RETXWE,
-      RETXREQ    => RETXREQ,
-      RETXDONE   => RETXDONE,
-      RETXSRC    => RETXSRC,
-      RETXTYP    => RETXTYP,
-      RETXSEQ     => RETXSEQ,
-      TXDOUT     => txfdin,
-      TXFIFOFULL => txfull,
-      TXFIFOADDR => txfaddr,
-      TXWE       => txfwe,
-      TXDONE     => txfdone);
 
   datafifo_inst : datafifo
     port map (
-      MEMCLK   => MEMCLK,
-      DIN      => txfdin,
-      FIFOFULL => txfull,
-      ADDRIN   => txfaddr,
-      WEIN     => txfwe,
-      INDONE   => txfdone,
-      CLK      => CLK,
-      DOEN     => DOEN,
-      ARM      => ARM,
-      DOUT     => DOUT,
+      CLK    => CLK,
+      DIN    => fdin,
+      ADDRIN => faddr,
+      WEIN   => fwe,
+      INDONE => fnext,
+      DOEN   => DOEN,
+      ARM    => ARM,
+      DOUT   => DOUT,
       GRANT    => GRANT);
 
+  dataretxbuf_inst: dataretxbuf
+    port map (
+      CLK     => CLK,
+      DIN     => fdin,
+      ADDRIN  => faddr,
+      WE      => fwe,
+      INDONE  => fnext,
+      MEMCLK  => MEMCLK,
+      WID     => RETXID,
+      WDONE   => RETXDONE,
+      WPENDING => RETXPENDING,
+      WDOUT   => RETXDOUT,
+      WADDR   => RETXADDR,
+      WROUT   => RETXWE); 
+    
 end Behavioral;

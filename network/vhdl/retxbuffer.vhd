@@ -17,6 +17,7 @@ entity retxbuffer is
     WADDRA : in std_logic_vector(8 downto 0);
     WRA    : in std_logic;
     WDONEA : in std_logic;
+    WPENDINGA : out std_logic; 
     WCLKA  : in std_logic;
 
     -- output buffer A  (reads) interface
@@ -28,12 +29,14 @@ entity retxbuffer is
     RWROUTA : out std_logic;
     RCLKA   : in  std_logic;
 
---buffer set B input (write) interfafe
+    --buffer set B input (write) interfafe
     WIDB   : in std_logic_vector(13 downto 0);
     WDINB  : in std_logic_vector(15 downto 0);
     WADDRB : in std_logic_vector(8 downto 0);
     WRB    : in std_logic;
     WDONEB : in std_logic;
+    WPENDING : out std_logic; 
+
     WCLKB  : in std_logic;
 
     -- output buffer B set Rad (reads) interface

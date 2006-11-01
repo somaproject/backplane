@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.numeric_std.all;
+
 use std.textio.all;
 use ieee.std_logic_textio.all;
 
@@ -29,28 +31,25 @@ architecture Behavioral of datapacketgentest is
 
   component datapacketgen
     port (
-      CLK       : in  std_logic;
-      ECYCLE    : in  std_logic;
-      MYMAC     : in  std_logic_vector(47 downto 0);
-      MYIP      : in  std_logic_vector(31 downto 0);
-      MYBCAST   : in  std_logic_vector(31 downto 0);
-      ADDRA     : out std_logic_vector(8 downto 0);
-      LENA      : in  std_logic_vector(9 downto 0);
-      DIA       : in  std_logic_vector(15 downto 0);
-      ADDRB     : out std_logic_vector(8 downto 0);
-      LENB      : in  std_logic_vector(9 downto 0);
-      DIB       : in  std_logic_vector(15 downto 0);
-      -- output interface at 100 MHz
-      MEMCLK    : in  std_logic;
-      DOUT      : out std_logic_vector(15 downto 0);
-      ADDROUT   : in  std_logic_vector(8 downto 0);
-      FIFOVALID : out std_logic;
-      FIFONEXT  : in  std_logic
+      CLK     : in  std_logic;
+      ECYCLE  : in  std_logic;
+      MYMAC   : in  std_logic_vector(47 downto 0);
+      MYIP    : in  std_logic_vector(31 downto 0);
+      MYBCAST : in  std_logic_vector(31 downto 0);
+      ADDRA   : out std_logic_vector(8 downto 0);
+      LENA    : in  std_logic_vector(9 downto 0);
+      DIA     : in  std_logic_vector(15 downto 0);
+      ADDRB   : out std_logic_vector(8 downto 0);
+      LENB    : in  std_logic_vector(9 downto 0);
+      DIB     : in  std_logic_vector(15 downto 0);
+
+      DOUT     : out std_logic_vector(15 downto 0);
+      ADDROUT  : out std_logic_vector(8 downto 0);
+      FWEOUT   : out std_logic;
+      FIFONEXT : out std_logic
       );
   end component;
 
-
-  signal MEMCLK : std_logic := '0';
 
   signal CLK     : std_logic                     := '0';
   signal MYMAC   : std_logic_vector(47 downto 0) := (others => '0');
@@ -69,10 +68,10 @@ architecture Behavioral of datapacketgentest is
   signal LENA, LENB : std_logic_vector(9 downto 0) := (others => '0');
 
   -- outputs
-  signal DOUT      : std_logic_vector(15 downto 0) := (others => '0');
-  signal ADDROUT   : std_logic_vector(8 downto 0)  := (others => '0');
-  signal FIFONEXT  : std_logic                     := '0';
-  signal FIFOVALID : std_logic                     := '0';
+  signal DOUT     : std_logic_vector(15 downto 0) := (others => '0');
+  signal ADDROUT  : std_logic_vector(8 downto 0)  := (others => '0');
+  signal FIFONEXT : std_logic                     := '0';
+  signal FWE      : std_logic                     := '0';
 
 
   -- input
@@ -84,26 +83,30 @@ architecture Behavioral of datapacketgentest is
 -- simulated eventbus
   signal epos : integer := 0;
 
+  type outbuffer_t is array (0 to 511) of std_logic_vector(15 downto 0);
+  signal outbuffer : outbuffer_t := (others => (others => '0'));
+
+
+
 begin  -- Behavioral
 
   datapacketgen_uut : datapacketgen
     port map (
-      CLK       => CLK,
-      ECYCLE    => ECYCLE,
-      MYMAC     => MYMAC,
-      MYIP      => MYIP,
-      MYBCAST   => mYBCAST,
-      ADDRA     => ACQADDRA,
-      LENA      => LENA,
-      DIA       => ACQDIA,
-      ADDRB     => ACQADDRB,
-      LENB      => LENB,
-      DIB       => ACQDIB,
-      MEMCLK    => MEMCLK,
-      DOUT      => DOUT,
-      ADDROUT   => ADDROUT,
-      FIFOVALID => FIFOVALID,
-      FIFONEXT  => FIFONEXT);
+      CLK      => CLK,
+      ECYCLE   => ECYCLE,
+      MYMAC    => MYMAC,
+      MYIP     => MYIP,
+      MYBCAST  => mYBCAST,
+      ADDRA    => ACQADDRA,
+      LENA     => LENA,
+      DIA      => ACQDIA,
+      ADDRB    => ACQADDRB,
+      LENB     => LENB,
+      DIB      => ACQDIB,
+      DOUT     => DOUT,
+      ADDROUT  => ADDROUT,
+      FWEOUT   => FWE,
+      FIFONEXT => FIFONEXT);
 
   acqa_uut : dataacquire
     port map (
@@ -131,13 +134,8 @@ begin  -- Behavioral
   MYBCAST <= X"c0a800FF";
 
   -- basic clocking
-  MEMCLK  <= not MEMCLK after 5 ns;
-  clkproc : process(MEMCLK)
-  begin
-    if rising_edge(MEMCLK) then
-      CLK <= not CLK;
-    end if;
-  end process clkproc;
+  CLK <= not CLK after 10 ns;
+
 
   -- ecycle generation
   ecycle_gen : process(CLK)
@@ -187,13 +185,22 @@ begin  -- Behavioral
       wait until rising_edge(CLK);
 
     end loop;
-    assert False report "End of Simulation" severity failure;
+    assert false report "End of Simulation" severity failure;
 
-    
+
   end process datainput;
 
 
   -- capture the output packets
+
+  outcap : process(CLK)
+  begin
+    if rising_edge(CLK) then
+      if FWE = '1' then
+        outbuffer(TO_INTEGER(unsigned(ADDROUT))) <= DOUT;
+      end if;
+    end if;
+  end process;
 
   outputget          : process
     file netdatafile : text;
@@ -205,50 +212,40 @@ begin  -- Behavioral
     file_open(netdatafile, "data.txt");
 
     while not endfile(netdatafile) loop
-      wait until rising_edge(MEMCLK) and ECYCLE = '1';
+      --wait until rising_edge(CLK) and ECYCLE = '1';
 
       -- read length
       for j in 0 to 1 loop
 
+        wait until rising_edge(CLK) and FIFONEXT = '1';
 
-        if FIFOVALID = '1' then
+        if FIFONEXT = '1' then
           readline(netdatafile, L);
           read(L, len);
-          ADDROUT <= (others => '0');
-          wait until rising_edge(MEMCLK);
 
           for i in 0 to len -1 loop
-            wait until rising_edge(MEMCLK);
             hread(L, data);
             DATAEXPECTED <= data;
-            wait for 1 ns;
+            wait for 50 ps;
 
-            if data /= DOUT then
+            if data /= outbuffer(i) then
               DATAERROR <= '1';
             else
               DATAERROR <= '0';
             end if;
-            wait for 1 ns;
-            assert data = DOUT report "Error reading data" severity error;
-            ADDROUT     <= ADDROUT + 1;
+            assert data = outbuffer(i)
+              report "Error reading data " severity error;
+            wait for 50 ps;
 
           end loop;  -- i
-
-          wait until rising_edge(MEMCLK);
-          FIFONEXT <= '1';
-          wait until rising_edge(MEMCLK);
-          FIFONEXT <= '0';
-          wait for 2 us;
-          wait until rising_edge(MEMCLK);
-          wait until rising_edge(MEMCLK);
-          wait until rising_edge(MEMCLK);
+          --report "validation complete";
 
         end if;
       end loop;  -- j
     end loop;
 
-    assert False report "End of Simulation" severity Failure;
-    
+    assert false report "End of Simulation" severity failure;
+
   end process outputget;
 
 end Behavioral;

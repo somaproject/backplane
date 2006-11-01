@@ -15,8 +15,12 @@ use UNISIM.vcomponents.all;
 
 entity network is
   port (
-    CLK          : in    std_logic;
-    MEMCLK       : in    std_logic;
+    CLK       : in std_logic;
+    MEMCLK    : in std_logic;
+    MEMCLK90  : in std_logic;
+    MEMCLK180 : in std_logic;
+    MEMCLK270 : in std_logic;
+
     RESET        : in    std_logic;
     -- config
     MYIP         : in    std_logic_vector(31 downto 0);
@@ -43,10 +47,17 @@ entity network is
     DIENB        : in    std_logic;
     DINB         : in    std_logic_vector(7 downto 0);
     -- memory interface
-    RAMDQ        : inout std_logic_vector(15 downto 0);
+    RAMCKE       : out   std_logic := '0';
+    RAMCAS       : out   std_logic;
+    RAMRAS       : out   std_logic;
+    RAMCS        : out   std_logic;
     RAMWE        : out   std_logic;
-    RAMADDR      : out   std_logic_vector(16 downto 0);
-    RAMCLK       : out   std_logic
+    RAMADDR      : out   std_logic_vector(12 downto 0);
+    RAMBA        : out   std_logic_vector(1 downto 0);
+    RAMDQSH      : inout std_logic;
+    RAMDQSL      : inout std_logic;
+    RAMDQ        : inout std_logic_vector(15 downto 0)
+
     );
 end network;
 
@@ -90,6 +101,8 @@ architecture Behavioral of network is
       DIN3     : in  std_logic_vector(15 downto 0);
       DIN4     : in  std_logic_vector(15 downto 0);
       DIN5     : in  std_logic_vector(15 downto 0);
+      DIN6     : in  std_logic_vector(15 downto 0);
+      
       GRANT    : out std_logic_vector(5 downto 0);
       ARM      : in  std_logic_vector(5 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
@@ -153,35 +166,29 @@ architecture Behavioral of network is
 
   component data
     port (
-      CLK      : in    std_logic;
-      MEMCLK   : in    std_logic;
-      ECYCLE   : in    std_logic;
-      MYMAC    : in    std_logic_vector(47 downto 0);
-      MYIP     : in    std_logic_vector(31 downto 0);
-      MYBCAST  : in    std_logic_vector(31 downto 0);
+      CLK         : in  std_logic;
+      MEMCLK      : in  std_logic;
+      ECYCLE      : in  std_logic;
+      MYIP        : in  std_logic_vector(31 downto 0);
+      MYMAC       : in  std_logic_vector(47 downto 0);
+      MYBCAST     : in  std_logic_vector(31 downto 0);
       -- input
-      DIENA    : in    std_logic;
-      DINA     : in    std_logic_vector(7 downto 0);
-      DIENB    : in    std_logic;
-      DINB     : in    std_logic_vector(7 downto 0);
-      -- memory
-      RAMDQ    : inout std_logic_vector(15 downto 0);
-      RAMWE    : out   std_logic;
-      RAMADDR  : out   std_logic_vector(16 downto 0);
+      DIENA       : in  std_logic;
+      DINA        : in  std_logic_vector(7 downto 0);
+      DIENB       : in  std_logic;
+      DINB        : in  std_logic_vector(7 downto 0);
       -- tx output
-      DOUT     : out   std_logic_vector(15 downto 0);
-      DOEN     : out   std_logic;
-      ARM      : out   std_logic;
-      GRANT    : in    std_logic;
+      DOUT        : out std_logic_vector(15 downto 0);
+      DOEN        : out std_logic;
+      ARM         : out std_logic;
+      GRANT       : in  std_logic;
       -- retx interface
-      RETXDOUT : out   std_logic_vector(15 downto 0);
-      RETXADDR : out   std_logic_vector(8 downto 0);
-      RETXWE   : out   std_logic;
-      RETXREQ  : in    std_logic;
-      RETXDONE : out   std_logic;
-      RETXSRC  : in    std_logic_vector(5 downto 0);
-      RETXTYP  : in    std_logic_vector(1 downto 0);
-      RETXSEQ  : in    std_logic_vector(31 downto 0)
+      RETXID      : out std_logic_vector(13 downto 0);
+      RETXDONE    : out std_logic;
+      RETXPENDING : in  std_logic;
+      RETXDOUT    : out std_logic_vector(15 downto 0);
+      RETXADDR    : out std_logic_vector(8 downto 0);
+      RETXWE      : out std_logic
       );
   end component;
 
@@ -194,14 +201,13 @@ architecture Behavioral of network is
       INPKTDATA : in  std_logic_vector(15 downto 0);
       INPKTADDR : out std_logic_vector(9 downto 0);
       -- retx interface
-      RETXDIN   : in  std_logic_vector(15 downto 0);
-      RETXADDR  : in  std_logic_vector(8 downto 0);
-      RETXWE    : in  std_logic;
-      RETXREQ   : out std_logic;
-      RETXDONE  : in  std_logic;
-      RETXSRC   : out std_logic_vector(5 downto 0);
-      RETXTYP   : out std_logic_vector(1 downto 0);
-      RETXSEQ   : out std_logic_vector(31 downto 0);
+    RETXDIN   : in  std_logic_vector(15 downto 0);
+    RETXADDR  : in  std_logic_vector(8 downto 0);
+    RETXWE    : in  std_logic;
+    RETXREQ   : out std_logic;
+    RETXDONE  : in  std_logic;
+    RETXID   : out std_logic_vector(13 downto 0);
+
       -- output
       ARM       : out std_logic;
       GRANT     : in  std_logic;
@@ -231,7 +237,112 @@ architecture Behavioral of network is
       GRANT     : in  std_logic);
   end component;
 
-  -- input if
+
+  component memddr2
+    port (
+      CLK    : in    std_logic;
+      CLK90  : in    std_logic;
+      CLK180 : in    std_logic;
+      CLK270 : in    std_logic;
+      RESET  : in    std_logic;
+      -- RAM!
+      CKE    : out   std_logic := '0';
+      CAS    : out   std_logic;
+      RAS    : out   std_logic;
+      CS     : out   std_logic;
+      WE     : out   std_logic;
+      ADDR   : out   std_logic_vector(12 downto 0);
+      BA     : out   std_logic_vector(1 downto 0);
+      DQSH   : inout std_logic;
+      DQSL   : inout std_logic;
+      DQ     : inout std_logic_vector(15 downto 0);
+      -- interface
+      START  : in    std_logic;
+      RW     : in    std_logic;
+      DONE   : out   std_logic;
+      -- write interface
+      ROWTGT : in    std_logic_vector(14 downto 0);
+      WRADDR : out   std_logic_vector(7 downto 0);
+      WRDATA : in    std_logic_vector(31 downto 0);
+      -- read interface
+      RDADDR : out   std_logic_vector(7 downto 0);
+      RDDATA : out   std_logic_vector(31 downto 0);
+      RDWE   : out   std_logic
+      );
+  end component;
+
+
+
+  component retxbuffer
+    port (
+      CLK   : in std_logic;
+      CLKHI : in std_logic;
+
+      -- buffer set A input (write) interface
+      WIDA      : in  std_logic_vector(13 downto 0);
+      WDINA     : in  std_logic_vector(15 downto 0);
+      WADDRA    : in  std_logic_vector(8 downto 0);
+      WRA       : in  std_logic;
+      WDONEA    : in  std_logic;
+      WPENDINGA : out std_logic;
+      WCLKA     : in  std_logic;
+
+      -- output buffer A  (reads) interface
+      RIDA    : in  std_logic_vector (13 downto 0);
+      RREQA   : in  std_logic;
+      RDOUTA  : out std_logic_vector(15 downto 0);
+      RADDRA  : out std_logic_vector(8 downto 0);
+      RDONEA  : out std_logic;
+      RWROUTA : out std_logic;
+      RCLKA   : in  std_logic;
+
+      --buffer set B input (write) interfafe
+      WIDB      : in  std_logic_vector(13 downto 0);
+      WDINB     : in  std_logic_vector(15 downto 0);
+      WADDRB    : in  std_logic_vector(8 downto 0);
+      WRB       : in  std_logic;
+      WDONEB    : in  std_logic;
+      WPENDINGB : out std_logic;
+
+      WCLKB : in std_logic;
+
+      -- output buffer B set Rad (reads) interface
+      RIDB    : in  std_logic_vector (13 downto 0);
+      RREQB   : in  std_logic;
+      RDOUTB  : out std_logic_vector(15 downto 0);
+      RADDRB  : out std_logic_vector(8 downto 0);
+      RDONEB  : out std_logic;
+      RWROUTB : out std_logic;
+      RCLKB   : in  std_logic;
+
+      -- memory output interface
+      MEMSTART  : out std_logic;
+      MEMRW     : out std_logic;
+      MEMDONE   : in  std_logic;
+      MEMWRADDR : in  std_logic_vector(7 downto 0);
+      MEMWRDATA : out std_logic_vector(31 downto 0) := (others => '0');
+      MEMROWTGT : out std_logic_vector(14 downto 0);
+      MEMRDDATA : in  std_logic_vector(31 downto 0);
+      MEMRDADDR : in  std_logic_vector(7 downto 0);
+      MEMRDWE   : in  std_logic
+      );
+  end component;
+
+-- memory
+  signal memstart : std_logic := '0';
+  signal memrw    : std_logic := '0';
+  signal memdone  : std_logic := '0';
+
+  signal memrowtgt : std_logic_vector(14 downto 0) := (others => '0');
+  signal memwraddr : std_logic_vector(7 downto 0)  := (others => '0');
+  signal memwrdata : std_logic_vector(31 downto 0) := (others => '0');
+  -- read interface
+  signal memrdaddr : std_logic_vector(7 downto 0)  := (others => '0');
+  signal memrddata : std_logic_vector(31 downto 0) := (others => '0');
+  signal memrdwe   : std_logic                     := '0';
+
+
+-- input if
 
   signal pktdata : std_logic_vector(15 downto 0) := (others => '0');
 
@@ -260,9 +371,11 @@ architecture Behavioral of network is
   signal din3 : std_logic_vector(15 downto 0) := (others => '0');
   signal din4 : std_logic_vector(15 downto 0) := (others => '0');
   signal din5 : std_logic_vector(15 downto 0) := (others => '0');
+  signal din6 : std_logic_vector(15 downto 0) := (others => '0');
 
-  signal grant : std_logic_vector(5 downto 0) := (others => '0');
-  signal arm   : std_logic_vector(5 downto 0) := (others => '0');
+
+  signal grant : std_logic_vector(6 downto 0) := (others => '0');
+  signal arm   : std_logic_vector(6 downto 0) := (others => '0');
 
   -- retx interface
   signal retxdout : std_logic_vector(15 downto 0) := (others => '0');
@@ -277,8 +390,43 @@ architecture Behavioral of network is
 
   -- clock signals
   signal clkf, clkfint, clk2f : std_logic := '0';
-  signal dcmlocked : std_logic := '0';
-  
+  signal dcmlocked            : std_logic := '0';
+
+  -- buffer set A input (write) interface
+  signal wida      : std_logic_vector(13 downto 0) := (others => '0');
+  signal wdina     : std_logic_vector(15 downto 0) := (others => '0');
+  signal waddra    : std_logic_vector(8 downto 0)  := (others => '0');
+  signal wra       : std_logic                     := '0';
+  signal wdonea    : std_logic                     := '0';
+  signal wpendinga : std_logic                     := '0';
+  signal wclka     : std_logic                     := '0';
+
+  -- output buffer A  (reads) interface
+  signal rida    : std_logic_vector (13 downto 0) := (others => '0');
+  signal rreqa   : std_logic                      := '0';
+  signal rdouta  : std_logic_vector(15 downto 0)  := (others => '0');
+  signal raddra  : std_logic_vector(8 downto 0)   := (others => '0');
+  signal rdonea  : std_logic                      := '0';
+  signal rwrouta : std_logic                      := '0';
+  signal rclka   : std_logic                      := '0';
+
+  --buffer set B input (write) interfafe
+  signal widb      : std_logic_vector(13 downto 0) := (others => '0');
+  signal wdinb     : std_logic_vector(15 downto 0) := (others => '0');
+  signal waddrb    : std_logic_vector(8 downto 0)  := (others => '0');
+  signal wrb       : std_logic                     := '0';
+  signal wdoneb    : std_logic                     := '0';
+  signal wpendingb : std_logic                     := '0';
+  signal wclkb     : std_logic                     := '0';
+
+  -- output buffer B set Rad (reads) interface
+  signal ridb    : std_logic_vector (13 downto 0) := (others => '0');
+  signal rreqb   : std_logic                      := '0';
+  signal rdoutb  : std_logic_vector(15 downto 0)  := (others => '0');
+  signal raddrb  : std_logic_vector(8 downto 0)   := (others => '0');
+  signal rdoneb  : std_logic                      := '0';
+  signal rwroutb : std_logic                      := '0';
+  signal rclkb   : std_logic                      := '0';
 
 begin  -- Behavioral
 
@@ -314,11 +462,11 @@ begin  -- Behavioral
       DIN3     => din3,
       DIN4     => din4,
       DIN5     => din5,
+      DIN6     => din6,
       GRANT    => grant,
       ARM      => arm,
       DOUT     => NICDOUT,
       NEWFRAME => NICNEWFRAME);
-
 
 
   arpresponse_inst : arpresponse
@@ -330,10 +478,10 @@ begin  -- Behavioral
       DONE      => arpindone,
       INPKTDATA => pktdata,
       INPKTADDR => arpinaddr,
-      ARM       => arm(4),
-      GRANT     => grant(4),
-      DOUT      => din4,
-      DOEN      => den(4));
+      ARM       => arm(5),
+      GRANT     => grant(5),
+      DOUT      => din5,
+      DOEN      => den(5));
 
   pingresponse_inst : pingresponse
     port map (
@@ -344,10 +492,10 @@ begin  -- Behavioral
       DONE      => pingindone,
       INPKTDATA => pktdata,
       INPKTADDR => pinginaddr,
-      ARM       => arm(5),
-      GRANT     => grant(5),
-      DOUT      => din5,
-      DOEN      => den(5));
+      ARM       => arm(6),
+      GRANT     => grant(6),
+      DOUT      => din6,
+      DOEN      => den(6));
 
   eventtx_inst : eventtx
     port map (
@@ -365,31 +513,28 @@ begin  -- Behavioral
 
   data_inst : data
     port map (
-      CLK      => CLK,
-      MEMCLK   => clk2f,
-      MYIP     => MYIP,
-      MYBCAST  => MYBCAST,
-      MYMAC    => MYMAC,
-      ECYCLE   => ECYCLE,
-      DIENA    => DIENA,
-      DINA     => DINA,
-      DIENB    => DIENB,
-      DINB     => DINB,
-      RAMDQ    => RAMDQ,
-      RAMWE    => RAMWE,
-      RAMADDR  => RAMADDR,
-      DOUT     => din1,
-      DOEN     => den(1),
-      ARM      => arm(1),
-      GRANT    => grant(1),
-      RETXDOUT => retxdout,
-      RETXADDR => retxaddr,
-      RETXWE   => retxwe,
-      RETXREQ  => retxreq,
-      RETXDONE => retxdone,
-      RETXSRC  => retxsrc,
-      RETXTYP  => retxtyp,
-      RETXSEQ  => retxseq);
+      CLK         => CLK,
+      MEMCLK      => memclk,
+      MYIP        => MYIP,
+      MYBCAST     => MYBCAST,
+      MYMAC       => MYMAC,
+      ECYCLE      => ECYCLE,
+      DIENA       => DIENA,
+      DINA        => DINA,
+      DIENB       => DIENB,
+      DINB        => DINB,
+      DOUT        => din1,
+      DOEN        => den(1),
+      ARM         => arm(1),
+      GRANT       => grant(1),
+      RETXID      => wida,
+      RETXDONE    => wdonea,
+      RETXPENDING => wpendinga,
+      RETXDOUT    => wdina,
+      RETXADDR    => waddra,
+      RETXWE      => wra
+
+      );
 
   retxresponse_inst : retxresponse
     port map (
@@ -398,14 +543,12 @@ begin  -- Behavioral
       DONE      => retxindone,
       INPKTDATA => pktdata,
       INPKTADDR => retxinaddr,
-      RETXDIN   => retxdout,
-      RETXADDR  => retxaddr,
-      RETXWE    => retxwe,
-      RETXREQ   => retxreq,
-      RETXDONE  => retxdone,
-      RETXsrc   => retxsrc,
-      RETXTYP   => retxtyp,
-      RETXSEQ   => retxseq,
+      RETXDIN   => rdouta, 
+      RETXADDR  => raddra,
+      RETXWE    => rwrouta,
+      RETXREQ   => rreqa,
+      RETXDONE  => rdonea,
+      RETXID => rida, 
       ARM       => arm(2),
       GRANT     => grant(2),
       DOUT      => din2,
@@ -424,40 +567,78 @@ begin  -- Behavioral
       EARX      => EARX,
       EDRX      => EDRX,
       EDSELRX   => EDSELRX,
-      DOUT      => din3,
-      DOEN      => den(3),
-      ARM       => arm(3),
-      GRANT     => grant(3));
+      DOUT      => din4,
+      DOEN      => den(4),
+      ARM       => arm(4),
+      GRANT     => grant(4));
 
-  clkgen : DCM_BASE
-    generic map (
-      CLK_FEEDBACK          => "1X",
-      DCM_AUTOCALIBRATION   => true,
-      DCM_PERFORMANCE_MODE  => "MAX_SPEED",
-      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
-      DFS_FREQUENCY_MODE    => "LOW",
-      DLL_FREQUENCY_MODE    => "LOW",
-      DUTY_CYCLE_CORRECTION => true,
-      FACTORY_JF            => X"F0F0",
-      PHASE_SHIFT           => 0,
-      STARTUP_WAIT          => false)
-    port map(
-      CLKIN                 => CLK,
-      CLK0                  => clkfint,
-
-      CLKFB                 => clkf,
-      CLK2X                 => clk2f,
-      CLK180 => NICIOCLK, 
-      RST                   => RESET,
-      LOCKED                => dcmlocked
-      );
-
-  
-  clk_bufg : buFG
+  retxbuffer_inst : retxbuffer
     port map (
-      O => clkf,
-      I => clkfint);
+      CLK       => CLK,
+      CLKHI     => MEMCLK,
+      WIDA      => WIDA,
+      WDINA     => wdina,
+      WADDRA    => waddra,
+      WRA       => wra,
+      WDONEA    => wdonea,
+      WPENDINGA => wpendinga, 
+      WCLKA     => MEMCLK,
+      RIDA      => rida,
+      RREQA     => rreqa,
+      RDOUTA    => rdouta,
+      RADDRA    => raddra,
+      RDONEA    => rdonea,
+      RWROUTA   => rwrouta,
+      RCLKA     => CLK,
+      WIDB      => widb,
+      WDINB     => wdinb,
+      WADDRB    => waddrb,
+      WRB       => wrb,
+      WDONEB    => wdoneb,
+      WPENDINGB => wpendingb, 
+      WCLKB     => CLK,
+      RIDB      => ridb,
+      RREQB     => rreqb,
+      RDOUTB    => rdoutb,
+      RADDRB    => raddrb,
+      RDONEB    => rdoneb,
+      RWROUTB   => rwroutb,
+      RCLKB     => clk,
+      MEMSTART  => memstart,
+      MEMRW     => memrw,
+      MEMDONE   => memdone,
+      MEMWRADDR => memwraddr,
+      MEMWRDATA => memwrdata,
+      MEMROWTGT => memrowtgt,
+      MEMRDDATA => memrddata,
+      MEMRDADDR => memrdaddr,
+      MEMRDWE   => memrdwe);
 
-  RAMCLK <= clk2f;
+  memddr2_inst : memddr2
+    port map (
+      CLK    => MEMCLK,
+      CLK90  => memclk90,
+      CLK180 => memclk180,
+      CLK270 => memclk270,
+      RESET  => RESET,
+      CKE    => RAMCKE,
+      CAS    => RAMCAS,
+      RAS    => RAMRAS,
+      CS     => RAMCS,
+      WE     => RAMWE,
+      ADDR   => RAMADDR,
+      BA     => RAMBA,
+      DQSH   => RAMDQSH,
+      DQSL   => RAMDQSL,
+      DQ     => RAMDQ,
+      START  => MEMSTART,
+      RW     => MEMRW,
+      DONE   => memdone,
+      ROWTGT => memrowtgt,
+      WRADDR => memwraddr,
+      WRDATA => memwrdata,
+      RDADDR => memrdaddr,
+      RDDATA => memrddata,
+      RDWE   => memrdwe);
 
 end Behavioral;

@@ -8,9 +8,9 @@ use UNISIM.vcomponents.all;
 
 
 entity datafifo is
-
   port (
     CLK    : in  std_logic;
+    MEMCLK : in  std_logic;
     -- input interfaces
     DIN    : in  std_logic_vector(15 downto 0);
     ADDRIN : in  std_logic_vector(8 downto 0);
@@ -21,7 +21,6 @@ entity datafifo is
     ARM    : out std_logic;
     DOUT   : out std_logic_vector(15 downto 0);
     GRANT  : in  std_logic);
-
 end datafifo;
 
 architecture Behavioral of datafifo is
@@ -61,7 +60,7 @@ architecture Behavioral of datafifo is
 
 begin  -- Behavioral
 
-  mem: bigmem
+  mem : bigmem
     port map (
       CLK     => CLK,
       DIN     => DIN,
@@ -69,8 +68,8 @@ begin  -- Behavioral
       ADDRIN  => addra,
       DOUT    => dob,
       ADDROUT => addrb);
-  
-    
+
+
   addra <= bpin & ADDRIN;
   addrb <= bpout & bcnt;
 
