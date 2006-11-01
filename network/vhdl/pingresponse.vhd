@@ -114,13 +114,13 @@ begin  -- Behavioral
   jtagin(7 downto 0) <= DEBUG;
   jtagin(39 downto 8) <= X"ABCDEF78";
   
-    jtag_Debug: jtagsimpleout
-    generic map (
-      JTAG_CHAIN => 2,
-      JTAGN      => 40)
-    port map (
-      CLK => CLK,
-      DIN => jtagin);
+--     jtag_Debug: jtagsimpleout
+--     generic map (
+--       JTAG_CHAIN => 2,
+--       JTAGN      => 40)
+--     port map (
+--       CLK => CLK,
+--       DIN => jtagin);
 
   pingipwriter_inst : pingipwriter
     port map (

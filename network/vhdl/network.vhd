@@ -364,7 +364,7 @@ architecture Behavioral of network is
 
   -- output
 
-  signal den  : std_logic_vector(5 downto 0)  := (others => '0');
+  signal den  : std_logic_vector(6 downto 0)  := (others => '0');
   signal din0 : std_logic_vector(15 downto 0) := (others => '0');
   signal din1 : std_logic_vector(15 downto 0) := (others => '0');
   signal din2 : std_logic_vector(15 downto 0) := (others => '0');
@@ -641,4 +641,7 @@ begin  -- Behavioral
       RDDATA => memrddata,
       RDWE   => memrdwe);
 
+
+  NICIOCLK <= CLK;
+  
 end Behavioral;

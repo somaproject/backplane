@@ -35,13 +35,13 @@ architecture Behavioral of dataretxbuf is
   signal outen   : std_logic                    := '0';
   signal nextout : std_logic                    := '0';
   signal fopos   : std_logic_vector(2 downto 0) := (others => '0');
-  signal bpos    : std_logic_vector(7 downto 0) := (others => '0');
+  signal bpos    : std_logic_vector(8 downto 0) := (others => '0');
 
   signal addrb : std_logic_vector(11 downto 0) := (others => '0');
 
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
 
-  signal src : std_logic_vector(1 downto 0);
+  signal src : std_logic_vector(5 downto 0);
   signal id  : std_logic_vector(31 downto 0) := (others => '0');
   signal typ : std_logic_vector(1 downto 0)  := (others => '0');
 
@@ -56,7 +56,7 @@ begin  -- Behavioral
 
     RAMB16_S4_S4_inst : RAMB16_S4_S4
       generic map (
-        SIM_COLLISION_CHECK => "NONE", )
+        SIM_COLLISION_CHECK => "NONE" )
       port map (
         DOA                 => open,
         DOB                 => dob(i*4 + 3 downto i*4),
@@ -78,7 +78,7 @@ begin  -- Behavioral
 
   addra <= fpos & addrin;
 
-  WIDA <= typ & src & id(5 downto 0);
+  WID <= typ & src & id(5 downto 0);
 
   main : process(CLK)
   begin
@@ -113,19 +113,19 @@ begin  -- Behavioral
         fopos <= fopos + 1;
       end if;
 
-      WADDR <= '0' & bpos;
+      WADDR <=  bpos;
       WROUT <= outen;
 
-      if bpos = X"13" then
-        src <= dob(1 downto 0);
+      if bpos = "0" & X"13" then
+        src <= dob(5 downto 0);
         typ <= dob(9 downto 8);
       end if;
 
-      if bpos = X"11" then
+      if bpos = "0" &  X"11" then
         id(31 downto 16) <= dob;
       end if;
 
-      if bpos =X"12" then
+      if bpos = "0" & X"12" then
         id(15 downto 0) <= dob;
       end if;
     end if;
@@ -151,13 +151,13 @@ begin  -- Behavioral
       when wrwait =>
         outen   <= '1';
         nextout <= '0';
-        if bpos = X"00" then
+        if bpos = "0" & X"00" then
           ns    <= done;
         else
           ns    <= wrwait;
         end if;
 
-      when wrdone =>
+      when done =>
         outen   <= '0';
         nextout <= '1';
         ns      <= wpendh;
@@ -165,7 +165,7 @@ begin  -- Behavioral
       when wpendh =>
         outen   <= '0';
         nextout <= '0';
-        if wrpending = '1' then
+        if wpending = '1' then
           ns    <= wpendl;
         else
           ns    <= wpendh;
@@ -174,7 +174,7 @@ begin  -- Behavioral
       when wpendl =>
         outen   <= '0';
         nextout <= '0';
-        if wrpending = '0' then
+        if wpending = '0' then
           ns    <= none;
         else
           ns    <= wpendl;

@@ -30,8 +30,7 @@ end datareceiver;
 
 architecture Behavioral of datareceiver is
   -- rxcnt is the count of data packets successfully received
-  -- rxgood                             -- the most recent NEWFRAME cycle
-  --                                    -- was a good packet
+  -- rxgood  the most recent NEWFRAME cycle was a good packet
   -- RXMISSING : oops, we missed one
   -- RXERROR : valid packet, invalid data
 
@@ -82,6 +81,7 @@ begin  -- Behavioral
             elsif TO_INTEGER(unsigned(id_input)) > id_pending then
               if maybegood = '1' then
                 RXMISSING            <= '1';
+                report "Missing Data packet" severity Error;
               end if;
               maybegood            <= '0';
             else

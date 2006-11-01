@@ -34,16 +34,20 @@ architecture Behavioral of eventreceiver is
   signal time_pending : integer                       := 0;
   signal time_input   : std_logic_vector(31 downto 0) := (others => '0');
   signal read_len     : integer                       := 0;
+  signal rxmissingint : std_logic                     := '0';
 
 begin  -- Behavioral
-  RXCNT <= rxcntint;
+  RXCNT     <= rxcntint;
+  RXMISSING <= rxmissingint;
 
   process(CLK)
     variable tim : std_logic_vector(47 downto 0) := (others => '0');
   begin
     if rising_edge(CLK) then
       newframel <= NEWFRAME;
-      tim                                        := std_logic_vector(TO_UNSIGNED(time_pending, 48));
+
+      tim := std_logic_vector(TO_UNSIGNED(time_pending, 48));
+
       if NEWFRAME = '0' then
         bytepos <= 0;
       elsif NEWFRAME = '1' and newframel = '0' then
@@ -86,13 +90,13 @@ begin  -- Behavioral
 
               if TO_INTEGER(unsigned(time_input))
                  = time_pending then
-                RXMISSING <= '0';
+                RXMISSINGint <= '0';
               elsif TO_INTEGER(unsigned(time_input))
                 /= time_pending then
-                RXMISSING <= '1';
-                maybegood <= '0';
+                RXMISSINGint <= '1';
+                maybegood    <= '0';
               else
-                maybegood <= '0';
+                maybegood    <= '0';
               end if;
 
 
@@ -103,10 +107,19 @@ begin  -- Behavioral
       end if;
 
       if newframe = '0' and newframel = '1' then
-        RXGOOD         <= maybegood;
+        RXGOOD <= maybegood;
         if maybegood = '1' then
+          report "Received correct event packet";
+
           rxcntint     <= rxcntint + 1;
           time_pending <= time_pending + 1;
+
+          -- if RXMISSING and maybegood then
+          -- this is an error
+          if rxmissingint = '1' and maybegood = '1' then
+            report "Missing Event packet" severity error;
+          end if;
+
         end if;
       end if;
     end if;

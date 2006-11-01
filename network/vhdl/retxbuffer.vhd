@@ -35,7 +35,7 @@ entity retxbuffer is
     WADDRB : in std_logic_vector(8 downto 0);
     WRB    : in std_logic;
     WDONEB : in std_logic;
-    WPENDING : out std_logic; 
+    WPENDINGB : out std_logic; 
 
     WCLKB  : in std_logic;
 

@@ -10,7 +10,6 @@ use UNISIM.vcomponents.all;
 entity datafifo is
   port (
     CLK    : in  std_logic;
-    MEMCLK : in  std_logic;
     -- input interfaces
     DIN    : in  std_logic_vector(15 downto 0);
     ADDRIN : in  std_logic_vector(8 downto 0);
@@ -153,49 +152,5 @@ begin  -- Behavioral
     end case;
   end process fsm;
 
-
-  buffer_high : RAMB16_S9_S9
-    generic map (
-      SIM_COLLISION_CHECK => "NONE")
-    port map (
-      DOA                 => open,
-      DOB                 => dob(15 downto 8),
-      ADDRA               => addra,
-      ADDRB               => addrb,
-      CLKA                => MEMCLK,
-      CLKB                => CLK,
-      DIA                 => DIN(15 downto 8),
-      DIB                 => X"00",
-      DIPA                => "0",
-      DIPB                => "0",
-      ENA                 => '1',
-      ENB                 => '1',
-      SSRA                => '0',
-      SSRB                => '0',
-      WEA                 => WEIN,
-      WEB                 => '0'
-      );
-
-  buffer_low : RAMB16_S9_S9
-    generic map (
-      SIM_COLLISION_CHECK => "NONE")
-    port map (
-      DOA                 => open,
-      DOB                 => dob(7 downto 0),
-      ADDRA               => addra,
-      ADDRB               => addrb,
-      CLKA                => MEMCLK,
-      CLKB                => CLK,
-      DIA                 => DIN(7 downto 0),
-      DIB                 => X"00",
-      DIPA                => "0",
-      DIPB                => "0",
-      ENA                 => '1',
-      ENB                 => '1',
-      SSRA                => '0',
-      SSRB                => '0',
-      WEA                 => WEIN,
-      WEB                 => '0'
-      );
 
 end Behavioral;

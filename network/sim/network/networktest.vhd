@@ -11,8 +11,12 @@ use UNISIM.vcomponents.all;
 
 library WORK;
 use WORK.networkstack;
+use WORK.HY5PS121621F_PACK;
+use WORK.HY5PS121621F_PACK.all;
+
 use WORK.somabackplane.all;
 use Work.somabackplane;
+
 
 entity networktest is
 
@@ -108,13 +112,20 @@ architecture Behavioral of networktest is
   signal retx_id            : std_logic_vector(31 downto 0) := (others => '0');
   signal retx_done          : std_logic                     := '0';
 
+  signal mainclk    : std_logic := '0';
+  signal clkpos     : integer   := 0;
+  signal clkslowpos : integer   := 0;
+
+  signal clockoffset : time := 3.2 ns;
+
+  signal clk_period : time := 6.6666 ns;
 
 
-  signal CLK       : std_logic := '0';
-  signal memclk    : std_logic := '0';
-  signal memclk90  : std_logic := '0';
-  signal memclk180 : std_logic := '0';
-  signal memclk270 : std_logic := '0';
+  signal CLK                 : std_logic := '0';
+  signal memclk, memclkn     : std_logic := '0';
+  signal memclk90, memclk90n : std_logic := '0';
+  signal memclk180           : std_logic := '0';
+  signal memclk270           : std_logic := '0';
 
 
   signal RESET        : std_logic                     := '1';
@@ -184,9 +195,95 @@ architecture Behavioral of networktest is
   signal eventinputs : events := (others => (others => X"0000"));
 
   signal eazeros : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
+  signal odelay  : time                                          := 0 ps;
+
+  component HY5PS121621F
+    generic (
+      TimingCheckFlag :       boolean                       := true;
+      PUSCheckFlag    :       boolean                       := false;
+      Part_Number     :       PART_NUM_TYPE                 := B400);
+    port
+      ( DQ            : inout std_logic_vector(15 downto 0) := (others => 'Z');
+        LDQS          : inout std_logic                     := 'Z';
+        LDQSB         : inout std_logic                     := 'Z';
+        UDQS          : inout std_logic                     := 'Z';
+        UDQSB         : inout std_logic                     := 'Z';
+        LDM           : in    std_logic;
+        WEB           : in    std_logic;
+        CASB          : in    std_logic;
+        RASB          : in    std_logic;
+        CSB           : in    std_logic;
+        BA            : in    std_logic_vector(1 downto 0);
+        ADDR          : in    std_logic_vector(12 downto 0);
+        CKE           : in    std_logic;
+        CLK           : in    std_logic;
+        CLKB          : in    std_logic;
+        UDM           : in    std_logic;
+        odelay        : in    time                          := 0 ps);
+  end component;
+
+
+  constant startup_delay : time      := 250 us;
+  signal   startwait     : std_logic := '1';
+
 
 begin  -- Behavioral
+  mainclk <= not mainclk after (clk_period / 8);
+  RESET   <= '0'         after 20 ns;
 
+  -- startup wait for ram to stabilize
+
+  process(mainclk)
+  begin
+    if rising_edge(mainclk) then
+      if clkpos = 3 then
+        clkpos <= 0;
+      else
+        clkpos <= clkpos + 1;
+      end if;
+
+      if clkpos = 0 then
+        MEMCLK <= '1';
+      elsif clkpos = 2 then
+        MEMCLK <= '0';
+      end if;
+
+      if clkpos = 1 then
+        MEMCLK90 <= '1';
+      elsif clkpos = 3 then
+        MEMCLK90 <= '0';
+      end if;
+
+      if clkpos = 2 then
+        MEMCLK180 <= '1';
+      elsif clkpos = 0 then
+        MEMCLK180 <= '0';
+      end if;
+
+      if clkpos = 3 then
+        MEMCLK270 <= '1';
+      elsif clkpos = 1 then
+        MEMCLK270 <= '0';
+      end if;
+
+      if clkslowpos = 11 then
+        clkslowpos <= 0;
+      else
+        clkslowpos <= clkslowpos + 1;
+      end if;
+
+      if clkslowpos = 0 then
+        CLK <= '1';
+      elsif clkslowpos = 6 then
+        CLK <= '0';
+
+      end if;
+
+    end if;
+  end process;
+
+  MEMCLKN   <= not MEMCLK;
+  MEMCLK90N <= not MEMCLK90;
 
   network_uut : network
     port map (
@@ -232,20 +329,42 @@ begin  -- Behavioral
       RAMDQSL => RAMDQSL,
       RAMDQ   => RAMDQ);
 
+  memory_inst : HY5PS121621F
+    generic map (
+      TimingCheckFlag => true,
+      PUSCheckFlag    => true,
+      PArt_number     => B400)
+    port map (
+      DQ              => RAMDQ,
+      LDQS            => RAMDQSL,
+      UDQS            => RAMDQSH,
+      WEB             => RAMWE,
+      LDM             => '0',
+      UDM             => '0',
+      CASB            => RAMCAS,
+      RASB            => RAMRAS,
+      CSB             => RAMCS,
+      BA              => RAMBA,
+      ADDR            => RAMADDR,
+      CKE             => RAMCKE,
+      CLK             => MEMCLK90,
+      CLKB            => MEMCLK90N,
+      odelay          => odelay);
 
 
-
-  RESET      <= '0' after 100 ns;
+  RESET        <= '0' after 100 ns;
   -- ecycle generation
   ecycle_gen : process(CLK)
   begin
     if rising_edge(CLK) then
-      if epos = 999 then
-        epos <= 0;
-      else
-        epos <= epos + 1;
-      end if;
+      if startwait = '0' then
+        if epos = 999 then
+          epos <= 0;
+        else
+          epos <= epos + 1;
+        end if;
 
+      end if;
       if epos = 999 then
         ECYCLE <= '1';
       else
@@ -262,6 +381,10 @@ begin  -- Behavioral
 
   main : process
   begin
+    wait for startup_delay;
+    startwait <= '0';
+
+
     wait for 2 us;
 -- networkstack.writepkt("arpquery.txt", CLK, NICDINEN, NICNEXTFRAME, NICDIN);
     wait for 2 us;
@@ -282,6 +405,7 @@ begin  -- Behavioral
   begin
     file_open(datafilea, "dataa.txt");
     file_open(datafileb, "datab.txt");
+    wait for 200 us;
 
     wait until rising_edge(CLK) and ECYCLE = '1';
     while not endfile(datafilea) loop

@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
-
+use ieee.numeric_std.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -20,25 +20,31 @@ end bigmem;
 
 architecture Behavioral of bigmem is
 
-  signal weset : std_logic_vector(3 downto 0) := (others => '0');
-  type douts_t : array (0 to 15) of
-    std_logic_vector(15 downto 0);      -- <[comment]>
-  signal douts : douts_t                      := (others => (others => '0'));
+  signal weset : std_logic_vector(15 downto 0) := (others => '0');
+
+  type douts_t is array (0 to 15) of
+    std_logic_vector(15 downto 0);
+
+  signal douts : douts_t := (others => (others => '0'));
 
 
 begin  -- Behavioral
   memsets : for i in 0 to 15 generate
     weset(i) <= '1' when WEIN = '1' and
-                addrin(13 downto 10) == std_logic_vector(TO_UNSIGNED(i, 4))
+                addrin(13 downto 10) = std_logic_vector(TO_UNSIGNED(i, 4))
                 else '0';
     rami :
       RAMB16_S18_S18
+        generic map (
+          SIM_COLLISION_CHECK => "NONE")
+
         port map (
           WEA   => weset(i),
           ENA   => '1',
           SSRA  => '0',
           CLKA  => CLK,
           ADDRA => ADDRIN(9 downto 0),
+          ADDRB => ADDROUT(9 downto 0),
           DIA   => DIN,
           DIPA  => "00",
           DOPA  => open,
