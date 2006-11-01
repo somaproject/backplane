@@ -9,15 +9,13 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="data.svg"
-   sodipodi:docbase="/home/jonas/soma/backplane/network/docs/data"
-   inkscape:version="0.44+devel"
+   sodipodi:docbase="/home/jonas/soma/somabackplane/network/docs/data"
+   inkscape:version="0.44"
    sodipodi:version="0.32"
    id="svg1996"
-   height="515.625"
-   width="953.125"
-   version="1.0"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   sodipodi:modified="true">
+   height="359.375"
+   width="890.625"
+   version="1.0">
   <defs
      id="defs3">
     <marker
@@ -50,7 +48,7 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="0"
+     inkscape:window-y="25"
      inkscape:window-x="0"
      inkscape:window-height="977"
      inkscape:window-width="1277"
@@ -65,9 +63,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="447.81687"
-     inkscape:cx="669.13321"
-     inkscape:zoom="0.7"
+     inkscape:cy="213.18285"
+     inkscape:cx="430.5865"
+     inkscape:zoom="1.4142136"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -92,7 +90,7 @@
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1"
-     transform="translate(0,-474.375)">
+     transform="translate(0,-630.625)">
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -850,12 +848,19 @@
          x="452.42212"
          y="749.375">FNEXT</tspan></text>
     <rect
-       style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#f5f6f9;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect8583"
+       width="218.75"
+       height="165.625"
+       x="634.375"
+       y="818.125" />
+    <rect
+       style="fill:white;fill-opacity:1;stroke:black;stroke-width:1.24999976;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect13547"
        width="184.36462"
-       height="80.855583"
+       height="93.765472"
        x="537.5"
-       y="846.33276" />
+       y="846.33234" />
     <text
        xml:space="preserve"
        style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -866,33 +871,26 @@
          sodipodi:role="line"
          id="tspan13551"
          x="537.5"
-         y="843.125">RETX Buffer rate-limiter</tspan></text>
+         y="843.125">Data ReTX Buffer Interface</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="656.25"
-       y="940"
-       id="text13553"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13555"
-         x="656.25"
-         y="940">Simple FIFO</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="551.00586"
-       y="958.75"
+       x="465.625"
+       y="955.625"
        id="text22303"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan22305"
-         x="551.00586"
-         y="958.75">ReTX Buffer must extract </tspan><tspan
+         x="465.625"
+         y="955.625">ReTX Buffer must extract </tspan><tspan
          sodipodi:role="line"
-         x="551.00586"
-         y="972.5"
-         id="tspan22307">SRC, ID, and TYP</tspan></text>
+         x="465.625"
+         y="969.375"
+         id="tspan22307">SRC, ID, and TYP, which means</tspan><tspan
+         sodipodi:role="line"
+         x="465.625"
+         y="983.125"
+         id="tspan10708">it must understand IP :( </tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -953,7 +951,7 @@
        id="path22329"
        transform="translate(0,474.375)" />
     <path
-       style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="M 512.5,281.25 L 512.5,381.25 L 534.375,381.25"
        id="path22331"
        transform="translate(0,474.375)"
@@ -969,7 +967,7 @@
        id="path22335"
        transform="translate(0,474.375)" />
     <path
-       style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="M 496.875,281.25 L 496.875,396.875 L 534.375,396.875"
        id="path22337"
        transform="translate(0,474.375)"
@@ -1003,7 +1001,7 @@
          sodipodi:role="line"
          id="tspan4557"
          x="718.51807"
-         y="905.625">WADDRA[8:0]</tspan></text>
+         y="905.625">WADDR[8:0]</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
@@ -1014,7 +1012,7 @@
          sodipodi:role="line"
          id="tspan4561"
          x="718.51807"
-         y="893.125">WDINA[15:0]</tspan></text>
+         y="893.125">WDOUT[15:0]</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
@@ -1025,7 +1023,7 @@
          sodipodi:role="line"
          id="tspan4565"
          x="718.51807"
-         y="858.75">WIDA[13:0]</tspan></text>
+         y="858.75">WID[13:0]</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
@@ -1036,7 +1034,7 @@
          sodipodi:role="line"
          id="tspan4569"
          x="717.81055"
-         y="871.25">WDONEA</tspan></text>
+         y="871.25">WDONE</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
@@ -1047,6 +1045,117 @@
          sodipodi:role="line"
          id="tspan6898"
          x="717.81055"
-         y="918.125">WRA</tspan></text>
+         y="918.125">WROUT</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="719.70703"
+       y="883.75"
+       id="text8579"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan8581"
+         x="719.70703"
+         y="883.75">PENDING</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="787.5"
+       y="980.625"
+       id="text10371"><tspan
+         sodipodi:role="line"
+         id="tspan10373"
+         x="787.5"
+         y="980.625">150 MHz</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="756.25"
+       y="858.75"
+       id="text13355"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan13357"
+         x="756.25"
+         y="858.75">RETXID[13:0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="756.25"
+       y="874.375"
+       id="text13359"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan13361"
+         x="756.25"
+         y="874.375">RETXDONE</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="756.25"
+       y="890"
+       id="text13363"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan13365"
+         x="756.25"
+         y="890">RETXPENDING</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="756.25"
+       y="905.625"
+       id="text13367"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan13369"
+         x="756.25"
+         y="905.625">RETXDOUT</tspan></text>
+    <path
+       style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       d="M 721.875,855.625 L 750,855.625"
+       id="path13371" />
+    <path
+       style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       d="M 721.875,871.25 L 750,871.25"
+       id="path13373" />
+    <path
+       style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       d="M 752.5725,886.875 L 724.4475,886.875"
+       id="path13375" />
+    <path
+       style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       d="M 721.875,902.5 L 750,902.5"
+       id="path13377" />
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="756.25"
+       y="921.25"
+       id="text13379"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan13381"
+         x="756.25"
+         y="921.25">RETXADDR</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="756.25"
+       y="936.875"
+       id="text13383"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan13385"
+         x="756.25"
+         y="936.875">RETXWE</tspan></text>
+    <path
+       style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       d="M 721.875,918.125 L 750,918.125"
+       id="path13387" />
+    <path
+       style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       d="M 721.875,933.75 L 750,933.75"
+       id="path13389" />
   </g>
 </svg>

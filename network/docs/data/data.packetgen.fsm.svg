@@ -9,8 +9,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="data.packetgen.fsm.svg"
-   sodipodi:docbase="/home/jonas/soma/backplane/network/docs"
-   inkscape:version="0.44+devel"
+   sodipodi:docbase="/home/jonas/soma/somabackplane/network/docs/data"
+   inkscape:version="0.44"
    sodipodi:version="0.32"
    id="svg1996"
    height="375"
@@ -48,7 +48,7 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="0"
+     inkscape:window-y="25"
      inkscape:window-x="0"
      inkscape:window-height="829"
      inkscape:window-width="913"
@@ -63,8 +63,8 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="75.854576"
-     inkscape:cx="328.57493"
+     inkscape:cy="23.197796"
+     inkscape:cx="303.47251"
      inkscape:zoom="0.7"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -313,7 +313,7 @@
          sodipodi:role="line"
          id="tspan6441"
          x="34.375"
-         y="852.5">BSEL=0</tspan><tspan
+         y="852.5">DSEL=0</tspan><tspan
          sodipodi:role="line"
          x="34.375"
          y="863.75"
@@ -367,7 +367,7 @@
          sodipodi:role="line"
          id="tspan6465"
          x="156.25"
-         y="852.5">BSEL=0</tspan><tspan
+         y="852.5">DSEL=0</tspan><tspan
          sodipodi:role="line"
          x="156.25"
          y="863.75"
@@ -439,15 +439,15 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="215.625"
+       x="212.5"
        y="808.75"
        id="text6511"><tspan
          sodipodi:role="line"
          id="tspan6513"
-         x="215.625"
+         x="212.5"
          y="808.75">LEN[9:1] =</tspan><tspan
          sodipodi:role="line"
-         x="215.625"
+         x="212.5"
          y="817.5"
          id="tspan6515">ADDR</tspan></text>
     <text
@@ -460,7 +460,7 @@
          sodipodi:role="line"
          id="tspan6519"
          x="293.75"
-         y="852.5">BSEL=0</tspan><tspan
+         y="852.5">DSEL=0</tspan><tspan
          sodipodi:role="line"
          x="293.75"
          y="863.75"
@@ -519,7 +519,7 @@
          sodipodi:role="line"
          id="tspan6541"
          x="34.375"
-         y="977.5">BSEL=1</tspan><tspan
+         y="977.5">DSEL=1</tspan><tspan
          sodipodi:role="line"
          x="34.375"
          y="988.75"
@@ -569,7 +569,7 @@
          sodipodi:role="line"
          x="134.375"
          y="977.5"
-         id="tspan6563">BSEL=1</tspan></text>
+         id="tspan6563">DSEL=1</tspan></text>
     <path
        id="path6565"
        d="M 175,936.875 L 175,936.875"
@@ -640,7 +640,7 @@
          sodipodi:role="line"
          x="240.625"
          y="977.5"
-         id="tspan6592">BSEL=2</tspan></text>
+         id="tspan6592">DSEL=2</tspan></text>
     <g
        id="g6678"
        transform="translate(250,984.375)">
@@ -686,7 +686,7 @@
          sodipodi:role="line"
          x="362.5"
          y="977.5"
-         id="tspan6692">BSEL=3</tspan></text>
+         id="tspan6692">DSEL=3</tspan></text>
     <g
        id="g6694"
        transform="translate(371.875,984.375)">
@@ -732,7 +732,7 @@
          sodipodi:role="line"
          x="484.375"
          y="977.5"
-         id="tspan6708">BSEL=0</tspan></text>
+         id="tspan6708">DSEL=0</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 287.5,690 L 287.5,677.5 C 287.5,677.5 287.5,665 275,665 C 262.5,665 178.125,665 178.125,665 C 178.125,665 165.625,665 165.625,677.5 C 165.625,680.625 165.625,686.875 165.625,686.875"

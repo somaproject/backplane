@@ -114,155 +114,6 @@ The fifo output stage, running at 100 MHz, simply checks if the input
 fifo pointer (registered as \signal{FIFONUM}) is different from the
 output fifo pointer and asserts \signal{FIFOVALID} if so.
 
-\subsection{Memory Arbitration}
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.8]{data.memarbit.svg}
-\end{centering}
-\caption{Data Bus Transmission memory arbitration interface}
-\label{data.memarbit}
-\end{figure}
-
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.8]{data.memarbit.fsm.svg}
-\end{centering}
-\caption{Data Bus Transmission memory arbitration interface finate state machine.}
-\label{data.memarbit.fsm}
-\end{figure}
-
-The data memory arbitration module controls access to the NoBL-based
-RAM used as a pacet FIFO. Each component has exclusive access to the
-memory pending the arbitrator's assertion of the associated
-\signal{START} signal. This access is yielded when the \signal{DONE}
-signal for the submodule goes high. All submodules run at 100 MHz, and
-are expected to internally compensate for read and write latencies to
-the RAM.
-
-All modules involved read the value of the \signal{BP[7:0]} (Base
-Pointer) signal, which indicates the next FIFO location to be written.
-For example, BP = 0x32 if FIFO location 0x31 was just written to.
-
-There are three primary modules: 
-\begin{enumerate}
-\item \textbf{Memory Packet Input} : writes the packet into memory,
-  extracting out the SRC, TYP, SEQ, and passing those onto the
-  retransmission lookup module for storage.
-\item \textbf{Retransmission Lookup} : This module interfaces to the
-  external retransmission packet processing module, taking in
-  retransmission requests and looking up the expected packet in the
-  RAM FIFO.
-\item \textbf{Memroy Packet Transmission} : When the RAM FIFO is
-  non-empty this module reads out packets and writes them to the Data
-  Output FIFO.
-\end{enumerate}
-
-\subsubsection{Memory Packet Input}
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.8]{memarbit.pktinput.svg}
-\end{centering}
-\caption{Data Bus Transmission memory arbitration interface packet input module.}
-\label{memarbit.pktinput}
-\end{figure}
-
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.8]{memarbit.pktinput.fsm.svg}
-\end{centering}
-\caption{Data Bus Transmission memory arbitration interface packet input module finate state machine} 
-\label{memarbit.pktinput.fsm}
-\end{figure}
-
-Assertion of \signal{START} instructs the memory packet input to
-determine if the contents of the upstream FIFO are valid
-(\signal{FIFOVALID} is asserted). If so, the packet is read out, with
-one-cycle latency between \signal{ADDROUT[8:0]} and
-\signal{DIN[15:0]}.
-
- The relevant packet metadata is extracted based on
-address, and the packet is written to the FIFO beginning at the
-location of the current base pointer (\signal{BP[7:0]}). Completion of
-this results in the assertion of \signal{DONE} and the incrementing of
-\signal{BP} to indicate the new FIFO contents.  Additionally, the
-packet metadata and fifo location are written to the Retransmission
-Lookup module via the assertion of \signal{IDWE}.
-
-\subsubsection{Memory Packet Retransmission Lookup} 
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.8]{memarbit.retx.svg}
-\end{centering}
-\caption{Data Bus Transmission memory arbitration interface retransmission lookup.}
-\label{memarbit.retx}
-\end{figure}
-
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.8]{memarbit.retx.fsm.svg}
-\end{centering}
-\caption{Data Bus Transmission memory arbitration interface retransmission lookup finite state machine.}
-\label{memarbit.retx.fsm}
-\end{figure}
-
-When servicing a retransmission request, this module has an internal
-lookup where it stores the BP locations for the eight most recent
-packets of a given (source, type). Of course, the FIFO can't actually
-hold all of those packets, and some sources may produce more packets
-per unit time than others, resulting in a FIFO with far more packets
-from (7, 2) than (3, 0). So the FIFO location that the lookup table
-points to might no longer contain the relevant packet.
-
-The Memory  Packet Retransmission Lookup  module does not  worry about
-this case,  and simply  passes the  data downstream. It  is up  to the
-retransmission  packet  processing module  to  check  that the  packet
-pulled  out of  the FIFO  is the  one it  is looking  for,  and return
-success or failure accordingly.
- 
-
-This module serves two masters: The ReTX Packet Processing Module and
-the main controller. Should the ReTX packet Processing module request
-a packet for retransmission by asserting \signal{RETXREQ} (which
-additionally latches the relevent RTX packet metadata), the module
-must wait until the assertion of \signal{START} to act on it.
-
-While \signal{IDWE} may be asserted at any time, the round-robin
-nature of the memory arbitration system eliminates the possibility of
-race conditions.
-
-DATA is read out of RAM using the combined looked-up BP and the
-internal \signal{ADDR[8:0]}. Due to the latency created by both the
-registering of RAM IO and the NoBL Pipelined RAM itself, shift
-registers are used to assert that the values written to the ReTx
-Packet Processing Module are correctly aligned.
-
-\subsubsection{Memory Packet Transmission}
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.8]{memarbit.pktoutput.svg}
-\end{centering}
-\caption{Data Bus Transmission memory arbitration interface retransmission lookup.}
-\label{memarbit.retx}
-\end{figure}
-
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.8]{memarbit.pktoutput.fsm.svg}
-\end{centering}
-\caption{Data Bus Transmission memory arbitration interface retransmission lookup finite state machine.}
-\label{memarbit.retx.fsm}
-\end{figure}
-
-Structurally this module is very similar to the Retransmission Lookup
-module, except that it contains an internal BP (called
-\signal{BASEADDR[7:0]}) which is compared to the input
-\signal{BP[7:0]} to determine if the RAM FIFO contains data.  If this
-is the case and if the output fifo is not full (\signal{FIFOFULL} is
-not asserted) then the packet is read from the RAM FIFO and written
-into the output FIFO. \signal{FIFODONE} is asserted upon completion of
-this write process.
-
-
 \subsection{Data Output FIFO}
 The data output fifo is the fifo that buffers data packets to be
 transmitted to deal with the fact that while our Data TX hit rate is
@@ -283,3 +134,12 @@ generator, and presents a series of 1k-deep packet interfaces.
 \caption{Data Bus Transmission output FIFO.}
 \label{data.outputfifo}
 \end{figure}
+
+\subsection{Retransmission Buffer Rate Limiter}
+This module extracts out the relevant packet metadata and writes it to
+the retransmission buffer, performing the necessary clock-rate
+conversion in the process. It has an internal 8-packet buffer to
+smooth out the requests for buffer writing, since the ReTX Buffer
+could be in the middle of a packet.
+
+
