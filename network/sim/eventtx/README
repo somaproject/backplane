@@ -1,3 +1,9 @@
+Here we generate a series of event packets via the linux UDP/IP stack
+and attempt to transmit them; capture them with tcpdump; and then test
+and make sure they look like what we were expecting.
+
+
+
 Run eventgen.py and capture the pending packets tcpdump
 
 sudo tcpdump src host 192.168.0.2 and ip broadcast -t -xx -s 2000 > data.tcpdump 

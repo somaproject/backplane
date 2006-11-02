@@ -17,7 +17,7 @@ entity eventbodywriter is
     
     DOUT   : out std_logic_vector(15 downto 0);
     WEOUT  : out std_logic;
-    ADDR: out std_logic_vector(9 downto 0)); 
+    ADDR: out std_logic_vector(8 downto 0)); 
     
 end eventbodywriter;
 
@@ -33,7 +33,7 @@ architecture Behavioral of eventbodywriter is
 
   signal estart : std_logic := '0';
 
-  signal eincnt : std_logic_vector(9 downto 0) := (others => '0');
+  signal eincnt : std_logic_vector(8 downto 0) := (others => '0');
   signal eininc : std_logic                    := '0';
 
 
@@ -50,7 +50,7 @@ architecture Behavioral of eventbodywriter is
 begin  -- Behavioral
 
   DOUT <= ldout  when wrlen = '0' else (X"00" & ewcnt);
-  ADDR <= eincnt when wrlen = '0' else "0000000000";
+  ADDR <= eincnt when wrlen = '0' else "000000000";
 
   elb <= '1' when bcnt = 11 else '0';
 
@@ -95,7 +95,7 @@ begin  -- Behavioral
       end if;
 
       if cs = ebegin then
-        eincnt <= "0000000001"; 
+        eincnt <= "000000001"; 
       else
         if eininc = '1' then
           eincnt <= eincnt + 1; 

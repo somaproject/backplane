@@ -26,7 +26,7 @@ architecture Behavioral of eventbodywritertest is
       EATX   : in  std_logic_vector(somabackplane.N-1 downto 0);
       DOUT   : out std_logic_vector(15 downto 0);
       WEOUT  : out std_logic;
-      ADDR   : out std_logic_vector(9 downto 0);
+      ADDR   : out std_logic_vector(8 downto 0);
       DONE   : out std_logic);
   end component;
 
@@ -40,7 +40,7 @@ architecture Behavioral of eventbodywritertest is
   signal DOUT : std_logic_vector(15 downto 0) := (others => '0');
 
   signal WEOUT : std_logic                    := '0';
-  signal ADDR  : std_logic_vector(9 downto 0) := (others => '0');
+  signal ADDR  : std_logic_vector(8 downto 0) := (others => '0');
   signal DONE  : std_logic                    := '0';
 
 -- simulated eventbus

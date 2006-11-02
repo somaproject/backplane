@@ -28,12 +28,12 @@ entity eventtx is
     ARM     : out std_logic;
 
     -- Retx write interface
-    RETXID : out std_logic_vector(13 downto 0);
-    RETXDOUT : out std_logic_vector(15 downto 0);
-    RETXADDR : out std_logic_vector(8 downto 0);
-    RETXDONE : out std_logic;
-    RETXPENDING : in std_logic;
-    RETXWE : out std_logix
+    RETXID      : out std_logic_vector(13 downto 0);
+    RETXDOUT    : out std_logic_vector(15 downto 0);
+    RETXADDR    : out std_logic_vector(8 downto 0);
+    RETXDONE    : out std_logic;
+    RETXPENDING : in  std_logic;
+    RETXWE      : out std_logic
     );
 end eventtx;
 
@@ -49,46 +49,64 @@ architecture Behavioral of eventtx is
 
   signal doutbody  : std_logic_vector(15 downto 0) := (others => '0');
   signal weoutbody : std_logic                     := '0';
-  signal addrbody  : std_logic_vector(9 downto 0)  := (others => '0');
+  signal addrbody  : std_logic_vector(8 downto 0)  := (others => '0');
 
   signal ebdone : std_logic := '0';
 
-  signal datalen : std_logic_vector(9 downto 0) := (others => '0');
+  signal datalen : std_logic_vector(8 downto 0) := (others => '0');
+  signal wlen    : std_logic_vector(9 downto 0) := (others => '0');
 
-  signal dia   : std_logic_vector(15 downto 0) := (others => '0');
-  signal wea   : std_logic                     := '0';
-  signal addra : std_logic_vector(9 downto 0)  := (others => '0');
 
-  signal osel : std_logic := '0';
+  signal osel : integer range 0 to 2 := 0;
 
-  signal dataaddr : std_logic_vector(9 downto 0) := (others => '0');
+  signal dataaddr, idaddr : std_logic_vector(8 downto 0) := (others => '0');
 
   signal nextbuf : std_logic := '0';
 
-  signal ecnt : std_logic_vector(15 downto 0) := (others => '0');
-
-  signal ebcnt : std_logic_vector(6 downto 0) := (others => '0');
-  signal ebcntdone : std_logic := '0';
+  -- counters
+  signal bits : std_logic_vector(95 downto 0) := (others => '0');
   
+  signal ecnt : integer range 0 to 15 := 0; 
 
-  signal wea1, wea2 : std_logic := '0';
+  signal ebcnt     : std_logic_vector(6 downto 0) := (others => '0');
+  signal ebcntdone : std_logic                    := '0';
 
-  type instates is (none, sendchk, hdrs, hdrw, flipbuf);
+  signal id : std_logic_vector(31 downto 0) := (others => '0');
+
+  signal idword : std_logic_vector(15 downto 0) := (others => '0');
+  signal idsel  : std_logic                     := '0';
+
+  signal nextpktsize : std_logic_vector(9 downto 0) := (others => '0');
+
+  -- Buffer write interface
+  signal dia   : std_logic_vector(15 downto 0) := (others => '0');
+  signal wea   : std_logic                     := '0';
+  signal addra : std_logic_vector(8 downto 0)  := (others => '0');
+
+  type instates is (none, firstchk, fullchk, hdrs, hdrw, idwrh, idwrl, flipbuf);
   signal ics, ins : instates := none;
 
-  -- output side
+  -- TX Mux output side
 
-  signal dob        : std_logic_vector(15 downto 0) := (others => '0');
-  signal dob1, dob2 : std_logic_vector(15 downto 0) := (others => '0');
-
-  signal olen : std_logic_vector(15 downto 0) := (others => '0');
-
-  signal addrb : std_logic_vector(9 downto 0) := (others => '0');
-
-  signal outen : std_logic := '0';
+  signal odout         : std_logic_vector(15 downto 0) := (others => '0');
+  signal olen          : std_logic_vector(15 downto 0) := (others => '0');
+  signal oaddr         : std_logic_vector(8 downto 0)  := (others => '0');
+  signal outen         : std_logic                     := '0';
+  signal ovalid, onext : std_logic                     := '0';
 
   type outstates is (none, armw, pktout, done);
   signal ocs, ons : outstates := none;
+
+  -- retx output side
+  signal redata : std_logic_vector(15 downto 0) := (others => '0');
+  signal readdr : std_logic_vector(8 downto 0)  := (others => '0');
+  signal reen   : std_logic                     := '0';
+
+  signal revalid, renext : std_logic := '0';
+
+  type restates is (none, fifowr, fifodone, fifow, done);
+  signal recs, rens : restates := none;
+
 
   -- components
   component udpheaderwriter
@@ -116,11 +134,11 @@ architecture Behavioral of eventtx is
       DONE   : out std_logic;
       DOUT   : out std_logic_vector(15 downto 0);
       WEOUT  : out std_logic;
-      ADDR   : out std_logic_vector(9 downto 0));
+      ADDR   : out std_logic_vector(8 downto 0));
   end component;
 
 
-  component eventtxpkfifo
+  component eventtxpktfifo
     port (
       CLK      : in  std_logic;
       DIN      : in  std_logic_vector(15 downto 0);
@@ -130,9 +148,18 @@ architecture Behavioral of eventtx is
       DOUT     : out std_logic_vector(15 downto 0);
       ADDROUT  : in  std_logic_vector(8 downto 0);
       VALID    : out std_logic;
-      NEXTFIFO : in  std_logic);
+      FIFONEXT : in  std_logic);
   end component;
 
+  component bitcnt
+    port (
+      CLK   : in  std_logic;
+      DIN   : in  std_logic_vector(95 downto 0);
+      DOUT  : out std_logic_vector(6 downto 0);
+      START : in  std_logic;
+      DONE  : out std_logic
+      );
+  end component;
 
 begin  -- Behavioral
 
@@ -145,7 +172,7 @@ begin  -- Behavioral
       DESTMAC  => X"FFFFFFFFFFFF",
       DESTPORT => X"1388",
       START    => hdrstart,
-      WLEN     => datalen,
+      WLEN     => wlen,
       DOUT     => douthdr,
       WEOUT    => weouthdr,
       ADDR     => addrhdr,
@@ -162,17 +189,39 @@ begin  -- Behavioral
       WEOUT  => weoutbody,
       ADDR   => addrbody);
 
+  bits(somabackplane.N -1 downto 0) <= eatx;
+  eventbitcnt: bitcnt
+    port map (
+      CLK   => CLK,
+      DIN   => bits,
+      DOUT  => ebcnt,
+      START => ECYCLE,
+      DONE  => ebcntdone);
+  
   -- combinationals, input side
 
-  dia  <= douthdr  when osel = '0' else doutbody;
-  wea  <= weouthdr when osel = '0' else weoutbody;
-  wea1 <= wea and bsel;
-  wea2 <= wea and nbsel;
+  dia <= idword  when osel = 0 else
+         douthdr when osel = 1 else
+         doutbody;
 
-  addra <= addrhdr when osel = '0' else (dataaddr + "0000010110");
+  wea <= '1'      when osel = 0 else
+         weouthdr when osel = 1
+         else weoutbody;
 
+  addra <= idaddr              when osel = 0 else
+           addrhdr(8 downto 0) when osel = 1 else
+           (dataaddr + "000011000");
 
+  idword <= id(15 downto 0) when idsel = '0'
+            else id(31 downto 16);
+
+  idaddr <= "000010111" when idsel = '0' else
+            "000010110";
+
+  wlen     <= ('0' & datalen) + "0000000010";
   dataaddr <= addrbody + datalen;
+
+  nextpktsize <= (ebcnt & "000") + ('0' & dataaddr );
 
   main_input : process(CLK)
   begin
@@ -182,70 +231,60 @@ begin  -- Behavioral
       if nextbuf = '1' then
         datalen   <= (others => '0');
       else
-        if ics = sendchk then
+        if ebdone = '1' then
           datalen <= dataaddr;
         end if;
       end if;
 
       if nextbuf = '1' then
-        ecnt   <= (others => '0');
+        ecnt   <= 1; 
       else
-        if ebdone = '1' then
+        if ebcntdone = '1' then
           ecnt <= ecnt + 1;
         end if;
       end if;
 
+      if nextbuf = '1' then
+        id <= id + 1;
+      end if;
 
     end if;
   end process main_input;
 
 
-  outen <= '1'  when ocs = pktout else '0';
-  ARM   <= '1'  when ocs = armw   else '0';
-  dob   <= dob1 when nbsel = '1'  else dob2;
-
-  DOUT    <= dob;
-  main_output : process(CLK)
-  begin
-    if rising_edge(CLK) then
-      ocs <= ons;
-
-      if ocs = armw then
-        olen <= dob;
-      end if;
-
-      DOEN <= outen;
-
-      if ocs = none then
-        addrb   <= (others => '0');
-      else
-        if outen = '1' then
-          addrb <= addrb + 1;
-        end if;
-      end if;
-
-    end if;
-  end process main_output;
-
-
-  input_fsm : process(ics, ebdone, ecnt, dataaddr, hdrdone)
+  input_fsm : process(ics, ebcntdone, ecnt, dataaddr, ebcnt, hdrdone)
   begin
     case ics is
       when none =>
         nextbuf  <= '0';
         hdrstart <= '0';
-        osel     <= '1';
-        if ebdone = '1' then
-          ins    <= sendchk;
+        osel     <= 2;
+        idsel    <= '0';
+        if ebcntdone = '1' then
+          ins    <= firstchk;
         else
           ins    <= none;
         end if;
 
-      when sendchk =>
+      when firstchk =>
         nextbuf  <= '0';
         hdrstart <= '0';
-        osel     <= '1';
-        if ecnt = 5 or dataaddr > "0001100100" then
+        osel     <= 2;
+        idsel    <= '0';
+        if ecnt = 1 then
+          ins    <= none;
+        else
+          ins    <= fullchk;
+        end if;
+
+      when fullchk =>
+        nextbuf  <= '0';
+        hdrstart <= '0';
+        osel     <= 2;
+        idsel    <= '0';
+        if ecnt = 6 or                 -- we are in the sixth ecycle, so there
+                                       -- are five in the buffer
+          (nextpktsize > "0111101000" ) then
           ins    <= hdrs;
         else
           ins    <= none;
@@ -254,44 +293,110 @@ begin  -- Behavioral
       when hdrs =>
         nextbuf  <= '0';
         hdrstart <= '1';
-        osel     <= '0';
+        osel     <= 1;
+        idsel    <= '0';
         ins      <= hdrw;
+
       when hdrw =>
         nextbuf  <= '0';
         hdrstart <= '0';
-        osel     <= '0';
+        osel     <= 1;
+        idsel    <= '0';
         if hdrdone = '1' then
-          ins    <= flipbuf;
+          ins    <= idwrh;
         else
           ins    <= hdrw;
         end if;
 
+      when idwrh =>
+        nextbuf  <= '0';
+        hdrstart <= '0';
+        osel     <= 0;
+        idsel    <= '1';
+        ins      <= idwrl;
+
+      when idwrl =>
+        nextbuf  <= '0';
+        hdrstart <= '1';
+        osel     <= 0;
+        idsel    <= '0';
+        ins      <= flipbuf;
+
       when flipbuf =>
         nextbuf  <= '1';
         hdrstart <= '0';
-        osel     <= '1';
+        osel     <= 1;
+        idsel    <= '0';
         ins      <= none;
 
       when others =>
         nextbuf  <= '0';
         hdrstart <= '0';
-        osel     <= '1';
+        osel     <= 1;
+        idsel    <= '0';
         ins      <= none;
+
     end case;
   end process input_fsm;
 
+  ----------------------------------------------------------------------------
+  -- TX output Interface
+  --------------------------------------------------------------------------  
 
-  output_fsm : process(ocs, nextbuf, GRANT, olen, addrb)
+  tx_pktfifo : eventtxpktfifo
+    port map (
+      CLK      => CLK,
+      DIN      => dia,
+      ADDRIN   => addra,
+      WE       => wea,
+      DONE     => nextbuf,
+      DOUT     => odout,
+      ADDROUT  => oaddr,
+      VALID    => ovalid,
+      FIFONEXT => onext);
+
+  outen <= '1' when ocs = pktout else '0';
+  ARM   <= '1' when ocs = armw   else '0';
+
+  DOUT <= odout;
+
+  main_txoutput : process(CLK)
+  begin
+    if rising_edge(CLK) then
+      ocs <= ons;
+
+      if ocs = armw then
+        olen <= odout;
+      end if;
+
+      DOEN <= outen;
+
+      if ocs = none then
+        oaddr   <= (others => '0');
+      else
+        if outen = '1' then
+          oaddr <= oaddr + 1;
+        end if;
+      end if;
+
+    end if;
+  end process main_txoutput;
+
+
+
+  output_fsm : process(ocs, ovalid, GRANT, olen, oaddr)
   begin
     case ocs is
       when none =>
-        if nextbuf = '1' then
+        onext <= '0';
+        if ovalid = '1' then
           ons <= armw;
         else
           ons <= none;
         end if;
 
       when armw =>
+        onext <= '0';
         if grant = '1' then
           ons <= pktout;
         else
@@ -299,76 +404,108 @@ begin  -- Behavioral
         end if;
 
       when pktout =>
-        if olen(10 downto 1) -1 = addrb then
+        onext <= '0';
+        if olen(10 downto 1) -1 = oaddr then
           ons <= done;
         else
           ons <= pktout;
         end if;
 
       when done   =>
-        ons <= none;
+        onext <= '1';
+        ons   <= none;
       when others =>
-        ons <= none;
+        onext <= '0';
+        ons   <= none;
     end case;
   end process output_fsm;
 
-  rambuffer1 : RAMB16_S18_S18
-    generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
-      -- Address 0 to 255
-      INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
-      INIT_01             => X"00000000000000000000000000000000000000000000000000009c4000000000"
-      )
-
+  ----------------------------------------------------------------------------
+  -- RETX Interface
+  --------------------------------------------------------------------------  
+  retx_pktfifo : eventtxpktfifo
     port map (
-      DOA   => open,
-      DOB   => dob1,
-      DOPA  => open,
-      DOPB  => open,
-      ADDRA => addra,
-      ADDRB => addrb,
-      CLKA  => CLK,
-      CLKB  => CLK,
-      DIA   => dia,
-      DIB   => X"0000",
-      DIPA  => "00",
-      DIPB  => "00",
-      ENA   => '1',
-      ENB   => '1',
-      SSRA  => '0',
-      SSRB  => '0',
-      WEA   => wea1,
-      WEB   => '0'
-      );
+      CLK      => CLK,
+      DIN      => dia,
+      ADDRIN   => addra,
+      WE       => wea,
+      DONE     => nextbuf,
+      DOUT     => redata,
+      ADDROUT  => readdr,
+      VALID    => revalid,
+      FIFONEXT => renext);
 
-  rambuffer2 : RAMB16_S18_S18
-    generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",  -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
-      -- The follosing INIT_xx declarations specify the intiial contents of the RAM
-      -- Address 0 to 255
-      INIT_00             => X"000000000000401100000000000045000800000000000000FFFFFFFFFFFF0000",
-      INIT_01             => X"00000000000000000000000000000000000000000000000000009c4000000000"
-      )
+  main_retxoutput : process(CLK)
+  begin
+    if rising_edge(CLK) then
+      recs     <= rens;
+      if readdr = "000010000" then
+        RETXID <= redata(13 downto 0);
+      end if;
 
-    port map (
-      DOA   => open,
-      DOB   => dob2,
-      DOPA  => open,
-      DOPB  => open,
-      ADDRA => addra,
-      ADDRB => addrb,
-      CLKA  => CLK,
-      CLKB  => CLK,
-      DIA   => dia,
-      DIB   => X"0000",
-      DIPA  => "00",
-      DIPB  => "00",
-      ENA   => '1',
-      ENB   => '1',
-      SSRA  => '0',
-      SSRB  => '0',
-      WEA   => wea2,
-      WEB                 => '0'
-      );
+      RETXADDR <= readdr;
+      RETXWE   <= reen;
+    end if;
+
+  end process main_retxoutput;
+
+  retx_fsm : process(recs, revalid, readdr, RETXPENDING)
+  begin
+    case recs is
+      when none =>
+        reen     <= '0';
+        renext   <= '0';
+        RETXDONE <= '0';
+        if revalid = '1' then
+          rens   <= fifowr;
+        else
+          rens   <= none;
+        end if;
+
+      when fifowr =>
+        reen     <= '1';
+        renext   <= '0';
+        RETXDONE <= '0';
+        if readdr = "111111111" then
+          rens   <= fifodone;
+        else
+          rens   <= fifowr;
+        end if;
+
+      when fifodone =>
+        reen     <= '0';
+        renext   <= '0';
+        RETXDONE <= '1';
+        if RETXPENDING = '1' then
+          rens   <= fifow;
+        else
+          rens   <= fifodone;
+        end if;
+
+      when fifow =>
+        reen     <= '0';
+        renext   <= '0';
+        RETXDONE <= '0';
+        if RETXPENDING = '0' then
+          rens   <= done;
+        else
+          rens   <= fifow;
+        end if;
+
+      when done =>
+        reen     <= '0';
+        renext   <= '1';
+        RETXDONE <= '0';
+        rens     <= none;
+
+      when others =>
+        reen     <= '0';
+        renext   <= '1';
+        RETXDONE <= '0';
+        rens     <= none;
+
+    end case;
+
+  end process retx_fsm;
 
 end Behavioral;

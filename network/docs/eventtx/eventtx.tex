@@ -11,7 +11,7 @@ periods of event queuing.
 To meet these parameters, we send an event datagram whenever: 
 \begin{enumerate}
 \item More than 5 ecycles have passed without a transmission
-\item we have a buffer whose total length is > 100. 
+\item There is not enough empty space in the current packet to send the current ecycle. 
 \end{enumerate} 
 
 \subsection{Implementation}
@@ -31,15 +31,29 @@ To meet these parameters, we send an event datagram whenever:
 \label{eventtx.fsm}
 \end{figure}
 
-We use two BlockRAM devices to create a double-buffered system where we can acquire new events and transmit old ones simultaneously. Each buffer can hold 2048 bytes, enough for a full-MTU datagram. 
-
-If a buffer has more than 100 bytes of events, say, 105, it's possible that the next ecycle will result in an overflow, so we must transmit. 
-
 At 50 MHz, a 1024-byte event takes 10.3 $\mu s$ to transmit. We need to
 maintain the ability for the network TX interface to transmit one of
 these per cycle.
 
-Our implementation uses separate FSMs to write the relevant bits for the IP/UDP headers and the. 
+Our implementation uses separatemodules to write the relevant bits for
+the IP/UDP headers and the data. 
+
+Each module writes into an EventTx Output FIFO, which is a 4-deep fifo
+with the relevant bits of an event UDP datagram as constants (such as
+protocol number).
+
+We use two of these fifos, one for eventual output to the network
+interface, and one for output to the retransmission buffer. The two
+distinct outputs allow for the different interfaces to receive data at
+different rates.
+
+Note our interface depends quite heavily on the implicit timing from
+the event bus. In particular, upon assertion of an ECYCLE, we wait ~5
+ticks until we have counted the number of events in this cycle. Then,
+if this will ``break the bank'' we must commit the current buffer
+\textit{and} reset all relevant logic before the Event Body Writer
+begins writing the current event's packets.
+
 
 \subsection{Event Body Writer}
 \begin{figure}
@@ -67,8 +81,11 @@ The eventbodywriter receives events via an Event Port and:
 We are guaranteed at least 40 ticks between the assertion of ECYCLE
 and the first assertion of WEOUT for that cycle. 
 
-
-At the assertion of DONE, we verify/guarantee that ADDR contains the address of the word that is one-past the last written word. For example, if we wrote one event, then the len was written at addr 0, the event was in 1-12, and ADDR will equal 13 when DONE is asserted, and stay at that for 40 ticks. 
+At the assertion of DONE, we verify/guarantee that ADDR contains the
+address of the word that is one-past the last written word. For
+example, if we wrote one event, then the len was written at addr 0,
+the event was in 1-12, and ADDR will equal 13 when DONE is asserted,
+and stay at that for 40 ticks.
 
 \subsection{Event Header Writer}
 The event header writer writes all the unique per-packet data including: 

@@ -18,10 +18,16 @@ $(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl
 $(WORKDIR)/udpheaderwriter/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
 	$(VHDLC) ../../vhdl/udpheaderwriter.vhd
 
-$(WORKDIR)/eventtx/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtx.vhd
+$(WORKDIR)/eventtxpkfifo/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd
+	$(VHDLC) ../../vhdl/eventtxpkfifo.vhd
+
+$(WORKDIR)/bitcnt/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd ../../vhdl/bitcnt.vhd
+	$(VHDLC) ../../vhdl/bitcnt.vhd
+
+$(WORKDIR)/eventtx/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd ../../vhdl/bitcnt.vhd ../../vhdl/eventtx.vhd
 	$(VHDLC) ../../vhdl/eventtx.vhd
 
-hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var 
+hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/eventtxpkfifo/_behavioral.var $(WORKDIR)/bitcnt/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var 
 
 comp: 
 
