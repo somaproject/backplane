@@ -64,8 +64,9 @@ The eventbodywriter receives events via an Event Port and:
 2. after the events are done, writes the number-of-events-written to byte 0
 3. then asserts done. 
 
-we are guaranteed at least 40 ticks between the assertion of done and
-the next write, for scheduling reasons.
+We are guaranteed at least 40 ticks between the assertion of ECYCLE
+and the first assertion of WEOUT for that cycle. 
+
 
 At the assertion of DONE, we verify/guarantee that ADDR contains the address of the word that is one-past the last written word. For example, if we wrote one event, then the len was written at addr 0, the event was in 1-12, and ADDR will equal 13 when DONE is asserted, and stay at that for 40 ticks. 
 
