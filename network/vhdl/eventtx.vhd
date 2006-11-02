@@ -68,15 +68,16 @@ architecture Behavioral of eventtx is
   
   signal ecnt : integer range 0 to 15 := 0; 
 
-  signal ebcnt     : std_logic_vector(6 downto 0) := (others => '0');
+  signal ebcnt, lebcnt     : std_logic_vector(6 downto 0) := (others => '0');
   signal ebcntdone : std_logic                    := '0';
+  signal ecyclel : std_logic := '0';
 
   signal id : std_logic_vector(31 downto 0) := (others => '0');
 
   signal idword : std_logic_vector(15 downto 0) := (others => '0');
   signal idsel  : std_logic                     := '0';
 
-  signal nextpktsize : std_logic_vector(9 downto 0) := (others => '0');
+  signal nextpktsize : std_logic_vector(10 downto 0) := (others => '0');
 
   -- Buffer write interface
   signal dia   : std_logic_vector(15 downto 0) := (others => '0');
@@ -194,8 +195,8 @@ begin  -- Behavioral
     port map (
       CLK   => CLK,
       DIN   => bits,
-      DOUT  => ebcnt,
-      START => ECYCLE,
+      DOUT  => lebcnt,
+      START => ecyclel,
       DONE  => ebcntdone);
   
   -- combinationals, input side
@@ -221,13 +222,18 @@ begin  -- Behavioral
   wlen     <= ('0' & datalen) + "0000000010";
   dataaddr <= addrbody + datalen;
 
-  nextpktsize <= (ebcnt & "000") + ('0' & dataaddr );
+  nextpktsize <= ('0' & ebcnt & "000") + ("00"  & datalen );
 
   main_input : process(CLK)
   begin
     if rising_edge(CLK) then
       ics <= ins;
 
+      if ebcntdone = '1' then
+        ebcnt <= lebcnt; 
+      end if;
+      ecyclel <= ECYCLE; 
+      
       if nextbuf = '1' then
         datalen   <= (others => '0');
       else
@@ -284,7 +290,7 @@ begin  -- Behavioral
         idsel    <= '0';
         if ecnt = 6 or                 -- we are in the sixth ecycle, so there
                                        -- are five in the buffer
-          (nextpktsize > "0111101000" ) then
+          (nextpktsize > "00111101000" ) then
           ins    <= hdrs;
         else
           ins    <= none;
@@ -317,7 +323,7 @@ begin  -- Behavioral
 
       when idwrl =>
         nextbuf  <= '0';
-        hdrstart <= '1';
+        hdrstart <= '0';
         osel     <= 0;
         idsel    <= '0';
         ins      <= flipbuf;
