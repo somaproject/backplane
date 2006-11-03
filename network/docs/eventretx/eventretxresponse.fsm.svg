@@ -8,14 +8,16 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="retxresponse.fsm.svg"
-   sodipodi:docbase="/home/jonas/soma/backplane/network/docs"
+   sodipodi:docname="eventretxresponse.fsm.svg"
+   sodipodi:docbase="/home/jonas/soma/backplane/network/docs/eventretx"
    inkscape:version="0.44+devel"
    sodipodi:version="0.32"
    id="svg1996"
    height="203.125"
    width="656.25"
-   version="1.0">
+   version="1.0"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   sodipodi:modified="true">
   <defs
      id="defs3">
     <marker
@@ -63,9 +65,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="66.987853"
-     inkscape:cx="434.13255"
-     inkscape:zoom="0.88989899"
+     inkscape:cy="36.757179"
+     inkscape:cx="315.41617"
+     inkscape:zoom="1.2585072"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -96,41 +98,6 @@
        d="M 418.75,933.75 L 340.625,933.75"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#TriangleOutM);stroke-opacity:1"
        sodipodi:nodetypes="cc" />
-    <g
-       id="g8043"
-       transform="translate(65.625,878.125)">
-      <g
-         transform="translate(-75,0)"
-         id="g8045">
-        <rect
-           rx="11.607143"
-           style="fill:white;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-miterlimit:3.9000001;stroke-dasharray:none;stroke-opacity:1"
-           id="rect8047"
-           width="62.5"
-           height="37.5"
-           x="171.875"
-           y="-56.875"
-           ry="11.607143" />
-        <rect
-           style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.25;stroke-miterlimit:3.9000001;stroke-dasharray:none;stroke-opacity:1"
-           id="rect8049"
-           width="68.75"
-           height="43.75"
-           x="168.75"
-           y="-60" />
-      </g>
-      <text
-         sodipodi:linespacing="125%"
-         id="text8051"
-         y="-35"
-         x="127.87411"
-         style="font-size:10.19999981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="-35"
-           x="127.87411"
-           id="tspan8053"
-           sodipodi:role="line">GETSRCTYP</tspan></text>
-    </g>
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -300,17 +267,6 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="153.125"
-       y="871.25"
-       id="text9026"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan9028"
-         x="153.125"
-         y="871.25">INPKTADDR=0x16</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="281.25"
        y="965"
        id="text9034"
@@ -425,10 +381,6 @@
          id="tspan9441"
          x="59.375"
          y="871.25">ARM=0</tspan></text>
-    <path
-       style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 225,840 L 287.5,840"
-       id="path4093" />
     <g
        id="g4980"
        transform="translate(193.75,878.125)">

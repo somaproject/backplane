@@ -250,6 +250,27 @@ architecture Behavioral of network is
       GRANT     : in  std_logic);
   end component;
 
+  component eventretxresponse
+    port (
+      CLK       : in  std_logic;
+      -- IO interface
+      START     : in  std_logic;
+      DONE      : out std_logic;
+      INPKTDATA : in  std_logic_vector(15 downto 0);
+      INPKTADDR : out std_logic_vector(9 downto 0);
+      -- retx interface
+      RETXDIN   : in  std_logic_vector(15 downto 0);
+      RETXADDR  : in  std_logic_vector(8 downto 0);
+      RETXWE    : in  std_logic;
+      RETXREQ   : out std_logic;
+      RETXDONE  : in  std_logic;
+      RETXID    : out std_logic_vector(13 downto 0);
+      -- output
+      ARM       : out std_logic;
+      GRANT     : in  std_logic;
+      DOUT      : out std_logic_vector(15 downto 0);
+      DOEN      : out std_logic);
+  end component;
 
   component memddr2
     port (
@@ -458,9 +479,13 @@ begin  -- Behavioral
       PINGSTART  => pinginstart,
       PINGADDR   => pinginaddr,
       PINGDONE   => pingindone,
-      RETXSTART  => retxinstart,
-      RETXADDR   => retxinaddr,
-      RETXDONE   => retxindone,
+      DRETXSTART  => dretxinstart,
+      DRETXADDR   => dretxinaddr,
+      DRETXDONE   => dretxindone,
+      ERETXSTART  => eretxinstart,
+      ERETXADDR   => eretxinaddr,
+      ERETXDONE   => eretxindone,
+      
       ARPSTART   => arpinstart,
       ARPADDR    => arpinaddr,
       ARPDONE    => arpindone,
@@ -516,22 +541,22 @@ begin  -- Behavioral
 
   eventtx_inst : eventtx
     port map (
-      CLK     => CLK,
-      MYMAC   => MYMAC,
-      MYIP    => MYIP,
-      MYBCAST => MYBCAST,
-      ECYCLE  => ECYCLE,
-      EDTX    => EDTX,
-      EATX    => EATX,
-      DOUT    => din0,
-      DOEN    => den(0),
-      ARM     => arm(0),
-      GRANT   => grant(0),
-      RETXID => widb,
-      RETXDOUT => wdinb,
-      RETXADDR => waddrb,
-      RETXWE => wrb,
-      RETXDONE => wdoneb,
+      CLK         => CLK,
+      MYMAC       => MYMAC,
+      MYIP        => MYIP,
+      MYBCAST     => MYBCAST,
+      ECYCLE      => ECYCLE,
+      EDTX        => EDTX,
+      EATX        => EATX,
+      DOUT        => din0,
+      DOEN        => den(0),
+      ARM         => arm(0),
+      GRANT       => grant(0),
+      RETXID      => widb,
+      RETXDOUT    => wdinb,
+      RETXADDR    => waddrb,
+      RETXWE      => wrb,
+      RETXDONE    => wdoneb,
       RETXPENDING => wpendingb
       );
 
@@ -595,6 +620,24 @@ begin  -- Behavioral
       DOEN      => den(4),
       ARM       => arm(4),
       GRANT     => grant(4));
+
+  eventretxresponse_inst : eventretxresponse
+    port map (
+      CLK       => CLK,
+      START     => eretxinstart,
+      DONE      => eretxindone,
+      INPKTDATA => pktdata,
+      INPKTADDR => eretxinaddr,
+      RETXDIN   => rdoutb,
+      RETXADDR  => raddrb,
+      RETXWE    => rwroutb,
+      RETXREQ   => rreqb,
+      RETXDONE  => rdoneb,
+      RETXID    => ridb,
+      ARM       => arm(3),
+      GRANT     => grant(3),
+      DOUT      => din3,
+      DOEN      => den(3));
 
   retxbuffer_inst : retxbuffer
     port map (
