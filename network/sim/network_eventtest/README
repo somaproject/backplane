@@ -1,0 +1,88 @@
+Overview of the entire network subsystem -- can we synthesize, run, etc. 
+
+We will first try a full arp/ping query cycle
+
+Here's what we want to test: 
+
+Can we handle, in one millisecond: 
+  64 data packets of full size (560 bytes)
+  50 full-size (80-event) event packets? 
+  10 inbound event packets, and their responses
+  10 retransmission requests
+  
+
+and sustain this over several MS? 
+  Our goal here is to: 
+    1. correctly receive all of our data. There should -never- be a dropped data packet or a fifo overflow
+    2. Correctly receive all outbount event packets.
+    3. correctly receive all of our event retx requests
+
+To test this we generate the relevant packets with our virtual ETH0
+device.
+
+What do we really care about? buffering and timing; thus the exact
+packet data isn't so important. 
+
+1. generate data-packets of data, complete with different start times
+and the like.
+
+2. for output comparison, we'll create several data consumers: 
+  1. data verify -- is the output packet the one we're looking for? complete with proper UDP header checking and the like
+  2. event verify -- is the output event packet the one we're looking for? 
+
+
+
+New plan: 
+What are the questions we want to ask ?
+1. Can we handle our requested bandwidth of whatevers? 
+2. Under ADVERSE inputs, can we maintain our desired outputs? 
+
+------------------------------------------------------------------
+Data Receivers
+------------------------------------------------------------------ 
+
+So to do this we generate a total of N events for each of the 64
+sources, all type 0. The datareciver is the consumer that checks all
+inbound packets and makes sure we receive the correct UDP port, src,
+typ, and ID. We have 64 of these in an array. 
+
+1. incremental IDs
+2. a data packet that is dependent upon ID, typ, src. 
+
+Note that each of these consumers is -unable- to send a retx
+request. Each of these containers throws up a "error" if it receives
+ID N+1 but did not receive ID N.
+
+there are four status signals: 
+rxcnt
+rxgood
+rxmissing
+rxerror
+
+------------------------------------------------------------------
+Event Receiver
+------------------------------------------------------------------ 
+
+At ALL times we place a full complement of events into the event bus.
+The first event is the timer event, and we use this to check if we are
+properly receiving the events. 
+
+This is event 0x10 from source 0x00. 
+
+Thus, we will make the (stupid?) assumption that all events are of the form:
+
+len: somabackplane.N - 1, and then somabackplane.N * 6 bytes of data
+
+
+------------------------------------------------------------------
+Retransmit request engine...
+------------------------------------------------------------------ 
+
+We wait until src N has received packet i, and then we send a
+retransmit request M ecycles later, and wait to make sure that we have
+received that packet.
+
+Ideally we want to handle 10 of these per ms. We've got a
+retransmit-request engine that generates retransmission requests, and
+then we use a datareceiver to try and capture the packet again.
+
