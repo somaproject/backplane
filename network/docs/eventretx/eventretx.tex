@@ -1,23 +1,23 @@
-\section{Retransmission Response Packet Processing Module} 
+\section{Event Retransmission Response Packet Processing Module} 
 
-The Retransmission Request Packet Processing module takes an input
-retransmit request and attempts to acquire that packet. It then sends
+The Event Retransmission Request Packet Processing module takes an input
+event retransmit request and attempts to acquire that packet. It then sends
 that packet out to the interface. Note that the packet retrieved from
 the FIFO may not be the packet requested, if the FIFO has since
 wrapped around.
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{retxresponse.svg}
+\includegraphics[scale=0.8]{eventretxresponse.svg}
 \end{centering}
 \caption{Retransmission Request module.}
-\label{retxresponse}
+\label{eventretxresponse}
 \end{figure}
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{retxresponse.fsm.svg}
+\includegraphics[scale=0.8]{eventretxresponse.fsm.svg}
 \end{centering}
-\caption{Retransmission Request module FSM.}
-\label{retxresponse.fsm}
+\caption{Event Retransmission Request module FSM.}
+\label{eventretxresponse.fsm}
 \end{figure}
