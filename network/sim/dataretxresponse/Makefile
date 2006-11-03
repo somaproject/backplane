@@ -9,19 +9,19 @@ $(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
 $(WORKDIR)/inputcontrol/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/inputcontrol.vhd
 	$(VHDLC) ../../vhdl/inputcontrol.vhd
 
-$(WORKDIR)/retxresponse/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/inputcontrol.vhd ../../vhdl/retxresponse.vhd
-	$(VHDLC) ../../vhdl/retxresponse.vhd
+$(WORKDIR)/dataretxresponse/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/inputcontrol.vhd ../../vhdl/dataretxresponse.vhd
+	$(VHDLC) ../../vhdl/dataretxresponse.vhd
 
-hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/retxresponse/_behavioral.var 
+hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/dataretxresponse/_behavioral.var 
 
 comp: 
 
-$(WORKDIR)/retxresponsetest/_behavioral.var: retxresponsetest.vhd
-	$(VHDLC) retxresponsetest.vhd
+$(WORKDIR)/dataretxresponsetest/_behavioral.var: dataretxresponsetest.vhd
+	$(VHDLC) dataretxresponsetest.vhd
 
-sim: $(WORKDIR)/retxresponsetest/_behavioral.var 
+sim: $(WORKDIR)/dataretxresponsetest/_behavioral.var 
 runsim: all
-	$(VHDLS) retxresponsetest.vhd
+	$(VHDLS) dataretxresponsetest.vhd
 
 
 clean:

@@ -3,16 +3,16 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/networkstack/_networkstack.var: ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
 	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/somabackplane/_somabackplane.var: ../../../vhdl/somabackplane.vhd
+$(WORKDIR)/somabackplane/prim.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd
 	$(VHDLC) ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/eventbodywriter/_behavioral.var: ../../vhdl/eventbodywriter.vhd
+$(WORKDIR)/eventbodywriter/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd
 	$(VHDLC) ../../vhdl/eventbodywriter.vhd
 
-hw: $(WORKDIR)/networkstack/_networkstack.var $(WORKDIR)/somabackplane/_somabackplane.var $(WORKDIR)/eventbodywriter/_behavioral.var 
+hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/eventbodywriter/_behavioral.var 
 
 comp: 
 
