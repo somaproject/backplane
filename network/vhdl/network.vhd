@@ -77,9 +77,15 @@ architecture Behavioral of network is
       PINGADDR   : in  std_logic_vector(9 downto 0);
       PINGDONE   : in  std_logic;
       -- retransmit request 
-      RETXSTART  : out std_logic;
-      RETXADDR   : in  std_logic_vector(9 downto 0);
-      RETXDONE   : in  std_logic;
+      DRETXSTART : out std_logic;
+      DRETXADDR  : in  std_logic_vector(9 downto 0);
+      DRETXDONE  : in  std_logic;
+
+      -- retransmit request 
+      ERETXSTART : out std_logic;
+      ERETXADDR  : in  std_logic_vector(9 downto 0);
+      ERETXDONE  : in  std_logic;
+
       -- ARP Request
       ARPSTART   : out std_logic;
       ARPADDR    : in  std_logic_vector(9 downto 0);
@@ -93,16 +99,16 @@ architecture Behavioral of network is
 
   component txmux
     port (
-      CLK      : in  std_logic;
-      DEN      : in  std_logic_vector(5 downto 0);
-      DIN0     : in  std_logic_vector(15 downto 0);
-      DIN1     : in  std_logic_vector(15 downto 0);
-      DIN2     : in  std_logic_vector(15 downto 0);
-      DIN3     : in  std_logic_vector(15 downto 0);
-      DIN4     : in  std_logic_vector(15 downto 0);
-      DIN5     : in  std_logic_vector(15 downto 0);
-      DIN6     : in  std_logic_vector(15 downto 0);
-      
+      CLK  : in std_logic;
+      DEN  : in std_logic_vector(5 downto 0);
+      DIN0 : in std_logic_vector(15 downto 0);
+      DIN1 : in std_logic_vector(15 downto 0);
+      DIN2 : in std_logic_vector(15 downto 0);
+      DIN3 : in std_logic_vector(15 downto 0);
+      DIN4 : in std_logic_vector(15 downto 0);
+      DIN5 : in std_logic_vector(15 downto 0);
+      DIN6 : in std_logic_vector(15 downto 0);
+
       GRANT    : out std_logic_vector(5 downto 0);
       ARM      : in  std_logic_vector(5 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
@@ -147,20 +153,27 @@ architecture Behavioral of network is
 
   component eventtx
     port (
-      CLK     : in  std_logic;
+      CLK         : in  std_logic;
       -- header fields
-      MYMAC   : in  std_logic_vector(47 downto 0);
-      MYIP    : in  std_logic_vector(31 downto 0);
-      MYBCAST : in  std_logic_vector(31 downto 0);
+      MYMAC       : in  std_logic_vector(47 downto 0);
+      MYIP        : in  std_logic_vector(31 downto 0);
+      MYBCAST     : in  std_logic_vector(31 downto 0);
       -- event interface
-      ECYCLE  : in  std_logic;
-      EDTX    : in  std_logic_vector(7 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N-1 downto 0);
+      ECYCLE      : in  std_logic;
+      EDTX        : in  std_logic_vector(7 downto 0);
+      EATX        : in  std_logic_vector(somabackplane.N-1 downto 0);
       -- tx IF
-      DOUT    : out std_logic_vector(15 downto 0);
-      DOEN    : out std_logic;
-      GRANT   : in  std_logic;
-      ARM     : out std_logic
+      DOUT        : out std_logic_vector(15 downto 0);
+      DOEN        : out std_logic;
+      GRANT       : in  std_logic;
+      ARM         : out std_logic;
+      -- Retx write interface
+      RETXID      : out std_logic_vector(13 downto 0);
+      RETXDOUT    : out std_logic_vector(15 downto 0);
+      RETXADDR    : out std_logic_vector(8 downto 0);
+      RETXDONE    : out std_logic;
+      RETXPENDING : in  std_logic;
+      RETXWE      : out std_logic
       );
   end component;
 
@@ -192,7 +205,7 @@ architecture Behavioral of network is
       );
   end component;
 
-  component retxresponse
+  component dataretxresponse
     port (
       CLK       : in  std_logic;
       -- IO interface
@@ -201,18 +214,18 @@ architecture Behavioral of network is
       INPKTDATA : in  std_logic_vector(15 downto 0);
       INPKTADDR : out std_logic_vector(9 downto 0);
       -- retx interface
-    RETXDIN   : in  std_logic_vector(15 downto 0);
-    RETXADDR  : in  std_logic_vector(8 downto 0);
-    RETXWE    : in  std_logic;
-    RETXREQ   : out std_logic;
-    RETXDONE  : in  std_logic;
-    RETXID   : out std_logic_vector(13 downto 0);
+      RETXDIN   : in  std_logic_vector(15 downto 0);
+      RETXADDR  : in  std_logic_vector(8 downto 0);
+      RETXWE    : in  std_logic;
+      RETXREQ   : out std_logic;
+      RETXDONE  : in  std_logic;
+      RETXID    : out std_logic_vector(13 downto 0);
 
       -- output
-      ARM       : out std_logic;
-      GRANT     : in  std_logic;
-      DOUT      : out std_logic_vector(15 downto 0);
-      DOEN      : out std_logic);
+      ARM   : out std_logic;
+      GRANT : in  std_logic;
+      DOUT  : out std_logic_vector(15 downto 0);
+      DOEN  : out std_logic);
   end component;
 
   component eventrx
@@ -358,9 +371,13 @@ architecture Behavioral of network is
   signal pinginaddr  : std_logic_vector(9 downto 0) := (others => '0');
   signal pingindone  : std_logic                    := '0';
 
-  signal retxinstart             : std_logic                    := '0';
-  signal retxinaddr              : std_logic_vector(9 downto 0) := (others => '0');
-  signal retxindone, retxindone2 : std_logic                    := '0';
+  signal eretxinstart : std_logic                    := '0';
+  signal eretxinaddr  : std_logic_vector(9 downto 0) := (others => '0');
+  signal eretxindone  : std_logic                    := '0';
+
+  signal dretxinstart : std_logic                    := '0';
+  signal dretxinaddr  : std_logic_vector(9 downto 0) := (others => '0');
+  signal dretxindone  : std_logic                    := '0';
 
   -- output
 
@@ -509,7 +526,14 @@ begin  -- Behavioral
       DOUT    => din0,
       DOEN    => den(0),
       ARM     => arm(0),
-      GRANT   => grant(0));
+      GRANT   => grant(0),
+      RETXID => widb,
+      RETXDOUT => wdinb,
+      RETXADDR => waddrb,
+      RETXWE => wrb,
+      RETXDONE => wdoneb,
+      RETXPENDING => wpendingb
+      );
 
   data_inst : data
     port map (
@@ -536,19 +560,19 @@ begin  -- Behavioral
 
       );
 
-  retxresponse_inst : retxresponse
+  dataretxresponse_inst : dataretxresponse
     port map (
       CLK       => CLK,
-      START     => retxinstart,
-      DONE      => retxindone,
+      START     => dretxinstart,
+      DONE      => dretxindone,
       INPKTDATA => pktdata,
-      INPKTADDR => retxinaddr,
-      RETXDIN   => rdouta, 
+      INPKTADDR => dretxinaddr,
+      RETXDIN   => rdouta,
       RETXADDR  => raddra,
       RETXWE    => rwrouta,
       RETXREQ   => rreqa,
       RETXDONE  => rdonea,
-      RETXID => rida, 
+      RETXID    => rida,
       ARM       => arm(2),
       GRANT     => grant(2),
       DOUT      => din2,
@@ -581,7 +605,7 @@ begin  -- Behavioral
       WADDRA    => waddra,
       WRA       => wra,
       WDONEA    => wdonea,
-      WPENDINGA => wpendinga, 
+      WPENDINGA => wpendinga,
       WCLKA     => MEMCLK,
       RIDA      => rida,
       RREQA     => rreqa,
@@ -595,7 +619,7 @@ begin  -- Behavioral
       WADDRB    => waddrb,
       WRB       => wrb,
       WDONEB    => wdoneb,
-      WPENDINGB => wpendingb, 
+      WPENDINGB => wpendingb,
       WCLKB     => CLK,
       RIDB      => ridb,
       RREQB     => rreqb,

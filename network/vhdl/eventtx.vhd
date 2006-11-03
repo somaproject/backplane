@@ -26,7 +26,6 @@ entity eventtx is
     DOEN    : out std_logic;
     GRANT   : in  std_logic;
     ARM     : out std_logic;
-
     -- Retx write interface
     RETXID      : out std_logic_vector(13 downto 0);
     RETXDOUT    : out std_logic_vector(15 downto 0);

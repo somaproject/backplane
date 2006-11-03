@@ -6,7 +6,7 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
-entity retxresponse is
+entity dataretxresponse is
   port (
     CLK       : in  std_logic;
     -- IO interface
@@ -26,9 +26,9 @@ entity retxresponse is
     GRANT     : in  std_logic;
     DOUT      : out std_logic_vector(15 downto 0);
     DOEN      : out std_logic);
-end retxresponse;
+end dataretxresponse;
 
-architecture Behavioral of retxresponse is
+architecture Behavioral of dataretxresponse is
 
   signal len      : std_logic_vector(8 downto 0) := (others => '0');
   signal bcnt     : std_logic_vector(9 downto 0) := (others => '0');
