@@ -19,10 +19,14 @@ entity inputcontrol is
     PINGSTART  : out std_logic;
     PINGADDR   : in  std_logic_vector(9 downto 0);
     PINGDONE   : in  std_logic;
-    -- retransmit request 
-    RETXSTART  : out std_logic;
-    RETXADDR   : in  std_logic_vector(9 downto 0);
-    RETXDONE   : in  std_logic;
+    -- data retransmit request 
+    DRETXSTART  : out std_logic;
+    DRETXADDR   : in  std_logic_vector(9 downto 0);
+    DRETXDONE   : in  std_logic;
+    -- event retransmit request 
+    ERETXSTART  : out std_logic;
+    ERETXADDR   : in  std_logic_vector(9 downto 0);
+    ERETXDONE   : in  std_logic;
     -- ARP Request
     ARPSTART   : out std_logic;
     ARPADDR   : in  std_logic_vector(9 downto 0);
@@ -50,7 +54,7 @@ architecture Behavioral of inputcontrol is
   signal addrb    : std_logic_vector(9 downto 0)  := (others => '0');
   signal dob      : std_logic_vector(15 downto 0) := (others => '0');
 
-  signal mode : integer range 0 to 4 := 0;
+  signal mode : integer range 0 to 5 := 0;
 
   signal start : std_logic := '0';
 
@@ -60,7 +64,8 @@ architecture Behavioral of inputcontrol is
   -- fsm
   type states is (none, dinst, dinw, fstart, nextpkt,
                   arppkt, arpopchk, arpqstart, arpwait,
-                  ipchka, icmpchk, udpporta, udpchk, retxstarts, retxwait,
+                  ipchka, icmpchk, udpporta, udpchk, dretxst, dretxwait,
+                  eretxst, eretxwait, 
                   evtstart, evtwait, 
                   echoreq, icmpstart, pingwait);
   signal cs, ns : states := none;
@@ -113,9 +118,10 @@ begin  -- Behavioral
 
   addrb <= "00" & intaddrb when mode = 0 else
            pingaddr        when mode = 1 else
-           retxaddr        when mode = 2 else
+           dretxaddr        when mode = 2 else
            arpaddr         when mode = 3 else
            eventaddr       when mode = 4 else
+           ERETXADDR when mode = 5 else
            "0000000000";
 
   -- DEBUGGING
@@ -159,9 +165,9 @@ begin  -- Behavioral
         end if;
 
         if start = '1' and mode = 2 then
-          RETXSTART <= '1';
+          DRETXSTART <= '1';
         else
-          RETXSTART <= '0';
+          DRETXSTART <= '0';
         end if;
 
         if start = '1' and mode = 3 then
@@ -176,12 +182,19 @@ begin  -- Behavioral
           EVENTSTART <= '0';
         end if;
 
+        if start = '1' and mode = 5 then
+          ERETXSTART <= '1';
+        else
+          ERETXSTART <= '0';
+        end if;
+
 
       end if;
     end if;
   end process main;
 
-  fsm : process(CS, WEA, dob, ARPDONE, PINGDONE, RETXDONE, EVENTDONE)
+  fsm : process(CS, WEA, dob, ARPDONE, PINGDONE, DRETXDONE,
+                ERETXDONE, EVENTDONE)
   begin
     case CS is
       when none =>
@@ -355,32 +368,53 @@ begin  -- Behavioral
         start      <= '0';
         intaddrb   <= X"13";
         if dob = X"1130" then
-          ns <= retxstarts;
+          ns <= dretxst;
+        elsif dob = X"157c" then
+          ns <= eretxst; 
         elsif dob = X"1388" then
-          
           ns <= evtstart; 
         else
           ns <= nextpkt; 
         end if;
         
-      when retxstarts =>
+      when dretxst =>
         statedebug <= X"10"; 
         lnextframe <= '0';
         mode       <= 2;
         start      <= '1';
         intaddrb   <= X"13";
-        ns <= retxwait;
+        ns <= dretxwait;
         
-      when retxwait =>
+      when dretxwait =>
         statedebug <= X"11"; 
         lnextframe <= '0';
         mode       <= 2;
         start      <= '0';
         intaddrb   <= X"13";
-        if RETXDONE ='1' then
+        if DRETXDONE ='1' then
           ns <= nextpkt;
         else
-          ns <= retxwait; 
+          ns <= dretxwait; 
+        end if;
+        
+      when eretxst =>
+        statedebug <= X"10"; 
+        lnextframe <= '0';
+        mode       <= 5;
+        start      <= '1';
+        intaddrb   <= X"13";
+        ns <= eretxwait;
+        
+      when eretxwait =>
+        statedebug <= X"11"; 
+        lnextframe <= '0';
+        mode       <= 5;
+        start      <= '0';
+        intaddrb   <= X"13";
+        if ERETXDONE ='1' then
+          ns <= nextpkt;
+        else
+          ns <= eretxwait; 
         end if;
         
       when evtstart =>
