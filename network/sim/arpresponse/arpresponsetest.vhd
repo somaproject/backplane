@@ -63,10 +63,15 @@ architecture Behavioral of arpresponsetest is
       PINGSTART  : out std_logic;
       PINGADDR   : in  std_logic_vector(9 downto 0);
       PINGDONE   : in  std_logic;
-      -- retransmit request 
-      RETXSTART  : out std_logic;
-      RETXADDR   : in  std_logic_vector(9 downto 0);
-      RETXDONE   : in  std_logic;
+      -- data retransmit request 
+      DRETXSTART : out std_logic;
+      DRETXADDR  : in  std_logic_vector(9 downto 0);
+      DRETXDONE  : in  std_logic;
+      -- event retransmit request 
+      ERETXSTART : out std_logic;
+      ERETXADDR  : in  std_logic_vector(9 downto 0);
+      ERETXDONE  : in  std_logic;
+
       -- ARP Request
       ARPSTART   : out std_logic;
       ARPADDR    : in  std_logic_vector(9 downto 0);
@@ -87,22 +92,28 @@ architecture Behavioral of arpresponsetest is
   signal PINGSTART  : std_logic                     := '0';
   signal PINGADDR   : std_logic_vector(9 downto 0)  := (others => '0');
   signal PINGDONE   : std_logic                     := '0';
-  -- retransmit request 
-  signal RETXSTART  : std_logic                     := '0';
-  signal RETXADDR   : std_logic_vector(9 downto 0)  := (others => '0');
-  signal RETXDONE   : std_logic                     := '0';
+  -- event retransmit request 
+  signal DRETXSTART : std_logic                     := '0';
+  signal DRETXADDR  : std_logic_vector(9 downto 0)  := (others => '0');
+  signal DRETXDONE  : std_logic                     := '0';
+  -- event retransmit request 
+  signal ERETXSTART : std_logic                     := '0';
+  signal ERETXADDR  : std_logic_vector(9 downto 0)  := (others => '0');
+  signal ERETXDONE  : std_logic                     := '0';
+
+
   -- ARP Request
-  signal ARPSTART   : std_logic                     := '0';
-  signal ARPADDR    : std_logic_vector(9 downto 0)  := (others => '0');
-  signal ARPDONE    : std_logic                     := '0';
+  signal ARPSTART   : std_logic                    := '0';
+  signal ARPADDR    : std_logic_vector(9 downto 0) := (others => '0');
+  signal ARPDONE    : std_logic                    := '0';
   -- input event
-  signal EVENTSTART : std_logic                     := '0';
-  signal EVENTADDR  : std_logic_vector(9 downto 0)  := (others => '0');
-  signal EVENTDONE  : std_logic                     := '0';
+  signal EVENTSTART : std_logic                    := '0';
+  signal EVENTADDR  : std_logic_vector(9 downto 0) := (others => '0');
+  signal EVENTDONE  : std_logic                    := '0';
 
 
   signal dexpected : std_logic_vector(15 downto 0) := (others => '0');
-  signal doutl : std_logic_vector(15 downto 0) := (others => '0');
+  signal doutl     : std_logic_vector(15 downto 0) := (others => '0');
 
 begin  -- Behavioral
 
@@ -134,9 +145,12 @@ begin  -- Behavioral
       PINGSTART  => PINGSTART,
       PINGADDR   => PINGADDR,
       PINGDONE   => PINGDONE,
-      RETXSTART  => RETXSTART,
-      RETXADDR   => RETXADDR,
-      RETXDONE   => RETXDONE,
+      DRETXSTART => DRETXSTART,
+      DRETXADDR  => DRETXADDR,
+      DRETXDONE  => DRETXDONE,
+      ERETXSTART => ERETXSTART,
+      ERETXADDR  => ERETXADDR,
+      ERETXDONE  => ERETXDONE,
       ARPSTART   => ARPSTART,
       ARPADDR    => ARPADDR,
       ARPDONE    => ARPDONE,
@@ -158,34 +172,34 @@ begin  -- Behavioral
     wait until rising_edge(CLK) and ARM = '1';
     wait for 20 us;
     wait until rising_edge(CLK);
-    GRANT <= '1';
+    GRANT         <= '1';
     wait until rising_edge(CLK);
-    GRANT <= '0';
+    GRANT         <= '0';
     while not endfile(data_file) loop
       wait until rising_edge(CLK);
       if DOEN = '1' then
         readline(data_file, L);
         hread(L, word);
-        doutl <= dout; 
-        dexpected <= word; 
+        doutl     <= dout;
+        dexpected <= word;
         wait for 1 ns;
-        assert doutl = dexpected report "Error reading DOUT" severity Error; 
-        
-        
+        assert doutl = dexpected report "Error reading DOUT" severity error;
+
+
       end if;
 
     end loop;
 
     wait until rising_edge(CLK) and ARPDONE = '1';
-      
+
     wait for 2 us;
     networkstack.writepkt("notusquery.txt", CLK, DINEN, NEXTFRAME, DIN);
 
     wait until rising_edge(CLK) and ARPDONE = '1';
 
-    assert False report "End of Simulation" severity Failure;
+    assert false report "End of Simulation" severity failure;
 
-    
+
     wait;
 
   end process;
