@@ -31,10 +31,14 @@ architecture Behavioral of inputcontroltest is
       PINGSTART  : out std_logic;
       PINGADDR   : in  std_logic_vector(9 downto 0);
       PINGDONE   : in  std_logic;
-      -- retransmit request 
-      RETXSTART  : out std_logic;
-      RETXADDR   : in  std_logic_vector(9 downto 0);
-      RETXDONE   : in  std_logic;
+      -- data retransmit request 
+      DRETXSTART  : out std_logic;
+      DRETXADDR   : in  std_logic_vector(9 downto 0);
+      DRETXDONE   : in  std_logic;
+      -- event retransmit request 
+      ERETXSTART  : out std_logic;
+      ERETXADDR   : in  std_logic_vector(9 downto 0);
+      ERETXDONE   : in  std_logic;
       -- ARP Request
       ARPSTART   : out std_logic;
       ARPADDR    : in  std_logic_vector(9 downto 0);
@@ -58,9 +62,15 @@ architecture Behavioral of inputcontroltest is
   signal PINGADDR   : std_logic_vector(9 downto 0)  := (others => '0');
   signal PINGDONE   : std_logic                     := '0';
   -- retransmit request 
-  signal RETXSTART  : std_logic                     := '0';
-  signal RETXADDR   : std_logic_vector(9 downto 0)  := (others => '0');
-  signal RETXDONE   : std_logic                     := '0';
+  signal DRETXSTART  : std_logic                     := '0';
+  signal DRETXADDR   : std_logic_vector(9 downto 0)  := (others => '0');
+  signal DRETXDONE   : std_logic                     := '0';
+  -- event retransmit request 
+  signal ERETXSTART  : std_logic                     := '0';
+  signal ERETXADDR   : std_logic_vector(9 downto 0)  := (others => '0');
+  signal ERETXDONE   : std_logic                     := '0';
+
+  
   -- ARP Request
   signal ARPSTART   : std_logic                     := '0';
   signal ARPADDR    : std_logic_vector(9 downto 0)  := (others => '0');
@@ -84,9 +94,12 @@ begin  -- Behavioral
       PINGSTART  => PINGSTART,
       PINGADDR   => PINGADDR,
       PINGDONE   => PINGDONE,
-      RETXSTART  => RETXSTART,
-      RETXADDR   => RETXADDR,
-      RETXDONE   => RETXDONE,
+      DRETXSTART  => DRETXSTART,
+      DRETXADDR   => DRETXADDR,
+      DRETXDONE   => DRETXDONE,
+      ERETXSTART  => ERETXSTART,
+      ERETXADDR   => ERETXADDR,
+      ERETXDONE   => ERETXDONE,
       ARPSTART   => ARPSTART,
       ARPADDR    => ARPADDR,
       ARPDONE    => ARPDONE,

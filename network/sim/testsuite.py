@@ -18,7 +18,7 @@ else:
 
     # core components
     
-    suite.addTest(vhdlTestCase("txmux"))
+    suite.addTest(vhdlTestCase("inputcontrol"))
     
 runner = unittest.TextTestRunner()
 runner.run(suite)
