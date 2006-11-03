@@ -172,6 +172,7 @@ begin  -- Behavioral
         RDONEA <= '0';
       end if;
 
+      WPENDINGA <= wdoneal; 
     end if;
 
   end process read_a;
@@ -198,6 +199,8 @@ begin  -- Behavioral
       else
         RDONEB <= '0';
       end if;
+
+      WPENDINGB <= wdonebl; 
 
 
 

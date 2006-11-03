@@ -134,14 +134,14 @@ begin  -- Behavioral
         end if;
 
       when getseqh =>
-        INPKTADDR <= "0000010111";
+        INPKTADDR <= "0000010110";
         ARM       <= '0';
         lretxreq  <= '0';
         bcntinc   <= '0';
         ns        <= getseql;
 
       when getseql =>
-        INPKTADDR <= "0000011000";
+        INPKTADDR <= "0000010111";
         ARM       <= '0';
         lretxreq  <= '0';
         bcntinc   <= '0';

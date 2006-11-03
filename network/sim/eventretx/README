@@ -1,88 +1,43 @@
-Overview of the entire network subsystem -- can we synthesize, run, etc. 
+Here we attempt to test and verify that the event tx and event retx
+components interface properly with the retxbuffer interface and dram.
 
-We will first try a full arp/ping query cycle
+Modules implicated include: 
 
-Here's what we want to test: 
+eventretxresponse
+eventtx
+retxbuffer
+memddr2
+inputcontrol
 
-Can we handle, in one millisecond: 
-  64 data packets of full size (560 bytes)
-  50 full-size (80-event) event packets? 
-  10 inbound event packets, and their responses
-  10 retransmission requests
-  
+What to test: 
 
-and sustain this over several MS? 
-  Our goal here is to: 
-    1. correctly receive all of our data. There should -never- be a dropped data packet or a fifo overflow
-    2. Correctly receive all outbount event packets.
-    3. correctly receive all of our event retx requests
+1. Do retransmission requests degrade gracefully? I.e. if I flood the
+system with ReTX requests, do I still get out all the primary events
+that I want?
 
-To test this we generate the relevant packets with our virtual ETH0
-device.
-
-What do we really care about? buffering and timing; thus the exact
-packet data isn't so important. 
-
-1. generate data-packets of data, complete with different start times
-and the like.
-
-2. for output comparison, we'll create several data consumers: 
-  1. data verify -- is the output packet the one we're looking for? complete with proper UDP header checking and the like
-  2. event verify -- is the output event packet the one we're looking for? 
+2. If I flood the system with ReTX requests, are all of the
+transmitted packets still placed in the eventReTX buffer?
 
 
+Event input: 
 
-New plan: 
-What are the questions we want to ask ?
-1. Can we handle our requested bandwidth of whatevers? 
-2. Under ADVERSE inputs, can we maintain our desired outputs? 
+We write full events (all N devices transmitting) every ecycle and try
+and transmit. We verify that these are correct. It's impossible for us
+to test wrap-arround because that's 320 ms of events, and I'm not
+going to wait that long for the sime to run.
 
-------------------------------------------------------------------
-Data Receivers
------------------------------------------------------------------- 
+Retransmission
 
-So to do this we generate a total of N events for each of the 64
-sources, all type 0. The datareciver is the consumer that checks all
-inbound packets and makes sure we receive the correct UDP port, src,
-typ, and ID. We have 64 of these in an array. 
+We have a "retx program" that we generated in python, which will
+consist of a seriels of lines:
 
-1. incremental IDs
-2. a data packet that is dependent upon ID, typ, src. 
+N
 
-Note that each of these consumers is -unable- to send a retx
-request. Each of these containers throws up a "error" if it receives
-ID N+1 but did not receive ID N.
-
-there are four status signals: 
-rxcnt
-rxgood
-rxmissing
-rxerror
-
-------------------------------------------------------------------
-Event Receiver
------------------------------------------------------------------- 
-
-At ALL times we place a full complement of events into the event bus.
-The first event is the timer event, and we use this to check if we are
-properly receiving the events. 
-
-This is event 0x10 from source 0x00. 
-
-Thus, we will make the (stupid?) assumption that all events are of the form:
-
-len: somabackplane.N - 1, and then somabackplane.N * 6 bytes of data
+which will wait until ecycle # N before requesting packet with
+sequence id ID.
 
 
-------------------------------------------------------------------
-Retransmit request engine...
------------------------------------------------------------------- 
+eventrxdecode: receives an event and then extracts out the sequence
+and the timestamp of each included event
 
-We wait until src N has received packet i, and then we send a
-retransmit request M ecycles later, and wait to make sure that we have
-received that packet.
-
-Ideally we want to handle 10 of these per ms. We've got a
-retransmit-request engine that generates retransmission requests, and
-then we use a datareceiver to try and capture the packet again.
 

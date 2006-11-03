@@ -21,8 +21,6 @@ entity retxreq is
     DOEN      : out std_logic;
     DOUT      : out std_logic_vector(15 downto 0);
     REQ       : in  std_logic;
-    SRC       : in  integer;
-    TYP       : in  integer;
     ID        : in  std_logic_vector(31 downto 0);
     DONE      : out std_logic);
 end retxreq;
@@ -55,12 +53,12 @@ begin  -- Behavioral
   membuffer(16) <= X"C0A8";
   membuffer(17) <= X"00FF";
   membuffer(18) <= X"9C40";
-  membuffer(19) <= X"1130";
+  membuffer(19) <= X"157c";
   membuffer(20) <= X"000E";
   membuffer(21) <= X"7B5A";
-  membuffer(22) <= (std_logic_vector(TO_UNSIGNED(typ, 8)) & std_logic_vector(TO_UNSIGNED(src, 8)));
-  membuffer(23) <= ID(31 downto 16);
-  membuffer(24) <= ID(15 downto 0);
+  membuffer(22) <= ID(31 downto 16);
+  membuffer(23) <= ID(15 downto 0);
+  membuffer(24) <= X"0000";
   membuffer(25) <= X"0000";
   membuffer(26) <= X"0000";
   membuffer(27) <= X"0000";

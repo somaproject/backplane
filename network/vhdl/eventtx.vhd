@@ -12,20 +12,20 @@ use UNISIM.vcomponents.all;
 
 entity eventtx is
   port (
-    CLK     : in  std_logic;
+    CLK         : in  std_logic;
     -- header fields
-    MYMAC   : in  std_logic_vector(47 downto 0);
-    MYIP    : in  std_logic_vector(31 downto 0);
-    MYBCAST : in  std_logic_vector(31 downto 0);
+    MYMAC       : in  std_logic_vector(47 downto 0);
+    MYIP        : in  std_logic_vector(31 downto 0);
+    MYBCAST     : in  std_logic_vector(31 downto 0);
     -- event interface
-    ECYCLE  : in  std_logic;
-    EDTX    : in  std_logic_vector(7 downto 0);
-    EATX    : in  std_logic_vector(somabackplane.N-1 downto 0);
+    ECYCLE      : in  std_logic;
+    EDTX        : in  std_logic_vector(7 downto 0);
+    EATX        : in  std_logic_vector(somabackplane.N-1 downto 0);
     -- network tx IF
-    DOUT    : out std_logic_vector(15 downto 0);
-    DOEN    : out std_logic;
-    GRANT   : in  std_logic;
-    ARM     : out std_logic;
+    DOUT        : out std_logic_vector(15 downto 0);
+    DOEN        : out std_logic;
+    GRANT       : in  std_logic;
+    ARM         : out std_logic;
     -- Retx write interface
     RETXID      : out std_logic_vector(13 downto 0);
     RETXDOUT    : out std_logic_vector(15 downto 0);
@@ -64,12 +64,12 @@ architecture Behavioral of eventtx is
 
   -- counters
   signal bits : std_logic_vector(95 downto 0) := (others => '0');
-  
-  signal ecnt : integer range 0 to 15 := 0; 
 
-  signal ebcnt, lebcnt     : std_logic_vector(6 downto 0) := (others => '0');
-  signal ebcntdone : std_logic                    := '0';
-  signal ecyclel : std_logic := '0';
+  signal ecnt : integer range 0 to 15 := 0;
+
+  signal ebcnt, lebcnt : std_logic_vector(6 downto 0) := (others => '0');
+  signal ebcntdone     : std_logic                    := '0';
+  signal ecyclel       : std_logic                    := '0';
 
   signal id : std_logic_vector(31 downto 0) := (others => '0');
 
@@ -190,14 +190,14 @@ begin  -- Behavioral
       ADDR   => addrbody);
 
   bits(somabackplane.N -1 downto 0) <= eatx;
-  eventbitcnt: bitcnt
+  eventbitcnt : bitcnt
     port map (
       CLK   => CLK,
       DIN   => bits,
       DOUT  => lebcnt,
       START => ecyclel,
       DONE  => ebcntdone);
-  
+
   -- combinationals, input side
 
   dia <= idword  when osel = 0 else
@@ -221,7 +221,7 @@ begin  -- Behavioral
   wlen     <= ('0' & datalen) + "0000000010";
   dataaddr <= addrbody + datalen;
 
-  nextpktsize <= ('0' & ebcnt & "000") + ("00"  & datalen );
+  nextpktsize <= ('0' & ebcnt & "000") + ("00" & datalen );
 
   main_input : process(CLK)
   begin
@@ -229,10 +229,10 @@ begin  -- Behavioral
       ics <= ins;
 
       if ebcntdone = '1' then
-        ebcnt <= lebcnt; 
+        ebcnt <= lebcnt;
       end if;
-      ecyclel <= ECYCLE; 
-      
+      ecyclel <= ECYCLE;
+
       if nextbuf = '1' then
         datalen   <= (others => '0');
       else
@@ -242,7 +242,7 @@ begin  -- Behavioral
       end if;
 
       if nextbuf = '1' then
-        ecnt   <= 1; 
+        ecnt   <= 1;
       else
         if ebcntdone = '1' then
           ecnt <= ecnt + 1;
@@ -287,8 +287,8 @@ begin  -- Behavioral
         hdrstart <= '0';
         osel     <= 2;
         idsel    <= '0';
-        if ecnt = 6 or                 -- we are in the sixth ecycle, so there
-                                       -- are five in the buffer
+        if ecnt = 6 or                  -- we are in the sixth ecycle, so there
+          -- are five in the buffer
           (nextpktsize > "00111101000" ) then
           ins    <= hdrs;
         else
@@ -440,16 +440,28 @@ begin  -- Behavioral
       VALID    => revalid,
       FIFONEXT => renext);
 
+  RETXDOUT <= redata; 
+
   main_retxoutput : process(CLK)
   begin
     if rising_edge(CLK) then
       recs     <= rens;
-      if readdr = "000010000" then
+      if readdr = "000011000" then
         RETXID <= redata(13 downto 0);
       end if;
 
       RETXADDR <= readdr;
       RETXWE   <= reen;
+
+      if renext = '1' then
+        readdr   <= (others => '0');
+      else
+        if reen = '1' then
+          readdr <= readdr + 1;
+
+        end if;
+
+      end if;
     end if;
 
   end process main_retxoutput;
