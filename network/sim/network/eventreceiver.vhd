@@ -69,23 +69,23 @@ begin  -- Behavioral
             then
               maybegood              <= '0';
             end if;
-          when 22 =>
+          when 24 =>
             read_len                 <= TO_INTEGER(unsigned(DIN));
             if DIN /= std_logic_vector(TO_UNSIGNED(somabackplane.N, 16)) then
               maybegood              <= '0';
             end if;
-          when 23 =>
+          when 25 =>
             if DIN /= X"1000" then
               maybegood              <= '0';
             end if;
-          when 24 =>
+          when 26 =>
             --time_input(47 downto 32) <= DIN;
             null;
-          when 25 =>
-            time_input(31 downto 16) <= DIN;
-          when 26 =>
-            time_input(15 downto 0)  <= DIN;
           when 27 =>
+            time_input(31 downto 16) <= DIN;
+          when 28 =>
+            time_input(15 downto 0)  <= DIN;
+          when 31 =>
             if maybegood = '1' then
 
               if TO_INTEGER(unsigned(time_input))
