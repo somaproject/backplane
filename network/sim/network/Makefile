@@ -136,10 +136,13 @@ $(WORKDIR)/hy5ps121621f_pack/prim.var: retxreq.vhd datareceiver.vhd eventreceive
 $(WORKDIR)/hy5ps121621f/_behavioral_model_hy5ps121621f.var: retxreq.vhd datareceiver.vhd eventreceiver.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd
 	$(VHDLC) ../../../memory/sim/components/hynix/HY5PS121621F.vhd
 
-$(WORKDIR)/networktest/_behavioral.var: retxreq.vhd datareceiver.vhd eventreceiver.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd networktest.vhd
+$(WORKDIR)/clockgen/_behavioral.var: retxreq.vhd datareceiver.vhd eventreceiver.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd ../components/clockgen/clockgen.vhd
+	$(VHDLC) ../components/clockgen/clockgen.vhd
+
+$(WORKDIR)/networktest/_behavioral.var: retxreq.vhd datareceiver.vhd eventreceiver.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd ../components/clockgen/clockgen.vhd networktest.vhd
 	$(VHDLC) networktest.vhd
 
-sim: $(WORKDIR)/retxreq/_behavioral.var $(WORKDIR)/datareceiver/_behavioral.var $(WORKDIR)/eventreceiver/_behavioral.var $(WORKDIR)/hy5ps121621f_pack/prim.var $(WORKDIR)/hy5ps121621f/_behavioral_model_hy5ps121621f.var $(WORKDIR)/networktest/_behavioral.var 
+sim: $(WORKDIR)/retxreq/_behavioral.var $(WORKDIR)/datareceiver/_behavioral.var $(WORKDIR)/eventreceiver/_behavioral.var $(WORKDIR)/hy5ps121621f_pack/prim.var $(WORKDIR)/hy5ps121621f/_behavioral_model_hy5ps121621f.var $(WORKDIR)/clockgen/_behavioral.var $(WORKDIR)/networktest/_behavioral.var 
 runsim: all
 	$(VHDLS) networktest
 

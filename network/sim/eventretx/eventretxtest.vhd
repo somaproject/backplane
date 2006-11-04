@@ -752,7 +752,7 @@ begin  -- Behavioral
       wait until rising_edge(CLK);
 
 
-      retxreqreqc <= '1';
+      retxreqreq <= '1';
       wait until rising_edge(CLK);
       retxreqreq <= '0';
 

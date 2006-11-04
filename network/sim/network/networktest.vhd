@@ -121,11 +121,11 @@ architecture Behavioral of networktest is
   signal clk_period : time := 6.6666 ns;
 
 
-  signal CLK                 : std_logic := '0';
-  signal memclk, memclkn     : std_logic := '0';
-  signal memclk90, memclk90n : std_logic := '0';
-  signal memclk180           : std_logic := '0';
-  signal memclk270           : std_logic := '0';
+  signal CLK                   : std_logic := '0';
+  signal memclk, memclkn       : std_logic := '0';
+  signal memclk90, memclk90n   : std_logic := '0';
+  signal memclk180, memclk180n : std_logic := '0';
+  signal memclk270, memclk270n : std_logic := '0';
 
 
   signal RESET        : std_logic                     := '1';
@@ -226,65 +226,37 @@ architecture Behavioral of networktest is
   constant startup_delay : time      := 250 us;
   signal   startwait     : std_logic := '1';
 
+component clockgen is
+  port (
+    CLK       : out std_logic;
+    MEMCLK    : out std_logic;
+    MEMCLKn   : out std_logic;
+    MEMCLK90  : out std_logic;
+    MEMCLK90n : out std_logic;
+
+    MEMCLK180  : out std_logic;
+    MEMCLK180n : out std_logic;
+
+    MEMCLK270  : out std_logic;
+    MEMCLK270n : out std_logic
+    );
+end component; 
 
 begin  -- Behavioral
-  mainclk <= not mainclk after (clk_period / 8);
   RESET   <= '0'         after 20 ns;
 
   -- startup wait for ram to stabilize
 
-  process(mainclk)
-  begin
-    if rising_edge(mainclk) then
-      if clkpos = 3 then
-        clkpos <= 0;
-      else
-        clkpos <= clkpos + 1;
-      end if;
-
-      if clkpos = 0 then
-        MEMCLK <= '1';
-      elsif clkpos = 2 then
-        MEMCLK <= '0';
-      end if;
-
-      if clkpos = 1 then
-        MEMCLK90 <= '1';
-      elsif clkpos = 3 then
-        MEMCLK90 <= '0';
-      end if;
-
-      if clkpos = 2 then
-        MEMCLK180 <= '1';
-      elsif clkpos = 0 then
-        MEMCLK180 <= '0';
-      end if;
-
-      if clkpos = 3 then
-        MEMCLK270 <= '1';
-      elsif clkpos = 1 then
-        MEMCLK270 <= '0';
-      end if;
-
-      if clkslowpos = 11 then
-        clkslowpos <= 0;
-      else
-        clkslowpos <= clkslowpos + 1;
-      end if;
-
-      if clkslowpos = 0 then
-        CLK <= '1';
-      elsif clkslowpos = 6 then
-        CLK <= '0';
-
-      end if;
-
-    end if;
-  end process;
-
-  MEMCLKN   <= not MEMCLK;
-  MEMCLK90N <= not MEMCLK90;
-
+  clockgen_inst: clockgen
+    port map (
+      CLK       => CLK,
+      MEMCLK    => MEMCLK,
+      MEMCLKn   => MEMCLKn,
+      MEMCLK90  => MEMCLK90,
+      MEMCLK90N => MEMCLK90n,
+      MEMCLK180 => MEMCLK180,
+      MEMCLK270 => MEMCLK270); 
+    
   network_uut : network
     port map (
       CLK       => CLK,
