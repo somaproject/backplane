@@ -18,7 +18,8 @@ architecture Behavioral of memtesttest is
   component memtest
     port (
       CLKIN    : in    std_logic;
-      CLKOUT   : out   std_logic;
+      CLKOUT_P   : out   std_logic;
+      CLKOUT_N   : out std_logic; 
       -- RAM!
       CKE      : out   std_logic;
       CAS      : out   std_logic;
@@ -49,18 +50,6 @@ architecture Behavioral of memtesttest is
   signal DQSH   : std_logic                     := '0';
   signal DQSL   : std_logic                     := '0';
   signal DQ     : std_logic_vector(15 downto 0) := (others => '0');
-  -- interface
-  signal START  : std_logic                     := '0';
-  signal RW     : std_logic                     := '0';
-  signal DONE   : std_logic                     := '0';
-  -- write interface
-  signal ROWTGT : std_logic_vector(14 downto 0) := (others => '0');
-  signal WRADDR : std_logic_vector(7 downto 0)  := (others => '0');
-  signal WRDATA : std_logic_vector(31 downto 0) := (others => '0');
-  -- read interface
-  signal RDADDR : std_logic_vector(7 downto 0)  := (others => '0');
-  signal RDDATA : std_logic_vector(31 downto 0) := (others => '0');
-  signal RDWE   : std_logic                     := '0';
 
   signal LEDERROR : std_logic := '0';
 
@@ -109,7 +98,7 @@ begin  -- Behavioral
   memtest_uut : memtest
     port map (
       CLKIN    => CLKIN,
-      CLKOUT   => CLK90,
+      CLKOUT_P   => CLK90,
       CKE      => CKE,
       CAS      => CAS,
       RAS      => RAS,

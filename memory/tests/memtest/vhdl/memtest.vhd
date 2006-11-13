@@ -9,8 +9,8 @@ use UNISIM.vcomponents.all;
 entity memtest is
   port (
     CLKIN    : in    std_logic;
-    CLKOUT_P   : out   std_logic;
-    CLKOUT_N : out std_logic; 
+    CLKOUT_P : out   std_logic;
+    CLKOUT_N : out   std_logic; 
     CKE      : out   std_logic;
     CAS      : out   std_logic;
     RAS      : out   std_logic;

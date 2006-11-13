@@ -9,7 +9,24 @@ We have a simple interface which, in a ping-pong fashion:
 
 we compare what was written and what we read back and: 
 1. if there's an error, we flash a LED
-2. for each bit in error we increment a counter that is read out via jtag
 
 
-We generate the primary clock from the input 50 MHz clock, tripling it to 150 MHz and then passing that output through a phase-adjusting DLL. 
+We generate the primary clock from the input 50 MHz clock, tripling it
+to 150 MHz and then passing that output through a phase-adjusting DLL.
+
+---------------------------------------------------------------------------
+TEST LOG
+---------------------------------------------------------------------------
+
+13 November 2006
+Well, it doesn't work, and the entire board then proceeds to suck down 1.5A @3.3V. 
+
+First, check stupid stuff. The memtesttest module works, and sets
+LEDERROR =0.
+
+
+Now, check the UCF File: Everything is correct. 
+
+Do we need a resistor to terminate the fracking CK/CK-? Adding one, 100 ohm... no luck. 
+
+Signals all "look good" with oscope. 
