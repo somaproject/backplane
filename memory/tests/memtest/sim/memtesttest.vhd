@@ -18,8 +18,8 @@ architecture Behavioral of memtesttest is
   component memtest
     port (
       CLKIN    : in    std_logic;
-      CLKOUT_P   : out   std_logic;
-      CLKOUT_N   : out std_logic; 
+      CLKOUT_P : out   std_logic;
+      CLKOUT_N : out   std_logic;
       -- RAM!
       CKE      : out   std_logic;
       CAS      : out   std_logic;
@@ -36,20 +36,20 @@ architecture Behavioral of memtesttest is
   end component;
 
   signal CLKIN                    : std_logic := '0';
-  signal clk, clk90, clkn, clk90n : std_logic := '0';
+  signal clk, memclk, memclkn, clkn, clk90n : std_logic := '0';
 
 
   -- RAM!
-  signal CKE    : std_logic                     := '0';
-  signal CAS    : std_logic                     := '1';
-  signal RAS    : std_logic                     := '1';
-  signal CS     : std_logic                     := '1';
-  signal WE     : std_logic                     := '1';
-  signal ADDR   : std_logic_vector(12 downto 0) := (others => '0');
-  signal BA     : std_logic_vector(1 downto 0)  := (others => '0');
-  signal DQSH   : std_logic                     := '0';
-  signal DQSL   : std_logic                     := '0';
-  signal DQ     : std_logic_vector(15 downto 0) := (others => '0');
+  signal CKE  : std_logic                     := '0';
+  signal CAS  : std_logic                     := '1';
+  signal RAS  : std_logic                     := '1';
+  signal CS   : std_logic                     := '1';
+  signal WE   : std_logic                     := '1';
+  signal ADDR : std_logic_vector(12 downto 0) := (others => '0');
+  signal BA   : std_logic_vector(1 downto 0)  := (others => '0');
+  signal DQSH : std_logic                     := '0';
+  signal DQSL : std_logic                     := '0';
+  signal DQ   : std_logic_vector(15 downto 0) := (others => '0');
 
   signal LEDERROR : std_logic := '0';
 
@@ -86,10 +86,10 @@ architecture Behavioral of memtesttest is
 
   signal burstcnt : std_logic_vector(7 downto 0) := (others => '0');
 
-  signal srcclk : std_logic := '0';
-  signal clkpos : integer   := 0;
+  signal srcclk   : std_logic := '0';
+  signal clkpos   : integer   := 0;
   signal clk90sim : std_logic := '0';
-  
+
 begin  -- Behavioral
 
   DQSH <= 'L';
@@ -98,7 +98,8 @@ begin  -- Behavioral
   memtest_uut : memtest
     port map (
       CLKIN    => CLKIN,
-      CLKOUT_P   => CLK90,
+      CLKOUT_P => memCLK,
+      CLKOUT_N => memCLKn,
       CKE      => CKE,
       CAS      => CAS,
       RAS      => RAS,
@@ -131,7 +132,6 @@ begin  -- Behavioral
 
   end process;
 
-  clk90sim <= srcclk after clk_period/12; 
 
   memory_inst : HY5PS121621F
     generic map (
@@ -151,10 +151,7 @@ begin  -- Behavioral
       BA              => BA,
       ADDR            => ADDR,
       CKE             => CKE,
-      CLK             => CLK90sim,
-      CLKB            => CLK90N);
-
-
-  CLK90N <= not CLK90sim;
+      CLK             => memclk,
+      CLKB            => memclkn);
 
 end Behavioral;

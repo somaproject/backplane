@@ -411,7 +411,7 @@ begin  -- Behavioral
 
 
   mr  <= "0010000110010";
-  emr <= "0000001000100";
+  emr <= "0010000000000";
 
   DONE <= '1' when ocs = readdone or ocs = writedone else '0';
 

@@ -30,3 +30,25 @@ Now, check the UCF File: Everything is correct.
 Do we need a resistor to terminate the fracking CK/CK-? Adding one, 100 ohm... no luck. 
 
 Signals all "look good" with oscope. 
+
+How about DCI resistors -- we have two ~45ohm ones right
+now. According to page 228 of the UG070 xilinx Virtex-4 User guide,
+VRN=VRP=R=Z_o, so this should be correct.
+
+Post-P&R Sim model works -- LEDERROR remains 0 and I can verify that
+bytes are being read and written.
+
+Is it a problem with the memclk phase? 
+clkout <= clk90 -- error
+clkout <= clk   -- error
+clkout <=clk180 -- error
+clkout <= clk270 -- error
+
+
+Disable Rtt, disable DQS#
+
+PHYSICALLY isolate the ODT line from the PCB, being careful not to cut self in process. 
+
+IF we write all 0s we successfully read back all zeros. 
+
+But if we write a one then we 

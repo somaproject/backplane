@@ -10,7 +10,7 @@ entity memtest is
   port (
     CLKIN    : in    std_logic;
     CLKOUT_P : out   std_logic;
-    CLKOUT_N : out   std_logic; 
+    CLKOUT_N : out   std_logic;
     CKE      : out   std_logic;
     CAS      : out   std_logic;
     RAS      : out   std_logic;
@@ -21,7 +21,8 @@ entity memtest is
     DQSH     : inout std_logic;
     DQSL     : inout std_logic;
     DQ       : inout std_logic_vector(15 downto 0);
-    LEDERROR : out   std_logic
+    LEDERROR : out   std_logic;
+    LEDRESET : out   std_logic
     );
 end memtest;
 
@@ -33,7 +34,7 @@ architecture Behavioral of memtest is
       CLK90  : in    std_logic;
       CLK180 : in    std_logic;
       CLK270 : in    std_logic;
-      RESET : in std_logic; 
+      RESET  : in    std_logic;
       -- RAM!
       CKE    : out   std_logic;
       CAS    : out   std_logic;
@@ -67,9 +68,9 @@ architecture Behavioral of memtest is
   signal CLK90, clk90int   : std_logic := '0';
   signal CLK180, clk180int : std_logic := '0';
   signal CLK270, clk270int : std_logic := '0';
-  signal RESET : std_logic := '1';
+  signal RESET             : std_logic := '1';
 
-  
+
   -- interface
   signal START  : std_logic                     := '0';
   signal RW     : std_logic                     := '0';
@@ -86,12 +87,12 @@ architecture Behavioral of memtest is
   signal wraddrl : std_logic_vector(7 downto 0) := (others => '0');
 
   signal clkout : std_logic := '0';
-  
+
   type states is (none, writestart, writedone, readstart, readdone);
   signal ocs, ons : states := none;
 
   signal locked, locked2 : std_logic := '0';
-  
+
 begin
 
   memddr2_inst : memddr2
@@ -100,7 +101,7 @@ begin
       CLK90  => clk90,
       CLK180 => clk180,
       CLK270 => clk270,
-      RESET => reset, 
+      RESET  => reset,
       CKE    => CKE,
       CAS    => CAS,
       RAS    => RAS,
@@ -137,12 +138,12 @@ begin
       DUTY_CYCLE_CORRECTION => true,
       STARTUP_WAIT          => false)
     port map (
-      CLK0                  => clkbint,  -- 0 degree DCM CLK ouptput
+      CLK0                  => clkbint,      -- 0 degree DCM CLK ouptput
       CLKFX                 => clkbfastint,  -- DCM CLK synthesis out (M/D)
       CLKFB                 => clkb,
       CLKIN                 => CLKIN,
-      LOCKED => locked, 
-      RST                   => '0'      -- DCM asynchronous reset input
+      LOCKED                => locked,
+      RST                   => '0'           -- DCM asynchronous reset input
       );
 
   clkb_bufg : BUFG
@@ -180,12 +181,12 @@ begin
       CLK90                 => clk90int,
       CLKFB                 => clk,
       CLKIN                 => clkbfast,
-      LOCKED => locked2, 
+      LOCKED                => locked2,
       RST                   => '0'
 
       );
 
-  RESET <= not locked2; 
+  RESET <= not locked2;
   clk_bufg : BUFG
     port map (
       O => clk,
@@ -206,9 +207,9 @@ begin
       O => clk270,
       I => clk270int);
 
-  CLKOUT <= clk90; 
+  CLKOUT <= clk90;
 
-    TXIO_obufds : OBUFDS
+  TXIO_obufds : OBUFDS
     generic map (
       IOSTANDARD => "DEFAULT")
     port map (
@@ -217,30 +218,33 @@ begin
       I          => clkout
       );
 
+  LEDRESET <= RESET;
   main : process(CLK)
   begin
-    if rising_edge(CLK) then
+    if RESET = '1' then
 
-      ocs <= ons;
+    else
+      if rising_edge(CLK) then
 
-      wraddrl <= wraddr;
-      wrdata  <= (rowtgt(7 downto 0) & wraddrl) &
-                 (not (rowtgt(7 downto 0) & wraddrl));
+        ocs <= ons;
 
-      if RDWE = '1' and ocs = readstart then
-        if rddata = (rowtgt(7 downto 0) & rdaddr) &
-          (not (rowtgt(7 downto 0) & rdaddr)) then
+        wraddrl <= wraddr;
+        wrdata  <= X"00000001"; --(rowtgt(7 downto 0) & wraddrl) &
+                   --(not (rowtgt(7 downto 0) & wraddrl));
 
-          LEDERROR <= '0';
-        else
-          LEDERROR <= '1';
+        if RDWE = '1' and ocs = readstart then
+          if rddata = X"00000001" then -- (rowtgt(7 downto 0) & rdaddr) &
+            --(not (rowtgt(7 downto 0) & rdaddr)) then
+
+            LEDERROR <= '0';
+          else
+            LEDERROR <= '1';
+          end if;
         end if;
-      end if;
 
-      if ocs = readdone then
-        rowtgt <= rowtgt + 1;
+        rowtgt <= (others => '0');
+        
       end if;
-
     end if;
   end process;
 
@@ -250,7 +254,8 @@ begin
       when none =>
         start <= '0';
         rw    <= '0';
-        ons    <= writestart;
+        --ons <= readstart;                    -- DEBUGGING
+        ons   <= writestart;
 
       when writestart =>
         start <= '1';
@@ -264,7 +269,7 @@ begin
       when writedone =>
         start <= '0';
         rw    <= '0';
-        ons    <= readstart;
+        ons   <= readstart;
 
       when readstart =>
         start <= '1';
@@ -278,12 +283,12 @@ begin
       when readdone =>
         start <= '0';
         rw    <= '0';
-        ons    <= none;
+        ons   <= none;
 
       when others =>
         start <= '0';
         rw    <= '0';
-        ons    <= none;
+        ons   <= none;
     end case;
 
   end process fsm;
