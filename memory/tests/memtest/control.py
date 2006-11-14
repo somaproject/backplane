@@ -145,5 +145,5 @@ def stuff():
 
         print hex(word)
         
-writeConstBuffer(1, 30, 0xFEDCBA98)
-readbuffer(1, 30)
+#writeSeqBuffer(1, 10)
+readbuffer(1, 10)
