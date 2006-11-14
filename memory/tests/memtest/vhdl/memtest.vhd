@@ -50,8 +50,8 @@ architecture Behavioral of memtest is
       START  : in    std_logic;
       RW     : in    std_logic;
       DONE   : out   std_logic;
-      -- write interface
       ROWTGT : in    std_logic_vector(14 downto 0);
+      -- write interface
       WRADDR : out   std_logic_vector(7 downto 0);
       WRDATA : in    std_logic_vector(31 downto 0);
       -- read interface
@@ -93,9 +93,70 @@ architecture Behavioral of memtest is
 
   signal locked, locked2 : std_logic := '0';
 
+
+  component jtagmemif
+    port (
+      CLK      : in  std_logic;
+      MEMSTART : out std_logic;
+      MEMRW    : out std_logic;
+      MEMDONE  : in  std_logic;
+      ROWTGT   : out std_logic_vector(14 downto 0);
+      WRADDR   : in  std_logic_vector(7 downto 0);
+      WRDATA   : out std_logic_vector(31 downto 0);
+      RDADDR   : in  std_logic_vector(7 downto 0);
+      RDDATA   : in  std_logic_vector(31 downto 0);
+      RDWE     : in  std_logic );
+  end component;
+
+  component jtagmemtest
+    port (
+      CLK    : in    std_logic;
+      CLK90  : in    std_logic;
+      CLK180 : in    std_logic;
+      CLK270 : in    std_logic;
+      RESET  : in    std_logic;
+      -- RAM!
+      CKE    : out   std_logic;
+      CAS    : out   std_logic;
+      RAS    : out   std_logic;
+      CS     : out   std_logic;
+      WE     : out   std_logic;
+      ADDR   : out   std_logic_vector(12 downto 0);
+      BA     : out   std_logic_vector(1 downto 0);
+      DQSH   : inout std_logic;
+      DQSL   : inout std_logic;
+      DQ     : inout std_logic_vector(15 downto 0);
+      -- interface
+      START  : in    std_logic;
+      RW     : in    std_logic;
+      DONE   : out   std_logic;
+      ROWTGT : in    std_logic_vector(14 downto 0);
+      -- write interface
+      WRADDR : out   std_logic_vector(7 downto 0);
+      WRDATA : in    std_logic_vector(31 downto 0);
+      -- read interface
+      RDADDR : out   std_logic_vector(7 downto 0);
+      RDDATA : out   std_logic_vector(31 downto 0);
+      RDWE   : out   std_logic );
+  end component;
+
 begin
 
-  memddr2_inst : memddr2
+  jtagmemif_inst : jtagmemif
+    port map (
+      CLK      => CLK,
+      MEMSTART => START,
+      MEMRW    => RW,
+      MEMDONE  => DONE,
+      ROWTGT   => ROWTGT,
+      WRADDR   => wraddr,
+      WRDATA   => wrdata,
+      RDADDR   => rdaddr,
+      RDDATA   => rddata,
+      RDWE     => rdwe);
+
+
+  memddr2_inst : jtagmemtest
     port map (
       CLK    => clk,
       CLK90  => clk90,
@@ -218,80 +279,8 @@ begin
       I          => clkout
       );
 
-  LEDRESET <= RESET;
-  main : process(CLK)
-  begin
-    if RESET = '1' then
-
-    else
-      if rising_edge(CLK) then
-
-        ocs <= ons;
-
-        wraddrl <= wraddr;
-        wrdata  <= X"00000001"; --(rowtgt(7 downto 0) & wraddrl) &
-                   --(not (rowtgt(7 downto 0) & wraddrl));
-
-        if RDWE = '1' and ocs = readstart then
-          if rddata = X"00000001" then -- (rowtgt(7 downto 0) & rdaddr) &
-            --(not (rowtgt(7 downto 0) & rdaddr)) then
-
-            LEDERROR <= '0';
-          else
-            LEDERROR <= '1';
-          end if;
-        end if;
-
-        rowtgt <= (others => '0');
-        
-      end if;
-    end if;
-  end process;
-
-  fsm : process(ocs, DONE)
-  begin
-    case ocs is
-      when none =>
-        start <= '0';
-        rw    <= '0';
-        --ons <= readstart;                    -- DEBUGGING
-        ons   <= writestart;
-
-      when writestart =>
-        start <= '1';
-        rw    <= '1';
-        if DONE = '1' then
-          ons <= writedone;
-        else
-          ons <= writestart;
-        end if;
-
-      when writedone =>
-        start <= '0';
-        rw    <= '0';
-        ons   <= readstart;
-
-      when readstart =>
-        start <= '1';
-        rw    <= '0';
-        if DONE = '1' then
-          ons <= readdone;
-        else
-          ons <= readstart;
-        end if;
-
-      when readdone =>
-        start <= '0';
-        rw    <= '0';
-        ons   <= none;
-
-      when others =>
-        start <= '0';
-        rw    <= '0';
-        ons   <= none;
-    end case;
-
-  end process fsm;
+  LEDRESET <= start; 
+  LEDERROR <= rw; 
 
   dlyctrl : IDELAYCTRL
     port map(
