@@ -10,6 +10,7 @@ USER4 : 1111100011 0x3C3
 """
 import os
 import sys
+import time
 
 USER1 = 0x3C2
 USER2 = 0x3C3
@@ -29,8 +30,9 @@ def bytereverse(x):
 xc3sprog = "~/XC3Sprog/xc3sprog"
 
 def readbuffer(pos, rowtgt):
-    performAction(pos, rowtgt, 'read')
     
+    performAction(pos, rowtgt, 'read')
+    time.sleep(1)
     for i in range(256):
         
         cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X 00 00 00 00"' % (pos, USER2, i))
@@ -61,6 +63,12 @@ def writeConstBuffer(pos, rowtgt, const):
     for i in range(256):
         writeword(pos, i, const)
     performAction(pos, rowtgt, 'write')
+    
+def writeSeqBuffer(pos, rowtgt):
+    for i in range(256):
+        writeword(pos, i, i)
+    performAction(pos, rowtgt, 'write')
+    
     
 def writebuffer(pos, rowtgt):
     for i in range(256):
@@ -136,6 +144,6 @@ def stuff():
 
 
         print hex(word)
-
-writeConstBuffer(1, 0, 0xABCDEF12)
-readbuffer(1, 0)
+        
+writeConstBuffer(1, 30, 0xFEDCBA98)
+readbuffer(1, 30)

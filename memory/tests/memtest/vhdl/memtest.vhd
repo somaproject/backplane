@@ -156,7 +156,7 @@ begin
       RDWE     => rdwe);
 
 
-  memddr2_inst : jtagmemtest
+  memddr2_inst : memddr2
     port map (
       CLK    => clk,
       CLK90  => clk90,
@@ -222,8 +222,6 @@ begin
     generic map (
       CLKDV_DIVIDE => 2.0,
 
-      CLKFX_DIVIDE          => 1,
-      CLKFX_MULTIPLY        => 4,
       CLKIN_DIVIDE_BY_2     => false,
       CLKIN_PERIOD          => 10.0,
       CLKOUT_PHASE_SHIFT    => "NONE",
