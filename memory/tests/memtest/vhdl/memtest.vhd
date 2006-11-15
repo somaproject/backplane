@@ -29,6 +29,9 @@ end memtest;
 architecture Behavioral of memtest is
 
   component memddr2
+    generic (
+      CASLATENCY : in integer
+      ); 
     port (
       CLK    : in    std_logic;
       CLK90  : in    std_logic;
@@ -157,6 +160,8 @@ begin
 
 
   memddr2_inst : memddr2
+    generic map (
+      CASLATENCY => 5)
     port map (
       CLK    => clk,
       CLK90  => clk90,
@@ -266,7 +271,7 @@ begin
       O => clk270,
       I => clk270int);
 
-  CLKOUT <= clk;
+  CLKOUT <= clk90;
 
   TXIO_obufds : OBUFDS
     generic map (

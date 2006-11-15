@@ -145,5 +145,5 @@ def stuff():
 
         print hex(word)
         
-#writeSeqBuffer(1, 10)
-readbuffer(1, 10)
+#writeSeqBuffer(1, 0)
+readbuffer(1, 0)

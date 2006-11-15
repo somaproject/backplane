@@ -67,3 +67,17 @@ There appear to be lots of "unused states" for the startup, and I'm not sure wha
 WOW WE CAN READ OUT ROWS!!! There exist bit errors, byte errors, and frame errors, but we are very clearly taking bytes out of this ram. 
 
 Now, with the CLKOUT being regular CLK we get a much better result, although the bytes are shifted. 
+
+We appear to be having a probelm both with byte order and with the first word. 
+
+
+  0 : 00000000
+  1 : 33441122
+  2 : 33441122
+  3 : 33441122
+
+A sequential buffer shows that we clearly appear to be writing the first half-word. So we're either writing one before that or writing one after that. 
+
+We tried always writing a constant to the interface to see if jtagserialio is at fault. 
+
+Now perhaps it's a cas issue

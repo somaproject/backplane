@@ -79,7 +79,7 @@ begin  -- Behavioral
   process(CLK)
   begin
     if rising_edge(CLK) then
-      WRDATA          <= lWRDATA;
+      WRDATA          <= lWRDATA;     -- DEBUG TO SEE WHEN WE WRITE
     end if;
   end process;
 
