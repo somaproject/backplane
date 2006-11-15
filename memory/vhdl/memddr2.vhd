@@ -38,7 +38,8 @@ entity memddr2 is
     -- read interface
     RDADDR : out std_logic_vector(7 downto 0);
     RDDATA : out std_logic_vector(31 downto 0);
-    RDWE   : out std_logic
+    RDWE   : out std_logic;
+    DEBUG : out std_logic_vector(3 downto 0)
     );
 end memddr2;
 
@@ -169,7 +170,8 @@ architecture Behavioral of memddr2 is
       RADDR       : out std_logic_vector(7 downto 0);
       RDATA       : out std_logic_vector(31 downto 0);
       RWE         : out std_logic;
-      NOTERMINATE : in  std_logic
+      NOTERMINATE : in  std_logic;
+      LATENCYEXTRA : in std_logic_vector(1 downto 0)
       );
   end component;
 
@@ -220,6 +222,8 @@ architecture Behavioral of memddr2 is
   signal dinl, dinh   : std_logic_vector(15 downto 0) := (others => '0');
   signal doutl, douth : std_logic_vector(15 downto 0) := (others => '0');
 
+  signal latencyextra : std_logic_vector(1 downto 0) := (others => '0');
+  
   component memcontmux
     port (
       CLK      : in  std_logic;
@@ -343,7 +347,8 @@ begin  -- Behavioral
       RADDR       => RDADDR,
       RDATA       => RDDATA,
       RWE         => RDWE,
-      NOTERMINATE => noterm);
+      NOTERMINATE => noterm,
+      LATENCYEXTRA => latencyextra);
 
   dqalign_inst_low : dqalign
     port map (
@@ -358,7 +363,7 @@ begin  -- Behavioral
       DOUT         => dinl,
       START        => alstart,
       DONE         => aldonel,
-      LATENCYEXTRA => open);
+      LATENCYEXTRA => latencyextra(0));
 
   dqalign_inst_high : dqalign
     port map (
@@ -373,9 +378,10 @@ begin  -- Behavioral
       DOUT         => dinh,
       START        => alstart,
       DONE         => aldoneh,
-      LATENCYEXTRA => open);
+      LATENCYEXTRA => latencyextra(1));
 
-
+  DEBUG(1 downto 0) <= latencyextra;
+  
   aldone <= aldonel and aldoneh;
 
   memcontmux_inst : memcontmux

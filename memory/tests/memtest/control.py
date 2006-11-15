@@ -33,9 +33,14 @@ def readbuffer(pos, rowtgt):
     
     performAction(pos, rowtgt, 'read')
     time.sleep(1)
-    for i in range(256):
+    for i in range(257):
+
+        if i == 256:
+            j = 255
+        else:
+            j = i
         
-        cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X 00 00 00 00"' % (pos, USER2, i))
+        cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X 00 00 00 00"' % (pos, USER2, j))
 
         fid = os.popen(cmdstr)
         bytesstr = fid.read().split()
@@ -66,7 +71,7 @@ def writeConstBuffer(pos, rowtgt, const):
     
 def writeSeqBuffer(pos, rowtgt):
     for i in range(256):
-        writeword(pos, i, i)
+        writeword(pos, i, 0xFFFF0000 + i)
     performAction(pos, rowtgt, 'write')
     
     
@@ -94,56 +99,10 @@ def performAction(pos, rowtgt, action):
     
     else:
         raise "invalid action"
-    
 
-def stuff():
-
-    type = sys.argv[1]
-
-    # take in bytes/numbers
-    addr = int(sys.argv[2], 16)
-    if len(sys.argv) > 3:
-        datastr = sys.argv[3]
-        dataword = int(datastr, 16)
-        data = []
-        for i in range(4):
-            data.append((dataword >> i *8) & 0xFF)
-        data = data[::-1]
-    else:
-        data = [0, 0, 0, 0]
-
-
-    cmdbyte = 0
-    if type == "read":
-        cmdbyte = 0x00 | addr 
-    elif type == "write":
-        cmdbyte = 0x80 | addr
-    else:
-        raise "error in command"
-
-
-
-    print cmdstr
-
-    fid = os.popen(cmdstr)
-
-    res = fid.read().split()
-
-    if type == 'read':
-        cmdstr = xc3sprog + ' 0 0x03 "00 00 00 00"'
-        fid = os.popen(cmdstr)
-
-        res = fid.read().split()
-
-        bytes = []
-        word = 0
-
-        for j, i  in enumerate(res):
-            x = int(i, 16)
-            word += x << (j *8)
-
-
-        print hex(word)
-        
-#writeSeqBuffer(1, 0)
-readbuffer(1, 0)
+print "Writing..."
+writeSeqBuffer(1, 20)
+print "Write done. Waiting."
+time.sleep(1)
+print "Reading..."
+readbuffer(1, 20)

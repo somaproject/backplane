@@ -1399,6 +1399,7 @@ begin
     DQ <= transport DataBuffer(k, l), (others => 'Z') after 0.5 * clk_cycle;
     l := l + 1;
   elsif (DQS_S'EVENT and DQS_S = '0' and DQS_S'LAST_VALUE = '1' and WriteFlag = FALSE) then
+    
     DQ <= transport DataBuffer(k, l), (others => 'Z') after 0.5 * clk_cycle;
     if (l = 3) then
       l := 0;

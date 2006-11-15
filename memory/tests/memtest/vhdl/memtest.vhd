@@ -60,7 +60,9 @@ architecture Behavioral of memtest is
       -- read interface
       RDADDR : out   std_logic_vector(7 downto 0);
       RDDATA : out   std_logic_vector(31 downto 0);
-      RDWE   : out   std_logic
+      RDWE   : out   std_logic;
+      -- DEBUG interface
+      DEBUG : out std_logic_vector(3 downto 0)
       );
   end component;
 
@@ -97,6 +99,8 @@ architecture Behavioral of memtest is
   signal locked, locked2 : std_logic := '0';
 
 
+  signal memdebug : std_logic_vector(3 downto 0);
+  
   component jtagmemif
     port (
       CLK      : in  std_logic;
@@ -186,7 +190,8 @@ begin
       WRDATA => WRDATA,
       RDADDR => RDADDR,
       RDDATA => RDDATA,
-      RDWE   => RDWE);
+      RDWE   => RDWE,
+      DEBUG => memdebug);
 
   DCM_BASE_inst : DCM_BASE
     generic map (
@@ -202,7 +207,7 @@ begin
       DFS_FREQUENCY_MODE    => "LOW",
       DLL_FREQUENCY_MODE    => "LOW",
       DUTY_CYCLE_CORRECTION => true,
-      STARTUP_WAIT          => false)
+      STARTUP_WAIT          => true)
     port map (
       CLK0                  => clkbint,      -- 0 degree DCM CLK ouptput
       CLKFX                 => clkbfastint,  -- DCM CLK synthesis out (M/D)
@@ -237,7 +242,7 @@ begin
       DFS_FREQUENCY_MODE    => "LOW",
       DLL_FREQUENCY_MODE    => "LOW",
       DUTY_CYCLE_CORRECTION => true,
-      STARTUP_WAIT          => false)
+      STARTUP_WAIT          => true)
     port map (
       CLK0                  => clkint,
       CLK180                => clk180int,
@@ -251,6 +256,7 @@ begin
       );
 
   RESET <= not locked2;
+  
   clk_bufg : BUFG
     port map (
       O => clk,
@@ -271,7 +277,7 @@ begin
       O => clk270,
       I => clk270int);
 
-  CLKOUT <= clk90;
+  CLKOUT <= clk270;
 
   TXIO_obufds : OBUFDS
     generic map (
@@ -282,8 +288,8 @@ begin
       I          => clkout
       );
 
-  LEDRESET <= start; 
-  LEDERROR <= rw; 
+  LEDRESET <= memdebug(0); 
+  LEDERROR <= memdebug(1); 
 
   dlyctrl : IDELAYCTRL
     port map(

@@ -81,3 +81,31 @@ A sequential buffer shows that we clearly appear to be writing the first half-wo
 We tried always writing a constant to the interface to see if jtagserialio is at fault. 
 
 Now perhaps it's a cas issue
+
+== 15 November 2006 ==
+
+We still haven't fixed the CAS issues completly -- we updated the module to take CAS Latency as a generic which we use to set the necessary registers. There is very clearly a WRITE latency that is cas-dependent as well. 
+
+Our current implementation works properly for CL=3 and 4 in sim, but
+not 5. I don't understand why at all.
+
+We still have the strange word one-off error. I'm not sure what's
+causing it. Fucking with the read latency registers seems to have
+(partially) fixed it although the last read-out word is wrong.
+
+Switching from clkout= clk90 to clkout <= clk to see if that helps anything. 
+
+
+
+for clk:        For clk180:     for clk270: 
+
+252 : FFFF00FC  252 : 00FCFFFF  252 : FFFF00FC
+253 : FFFF00FD  253 : 00FDFFFF  253 : FFFF00FD
+254 : FFFF00FE  254 : 00FEFFFF  254 : FFFF00FE
+255 : 00FF0000  255 : 00FF00FD  255 : 00FF0000
+
+Now, we try screwing with the output timing of the data from DQALIGN. This isn't a bad idea, noooo.....
+
+osel ='1' to osel = '0':
+
+
