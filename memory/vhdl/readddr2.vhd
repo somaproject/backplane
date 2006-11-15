@@ -92,6 +92,7 @@ begin  -- Behavioral
       -- shift regitsrs
       rwesreg   <= rwesreg(9 downto 0) & incacnt;
       raddrsreg <= raddrsreg(9 downto 0) & acnt;
+
       RDATA <= DIN;
 
     end if;

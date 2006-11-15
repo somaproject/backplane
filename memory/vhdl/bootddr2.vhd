@@ -40,22 +40,23 @@ architecture Behavioral of bootddr2 is
   signal laddr : std_logic_vector(15 downto 0) := (others => '0');
   signal lBA   : std_logic_vector(1 downto 0)  := (others => '0');
 
-  type states is ( none, resetall, ckewait,  startw1, startw2,
-                   startw3, propw1, propw2, propw3, prewait, 
-                   propw4, nexttick, datainc, propdone, bootnop,
-                   loademr2, loademr3, lemrden, lmrdrst, dlllckw, preall,
+  type states is ( none, ckewait,
+                   bootnop,
+                   prewait,
+                   loademr2, loademr2w,
+                   loademr3, loademr3w, lemrden, lmrdrst, dlllckw, preall,
                    ref1w, ref1, ref2, ref2w, dww, dw, dww2, loadmr,
-                   loadmrw, loademr2w, loademr3w, lemrdenw, 
-                   lemrex0, lemrex0w, lemren0, lemren0w, 
-                   dones ); 
+                   loadmrw, lemrdenw,
+                   lemrex0, lemrex0w, lemren0, lemren0w,
+                   dones );
 
 
   signal ocs, ons : states := none;
 
 begin  -- Behavioral
 
-  DONE <= '1' when ocs = lemrex0w  else '0';
-  
+  DONE <= '1' when ocs = lemrex0w else '0';
+
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -91,11 +92,11 @@ begin  -- Behavioral
         laddr <= (others => '0');
         lba   <= "00";
         if START = '1' then
-          ons  <= ckewait;
+          ons <= ckewait;
         else
-          ons  <= none;
+          ons <= none;
         end if;
-        
+
       when ckewait       =>
         lcke  <= '0';
         lcs   <= '1';
@@ -105,9 +106,9 @@ begin  -- Behavioral
         laddr <= (others => '0');
         lba   <= "00";
         if bcnt = 30 then
-          ons  <= bootnop;
+          ons <= bootnop;
         else
-          ons  <= ckewait; 
+          ons <= ckewait;
         end if;
 
       when bootnop       =>
@@ -119,9 +120,9 @@ begin  -- Behavioral
         laddr <= (others => '0');
         lba   <= "00";
         if bcnt = 30000 then
-          ons  <= prewait;
+          ons <= prewait;
         else
-          ons  <= bootnop;
+          ons <= bootnop;
         end if;
 
       when prewait =>
@@ -132,7 +133,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0400";
         lba   <= "00";
-        ons <= loademr2; 
+        ons   <= loademr2;
 
       when loademr2 =>
         lcke  <= '1';
@@ -142,7 +143,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0000";
         lba   <= "10";
-        ons    <= loademr2w;
+        ons   <= loademr2w;
 
       when loademr2w =>
         lcke  <= '1';
@@ -152,7 +153,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "10";
-        ons    <= loademr3;
+        ons   <= loademr3;
 
       when loademr3 =>
         lcke  <= '1';
@@ -162,7 +163,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0000";
         lba   <= "11";
-        ons    <= loademr3w;
+        ons   <= loademr3w;
 
       when loademr3w =>
         lcke  <= '1';
@@ -172,7 +173,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "11";
-        ons    <= lemrden;
+        ons   <= lemrden;
 
       when lemrden =>
         lcke  <= '1';
@@ -182,7 +183,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0000";
         lba   <= "01";
-        ons    <= lemrdenw;
+        ons   <= lemrdenw;
 
       when lemrdenw =>
         lcke  <= '1';
@@ -192,7 +193,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "01";
-        ons    <= lmrdrst;
+        ons   <= lmrdrst;
 
       when lmrdrst =>
         lcke  <= '1';
@@ -202,7 +203,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0743";
         lba   <= "00";
-        ons    <= dlllckw;
+        ons   <= dlllckw;
 
       when dlllckw =>
         lcke  <= '1';
@@ -213,9 +214,9 @@ begin  -- Behavioral
         laddr <= X"0000";
         lba   <= "00";
         if bcnt = 40000 then
-          ons  <= preall;
+          ons <= preall;
         else
-          ons  <= dlllckw;
+          ons <= dlllckw;
         end if;
 
       when preall =>
@@ -226,7 +227,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0400";
         lba   <= "00";
-        ons    <= ref1w;
+        ons   <= ref1w;
 
       when ref1w =>
         lcke  <= '1';
@@ -237,9 +238,9 @@ begin  -- Behavioral
         laddr <= X"0000";
         lba   <= "00";
         if bcnt = 42000 then
-          ons  <= ref1;
+          ons <= ref1;
         else
-          ons  <= ref1w;
+          ons <= ref1w;
         end if;
 
       when ref1 =>
@@ -250,7 +251,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons    <= ref2w;
+        ons   <= ref2w;
 
       when ref2w =>
         lcke  <= '1';
@@ -261,9 +262,9 @@ begin  -- Behavioral
         laddr <= X"0000";
         lba   <= "00";
         if bcnt = 42500 then
-          ons  <= ref2;
+          ons <= ref2;
         else
-          ons  <= ref2w;
+          ons <= ref2w;
         end if;
 
       when ref2 =>
@@ -274,32 +275,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons    <= dww2;
-
-      when dww =>
-        lcke  <= '1';
-        lcs   <= '0';
-        lras  <= '1';
-        lcas  <= '1';
-        lwe   <= '1';
-        laddr <= X"0000";
-        lba   <= "00";
-        if bcnt = 43000 then
-          ons  <= dw;
-        else
-          ons  <= dww;
-        end if;
-
-      when dw =>
-        lcke  <= '1';
-        lcs   <= '0';
-        lras  <= '1';
-        lcas  <= '0';
-        lwe   <= '0';
-        laddr <= X"0000";
-        lba   <= "00";
-        ons    <= dww2;
-
+        ons   <= dww2;
 
       when dww2 =>
         lcke  <= '1';
@@ -310,9 +286,9 @@ begin  -- Behavioral
         laddr <= X"0000";
         lba   <= "00";
         if bcnt = 44000 then
-          ons  <= loadmr;
+          ons <= loadmr;
         else
-          ons  <= dww2;
+          ons <= dww2;
         end if;
 
       when loadmr =>
@@ -323,7 +299,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= "000" & MR;
         lba   <= "00";
-        ons    <= loadmrw;
+        ons   <= loadmrw;
 
       when loadmrw =>
         lcke  <= '1';
@@ -333,7 +309,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons    <= lemren0;
+        ons   <= lemren0;
 
       when lemren0 =>
         lcke  <= '1';
@@ -343,7 +319,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= "000" & EMR;
         lba   <= "01";
-        ons    <= lemren0w;
+        ons   <= lemren0w;
 
       when lemren0w =>
         lcke  <= '1';
@@ -353,7 +329,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons    <= lemrex0;
+        ons   <= lemrex0;
 
 
       when lemrex0 =>
@@ -364,7 +340,7 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= "000" & EMR;
         lba   <= "01";
-        ons    <= lemrex0w;
+        ons   <= lemrex0w;
 
       when lemrex0w =>
         lcke  <= '1';
@@ -374,7 +350,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons    <= dones; 
+        ons   <= dones;
 
       when dones =>
         lcke  <= '1';
@@ -387,7 +363,7 @@ begin  -- Behavioral
         if START = '1' then
           ons <= none;
         else
-          ons    <= dones;                  
+          ons <= dones;
         end if;
 
 
@@ -399,7 +375,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons    <= none;
+        ons   <= none;
 
     end case;
 
