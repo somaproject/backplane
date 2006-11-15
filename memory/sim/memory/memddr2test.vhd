@@ -16,6 +16,8 @@ end memddr2test;
 architecture Behavioral of memddr2test is
 
   component memddr2
+    generic (
+      CASLATENCY : in integer);
     port (
       CLK    : in    std_logic;
       CLK90  : in    std_logic;
@@ -129,6 +131,8 @@ begin  -- Behavioral
   DQSH <= 'L';
   DQSL <= 'L';
   memddr2_uut : memddr2
+    generic map (
+      CASLATENCY => 4)
     port map (
       CLK    => CLK,
       CLK90  => CLK90,

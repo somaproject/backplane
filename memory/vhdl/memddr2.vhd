@@ -7,6 +7,8 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity memddr2 is
+  generic (
+      CASLATENCY : in integer);
   port (
     CLK    : in    std_logic;
     CLK90  : in    std_logic;
@@ -114,6 +116,8 @@ architecture Behavioral of memddr2 is
   -- write module
   -- 
   component writeddr2
+  generic (
+      CASLATENCY : in integer);
     port (
       CLK    : in  std_logic;
       START  : in  std_logic;
@@ -147,6 +151,8 @@ architecture Behavioral of memddr2 is
 
 
   component readddr2
+  generic (
+      CASLATENCY : in integer);
     port (      CLK         : in  std_logic;
       START       : in  std_logic;
       DONE        : out std_logic;
@@ -301,6 +307,8 @@ begin  -- Behavioral
 
 
   writeddr2_inst : writeddr2
+    generic map (
+      CASLATENCY => CASLATENCY)
     port map (
       CLK    => CLK,
       START  => wstart,
@@ -318,6 +326,8 @@ begin  -- Behavioral
       WDATA  => WRDATA);
 
   readaddr2_inst : readddr2
+    generic map (
+      CASLATENCY => CASLATENCY)
     port map (
       CLK         => CLK,
       START       => rstart,
@@ -410,7 +420,10 @@ begin  -- Behavioral
 
 
 
-  mr  <= "0010000110010";
+  mr <= "0010000110010" when CASLATENCY = 3 else
+        "0010001000010" when CASLATENCY = 4 else
+        "0010001010010" when CASLATENCY = 5;
+
   emr <= "0010000000000";
 
   DONE <= '1' when ocs = readdone or ocs = writedone else '0';

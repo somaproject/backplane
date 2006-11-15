@@ -8,23 +8,25 @@ use UNISIM.vcomponents.all;
 
 
 entity writeddr2 is
+  generic (
+    CASLATENCY : in  integer);
   port (
-    CLK    : in  std_logic;
-    START  : in  std_logic;
-    DONE   : out std_logic;
+    CLK        : in  std_logic;
+    START      : in  std_logic;
+    DONE       : out std_logic;
     -- ram interface
-    CS     : out std_logic;
-    RAS    : out std_logic;
-    CAS    : out std_logic;
-    WE     : out std_logic;
-    ADDR   : out std_logic_vector(12 downto 0);
-    BA     : out std_logic_vector(1 downto 0);
-    DOUT   : out std_logic_vector(31 downto 0);
-    TS     : out std_logic;
+    CS         : out std_logic;
+    RAS        : out std_logic;
+    CAS        : out std_logic;
+    WE         : out std_logic;
+    ADDR       : out std_logic_vector(12 downto 0);
+    BA         : out std_logic_vector(1 downto 0);
+    DOUT       : out std_logic_vector(31 downto 0);
+    TS         : out std_logic;
     -- input data interface
-    ROWTGT : in  std_logic_vector(14 downto 0);
-    WADDR  : out std_logic_vector(7 downto 0);
-    WDATA  : in  std_logic_vector(31 downto 0)
+    ROWTGT     : in  std_logic_vector(14 downto 0);
+    WADDR      : out std_logic_vector(7 downto 0);
+    WDATA      : in  std_logic_vector(31 downto 0)
     );
 end writeddr2;
 
@@ -62,7 +64,10 @@ begin  -- Behavioral
   laddr <= ("0000" & acnt(7 downto 1) & "00") when asel = '1' else rowtgt(12 downto 0);
   lba   <= rowtgt(14 downto 13);
 
-  lts   <= tssreg(2);
+
+  lts <= tssreg(2)   when CASLATENCY = 3 else
+           tssreg(3) when CASLATENCY = 4 else
+           tssreg(4) when CASLATENCY = 5;
 
 
   DONE <= '1' when ocs = dones else '0';
@@ -79,10 +84,10 @@ begin  -- Behavioral
       ADDR <= laddr;
       TS   <= lts;
 
-      CS   <= lcs;
-      RAS  <= lras;
-      CAS  <= lcas;
-      WE   <= lwe;
+      CS  <= lcs;
+      RAS <= lras;
+      CAS <= lcas;
+      WE  <= lwe;
 
       if ocs = none then
         acnt   <= (others => '0');
@@ -96,12 +101,16 @@ begin  -- Behavioral
       tssreg   <= tssreg(9 downto 0) & (not incacnt);
       doutsreg <= doutsreg(9 downto 0) & WDATA;
 
-      DOUT <= WDATA; 
-
       ADDR <= laddr;
 
     end if;
   end process main;
+
+  DOUT <= doutsreg(0) when CASLATENCY = 3 else
+          doutsreg(1) when CASLATENCY = 4 else
+          doutsreg(2) when CASLATENCY = 5;
+
+
 
   fsm : process(ocs, start, acnt)
   begin
@@ -177,9 +186,9 @@ begin  -- Behavioral
         lcas    <= '1';
         lwe     <= '1';
         if acnt = X"10" then
-          ons <= doneprec;
+          ons   <= doneprec;
         else
-          ons <= prenopw; 
+          ons   <= prenopw;
         end if;
 
       when doneprec =>

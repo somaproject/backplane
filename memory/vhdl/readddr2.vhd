@@ -8,6 +8,8 @@ use UNISIM.vcomponents.all;
 
 
 entity readddr2 is
+    generic (
+      CASLATENCY : in integer);
   port (
     CLK         : in  std_logic;
     START       : in  std_logic;
@@ -90,14 +92,19 @@ begin  -- Behavioral
       -- shift regitsrs
       rwesreg   <= rwesreg(9 downto 0) & incacnt;
       raddrsreg <= raddrsreg(9 downto 0) & acnt;
-
-      RWE   <= rwesreg(7);
-      RADDR <= raddrsreg(7);
-
       RDATA <= DIN;
 
     end if;
   end process main;
+
+
+  
+  RWE   <= rwesreg(8) when CASLATENCY = 3 else
+           rwesreg(9) when CASLATENCY = 4 else
+           rwesreg(10) when CASLATENCY = 5;
+  RADDR <= raddrsreg(8) when CASLATENCY = 3 else
+           raddrsreg(9) when CASLATENCY = 4 else
+           raddrsreg(10) when CASLATENCY = 5;
 
   fsm : process(ocs, start, acnt, rwesreg)
   begin
