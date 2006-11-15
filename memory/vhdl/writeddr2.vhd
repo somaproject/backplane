@@ -43,11 +43,12 @@ architecture Behavioral of writeddr2 is
   signal lts   : std_logic                     := '0';
   signal ldout : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal acnt    : std_logic_vector(7 downto 0) := (others => '0');
+  signal acnt, acntl    : std_logic_vector(7 downto 0) := (others => '0');
   signal incacnt : std_logic                    := '0';
   signal asel    : std_logic                    := '0';
 
-
+  signal precnt : integer range 0 to 15 := 0;
+  
 
   type states is (none, act, write, nop1, nop2, nop3, prenopw,
                   doneprec, dones);
@@ -94,15 +95,25 @@ begin  -- Behavioral
       else
         if incacnt = '1' then
           acnt <= acnt + 1;
+          acntl <= acnt;
         end if;
       end if;
 
       -- shift regitsrs
+
       tssreg   <= tssreg(9 downto 0) & (not incacnt);
       doutsreg <= doutsreg(9 downto 0) & WDATA;
 
       ADDR <= laddr;
 
+      if ocs = none then
+        precnt <= 0;
+      else
+        if ocs = prenopw then
+          precnt <= precnt + 1;
+        end if; 
+      end if;
+               
     end if;
   end process main;
 
@@ -112,7 +123,7 @@ begin  -- Behavioral
 
 
 
-  fsm : process(ocs, start, acnt)
+  fsm : process(ocs, start, acnt, acntl, precnt)
   begin
     case ocs is
       when none =>
@@ -147,24 +158,6 @@ begin  -- Behavioral
         lwe     <= '0';
         ons     <= nop3;                -- debugging
 
-      when nop1 =>
-        incacnt <= '1';
-        asel    <= '1';
-        lcs     <= '0';
-        lras    <= '1';
-        lcas    <= '1';
-        lwe     <= '1';
-        ons     <= nop2;
-
-      when nop2 =>
-        incacnt <= '1';
-        asel    <= '1';
-        lcs     <= '0';
-        lras    <= '1';
-        lcas    <= '1';
-        lwe     <= '1';
-        ons     <= nop3;
-
       when nop3 =>
         incacnt <= '1';
         asel    <= '1';
@@ -179,20 +172,20 @@ begin  -- Behavioral
         end if;
 
       when prenopw =>
-        incacnt <= '1';
+        incacnt <= '0';
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = X"10" then
+        if precnt = 10 then
           ons   <= doneprec;
         else
           ons   <= prenopw;
         end if;
 
       when doneprec =>
-        incacnt <= '1';
+        incacnt <= '0';
         asel    <= '1';
         lcs     <= '0';
         lras    <= '0';
@@ -201,7 +194,7 @@ begin  -- Behavioral
         ons     <= dones;
 
       when dones =>
-        incacnt <= '1';
+        incacnt <= '0';
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
@@ -210,7 +203,7 @@ begin  -- Behavioral
         ons     <= none;
 
       when others =>
-        incacnt <= '1';
+        incacnt <= '0';
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
