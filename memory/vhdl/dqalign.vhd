@@ -207,10 +207,10 @@ begin  -- Behavioral
       end if;
 
       ddq2ll              <= ddq2l;
+      
       if osel = '1' then                
         DOUT(15 downto 8) <= ddq1l;
         DOUT(7 downto 0)  <= ddq2l;
-
       else
         DOUT(15 downto 8) <= ddq2ll;
         DOUT(7 downto 0)  <= ddq1l;
