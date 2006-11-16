@@ -193,7 +193,7 @@ begin  -- Behavioral
         end if;
       end if;
 
-      if cs = none then
+      if cs = resetall then
         startwcnt <= 0;
       else
         if cs = startw then
