@@ -132,7 +132,7 @@ begin  -- Behavioral
   DQSL <= 'L';
   memddr2_uut : memddr2
     generic map (
-      CASLATENCY => 3)
+      CASLATENCY => 5)
     port map (
       CLK    => CLK,
       CLK90  => CLK90,

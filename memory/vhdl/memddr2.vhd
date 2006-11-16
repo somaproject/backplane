@@ -348,7 +348,7 @@ begin  -- Behavioral
       RDATA       => RDDATA,
       RWE         => RDWE,
       NOTERMINATE => noterm,
-      LATENCYEXTRA => latencyextra);
+      LATENCYEXTRA => "00");
 
   dqalign_inst_low : dqalign
     port map (

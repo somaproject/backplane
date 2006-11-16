@@ -142,7 +142,7 @@ begin  -- Behavioral
     for t in 0 to 30 loop
       clockoffset <= 100 ps * t; 
 
-      wait for 5 us;
+      wait for 10 us;
 
       wait until rising_edge(CLK);
       START <= '1';

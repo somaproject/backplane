@@ -57,7 +57,7 @@ architecture Behavioral of dqalign is
   signal dqcnt  : std_logic_vector(5 downto 0) := (others => '0');
 
   -- state machine
-  type states is (none, resetall, startw1, startw2, startw3,
+  type states is (none, resetall, startw, startw3,
                   propw1, propw2, propw3, propw4, nexttick,
                   datainc, propdone, dones);
 
@@ -68,6 +68,8 @@ architecture Behavioral of dqalign is
   signal dqsin : std_logic := '0';
 
   constant PPOS : integer := 22;
+
+  signal startwcnt : integer range 0 to 31 := 0;
 
 
 begin  -- Behavioral
@@ -191,7 +193,18 @@ begin  -- Behavioral
         end if;
       end if;
 
+      if cs = none then
+        startwcnt <= 0;
+      else
+        if cs = startw then
+          if startwcnt = 31 then
+            null; 
+          else
+          startwcnt <= startwcnt + 1;             
+          end if;
 
+        end if;
+      end if;
       -- dq components
       if inrst = '1' then
         dqcnt   <= (others => '0');
@@ -228,7 +241,8 @@ begin  -- Behavioral
   end process main;
 
 
-  fsm : process(cs, START, dqsq1l, dqsq2l, dqsq1, dqcnt, dqscnt)
+  fsm : process(cs, START, dqsq1l, dqsq2l, dqsq1, dqcnt, dqscnt,
+                startwcnt)
   begin
     case cs is
       when none =>
@@ -251,25 +265,20 @@ begin  -- Behavioral
         dqsce  <= '0';
         dqinc  <= '0';
         dqce   <= '0';
-        ns     <= startw1;
+        ns     <= startw;
 
-      when startw1 =>
+      when startw =>
         inrst  <= '0';
         dqsamp <= '0';
         dqsinc <= '0';
         dqsce  <= '0';
         dqinc  <= '0';
         dqce   <= '0';
-        ns     <= startw2;
-
-      when startw2 =>
-        inrst  <= '0';
-        dqsamp <= '0';
-        dqsinc <= '0';
-        dqsce  <= '0';
-        dqinc  <= '0';
-        dqce   <= '0';
-        ns     <= startw3;
+        if startwcnt = 30 then
+          ns <= startw3;
+        else
+          ns <= startw; 
+        end if;
 
       when startw3 =>
         inrst  <= '0';

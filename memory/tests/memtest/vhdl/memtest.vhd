@@ -277,7 +277,7 @@ begin
       O => clk270,
       I => clk270int);
 
-  CLKOUT <= clk270;
+  CLKOUT <= clk;
 
   TXIO_obufds : OBUFDS
     generic map (
