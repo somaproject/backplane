@@ -35,7 +35,8 @@ entity jtagmemtest is
     -- read interface
     RDADDR : out   std_logic_vector(7 downto 0);
     RDDATA : out   std_logic_vector(31 downto 0);
-    RDWE   : out   std_logic );
+    RDWE   : out   std_logic ;
+    DEBUG : out std_logic_vector(3 downto 0));
 end jtagmemtest;
 
 architecture Behavioral of jtagmemtest is

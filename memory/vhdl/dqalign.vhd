@@ -20,8 +20,8 @@ entity dqalign is
     DOUT         : out   std_logic_vector(15 downto 0);
     START        : in    std_logic;
     DONE         : out   std_logic;
-    LATENCYEXTRA : out   std_logic
-
+    LATENCYEXTRA : out   std_logic; 
+    POSOUT : out std_logic_vector(7 downto 0)
     );
 
 end dqalign;
@@ -98,6 +98,7 @@ begin  -- Behavioral
       );
 
   iogen       : for i in 0 to 7 generate
+
 
     IOBUF_dq : IOBUF
       port map (
@@ -237,6 +238,8 @@ begin  -- Behavioral
         end if;
       end if;
 
+      POSOUT <= "00" & dqscnt; 
+
     end if;
   end process main;
 
@@ -374,7 +377,7 @@ begin  -- Behavioral
         dqsce  <= '0';
         dqinc  <= '0';
         dqce   <= '0';
-        if start = '1' then
+        if START = '1' then
           ns   <= resetall;
         else
           ns   <= dones;

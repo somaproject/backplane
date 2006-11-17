@@ -30,38 +30,41 @@ architecture Behavioral of memtest is
 
   component memddr2
     generic (
-      CASLATENCY : in integer
-      ); 
+      CASLATENCY  : in    integer
+      );
     port (
-      CLK    : in    std_logic;
-      CLK90  : in    std_logic;
-      CLK180 : in    std_logic;
-      CLK270 : in    std_logic;
-      RESET  : in    std_logic;
+      CLK         : in    std_logic;
+      CLK90       : in    std_logic;
+      CLK180      : in    std_logic;
+      CLK270      : in    std_logic;
+      RESET       : in    std_logic;
       -- RAM!
-      CKE    : out   std_logic;
-      CAS    : out   std_logic;
-      RAS    : out   std_logic;
-      CS     : out   std_logic;
-      WE     : out   std_logic;
-      ADDR   : out   std_logic_vector(12 downto 0);
-      BA     : out   std_logic_vector(1 downto 0);
-      DQSH   : inout std_logic;
-      DQSL   : inout std_logic;
-      DQ     : inout std_logic_vector(15 downto 0);
+      CKE         : out   std_logic;
+      CAS         : out   std_logic;
+      RAS         : out   std_logic;
+      CS          : out   std_logic;
+      WE          : out   std_logic;
+      ADDR        : out   std_logic_vector(12 downto 0);
+      BA          : out   std_logic_vector(1 downto 0);
+      DQSH        : inout std_logic;
+      DQSL        : inout std_logic;
+      DQ          : inout std_logic_vector(15 downto 0);
       -- interface
-      START  : in    std_logic;
-      RW     : in    std_logic;
-      DONE   : out   std_logic;
-      ROWTGT : in    std_logic_vector(14 downto 0);
+      START       : in    std_logic;
+      RW          : in    std_logic;
+      DONE        : out   std_logic;
+      ROWTGT      : in    std_logic_vector(14 downto 0);
       -- write interface
-      WRADDR : out   std_logic_vector(7 downto 0);
-      WRDATA : in    std_logic_vector(31 downto 0);
+      WRADDR      : out   std_logic_vector(7 downto 0);
+      WRDATA      : in    std_logic_vector(31 downto 0);
       -- read interface
-      RDADDR : out   std_logic_vector(7 downto 0);
-      RDDATA : out   std_logic_vector(31 downto 0);
-      RDWE   : out   std_logic;
+      RDADDR      : out   std_logic_vector(7 downto 0);
+      RDDATA      : out   std_logic_vector(31 downto 0);
+      RDWE        : out   std_logic;
       -- DEBUG interface
+      DQALIGNPOSL : out   std_logic_vector(7 downto 0);
+      DQALIGNPOSH : out   std_logic_vector(7 downto 0);
+
       DEBUG : out std_logic_vector(3 downto 0)
       );
   end component;
@@ -77,17 +80,20 @@ architecture Behavioral of memtest is
 
 
   -- interface
-  signal START  : std_logic                     := '0';
-  signal RW     : std_logic                     := '0';
-  signal DONE   : std_logic                     := '0';
+  signal START       : std_logic                     := '0';
+  signal RW          : std_logic                     := '0';
+  signal DONE        : std_logic                     := '0';
   -- write interface
-  signal ROWTGT : std_logic_vector(14 downto 0) := (others => '0');
-  signal WRADDR : std_logic_vector(7 downto 0)  := (others => '0');
-  signal WRDATA : std_logic_vector(31 downto 0) := (others => '0');
+  signal ROWTGT      : std_logic_vector(14 downto 0) := (others => '0');
+  signal WRADDR      : std_logic_vector(7 downto 0)  := (others => '0');
+  signal WRDATA      : std_logic_vector(31 downto 0) := (others => '0');
   -- read interface
-  signal RDADDR : std_logic_vector(7 downto 0)  := (others => '0');
-  signal RDDATA : std_logic_vector(31 downto 0) := (others => '0');
-  signal RDWE   : std_logic                     := '0';
+  signal RDADDR      : std_logic_vector(7 downto 0)  := (others => '0');
+  signal RDDATA      : std_logic_vector(31 downto 0) := (others => '0');
+  signal RDWE        : std_logic                     := '0';
+-- debug
+  signal DQALIGNPOSL : std_logic_vector(7 downto 0)  := (others => '0');
+  signal DQALIGNPOSH : std_logic_vector(7 downto 0)  := (others => '0');
 
   signal wraddrl : std_logic_vector(7 downto 0) := (others => '0');
 
@@ -100,7 +106,7 @@ architecture Behavioral of memtest is
 
 
   signal memdebug : std_logic_vector(3 downto 0);
-  
+
   component jtagmemif
     port (
       CLK      : in  std_logic;
@@ -144,8 +150,17 @@ architecture Behavioral of memtest is
       -- read interface
       RDADDR : out   std_logic_vector(7 downto 0);
       RDDATA : out   std_logic_vector(31 downto 0);
-      RDWE   : out   std_logic );
+      RDWE   : out   std_logic;
+      -- debugging
+      DEBUG  : out   std_logic_vector(3 downto 0));
   end component;
+
+
+  -- jtag control interface
+  signal cdrck, csel, cshift, cupdate, cupdatel,
+    ctdo, ctdi : std_logic := '0';
+
+  signal csreg : std_logic_vector(39 downto 0) := (others => '0');
 
 begin
 
@@ -167,31 +182,33 @@ begin
     generic map (
       CASLATENCY => 5)
     port map (
-      CLK    => clk,
-      CLK90  => clk90,
-      CLK180 => clk180,
-      CLK270 => clk270,
-      RESET  => reset,
-      CKE    => CKE,
-      CAS    => CAS,
-      RAS    => RAS,
-      CS     => CS,
-      WE     => WE,
-      ADDR   => ADDR,
-      BA     => BA,
-      DQSH   => DQSH,
-      DQSL   => DQSL,
-      DQ     => DQ,
-      START  => START,
-      RW     => RW,
-      DONE   => DONE,
-      ROWTGT => ROWTGT,
-      WRADDR => WRADDR,
-      WRDATA => WRDATA,
-      RDADDR => RDADDR,
-      RDDATA => RDDATA,
-      RDWE   => RDWE,
-      DEBUG => memdebug);
+      CLK        => clk,
+      CLK90      => clk90,
+      CLK180     => clk180,
+      CLK270     => clk270,
+      RESET      => reset,
+      CKE        => CKE,
+      CAS        => CAS,
+      RAS        => RAS,
+      CS         => CS,
+      WE         => WE,
+      ADDR       => ADDR,
+      BA         => BA,
+      DQSH       => DQSH,
+      DQSL       => DQSL,
+      DQ         => DQ,
+      START      => START,
+      RW         => RW,
+      DONE       => DONE,
+      ROWTGT     => ROWTGT,
+      WRADDR     => WRADDR,
+      WRDATA     => WRDATA,
+      RDADDR     => RDADDR,
+      RDDATA     => RDDATA,
+      RDWE       => RDWE,
+      DEBUG      => memdebug, 
+      DQALIGNPOSL => DQALIGNPOSL,
+      DQALIGNPOSH => DQALIGNPOSH);
 
   DCM_BASE_inst : DCM_BASE
     generic map (
@@ -256,7 +273,7 @@ begin
       );
 
   RESET <= not locked2;
-  
+
   clk_bufg : BUFG
     port map (
       O => clk,
@@ -277,7 +294,7 @@ begin
       O => clk270,
       I => clk270int);
 
-  CLKOUT <= clk;
+  CLKOUT <= clk270;
 
   TXIO_obufds : OBUFDS
     generic map (
@@ -288,8 +305,8 @@ begin
       I          => clkout
       );
 
-  LEDRESET <= memdebug(0); 
-  LEDERROR <= memdebug(1); 
+  LEDRESET <= memdebug(0);
+  LEDERROR <= memdebug(1);
 
   dlyctrl : IDELAYCTRL
     port map(
@@ -297,5 +314,47 @@ begin
       REFCLK => clk,
       RST    => reset
       );
+
+
+-- test metadata and control
+  BSCAN_control_inst : BSCAN_VIRTEX4
+    generic map (
+      JTAG_CHAIN => 4)
+    port map (
+      CAPTURE    => open,
+      DRCK       => cdrck,
+      reset      => open,
+      SEL        => csel,
+      SHIFT      => cshift,
+      TDI        => ctdi,
+      UPDATE     => cupdate,
+      TDO        => ctdo);
+
+
+  process(cdrck, cupdate)
+    variable pos : integer range 0 to 39 := 0;
+
+  begin
+    if cupdate = '1' then
+      pos   := 0;
+    else
+      if rising_edge(cdrck) then
+        ctdo   <= csreg(pos);
+        pos := pos + 1;
+      end if;
+    end if;
+  end process;
+
+  csreg   <= X"AB" & DQALIGNPOSL & X"CD" & DQALIGNPOSH & X"EF";
+
+  process(CLK)
+  begin
+    if rising_edge(clk) then
+      cupdatel <= cupdate;
+      if cupdatel = '0' and cupdate = '1' and csel = '1' then
+        null;
+      end if;
+    end if;
+  end process;
 
 end behavioral;

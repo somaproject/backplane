@@ -100,9 +100,22 @@ def performAction(pos, rowtgt, action):
     else:
         raise "invalid action"
 
+
+def readStatus(pos):
+    cmdstr = xc3sprog + (' %d 0x%3.3X "00 00 00 00 00"' % (pos, USER4))
+
+    fid = os.popen(cmdstr)
+    bytesstr = fid.read().split()
+    bytes = [int(b, 16) for b in bytesstr]
+    print " %2.2X%2.2X%2.2X%2.2X%2.2X" % (bytes[4], bytes[3], bytes[2],
+                                          bytes[1], bytes[0])
+
+print "getting status:"
+readStatus(1)
+
 print "Writing..."
-writeSeqBuffer(1, 20)
+writeSeqBuffer(1, 8)
 print "Write done. Waiting."
 time.sleep(1)
 print "Reading..."
-readbuffer(1, 20)
+readbuffer(1, 8)

@@ -28,7 +28,8 @@ entity readddr2 is
     RDATA       : out std_logic_vector(31 downto 0);
     RWE         : out std_logic;
     NOTERMINATE : in  std_logic;
-    LATENCYEXTRA: in std_logic_vector(1 downto 0)
+    LATENCYEXTRA: in std_logic_vector(1 downto 0);
+    READOFFSET : in std_logic_vector(1 downto 0)
     );
 end readddr2;
 
@@ -56,14 +57,14 @@ architecture Behavioral of readddr2 is
                   dones);
   signal ocs, ons : states := none;
 
-  type raddrsreg_t is array (11 downto 0) of std_logic_vector(7 downto 0);
+  type raddrsreg_t is array (13 downto 0) of std_logic_vector(7 downto 0);
   signal raddrsreg : raddrsreg_t := (others => (others => '0'));
 
-  signal rwesreg : std_logic_vector(11 downto 0);
+  signal rwesreg : std_logic_vector(13 downto 0);
 
 
 begin  -- Behavioral
-  laddr <= ("0000" & acnt(7 downto 1) & "00") when asel = '1' else rowtgt(12 downto 0);
+  laddr <= ("0000" & acnt(7 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 downto 0);
 
   lba   <= rowtgt(14 downto 13);
 
@@ -76,7 +77,7 @@ begin  -- Behavioral
       ocs <= ons;
 
       BA   <= lba;
-      ADDR <= laddr;
+      ADDR <= laddr; 
       CS   <= lcs;
       RAS  <= lras;
       CAS  <= lcas;
@@ -91,8 +92,8 @@ begin  -- Behavioral
       end if;
 
       -- shift regitsrs
-      rwesreg   <= rwesreg(10 downto 0) & incacnt;
-      raddrsreg <= raddrsreg(10 downto 0) & acnt;
+      rwesreg   <= rwesreg(12 downto 0) & incacnt;
+      raddrsreg <= raddrsreg(12 downto 0) & acnt;
 
       RDATA <= DIN;
 
@@ -101,20 +102,22 @@ begin  -- Behavioral
 
 
 
-  RWE   <= rwesreg(8) when CASLATENCY = 3 and latencyextra(0) = '0' else
-           rwesreg(9) when CASLATENCY = 4 and latencyextra(0) = '0' else
-           rwesreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
-           rwesreg(9) when CASLATENCY = 3 and latencyextra(0) = '1' else
-           rwesreg(10) when CASLATENCY = 4 and latencyextra(0) = '1' else
-           rwesreg(11) when CASLATENCY = 5 and latencyextra(0) = '1';
+--   RWE   <= rwesreg(8) when CASLATENCY = 3 and latencyextra(0) = '0' else
+--            rwesreg(9) when CASLATENCY = 4 and latencyextra(0) = '0' else
+--            rwesreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
+--            rwesreg(9) when CASLATENCY = 3 and latencyextra(0) = '1' else
+--            rwesreg(10) when CASLATENCY = 4 and latencyextra(0) = '1' else
+--            rwesreg(11) when CASLATENCY = 5 and latencyextra(0) = '1';
   
-  RADDR <= raddrsreg(8) when CASLATENCY = 3 and latencyextra(0) = '0'  else
-           raddrsreg(9) when CASLATENCY = 4 and latencyextra(0) = '0'  else
-           raddrsreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
-           raddrsreg(9) when CASLATENCY = 3 and latencyextra(0) = '1'  else
-           raddrsreg(10) when CASLATENCY = 4 and latencyextra(0) = '1'  else
-           raddrsreg(11) when CASLATENCY = 5 and latencyextra(0) = '1'; 
-           
+--   RADDR <= raddrsreg(8) when CASLATENCY = 3 and latencyextra(0) = '0'  else
+--            raddrsreg(9) when CASLATENCY = 4 and latencyextra(0) = '0'  else
+--            raddrsreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
+--            raddrsreg(9) when CASLATENCY = 3 and latencyextra(0) = '1'  else
+--            raddrsreg(10) when CASLATENCY = 4 and latencyextra(0) = '1'  else
+--            raddrsreg(11) when CASLATENCY = 5 and latencyextra(0) = '1'; 
+
+  RWE <= rwesreg(10);                   -- debugging
+  RADDR <= raddrsreg(10);               -- debugging
 
   fsm : process(ocs, start, acnt, rwesreg)
   begin

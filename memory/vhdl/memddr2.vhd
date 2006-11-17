@@ -39,11 +39,15 @@ entity memddr2 is
     RDADDR : out std_logic_vector(7 downto 0);
     RDDATA : out std_logic_vector(31 downto 0);
     RDWE   : out std_logic;
+    -- debugging
+    DQALIGNPOSL : out std_logic_vector(7 downto 0);
+    DQALIGNPOSH : out std_logic_vector(7 downto 0);
     DEBUG : out std_logic_vector(3 downto 0)
     );
 end memddr2;
 
 architecture Behavioral of memddr2 is
+
   signal lcas : std_logic := '1';
 
   signal dsel : integer range 0 to 3 := 0;
@@ -171,7 +175,8 @@ architecture Behavioral of memddr2 is
       RDATA       : out std_logic_vector(31 downto 0);
       RWE         : out std_logic;
       NOTERMINATE : in  std_logic;
-      LATENCYEXTRA : in std_logic_vector(1 downto 0)
+      LATENCYEXTRA : in std_logic_vector(1 downto 0);
+      READOFFSET: in std_logic_vector(1 downto 0)
       );
   end component;
 
@@ -199,7 +204,9 @@ architecture Behavioral of memddr2 is
       DOUT         : out   std_logic_vector(15 downto 0);
       START        : in    std_logic;
       DONE         : out   std_logic;
-      LATENCYEXTRA : out   std_logic
+      LATENCYEXTRA : out   std_logic;
+    POSOUT : out std_logic_vector(7 downto 0)
+      
       );
   end component;
 
@@ -270,7 +277,6 @@ architecture Behavioral of memddr2 is
       RBA      : in  std_logic_vector(1 downto 0)
       );
   end component;
-
 
                                     
 begin  -- Behavioral
@@ -348,7 +354,8 @@ begin  -- Behavioral
       RDATA       => RDDATA,
       RWE         => RDWE,
       NOTERMINATE => noterm,
-      LATENCYEXTRA => "00");
+      LATENCYEXTRA => "00",
+      READOFFSET => "00");
 
   dqalign_inst_low : dqalign
     port map (
@@ -363,7 +370,8 @@ begin  -- Behavioral
       DOUT         => dinl,
       START        => alstart,
       DONE         => aldonel,
-      LATENCYEXTRA => latencyextra(0));
+      LATENCYEXTRA => latencyextra(0), 
+      POSOUT => DQALIGNPOSL);
 
   dqalign_inst_high : dqalign
     port map (
@@ -378,7 +386,9 @@ begin  -- Behavioral
       DOUT         => dinh,
       START        => alstart,
       DONE         => aldoneh,
-      LATENCYEXTRA => latencyextra(1));
+      LATENCYEXTRA => latencyextra(1),
+      POSOUT => DQALIGNPOSH
+      );
 
   DEBUG(1 downto 0) <= latencyextra;
   

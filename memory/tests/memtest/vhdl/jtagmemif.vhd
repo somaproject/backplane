@@ -17,7 +17,9 @@ entity jtagmemif is
     WRDATA   : out std_logic_vector(31 downto 0);
     RDADDR   : in  std_logic_vector(7 downto 0);
     RDDATA   : in  std_logic_vector(31 downto 0);
-    RDWE     : in  std_logic );
+    RDWE     : in  std_logic;
+    READOFFSET : out std_logic_vector(1 downto 0);
+    WRITEOFFSET: out std_logic_vector(1 downto 0));
 end jtagmemif;
 
 architecture Behavioral of jtagmemif is
@@ -76,10 +78,11 @@ begin  -- Behavioral
   wrdatain             <= wrsreg(39 downto 8);
 
   wraddrf(7 downto 0) <= WRADDR;
+  
   process(CLK)
   begin
     if rising_edge(CLK) then
-      WRDATA          <= lWRDATA;     -- DEBUG TO SEE WHEN WE WRITE
+      WRDATA          <= lWRDATA;     
     end if;
   end process;
 

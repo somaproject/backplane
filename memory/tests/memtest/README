@@ -109,3 +109,138 @@ Now, we try screwing with the output timing of the data from DQALIGN. This isn't
 osel ='1' to osel = '0':
 
 
+------------------------------------------
+15 november 2006
+------------------------------------------
+
+For the below, clkout = clk
+
+Seqwrite with READOFFSET = 00: 
+[jonas@shannon memtest]$ sudo python control.py
+Password:
+Writing...
+Write done. Waiting.
+Reading...
+  0 : 00001B40
+  1 : FFFF0000
+  2 : FFFF0001
+  3 : FFFF0002
+  4 : FFFF0003
+  5 : FFFF0004
+  6 : FFFF0005
+  7 : FFFF0006
+  8 : FFFF0007
+...
+251 : FFFF00FA
+252 : FFFF00FB
+253 : FFFF00FC
+254 : FFFF00FD
+255 : FFFF00FE
+
+
+
+Seqwrite with READOFFSET = 01:
+[jonas@shannon memtest]$ sudo python control.py
+Writing...
+Write done. Waiting.
+Reading...
+  0 : FFFFFFFF
+  1 : 0000FFFF
+  2 : 1B40FFFF
+  3 : 0002FFFF
+  4 : 0001FFFF
+  5 : 0004FFFF
+  6 : 0003FFFF
+  7 : 0006FFFF
+  8 : 0005FFFF
+  9 : 0008FFFF
+ 10 : 0007FFFF
+ 11 : 000AFFFF
+ 12 : 0009FFFF
+ 13 : 000CFFFF
+ 14 : 000BFFFF
+ 15 : 000EFFFF
+ 16 : 000DFFFF
+ 17 : 0010FFFF
+ 18 : 000FFFFF
+ 19 : 0012FFFF
+...
+247 : 00F6FFFF
+248 : 00F5FFFF
+249 : 00F8FFFF
+250 : 00F7FFFF
+251 : 00FAFFFF
+252 : 00F9FFFF
+253 : 00FCFFFF
+254 : 00FBFFFF
+255 : 00FEFFFF
+
+
+Seqwrite with READOFFSET = 10:
+[jonas@shannon memtest]$ sudo python control.py
+Writing...
+Write done. Waiting.
+Reading...
+  0 : 0000FFFF
+  1 : 1B40FFFF
+  2 : 0002FFFF
+  3 : 0001FFFF
+  4 : 0004FFFF
+  5 : 0003FFFF
+  6 : 0006FFFF
+  7 : 0005FFFF
+  8 : 0008FFFF
+  9 : 0007FFFF
+ 10 : 000AFFFF
+ 11 : 0009FFFF
+ 12 : 000CFFFF
+ 13 : 000BFFFF
+...
+246 : 00F6FFFF
+247 : 00F5FFFF
+248 : 00F8FFFF
+249 : 00F7FFFF
+250 : 00FAFFFF
+251 : 00F9FFFF
+252 : 00FCFFFF
+253 : 00FBFFFF
+254 : 00FEFFFF
+255 : 00FDFFFF
+
+Seqwrite with READOFFSET = 11:
+
+[jonas@shannon memtest]$ sudo python control.py
+Writing...
+Write done. Waiting.
+Reading...
+  0 : 0000FFFF
+  1 : 1B40FFFF
+  2 : 0000FFFF
+  3 : 0001FFFF
+  4 : 0002FFFF
+  5 : 0003FFFF
+  6 : 0004FFFF
+  7 : 0005FFFF
+  8 : 0006FFFF
+  9 : 0007FFFF
+...
+244 : 00F2FFFF
+245 : 00F3FFFF
+246 : 00F4FFFF
+247 : 00F5FFFF
+248 : 00F6FFFF
+249 : 00F7FFFF
+250 : 00F8FFFF
+251 : 00F9FFFF
+252 : 00FAFFFF
+253 : 00FBFFFF
+254 : 00FCFFFF
+255 : 00FDFFFF
+
+16 November 2006
+
+now, we've instruemnted DQALIGN position registers. 
+
+clkout <= clk: DQALIGNPOSL = 0x1D DQALIGNPOSH = 0x1D
+clkout <= clk90; DQALIGNPOSL = 0D  DQALIGNPOSH = 0D
+clkout <= clk270; DQALIGNPOSL = 0C   DQALIGNPOSH = 0C

@@ -66,9 +66,9 @@ begin  -- Behavioral
   lba   <= rowtgt(14 downto 13);
 
 
-  lts <= tssreg(2)   when CASLATENCY = 3 else
+  lts <= tssreg(3)   when CASLATENCY = 3 else
            tssreg(3) when CASLATENCY = 4 else
-           tssreg(4) when CASLATENCY = 5;
+           tssreg(4) when CASLATENCY = 5; 
 
 
   DONE <= '1' when ocs = dones else '0';
@@ -82,7 +82,6 @@ begin  -- Behavioral
       ocs <= ons;
 
       BA   <= lba;
-      ADDR <= laddr;
       TS   <= lts;
 
       CS  <= lcs;
@@ -104,7 +103,7 @@ begin  -- Behavioral
       tssreg   <= tssreg(9 downto 0) & (not incacnt);
       doutsreg <= doutsreg(9 downto 0) & WDATA;
 
-      ADDR <= laddr;
+
 
       if ocs = none then
         precnt <= 0;
@@ -114,10 +113,13 @@ begin  -- Behavioral
         end if; 
       end if;
                
+      ADDR <= laddr; 
     end if;
   end process main;
 
-  DOUT <= doutsreg(0) when CASLATENCY = 3 else
+
+
+  DOUT <= doutsreg(0) when CASLATENCY = 3 else  
           doutsreg(1) when CASLATENCY = 4 else
           doutsreg(2) when CASLATENCY = 5;
 
