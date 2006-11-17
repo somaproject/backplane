@@ -102,22 +102,19 @@ begin  -- Behavioral
 
 
 
---   RWE   <= rwesreg(8) when CASLATENCY = 3 and latencyextra(0) = '0' else
---            rwesreg(9) when CASLATENCY = 4 and latencyextra(0) = '0' else
---            rwesreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
---            rwesreg(9) when CASLATENCY = 3 and latencyextra(0) = '1' else
---            rwesreg(10) when CASLATENCY = 4 and latencyextra(0) = '1' else
---            rwesreg(11) when CASLATENCY = 5 and latencyextra(0) = '1';
+   RWE   <= rwesreg(8) when CASLATENCY = 3 and latencyextra(0) = '0' else
+            rwesreg(9) when CASLATENCY = 4 and latencyextra(0) = '0' else
+            rwesreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
+            rwesreg(9) when CASLATENCY = 3 and latencyextra(0) = '1' else
+            rwesreg(10) when CASLATENCY = 4 and latencyextra(0) = '1' else
+            rwesreg(11) when CASLATENCY = 5 and latencyextra(0) = '1';
   
---   RADDR <= raddrsreg(8) when CASLATENCY = 3 and latencyextra(0) = '0'  else
---            raddrsreg(9) when CASLATENCY = 4 and latencyextra(0) = '0'  else
---            raddrsreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
---            raddrsreg(9) when CASLATENCY = 3 and latencyextra(0) = '1'  else
---            raddrsreg(10) when CASLATENCY = 4 and latencyextra(0) = '1'  else
---            raddrsreg(11) when CASLATENCY = 5 and latencyextra(0) = '1'; 
-
-  RWE <= rwesreg(10);                   -- debugging
-  RADDR <= raddrsreg(10);               -- debugging
+   RADDR <= raddrsreg(8) when CASLATENCY = 3 and latencyextra(0) = '0'  else
+            raddrsreg(9) when CASLATENCY = 4 and latencyextra(0) = '0'  else
+            raddrsreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
+            raddrsreg(9) when CASLATENCY = 3 and latencyextra(0) = '1'  else
+            raddrsreg(10) when CASLATENCY = 4 and latencyextra(0) = '1'  else
+            raddrsreg(11) when CASLATENCY = 5 and latencyextra(0) = '1'; 
 
   fsm : process(ocs, start, acnt, rwesreg)
   begin

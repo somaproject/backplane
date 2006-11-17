@@ -222,7 +222,7 @@ begin  -- Behavioral
 
       ddq2ll              <= ddq2l;
       
-      if osel = '1' then                
+      if osel = '0' then                
         DOUT(15 downto 8) <= ddq1l;
         DOUT(7 downto 0)  <= ddq2l;
       else

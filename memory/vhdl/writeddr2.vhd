@@ -66,7 +66,7 @@ begin  -- Behavioral
   lba   <= rowtgt(14 downto 13);
 
 
-  lts <= tssreg(3)   when CASLATENCY = 3 else
+  lts <= tssreg(2)   when CASLATENCY = 3 else
            tssreg(3) when CASLATENCY = 4 else
            tssreg(4) when CASLATENCY = 5; 
 

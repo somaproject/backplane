@@ -354,7 +354,7 @@ begin  -- Behavioral
       RDATA       => RDDATA,
       RWE         => RDWE,
       NOTERMINATE => noterm,
-      LATENCYEXTRA => "00",
+      LATENCYEXTRA => latencyextra,
       READOFFSET => "00");
 
   dqalign_inst_low : dqalign

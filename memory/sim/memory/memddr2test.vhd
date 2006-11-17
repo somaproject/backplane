@@ -17,44 +17,44 @@ architecture Behavioral of memddr2test is
 
   component memddr2
     generic (
-      CASLATENCY : in integer);
+      CASLATENCY : in    integer);
     port (
-      CLK    : in    std_logic;
-      CLK90  : in    std_logic;
-      CLK180 : in    std_logic;
-      CLK270 : in    std_logic;
-      RESET  : in    std_logic;
+      CLK        : in    std_logic;
+      CLK90      : in    std_logic;
+      CLK180     : in    std_logic;
+      CLK270     : in    std_logic;
+      RESET      : in    std_logic;
       -- RAM!
-      CKE    : out   std_logic;
-      CAS    : out   std_logic;
-      RAS    : out   std_logic;
-      CS     : out   std_logic;
-      WE     : out   std_logic;
-      ADDR   : out   std_logic_vector(12 downto 0);
-      BA     : out   std_logic_vector(1 downto 0);
-      DQSH   : inout std_logic;
-      DQSL   : inout std_logic;
-      DQ     : inout std_logic_vector(15 downto 0);
+      CKE        : out   std_logic;
+      CAS        : out   std_logic;
+      RAS        : out   std_logic;
+      CS         : out   std_logic;
+      WE         : out   std_logic;
+      ADDR       : out   std_logic_vector(12 downto 0);
+      BA         : out   std_logic_vector(1 downto 0);
+      DQSH       : inout std_logic;
+      DQSL       : inout std_logic;
+      DQ         : inout std_logic_vector(15 downto 0);
       -- interface
-      START  : in    std_logic;
-      RW     : in    std_logic;
-      DONE   : out   std_logic;
+      START      : in    std_logic;
+      RW         : in    std_logic;
+      DONE       : out   std_logic;
       -- write interface
-      ROWTGT : in    std_logic_vector(14 downto 0);
-      WRADDR : out   std_logic_vector(7 downto 0);
-      WRDATA : in    std_logic_vector(31 downto 0);
+      ROWTGT     : in    std_logic_vector(14 downto 0);
+      WRADDR     : out   std_logic_vector(7 downto 0);
+      WRDATA     : in    std_logic_vector(31 downto 0);
       -- read interface
-      RDADDR : out   std_logic_vector(7 downto 0);
-      RDDATA : out   std_logic_vector(31 downto 0);
-      RDWE   : out   std_logic
+      RDADDR     : out   std_logic_vector(7 downto 0);
+      RDDATA     : out   std_logic_vector(31 downto 0);
+      RDWE       : out   std_logic
       );
   end component;
 
-  signal CLK, CLKN     : std_logic := '0';
-  signal CLK90, CLK90N : std_logic := '0';
-  signal CLK180        : std_logic := '0';
-  signal CLK270        : std_logic := '0';
-  signal RESET         : std_logic := '1';
+  signal CLK, CLKN       : std_logic := '0';
+  signal CLK90, CLK90N   : std_logic := '0';
+  signal CLK180, clk180n : std_logic := '0';
+  signal CLK270, clk270n : std_logic := '0';
+  signal RESET           : std_logic := '1';
 
 
   -- RAM!
@@ -123,41 +123,44 @@ architecture Behavioral of memddr2test is
   type outbuffer is array (0 to 1023) of std_logic_vector(15 downto 0);
   signal outbufferA : outbuffer := (others => (others => '0'));
 
-  
+  signal memclk, memclkn : std_logic := '0';
+
+
 
 
 begin  -- Behavioral
 
   DQSH <= 'L';
   DQSL <= 'L';
+  
   memddr2_uut : memddr2
     generic map (
       CASLATENCY => 5)
     port map (
-      CLK    => CLK,
-      CLK90  => CLK90,
-      CLK180 => CLK180,
-      CLK270 => CLK270,
-      RESET  => RESET,
-      CKE    => CKE,
-      CAS    => CAS,
-      RAS    => RAS,
-      CS     => CS,
-      WE     => WE,
-      ADDR   => ADDR,
-      BA     => BA,
-      DQSH   => DQSH,
-      DQSL   => DQSL,
-      DQ     => DQ,
-      START  => START,
-      RW     => RW,
-      DONE   => DONE,
-      ROWTGT => ROWTGT,
-      WRADDR => WRADDR,
-      WRDATA => WRDATA,
-      RDADDR => RDADDR,
-      RDDATA => RDDATA,
-      RDWE   => RDWE);
+      CLK        => CLK,
+      CLK90      => CLK90,
+      CLK180     => CLK180,
+      CLK270     => CLK270,
+      RESET      => RESET,
+      CKE        => CKE,
+      CAS        => CAS,
+      RAS        => RAS,
+      CS         => CS,
+      WE         => WE,
+      ADDR       => ADDR,
+      BA         => BA,
+      DQSH       => DQSH,
+      DQSL       => DQSL,
+      DQ         => DQ,
+      START      => START,
+      RW         => RW,
+      DONE       => DONE,
+      ROWTGT     => ROWTGT,
+      WRADDR     => WRADDR,
+      WRDATA     => WRDATA,
+      RDADDR     => RDADDR,
+      RDDATA     => RDDATA,
+      RDWE       => RDWE);
 
   mainclk <= not mainclk after (clk_period / 8);
 
@@ -179,8 +182,8 @@ begin  -- Behavioral
       BA              => BA,
       ADDR            => ADDR,
       CKE             => CKE,
-      CLK             => CLK90,
-      CLKB            => CLK90N,
+      CLK             => memCLK,
+      CLKB            => memCLKN,
       odelay          => odelay);
 
   process(mainclk)
@@ -219,9 +222,13 @@ begin  -- Behavioral
   end process;
 
 
-  CLKN   <= not CLK;
-  CLK90N <= not CLK90;
+  CLKN    <= not CLK;
+  CLK90N  <= not CLK90;
+  CLK270N <= not clk270;
+  CLK180N <= not clk180;
 
+  memclk  <= clk180;
+  memclkn <= clk180n;
 
 
   -- fake write memory
