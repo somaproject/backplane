@@ -33,21 +33,19 @@ def readbuffer(pos, rowtgt):
     
     performAction(pos, rowtgt, 'read')
     time.sleep(1)
-    for i in range(257):
+    for i in range(512):
 
-        if i == 256:
-            j = 255
-        else:
-            j = i
-        
-        cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X 00 00 00 00"' % (pos, USER2, j))
+        cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X %2.2X 00 00 00 00 00 00"' % (pos, USER2, i & 0xFF, (i >> 8) & 0xFF))
 
         fid = os.popen(cmdstr)
         bytesstr = fid.read().split()
         bytes = [int(b, 16) for b in bytesstr]
         if i > 0: # because the first read doesn't return real values
-            print "%3d : %2.2X%2.2X%2.2X%2.2X" % (i -1, bytes[3], bytes[2],
-                                               bytes[1], bytes[0])
+            for b in bytes:
+                print "%2.2X" % b, 
+        print
+
+            
 
 
 def writeword(pos, addr, val):

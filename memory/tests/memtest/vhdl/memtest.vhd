@@ -118,7 +118,9 @@ architecture Behavioral of memtest is
       WRDATA   : out std_logic_vector(31 downto 0);
       RDADDR   : in  std_logic_vector(7 downto 0);
       RDDATA   : in  std_logic_vector(31 downto 0);
-      RDWE     : in  std_logic );
+      RDWE     : in  std_logic;
+      READSTART : in std_logic
+      );
   end component;
 
   component jtagmemtest
@@ -175,7 +177,9 @@ begin
       WRDATA   => wrdata,
       RDADDR   => rdaddr,
       RDDATA   => rddata,
-      RDWE     => rdwe);
+      RDWE     => rdwe , 
+      READSTART => memdebug(3) 
+      );
 
 
   memddr2_inst : memddr2

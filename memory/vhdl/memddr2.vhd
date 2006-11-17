@@ -391,7 +391,9 @@ begin  -- Behavioral
       );
 
   DEBUG(1 downto 0) <= latencyextra;
+  DEBUG(3) <= rstart;
   
+    
   aldone <= aldonel and aldoneh;
 
   memcontmux_inst : memcontmux
