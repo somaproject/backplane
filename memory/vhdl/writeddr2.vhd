@@ -43,7 +43,7 @@ architecture Behavioral of writeddr2 is
   signal lts   : std_logic                     := '0';
   signal ldout : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal acnt, acntl    : std_logic_vector(7 downto 0) := (others => '0');
+  signal acnt, acntl    : std_logic_vector(8 downto 0) := (others => '0');
   signal incacnt : std_logic                    := '0';
   signal asel    : std_logic                    := '0';
 
@@ -62,18 +62,18 @@ architecture Behavioral of writeddr2 is
 
 begin  -- Behavioral
 
-  laddr <= ("0000" & acnt(7 downto 1) & "00") when asel = '1' else rowtgt(12 downto 0);
+  laddr <= ("000" & acnt(8 downto 1) & "00") when asel = '1' else rowtgt(12 downto 0);
   lba   <= rowtgt(14 downto 13);
 
 
-  lts <= tssreg(2)   when CASLATENCY = 3 else
-           tssreg(3) when CASLATENCY = 4 else
-           tssreg(4) when CASLATENCY = 5; 
+  lts <= tssreg(0)   when CASLATENCY = 3 else
+           tssreg(0) when CASLATENCY = 4 else
+           tssreg(0) when CASLATENCY = 5; 
 
 
   DONE <= '1' when ocs = dones else '0';
 
-  WADDR <= acnt;
+  WADDR <= acnt(7 downto 0);
 
   main : process(CLK)
   begin
@@ -113,15 +113,16 @@ begin  -- Behavioral
         end if; 
       end if;
                
-      ADDR <= laddr; 
+      ADDR <= laddr;       
     end if;
   end process main;
 
 
 
-  DOUT <= doutsreg(0) when CASLATENCY = 3 else  
+  
+  DOUT <= doutsreg(0) when CASLATENCY = 3 else 
           doutsreg(1) when CASLATENCY = 4 else
-          doutsreg(2) when CASLATENCY = 5;
+          doutsreg(1) when CASLATENCY = 5;
 
 
 
@@ -158,8 +159,8 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '0';
         lwe     <= '0';
-        ons     <= nop3;                -- debugging
-
+        ons     <= nop3;
+        
       when nop3 =>
         incacnt <= '1';
         asel    <= '1';
@@ -167,14 +168,14 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = X"FF" then
+        if acnt = "011111111" then
           ons   <= prenopw;
         else
           ons   <= write;
         end if;
 
       when prenopw =>
-        incacnt <= '0';
+        incacnt <= '1';                 -- debugging!
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';

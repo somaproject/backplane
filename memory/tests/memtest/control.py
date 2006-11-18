@@ -112,7 +112,7 @@ print "getting status:"
 readStatus(1)
 
 print "Writing..."
-writeSeqBuffer(1, 8)
+writeConstBuffer(1, 8, 0x11223344)
 print "Write done. Waiting."
 time.sleep(1)
 print "Reading..."

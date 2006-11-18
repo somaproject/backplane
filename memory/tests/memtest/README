@@ -244,3 +244,30 @@ now, we've instruemnted DQALIGN position registers.
 clkout <= clk: DQALIGNPOSL = 0x1D DQALIGNPOSH = 0x1D
 clkout <= clk90; DQALIGNPOSL = 0D  DQALIGNPOSH = 0D
 clkout <= clk270; DQALIGNPOSL = 0C   DQALIGNPOSH = 0C
+------------------------------------------------------------------------
+
+Damn this is so frustrating
+
+with lts <= tssreg(2):
+
+00 00 00 00 00 00 00 00
+FF FF 00 00 00 00 00 80
+FF FF 00 00 00 01 00 80
+FF FF 01 00 00 02 00 80
+FF FF 02 00 00 03 00 80
+
+with lts <= tssreg(1):
+00 00 00 00 00 00 00 00
+FF FF 00 00 00 00 00 80
+FF FF 00 00 00 01 00 80
+FF FF 01 00 00 02 00 80
+FF FF 02 00 00 03 00 80
+
+with lts <= tssreg(0):
+00 00 00 00 00 00 00 80
+00 FF FF 00 00 01 00 80
+01 FF FF 00 00 02 00 80
+02 FF FF 00 00 03 00 80
+03 FF FF 00 00 04 00 80
+04 FF FF 00 00 05 00 80
+

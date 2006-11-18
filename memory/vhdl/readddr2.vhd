@@ -46,7 +46,7 @@ architecture Behavioral of readddr2 is
   signal lts   : std_logic                     := '0';
   signal ldout : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal acnt    : std_logic_vector(7 downto 0) := (others => '0');
+  signal acnt    : std_logic_vector(8 downto 0) := (others => '0');
   signal incacnt : std_logic                    := '0';
   signal asel    : std_logic                    := '0';
 
@@ -64,7 +64,7 @@ architecture Behavioral of readddr2 is
 
 
 begin  -- Behavioral
-  laddr <= ("0000" & acnt(7 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 downto 0);
+  laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 downto 0);
 
   lba   <= rowtgt(14 downto 13);
 
@@ -93,7 +93,7 @@ begin  -- Behavioral
 
       -- shift regitsrs
       rwesreg   <= rwesreg(12 downto 0) & incacnt;
-      raddrsreg <= raddrsreg(12 downto 0) & acnt;
+      raddrsreg <= raddrsreg(12 downto 0) & acnt(7 downto 0);
 
       RDATA <= DIN;
 
@@ -212,7 +212,7 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = X"FF" and NOTERMINATE = '0' then
+        if acnt = "111111111" and NOTERMINATE = '0' then
           ons   <= doneprec;
         else
           ons   <= read;
