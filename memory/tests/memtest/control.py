@@ -11,6 +11,8 @@ USER4 : 1111100011 0x3C3
 import os
 import sys
 import time
+import numpy
+
 
 USER1 = 0x3C2
 USER2 = 0x3C3
@@ -69,7 +71,7 @@ def writeConstBuffer(pos, rowtgt, const):
     
 def writeSeqBuffer(pos, rowtgt):
     for i in range(256):
-        writeword(pos, i, 0xFFFF0000 + i)
+        writeword(pos, i, 0xABCD0000 | i | (i*256))
     performAction(pos, rowtgt, 'write')
     
     
@@ -112,8 +114,8 @@ print "getting status:"
 readStatus(1)
 
 print "Writing..."
-writeConstBuffer(1, 8, 0x11223344)
+writeConstBuffer(1, 20, 0xAABBCCDD)
 print "Write done. Waiting."
 time.sleep(1)
 print "Reading..."
-readbuffer(1, 8)
+readbuffer(1, 20)

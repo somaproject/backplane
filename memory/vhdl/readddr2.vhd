@@ -212,7 +212,7 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = "111111111" and NOTERMINATE = '0' then
+        if acnt = "011111111" and NOTERMINATE = '0' then
           ons   <= doneprec;
         else
           ons   <= read;
