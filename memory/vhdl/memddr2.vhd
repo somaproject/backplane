@@ -278,16 +278,20 @@ architecture Behavioral of memddr2 is
       );
   end component;
 
-                                    
+  signal rddataint : std_logic_vector(31 downto 0) := (others => '0');
+  
 begin  -- Behavioral
 
-  din(15 downto 0)  <= dinh(7 downto 0) & dinl(7 downto 0);
-  din(31 downto 16) <= dinh(15 downto 8) & dinl(15 downto 8);
-
-
-  doutl <= dout(23 downto 16) & dout(7 downto 0);
-  douth <= dout(31 downto 24) & dout(15 downto 8);
-
+  
+  --din(15 downto 0)  <= dinh(7 downto 0) & dinl(7 downto 0);
+  --din(31 downto 16) <= dinh(15 downto 8) & dinl(15 downto 8);
+  din <= dinh & dinl; 
+  
+  -- doutl <= dout(23 downto 16) & dout(7 downto 0);
+  --douth <= dout(31 downto 24) & dout(15 downto 8);
+  doutl <= dout(15 downto 0);
+  douth <= dout(31 downto 16);
+  
   refreshddr2_inst : refreshddr2
     port map (
       CLK   => CLK,
@@ -351,12 +355,16 @@ begin  -- Behavioral
       DIN         => din,
       ROWTGT      => rowtgt,
       RADDR       => RDADDR,
-      RDATA       => RDDATA,
+      RDATA       => RDDATAint,
       RWE         => RDWE,
       NOTERMINATE => noterm,
       LATENCYEXTRA => latencyextra,
       READOFFSET => "00");
-
+  
+ -- RDDATA <= rddataint(7 downto 0) & rddataint(15 downto 8)
+ --           & rddataint(23 downto 16) & rddataint(31 downto 24);
+  RDDATA <= rddataint; 
+  
   dqalign_inst_low : dqalign
     port map (
       CLK          => CLK,
