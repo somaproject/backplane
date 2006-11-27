@@ -227,8 +227,8 @@ begin  -- Behavioral
   CLK270N <= not clk270;
   CLK180N <= not clk180;
 
-  memclk  <= clk180;
-  memclkn <= clk180n;
+  memclk  <= clk270;
+  memclkn <= clk270n;
 
 
   -- fake write memory

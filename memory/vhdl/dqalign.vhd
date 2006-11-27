@@ -71,7 +71,8 @@ architecture Behavioral of dqalign is
 
   signal startwcnt : integer range 0 to 31 := 0;
 
-
+  signal tsint : std_logic := '0';
+  
 begin  -- Behavioral
 
   LATENCYEXTRA <= osel;
@@ -93,10 +94,18 @@ begin  -- Behavioral
     port map (
       O  => dqsin,
       IO => DQS,
-      I  => CLK90,
-      T  => TS
+      I  => CLK270,
+      T  => tsint
       );
 
+  process(CLK270)
+    begin
+      if rising_edge(CLK90) then
+        tsint <= TS; 
+        
+      end if;
+    end process;
+    
   iogen       : for i in 0 to 7 generate
 
 
@@ -105,7 +114,7 @@ begin  -- Behavioral
         O  => dqi(i),                   -- Buffer output
         IO => dq(i),                    -- Buffer inout port (connect directly to top-level port)
         I  => dinddr(i),                -- Buffer input
-        T  => TS                        -- 3-state enable input 
+        T  => tsint                        -- 3-state enable input 
         );
 
 

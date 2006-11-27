@@ -50,7 +50,8 @@ architecture Behavioral of writeddr2 is
   signal precnt : integer range 0 to 15 := 0;
   
 
-  type states is (none, act, write, nop1, nop2, nop3, prenopw,
+  type states is (none, act, actw1, actw2, actw3,
+                  write, nop1, nop2, nop3, prenopw,
                   doneprec, dones);
   signal ocs, ons : states := none;
 
@@ -66,9 +67,7 @@ begin  -- Behavioral
   lba   <= rowtgt(14 downto 13);
 
 
-  lts <= tssreg(0)   when CASLATENCY = 3 else
-           tssreg(0) when CASLATENCY = 4 else
-           tssreg(0) when CASLATENCY = 5; 
+  lts <= tssreg(4); 
 
 
   DONE <= '1' when ocs = dones else '0';
@@ -120,9 +119,8 @@ begin  -- Behavioral
 
 
   
-  DOUT <= doutsreg(0) when CASLATENCY = 3 else 
-          doutsreg(1) when CASLATENCY = 4 else
-          doutsreg(1) when CASLATENCY = 5;
+  DOUT <= doutsreg(3); 
+          
 
 
 
@@ -150,7 +148,35 @@ begin  -- Behavioral
         lras    <= '0';
         lcas    <= '1';
         lwe     <= '1';
+        ons     <= actw1;
+        
+      when actw1 =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= actw2;
+        
+      when actw2 =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        ons     <= actw3;
+        
+      when actw3 =>
+        incacnt <= '0';
+        asel    <= '0';
+        lcs     <= '0';
+        lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
         ons     <= write;
+        
 
       when write =>
         incacnt <= '1';
@@ -168,14 +194,16 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = "011111111" then
+--        if acnt = "011111111" then
+        if acnt = "001111111" then      -- check to see if overwriting is end
+          -- effect
           ons   <= prenopw;
         else
           ons   <= write;
         end if;
 
       when prenopw =>
-        incacnt <= '1';                 -- debugging!
+        incacnt <= '0';                 -- debugging!
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
