@@ -446,9 +446,7 @@ begin  -- Behavioral
 
 
 
-  mr <= "0010000110010" when CASLATENCY = 3 else
-        "0010001000010" when CASLATENCY = 4 else
-        "0010001010010" when CASLATENCY = 5;
+  mr <=  "0010001010010"; 
 
   emr <= "0010000000000";
 

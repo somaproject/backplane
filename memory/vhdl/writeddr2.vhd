@@ -51,7 +51,7 @@ architecture Behavioral of writeddr2 is
   
 
   type states is (none, act, actw1, actw2, actw3,
-                  write, nop1, nop2, nop3, prenopw,
+                  write, nop1, nop2, nop3, extrats,  prenopw,
                   doneprec, dones);
   signal ocs, ons : states := none;
 
@@ -60,15 +60,16 @@ architecture Behavioral of writeddr2 is
 
   signal tssreg : std_logic_vector(10 downto 0) := (others => '1');
 
-
+  signal tsassert : std_logic := '0';
+  
 begin  -- Behavioral
 
   laddr <= ("000" & acnt(8 downto 1) & "00") when asel = '1' else rowtgt(12 downto 0);
   lba   <= rowtgt(14 downto 13);
 
 
-  lts <= tssreg(4); 
-
+  lts <= tssreg(2); 
+  DOUT <= doutsreg(3); 
 
   DONE <= '1' when ocs = dones else '0';
 
@@ -99,7 +100,7 @@ begin  -- Behavioral
 
       -- shift regitsrs
 
-      tssreg   <= tssreg(9 downto 0) & (not incacnt);
+      tssreg   <= tssreg(9 downto 0) & (not tsassert);
       doutsreg <= doutsreg(9 downto 0) & WDATA;
 
 
@@ -116,19 +117,12 @@ begin  -- Behavioral
     end if;
   end process main;
 
-
-
-  
-  DOUT <= doutsreg(3); 
-          
-
-
-
   fsm : process(ocs, start, acnt, acntl, precnt)
   begin
     case ocs is
       when none =>
         incacnt <= '0';
+        tsassert <= '0'; 
         asel    <= '0';
         lcs     <= '0';
         lras    <= '1';
@@ -143,6 +137,7 @@ begin  -- Behavioral
 
       when act =>
         incacnt <= '0';
+        tsassert <= '0'; 
         asel    <= '0';
         lcs     <= '0';
         lras    <= '0';
@@ -152,6 +147,7 @@ begin  -- Behavioral
         
       when actw1 =>
         incacnt <= '0';
+        tsassert <= '0'; 
         asel    <= '0';
         lcs     <= '0';
         lras    <= '1';
@@ -161,6 +157,7 @@ begin  -- Behavioral
         
       when actw2 =>
         incacnt <= '0';
+        tsassert <= '0'; 
         asel    <= '0';
         lcs     <= '0';
         lras    <= '1';
@@ -170,6 +167,7 @@ begin  -- Behavioral
         
       when actw3 =>
         incacnt <= '0';
+        tsassert <= '0'; 
         asel    <= '0';
         lcs     <= '0';
         lras    <= '1';
@@ -179,7 +177,8 @@ begin  -- Behavioral
         
 
       when write =>
-        incacnt <= '1';
+        incacnt <= '0';
+        tsassert <= '1'; 
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
@@ -189,24 +188,38 @@ begin  -- Behavioral
         
       when nop3 =>
         incacnt <= '1';
+        tsassert <= '1'; 
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
---        if acnt = "011111111" then
-        if acnt = "001111111" then      -- check to see if overwriting is end
-          -- effect
-          ons   <= prenopw;
+        if acnt = "011111111" then
+          ons   <= extrats;
         else
           ons   <= write;
         end if;
 
-      when prenopw =>
-        incacnt <= '0';                 -- debugging!
+      when extrats =>
+        incacnt <= '1';
+        tsassert <= '1'; 
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
+        lcas    <= '1';
+        lwe     <= '1';
+        if acnt = "100000000" then
+          ons   <= prenopw;
+        else
+          ons   <= extrats;
+        end if;
+
+      when prenopw =>
+        incacnt <= '0';
+        tsassert <= '0'; 
+        asel    <= '1';
+        lcs     <= '0';
+        lras    <= '1'; 
         lcas    <= '1';
         lwe     <= '1';
         if precnt = 10 then
@@ -217,6 +230,7 @@ begin  -- Behavioral
 
       when doneprec =>
         incacnt <= '0';
+        tsassert <= '0'; 
         asel    <= '1';
         lcs     <= '0';
         lras    <= '0';
@@ -226,6 +240,7 @@ begin  -- Behavioral
 
       when dones =>
         incacnt <= '0';
+        tsassert <= '0'; 
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';
@@ -235,6 +250,7 @@ begin  -- Behavioral
 
       when others =>
         incacnt <= '0';
+        tsassert <= '0'; 
         asel    <= '1';
         lcs     <= '0';
         lras    <= '1';

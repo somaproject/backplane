@@ -102,6 +102,7 @@ begin  -- Behavioral
       );
 
   clk90n <= not clk90;                  -- This passes timing
+
   process(clk90)
     begin
       if rising_edge(clk90) then

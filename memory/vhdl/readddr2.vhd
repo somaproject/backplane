@@ -64,8 +64,11 @@ architecture Behavioral of readddr2 is
 
 
 begin  -- Behavioral
-  laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 downto 0);
-
+laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 downto 0);
+ 
+ --ddr <= ("0001111111100" ) when asel = '1' else rowtgt(12 downto 0);
+ 
+  
   lba   <= rowtgt(14 downto 13);
 
   DONE <= '1' when ocs = dones else '0';
@@ -212,7 +215,7 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = "011111111" and NOTERMINATE = '0' then
+        if acnt = "111111111" and NOTERMINATE = '0' then
           ons   <= doneprec;
         else
           ons   <= read;
