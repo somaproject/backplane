@@ -177,24 +177,6 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 
         lwe     <= '1';
         ons     <= nop3;
 
-      when nop1 =>
-        incacnt <= '1';
-        asel    <= '1';
-        lcs     <= '0';
-        lras    <= '1';
-        lcas    <= '1';
-        lwe     <= '1';
-        ons     <= nop2;
-
-      when nop2 =>
-        incacnt <= '1';
-        asel    <= '1';
-        lcs     <= '0';
-        lras    <= '1';
-        lcas    <= '1';
-        lwe     <= '1';
-        ons     <= nop3;
-
       when nop3 =>
         incacnt <= '1';
         asel    <= '1';
@@ -202,7 +184,7 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = "111111111" and NOTERMINATE = '0' then
+        if acnt = "011111111" and NOTERMINATE = '0' then
           ons   <= doneprec;
         else
           ons   <= read;

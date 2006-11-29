@@ -66,9 +66,6 @@ begin  -- Behavioral
   lba   <= rowtgt(14 downto 13);
 
 
-  lts <= tssreg(3); 
-  DOUT <= doutsreg(3); 
-
   DONE <= '1' when ocs = dones else '0';
 
   WADDR <= acnt(7 downto 0);
@@ -80,13 +77,16 @@ begin  -- Behavioral
       ocs <= ons;
 
       BA   <= lba;
-      TS   <= lts;
+      TS   <= tssreg(4); 
 
       CS  <= lcs;
       RAS <= lras;
       CAS <= lcas;
       WE  <= lwe;
 
+      DOUT <= doutsreg(2);
+
+      
       if ocs = none then
         acnt   <= (others => '0');
       else
@@ -131,7 +131,6 @@ begin  -- Behavioral
         else
           ons   <= none;
         end if;
-
 
       when act =>
         incacnt <= '0';
