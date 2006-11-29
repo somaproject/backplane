@@ -68,7 +68,7 @@ begin  -- Behavioral
   lba   <= rowtgt(14 downto 13);
 
 
-  lts <= tssreg(2); 
+  lts <= tssreg(3); 
   DOUT <= doutsreg(3); 
 
   DONE <= '1' when ocs = dones else '0';

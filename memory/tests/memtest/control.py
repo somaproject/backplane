@@ -160,10 +160,12 @@ def randwrite():
    writeDataBuffer(1, row, datain)
    dataout = readDataBuffer(1, row)
    for i in range(256):
-       print "%3d : %8.8X %8.8X " % (i, datain[i], dataout[i])
+       errorbits =  datain[i] ^ dataout[i]
+       print "%3d : %8.8X %8.8X %8.8X %d" % (i, datain[i], dataout[i],
+                                         errorbits, errorbits)
        
 
 print "getting status:"
 readStatus(1)
-manwrite()
+randwrite()
 

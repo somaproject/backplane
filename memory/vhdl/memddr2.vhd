@@ -289,8 +289,8 @@ begin  -- Behavioral
   
   -- doutl <= dout(23 downto 16) & dout(7 downto 0);
   --douth <= dout(31 downto 24) & dout(15 downto 8);
-  doutl <= dout(7 downto 0) & dout(15 downto 8);
-  douth <= dout(23 downto 16) & dout(31 downto 24);
+  doutl <= dout(15 downto 0);
+  douth <= dout(31 downto 16);
   
   refreshddr2_inst : refreshddr2
     port map (
