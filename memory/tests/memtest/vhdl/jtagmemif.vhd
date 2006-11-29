@@ -8,19 +8,19 @@ use UNISIM.vcomponents.all;
 
 entity jtagmemif is
   port (
-    CLK      : in  std_logic;
-    MEMSTART : out std_logic;
-    MEMRW    : out std_logic;
-    MEMDONE  : in  std_logic;
-    ROWTGT   : out std_logic_vector(14 downto 0);
-    WRADDR   : in  std_logic_vector(7 downto 0);
-    WRDATA   : out std_logic_vector(31 downto 0);
-    RDADDR   : in  std_logic_vector(7 downto 0);
-    RDDATA   : in  std_logic_vector(31 downto 0);
-    RDWE     : in  std_logic;
-    READOFFSET : out std_logic_vector(1 downto 0);
-    WRITEOFFSET: out std_logic_vector(1 downto 0);
-    READSTART : in std_logic
+    CLK         : in  std_logic;
+    MEMSTART    : out std_logic;
+    MEMRW       : out std_logic;
+    MEMDONE     : in  std_logic;
+    ROWTGT      : out std_logic_vector(14 downto 0);
+    WRADDR      : in  std_logic_vector(7 downto 0);
+    WRDATA      : out std_logic_vector(31 downto 0);
+    RDADDR      : in  std_logic_vector(7 downto 0);
+    RDDATA      : in  std_logic_vector(31 downto 0);
+    RDWE        : in  std_logic;
+    READOFFSET  : out std_logic_vector(1 downto 0);
+    WRITEOFFSET : out std_logic_vector(1 downto 0);
+    READSTART   : in  std_logic
     );
 end jtagmemif;
 
@@ -48,18 +48,21 @@ architecture Behavioral of jtagmemif is
     ctdo, ctdi : std_logic := '0';
 
   signal csreg : std_logic_vector(39 downto 0) := (others => '0');
+  signal dones : std_logic                     := '0';
 
-  signal readaddr : std_logic_vector(8 downto 0) := (others => '0');
+
+  signal readaddr : std_logic_vector(8 downto 0)  := (others => '0');
   signal readdata : std_logic_vector(63 downto 0) := (others => '0');
-  signal readwen : std_logic := '0';
+  signal readwen  : std_logic                     := '0';
 
 
   signal readstartl : std_logic := '0';
-  
+
 begin  -- Behavioral
 
-  -- input write
-
+  --------------------------------------------------------------------------
+  -- Write interface
+  --------------------------------------------------------------------------
 
   BSCAN_write_inst : BSCAN_VIRTEX4
     generic map (
@@ -85,11 +88,11 @@ begin  -- Behavioral
   wrdatain             <= wrsreg(39 downto 8);
 
   wraddrf(7 downto 0) <= WRADDR;
-  
+
   process(CLK)
   begin
     if rising_edge(CLK) then
-      WRDATA          <= lWRDATA;     
+      WRDATA <= lWRDATA;
     end if;
   end process;
 
@@ -128,6 +131,10 @@ begin  -- Behavioral
       TDO        => rtdo);
 
 
+
+  --------------------------------------------------------------------------
+  -- CONTROL INTERFACE
+  --------------------------------------------------------------------------
   BSCAN_control_inst : BSCAN_VIRTEX4
     generic map (
       JTAG_CHAIN => 1)
@@ -143,10 +150,10 @@ begin  -- Behavioral
 
 
   process(cdrck)
-
   begin
-      if rising_edge(cdrck) then
-        csreg <= ctdi & csreg(39 downto 1);
+    if rising_edge(cdrck) then
+      csreg <= ctdi & csreg(39 downto 1);
+      ctdo  <= dones;
     end if;
   end process;
 
@@ -154,8 +161,11 @@ begin  -- Behavioral
   begin
     if rising_edge(clk) then
       cupdatel <= cupdate;
-      
-      if cupdatel = '0' and cupdate = '1' and csel = '1' then
+
+
+      if cupdatel = '0' and cupdate = '1'
+        and csel = '1' and
+        csreg(24) = '1' then
 
         MEMRW    <= csreg(16);
         ROWTGT   <= csreg(14 downto 0);
@@ -163,15 +173,27 @@ begin  -- Behavioral
       else
         MEMSTART <= '0';
       end if;
+
+      if MEMDONE = '1' then
+        dones <= '1';
+      else
+
+        if cupdatel = '0' and cupdate = '1'
+          -- query operation resets done bit
+          and csel = '1' and
+          csreg(24) = '0' then
+          dones <= '0';
+        end if;
+      end if;
     end if;
   end process;
 
 
-  ----------------------------------------------------------------------------
+  --------------------------------------------------------------------------
   -- READ INTERFACE
-  -----------------------------------------------------------------------------
-  
-  
+  --------------------------------------------------------------------------
+
+
   process(rdrck, rupdate)
     variable pos : integer range 0 to 63 := 0;
 
@@ -187,29 +209,29 @@ begin  -- Behavioral
     end if;
   end process;
 
-  readclk: process (CLK)
-    begin
-      if rising_edge(CLK) then
-        readstartl <= readstart; 
-        if readstart = '1' and readstartl = '0' then
-          readaddr <= (others => '0'); 
-        else
-          readaddr <= readaddr + 1; 
-        end if;
-
-        if readstart = '1' and readstartl = '0' then
-          readwen <= '1';
-        else
-          if readaddr = "111111111" then
-            readwen <= '0';
-          end if;
-        end if;
+  readclk : process (CLK)
+  begin
+    if rising_edge(CLK) then
+      readstartl <= readstart;
+      if readstart = '1' and readstartl = '0' then
+        readaddr <= (others => '0');
+      else
+        readaddr <= readaddr + 1;
       end if;
 
-    end process; 
+      if readstart = '1' and readstartl = '0' then
+        readwen   <= '1';
+      else
+        if readaddr = "111111111" then
+          readwen <= '0';
+        end if;
+      end if;
+    end if;
+
+  end process;
 
   readdata <= RDWE & "0000000" & X"00" & RDADDR & X"00" & RDDATA;
-    
+
 
   rdaddrin <= rdsreg(8 downto 0);
 
@@ -220,11 +242,11 @@ begin  -- Behavioral
       DOA     => rddatain(31 downto 0),  -- Port A 32-bit Data Output
       DOB     => open,                   -- Port B 32-bit Data Output
       ADDRA   => rdaddrin,               -- Port A 9-bit Address Input
-      ADDRB   => readaddr,                -- Port B 9-bit Address Input
+      ADDRB   => readaddr,               -- Port B 9-bit Address Input
       CLKA    => rupdate,                -- Port A Clock
       CLKB    => CLK,                    -- Port B Clock
       DIA     => X"00000000",            -- Port A 32-bit Data Input
-      DIB     => readdata(31 downto 0),   -- Port B 32-bit Data Input
+      DIB     => readdata(31 downto 0),  -- Port B 32-bit Data Input
       DIPA    => "0000",                 -- Port A 4-bit parity Input
       DIPB    => "0000",                 -- Port-B 4-bit parity Input
       ENA     => rsel,                   -- Port A RAM Enable Input
@@ -232,7 +254,7 @@ begin  -- Behavioral
       SSRA    => '0',                    -- Port A Synchronous Set/Reset Input
       SSRB    => '0',                    -- Port B Synchronous Set/Reset Input
       WEA     => '0',                    -- Port A Write Enable Input
-      WEB     => readwen                    -- Port B Write Enable Input
+      WEB     => readwen                 -- Port B Write Enable Input
       );
 
   readbuffer_inst_high : RAMB16_S36_S36
@@ -240,23 +262,23 @@ begin  -- Behavioral
       INIT_00 => X"000000000000000000000000000000008877665544332211FEDCBA9876543210")
     port map (
       DOA     => rddatain(63 downto 32),  -- Port A 32-bit Data Output
-      DOB     => open,                   -- Port B 32-bit Data Output
-      ADDRA   => rdaddrin,               -- Port A 9-bit Address Input
+      DOB     => open,                    -- Port B 32-bit Data Output
+      ADDRA   => rdaddrin,                -- Port A 9-bit Address Input
       ADDRB   => readaddr,                -- Port B 9-bit Address Input
-      CLKA    => rupdate,                -- Port A Clock
-      CLKB    => CLK,                    -- Port B Clock
-      DIA     => X"00000000",            -- Port A 32-bit Data Input
-      DIB     => readdata(63 downto 32),                 -- Port B 32-bit Data Input
-      DIPA    => "0000",                 -- Port A 4-bit parity Input
-      DIPB    => "0000",                 -- Port-B 4-bit parity Input
-      ENA     => rsel,                   -- Port A RAM Enable Input
-      ENB     => '1',                    -- PortB RAM Enable Input
-      SSRA    => '0',                    -- Port A Synchronous Set/Reset Input
-      SSRB    => '0',                    -- Port B Synchronous Set/Reset Input
-      WEA     => '0',                    -- Port A Write Enable Input
-      WEB     => readwen                    -- Port B Write Enable Input
+      CLKA    => rupdate,                 -- Port A Clock
+      CLKB    => CLK,                     -- Port B Clock
+      DIA     => X"00000000",             -- Port A 32-bit Data Input
+      DIB     => readdata(63 downto 32),  -- Port B 32-bit Data Input
+      DIPA    => "0000",                  -- Port A 4-bit parity Input
+      DIPB    => "0000",                  -- Port-B 4-bit parity Input
+      ENA     => rsel,                    -- Port A RAM Enable Input
+      ENB     => '1',                     -- PortB RAM Enable Input
+      SSRA    => '0',                     -- Port A Synchronous Set/Reset Input
+      SSRB    => '0',                     -- Port B Synchronous Set/Reset Input
+      WEA     => '0',                     -- Port A Write Enable Input
+      WEB     => readwen                  -- Port B Write Enable Input
       );
 
 
-  
+
 end Behavioral;

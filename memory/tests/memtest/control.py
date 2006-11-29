@@ -35,7 +35,6 @@ xc3sprog = "~/XC3Sprog/xc3sprog"
 def readbuffer(pos, rowtgt):
     
     performAction(pos, rowtgt, 'read')
-    time.sleep(1)
     for i in range(512):
 
         cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X %2.2X 00 00 00 00 00 00"' % (pos, USER2, i & 0xFF, (i >> 8) & 0xFF))
@@ -56,8 +55,10 @@ def readDataBuffer(pos, rowtgt):
 
     
     performAction(pos, rowtgt, 'read')
+    queryDoneBlock(pos)
+
     dataout = n.zeros(256, dtype=n.uint32)
-    time.sleep(1)
+
     for i in range(512):
 
         cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X %2.2X 00 00 00 00 00 00"' % (pos, USER2, i & 0xFF, (i >> 8) & 0xFF))
@@ -91,6 +92,14 @@ def writeword(pos, addr, val):
 
     fid = os.popen(cmdstr)
 
+
+def queryDoneBlock(pos):
+    # block on reading the query and waiting for done bit
+    res = performAction(pos, 0,  "query")
+    while not res:
+        res = performAction(pos, 0,  "query")
+    
+    
 def writeConstBuffer(pos, rowtgt, const):
     for i in range(256):
         writeword(pos, i, const)
@@ -112,24 +121,41 @@ def writeDataBuffer(pos, rowtgt, data):
     for i in range(256):
         writeword(pos, i, data[i])
     performAction(pos, rowtgt, 'write')
+    queryDoneBlock(pos)
     
+    
+
 
 def performAction(pos, rowtgt, action):
     r1 = rowtgt & 0xFF
     r2 = (rowtgt >> 8) & 0xFF
     
     if action == "read":
-        cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X %2.2X 00 00 00"' % (pos,
+        cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X %2.2X 00 01 00"' % (pos,
                                                                      USER1,
                                                                      r1, r2))
         fid = os.popen(cmdstr)
+        return False
     
     elif action == "write":
-        cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X %2.2X 01 00 00"' % (pos,
+        cmdstr = xc3sprog + (' %d 0x%3.3X "%2.2X %2.2X 01 01 00"' % (pos,
                                                                      USER1,
                                                                      r1, r2))
         fid = os.popen(cmdstr)
-    
+        return False
+    elif action == "query" :
+        cmdstr = xc3sprog + (' %d 0x%3.3X "00 00 00 00 00"' % (pos, USER1))
+        
+        fid = os.popen(cmdstr) 
+        bytesstr = fid.read().split()
+        bytes = [int(b, 16) for b in bytesstr]
+        print bytes
+        if (bytes[0] & 0x01 == 1):
+            return True
+        else:
+            return False
+        
+       
     else:
         raise "invalid action"
 
@@ -149,20 +175,26 @@ def manwrite():
    
     print "Writing..."
     writeSeqBuffer(1, row)
-    print "Write done. Waiting."
-    time.sleep(1)
+    print performAction(1, row,  "query")
+    
     print "Reading..."
     readbuffer(1, row)
+    
 
 def randwrite():
-   datain = (n.random.rand(256) * 2**32).astype(n.uint32)
-   row = random.randint(1000)
-   writeDataBuffer(1, row, datain)
-   dataout = readDataBuffer(1, row)
-   for i in range(256):
-       errorbits =  datain[i] ^ dataout[i]
-       print "%3d : %8.8X %8.8X %8.8X %d" % (i, datain[i], dataout[i],
-                                         errorbits, errorbits)
+    """
+    Fill a random row with random data, try and read it back, and look
+    at the resulting bit error pattern.
+    """
+    
+    datain = (n.random.rand(256) * 2**32).astype(n.uint32)
+    row = random.randint(1000)
+    writeDataBuffer(1, row, datain)
+    dataout = readDataBuffer(1, row)
+    for i in range(256):
+        errorbits =  datain[i] ^ dataout[i]
+        print "%3d : %8.8X %8.8X %8.8X %d" % (i, datain[i], dataout[i],
+                                              errorbits, errorbits)
        
 
 print "getting status:"

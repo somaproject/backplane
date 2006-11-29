@@ -1,0 +1,60 @@
+THe JTAG memory interface is designed to allow the reading and writing
+of a single row of ram via the Virtex-4 Boundary Scan user registers.
+
+USER1 : 1111000010 0x3C2
+USER2 : 1111000011 0x3C3
+USER3 : 1111100010 0x3E2
+USER4 : 1111100011 0x3C3
+
+We have three operations. A write buffer operation writes to a
+temporary input block ram buffer. You would ideally fill this whole
+buffer with data and then execute a "write action" operation to tell
+the ram interface to write the data to ram. Once the query returns a
+"done", you could then execute a verification readback.
+
+
+
+1. write buffer -- write a 32-bit word to the input (write) buffer (USER3)
+   We send the following 40-bit word: 
+   [7:0]   :  target address in write buffer
+   [39:8]  : data word to write. 
+
+2. read buffer -- how did the ram interface write -out- the requested row (USER2)
+
+   The read buffer interface is more designed for
+   debugging than to actually simulate the sort of buffer that we
+   would consider using. Starting with the assertion of a read memstart,
+   we record all bits coming out of the ram interface as follows: 
+
+   [31:0]  : the read data word
+   [47:40] : the address that we attempted to write to
+   [63]    : R/W bit. 
+
+   all of this data is sucked into a 512x64 bit buffer. This lets us
+   see -every- byte we read out of the interface, even if it isn't
+   properly aligned with the read/write operation.
+
+   Now, the USER2 instruction gets the above word out in response to a
+   PREVIOUS REQUEST for a word in THIS buffer. This address is sent as
+   the 9 LSBs of the jtag request. NOte, for sanity: There is a
+   one-cycle read latency. So if you ask to read the contents at addr
+   0, on the -next- read the jtag interface will return those
+   contents.
+   
+
+3. action -- to start the buffer transaction  (USER1)
+   We send a 40-bit word with:
+   [12:0]   : target row
+   [16]     : 0 = read operation, 1  = write
+   [24]     : 1 = start operation, 0 = query
+
+   query operations are simply for reading out the value of the "done" bit. 
+   This is the "MEMDONE" bit from the interface, which is latched 
+   until a query read. It is bit 0 in the read-out data. 
+
+   this can be used to make sure that the previous transaction
+   has actually completed and avoid the need to have control software
+   pad operations with wait states. 
+   
+   
+    
