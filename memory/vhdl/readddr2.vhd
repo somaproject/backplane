@@ -8,8 +8,6 @@ use UNISIM.vcomponents.all;
 
 
 entity readddr2 is
-    generic (
-      CASLATENCY : in integer);
   port (
     CLK         : in  std_logic;
     START       : in  std_logic;
@@ -66,8 +64,6 @@ architecture Behavioral of readddr2 is
 begin  -- Behavioral
 laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 downto 0);
  
- --ddr <= ("0001111111100" ) when asel = '1' else rowtgt(12 downto 0);
- 
   
   lba   <= rowtgt(14 downto 13);
 
@@ -105,19 +101,11 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 
 
 
 
-   RWE   <= rwesreg(8) when CASLATENCY = 3 and latencyextra(0) = '0' else
-            rwesreg(9) when CASLATENCY = 4 and latencyextra(0) = '0' else
-            rwesreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
-            rwesreg(9) when CASLATENCY = 3 and latencyextra(0) = '1' else
-            rwesreg(10) when CASLATENCY = 4 and latencyextra(0) = '1' else
-            rwesreg(11) when CASLATENCY = 5 and latencyextra(0) = '1';
+   RWE <=  rwesreg(10) when  latencyextra(0) = '0' else
+            rwesreg(11); 
   
-   RADDR <= raddrsreg(8) when CASLATENCY = 3 and latencyextra(0) = '0'  else
-            raddrsreg(9) when CASLATENCY = 4 and latencyextra(0) = '0'  else
-            raddrsreg(10) when CASLATENCY = 5 and latencyextra(0) = '0' else
-            raddrsreg(9) when CASLATENCY = 3 and latencyextra(0) = '1'  else
-            raddrsreg(10) when CASLATENCY = 4 and latencyextra(0) = '1'  else
-            raddrsreg(11) when CASLATENCY = 5 and latencyextra(0) = '1'; 
+   RADDR <= raddrsreg(10) when latencyextra(0) = '0' else
+            raddrsreg(11); 
 
   fsm : process(ocs, start, acnt, rwesreg)
   begin
@@ -134,7 +122,6 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 
         else
           ons   <= none;
         end if;
-
 
       when act =>
         incacnt <= '0';

@@ -41,10 +41,14 @@ architecture Behavioral of dqalign is
   signal dqsq1ll, dqsq2ll : std_logic := '0';
 
   -- data signals
-  signal dqdelay              : std_logic_vector(7 downto 0) := (others => '0');
-  signal ddq1, ddq2           : std_logic_vector(7 downto 0) := (others => '0');
-  signal ddq1l, ddq2l, ddq2ll : std_logic_vector(7 downto 0) := (others => '0');
-  signal dinddr               : std_logic_vector(7 downto 0) := (others => '0');
+  signal dqdelay              : std_logic_vector(7 downto 0)
+    := (others => '0');
+  signal ddq1, ddq2           : std_logic_vector(7 downto 0)
+    := (others => '0');
+  signal ddq1l, ddq2l, ddq2ll : std_logic_vector(7 downto 0)
+    := (others => '0');
+  signal dinddr               : std_logic_vector(7 downto 0)
+    := (others => '0');
   signal dqinc                : std_logic                    := '0';
   signal dqce                 : std_logic                    := '0';
 
@@ -110,17 +114,14 @@ begin  -- Behavioral
       end if;
     end process; 
                
-  
-  
   iogen       : for i in 0 to 7 generate
-
 
     IOBUF_dq : IOBUF
       port map (
-        O  => dqi(i),                   -- Buffer output
-        IO => dq(i),                    -- Buffer inout port (connect directly to top-level port)
-        I  => dinddr(i),                -- Buffer input
-        T  => tsint                        -- 3-state enable input 
+        O  => dqi(i),                  
+        IO => dq(i),                   
+        I  => dinddr(i),               
+        T  => tsint                    
         );
 
 

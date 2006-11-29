@@ -8,8 +8,6 @@ use UNISIM.vcomponents.all;
 
 
 entity writeddr2 is
-  generic (
-    CASLATENCY : in  integer);
   port (
     CLK        : in  std_logic;
     START      : in  std_logic;
@@ -208,7 +206,7 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = "100000000" then
+        if acnt = "100000001" then    
           ons   <= prenopw;
         else
           ons   <= extrats;

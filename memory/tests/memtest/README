@@ -271,3 +271,15 @@ with lts <= tssreg(0):
 03 FF FF 00 00 04 00 80
 04 FF FF 00 00 05 00 80
 
+
+== 29 November 2006 ==
+
+Okay, at long last we got this all to work IN HARDWARE. AT the moment
+the design doesn't work in simulation. We're going to try and clean up
+the code now and make that the case.
+
+According to the sim, we tristate the DQ lines pretty early; I'm going
+to add an extra tick of TS and see if we still get correct R/W
+behavior.
+
+Correct!!!

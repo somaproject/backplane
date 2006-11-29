@@ -7,8 +7,6 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity memddr2 is
-  generic (
-      CASLATENCY : in integer);
   port (
     CLK    : in    std_logic;
     CLK90  : in    std_logic;
@@ -121,8 +119,6 @@ architecture Behavioral of memddr2 is
   -- write module
   -- 
   component writeddr2
-  generic (
-      CASLATENCY : in integer);
     port (
       CLK    : in  std_logic;
       START  : in  std_logic;
@@ -156,8 +152,6 @@ architecture Behavioral of memddr2 is
 
 
   component readddr2
-  generic (
-      CASLATENCY : in integer);
     port (      CLK         : in  std_logic;
       START       : in  std_logic;
       DONE        : out std_logic;
@@ -283,12 +277,8 @@ architecture Behavioral of memddr2 is
 begin  -- Behavioral
 
   
-  --din(15 downto 0)  <= dinh(7 downto 0) & dinl(7 downto 0);
-  --din(31 downto 16) <= dinh(15 downto 8) & dinl(15 downto 8);
   din <= dinh & dinl; 
   
-  -- doutl <= dout(23 downto 16) & dout(7 downto 0);
-  --douth <= dout(31 downto 24) & dout(15 downto 8);
   doutl <= dout(15 downto 0);
   douth <= dout(31 downto 16);
   
@@ -321,8 +311,6 @@ begin  -- Behavioral
 
 
   writeddr2_inst : writeddr2
-    generic map (
-      CASLATENCY => CASLATENCY)
     port map (
       CLK    => CLK,
       START  => wstart,
@@ -340,8 +328,6 @@ begin  -- Behavioral
       WDATA  => WRDATA);
 
   readaddr2_inst : readddr2
-    generic map (
-      CASLATENCY => CASLATENCY)
     port map (
       CLK         => CLK,
       START       => rstart,
@@ -361,8 +347,6 @@ begin  -- Behavioral
       LATENCYEXTRA => latencyextra,
       READOFFSET => "00");
   
- -- RDDATA <= rddataint(7 downto 0) & rddataint(15 downto 8)
- --           & rddataint(23 downto 16) & rddataint(31 downto 24);
   RDDATA <= rddataint; 
   
   dqalign_inst_low : dqalign
