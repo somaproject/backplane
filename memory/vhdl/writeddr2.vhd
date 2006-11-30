@@ -77,14 +77,14 @@ begin  -- Behavioral
       ocs <= ons;
 
       BA   <= lba;
-      TS   <= tssreg(4); 
+      TS   <= tssreg(3); 
+      DOUT <= doutsreg(1);
 
       CS  <= lcs;
       RAS <= lras;
       CAS <= lcas;
       WE  <= lwe;
 
-      DOUT <= doutsreg(2);
 
       
       if ocs = none then
@@ -174,7 +174,7 @@ begin  -- Behavioral
         
 
       when write =>
-        incacnt <= '0';
+        incacnt <= '1';
         tsassert <= '1'; 
         asel    <= '1';
         lcs     <= '0';
