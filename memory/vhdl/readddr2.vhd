@@ -67,6 +67,7 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 
   
   lba   <= rowtgt(14 downto 13);
 
+
   DONE <= '1' when ocs = dones else '0';
 
   main : process(CLK)
@@ -207,7 +208,7 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if  rwesreg(7) = '0' then       -- wait for all reads to finish
+        if  rwesreg(9) = '0' then       -- wait for all reads to finish
           ons <= dones;
         else
           ons <= donewait; 

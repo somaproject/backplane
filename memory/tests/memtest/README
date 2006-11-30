@@ -352,3 +352,17 @@ Try
 
  TS   <= tssreg(3); 
  DOUT <= doutsreg(1);
+
+And this works!
+
+Now, to get working in sim:
+
+      if osel = '0' then                
+        DOUT(15 downto 8) <= ddq1l;
+        DOUT(7 downto 0)  <= ddq2l;
+      else
+        DOUT(15 downto 8) <= ddq2ll;
+        DOUT(7 downto 0)  <= ddq1l;
+
+The theory is that one of these is wrong; let's muck with the '0' case! It didn't work in sim; let's try the other one!
+

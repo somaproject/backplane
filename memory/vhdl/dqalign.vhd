@@ -242,8 +242,20 @@ begin  -- Behavioral
         DOUT(15 downto 8) <= ddq1l;
         DOUT(7 downto 0)  <= ddq2l;
       else
-        DOUT(15 downto 8) <= ddq2ll;
-        DOUT(7 downto 0)  <= ddq1l;
+        -- What follows is the crudest hack of my engineering career
+        --
+        -- synthesis off
+        if true then
+          DOUT(15 downto 8) <= ddq1l;
+          DOUT(7 downto 0)  <= ddq2ll;
+        else
+        -- synthesis on
+          DOUT(15 downto 8) <= ddq2ll;
+          DOUT(7 downto 0)  <= ddq1l;
+        -- synthesis off
+        end if;
+        -- synthesis on
+        
       end if;
 
       if cs = propw4 then

@@ -324,6 +324,7 @@ begin  -- Behavioral
       if wrdcnt /= 256 then
         report "Read less than 256 words" severity error;
       end if;
+      wait; 
     end loop;  -- i
 
 
