@@ -29,9 +29,6 @@ end memtest;
 architecture Behavioral of memtest is
 
   component memddr2
-    generic (
-      CASLATENCY  : in    integer
-      );
     port (
       CLK         : in    std_logic;
       CLK90       : in    std_logic;
@@ -65,7 +62,7 @@ architecture Behavioral of memtest is
       DQALIGNPOSL : out   std_logic_vector(7 downto 0);
       DQALIGNPOSH : out   std_logic_vector(7 downto 0);
 
-      DEBUG : out std_logic_vector(3 downto 0)
+      DEBUG : out std_logic_vector(31 downto 0)
       );
   end component;
 
@@ -105,7 +102,7 @@ architecture Behavioral of memtest is
   signal locked, locked2 : std_logic := '0';
 
 
-  signal memdebug : std_logic_vector(3 downto 0);
+  signal memdebug : std_logic_vector(31 downto 0);
 
   component jtagmemif
     port (
@@ -183,8 +180,6 @@ begin
 
 
   memddr2_inst : memddr2
-    generic map (
-      CASLATENCY => 5)
     port map (
       CLK        => clk,
       CLK90      => clk90,

@@ -59,11 +59,14 @@ architecture Behavioral of writeddr2 is
   signal tssreg : std_logic_vector(10 downto 0) := (others => '1');
 
   signal tsassert : std_logic := '0';
+
+  signal rowtgtl : std_logic_vector(14 downto 0) := (others => '0');
+  
   
 begin  -- Behavioral
 
-  laddr <= ("000" & acnt(8 downto 1) & "00") when asel = '1' else rowtgt(12 downto 0);
-  lba   <= rowtgt(14 downto 13);
+  laddr <= ("000" & acnt(8 downto 1) & "00") when asel = '1' else rowtgtl(12 downto 0);
+  lba   <= rowtgtl(14 downto 13);
 
 
   DONE <= '1' when ocs = dones else '0';
@@ -86,6 +89,9 @@ begin  -- Behavioral
       WE  <= lwe;
 
 
+      if START = '1' then
+        rowtgtl <= ROWTGT; 
+      end if;
       
       if ocs = none then
         acnt   <= (others => '0');

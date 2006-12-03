@@ -366,3 +366,35 @@ Now, to get working in sim:
 
 The theory is that one of these is wrong; let's muck with the '0' case! It didn't work in sim; let's try the other one!
 
+
+-------------------------------------
+more work
+
+So, in the multi-row read/write case, we're getting random bit errors
+even when writing all zeros. I'm not sure why this would be. 
+
+Is it that we're not refreshing properly? Let's try disabling refresh
+entirely, and see if we get similar-looking errors.
+
+One model would be "we should get more errors the more w eread" 
+
+If we disable refresh we see: 
+[jonas@shannon XC3Sprog]$ wc -l /tmp/read.*.log
+  368 /tmp/read.1.log
+  388 /tmp/read.2.log
+  839 /tmp/read.3.log
+
+turning it back on we see basically the same. theproblem was that the mux for refresh was not being properly set. 
+
+2 December 2006. 
+
+The only thing I can think of at the moment is that we are somehow reading and writing to the wrong row. 
+
+So for both read and write modules I want to guarantee the constant correct assertion of the row tgt. the relevant ADDRs are already set, so I tried just latching rowtgt. 
+
+It seems pretty obvious that this is a row problem. Some row errors are caused by the previous row's data being found in them. 
+
+
+
+
+Added precharge for all. 

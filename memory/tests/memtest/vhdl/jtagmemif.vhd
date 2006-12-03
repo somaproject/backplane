@@ -44,7 +44,7 @@ architecture Behavioral of jtagmemif is
 
   signal rdaddrf : std_logic_vector(8 downto 0) := (others => '0');
 
-  signal cdrck, csel, cshift, cupdate, cupdatel,
+  signal cdrck, csel, cshift, cupdate, cupdatel, cupdatell, csell,
     ctdo, ctdi : std_logic := '0';
 
   signal csreg : std_logic_vector(39 downto 0) := (others => '0');
@@ -56,8 +56,12 @@ architecture Behavioral of jtagmemif is
   signal readwen  : std_logic                     := '0';
 
 
-  signal readstartl : std_logic := '0';
+  signal readstartl : std_logic                      := '0';
+  signal coutreg    : std_logic_vector(143 downto 0) := (others => '0');
 
+  signal lmemstart : std_logic := '0';
+  signal lmemdone : std_logic := '0';
+  
 begin  -- Behavioral
 
   --------------------------------------------------------------------------
@@ -149,11 +153,19 @@ begin  -- Behavioral
       TDO        => ctdo);
 
 
-  process(cdrck)
+  process(cdrck, cupdate)
+    variable pos : integer range 0 to 143 := 0;
   begin
-    if rising_edge(cdrck) then
-      csreg <= ctdi & csreg(39 downto 1);
-      ctdo  <= dones;
+    if cupdate = '1' then
+      pos                                 := 0;
+      coutreg <= X"ABCD" & wrsreg & rdsreg & csreg(16) & csreg(14 downto 0)
+                  & X"A" &  "000" & dones;
+    else
+      if rising_edge(cdrck) then
+        csreg <= ctdi & csreg(39 downto 1);
+        ctdo  <= coutreg(pos);
+        pos                               := pos + 1;
+      end if;
     end if;
   end process;
 
@@ -161,27 +173,34 @@ begin  -- Behavioral
   begin
     if rising_edge(clk) then
       cupdatel <= cupdate;
+      cupdatell <= cupdatel;
+      csell <= csel; 
 
-
-      if cupdatel = '0' and cupdate = '1'
-        and csel = '1' and
+      if cupdatell = '0' and cupdatel = '1'
+        and csell = '1' and
         csreg(24) = '1' then
 
         MEMRW    <= csreg(16);
         ROWTGT   <= csreg(14 downto 0);
-        MEMSTART <= '1';
+        lmemstart <= '1';
       else
-        MEMSTART <= '0';
+        lmemstart <= '0';
       end if;
 
-      if MEMDONE = '1' then
+      MEMSTART <= lmemstart;
+      
+      lmemdone <= MEMDONE;
+      
+      if MEMDONE = '1' and lmemdone = '0' then
         dones <= '1';
       else
 
-        if cupdatel = '0' and cupdate = '1'
-          -- query operation resets done bit
-          and csel = '1' and
-          csreg(24) = '0' then
+        if cupdatell = '0' and cupdatel = '1'
+          and csell = '1' and
+
+                  -- query operation resets done bit
+        
+          csreg(24) = '0' and csreg(25) = '1' then
           dones <= '0';
         end if;
       end if;

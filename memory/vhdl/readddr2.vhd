@@ -59,13 +59,14 @@ architecture Behavioral of readddr2 is
   signal raddrsreg : raddrsreg_t := (others => (others => '0'));
 
   signal rwesreg : std_logic_vector(13 downto 0);
-
+  signal rowtgtl : std_logic_vector(14 downto 0) := (others => '0');
+  
 
 begin  -- Behavioral
-laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 downto 0);
+laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgtl(12 downto 0);
  
   
-  lba   <= rowtgt(14 downto 13);
+  lba   <= rowtgtl(14 downto 13);
 
 
   DONE <= '1' when ocs = dones else '0';
@@ -97,6 +98,11 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgt(12 
 
       RDATA <= DIN;
 
+
+      if START = '1' then
+        rowtgtl <= ROWTGT;
+        
+      end if;
     end if;
   end process main;
 

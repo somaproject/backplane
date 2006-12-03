@@ -28,9 +28,8 @@ entity memddr2 is
     START  : in    std_logic;
     RW     : in    std_logic;
     DONE   : out   std_logic;
-
-    -- write interface
     ROWTGT : in  std_logic_vector(14 downto 0);
+    -- write interface
     WRADDR : out std_logic_vector(7 downto 0);
     WRDATA : in  std_logic_vector(31 downto 0);
     -- read interface
@@ -40,7 +39,7 @@ entity memddr2 is
     -- debugging
     DQALIGNPOSL : out std_logic_vector(7 downto 0);
     DQALIGNPOSH : out std_logic_vector(7 downto 0);
-    DEBUG : out std_logic_vector(3 downto 0)
+    DEBUG : out std_logic_vector(31 downto 0)
     );
 end memddr2;
 
@@ -116,6 +115,8 @@ architecture Behavioral of memddr2 is
 
   signal emr, mr : std_logic_vector(12 downto 0) := (others => '0');
 
+  signal readcnt, writecnt : std_logic_vector(7 downto 0) := (others => '0');
+ 
   -- write module
   -- 
   component writeddr2
@@ -410,7 +411,7 @@ begin  -- Behavioral
       REFCAS   => refcas,
       REFRAS   => refras,
       REFCS    => REFcs,
-      REFADDR  => "0000000000000",
+      REFADDR  => "0111000000000",      -- high so we get refresh all
       REFWE    => refwe,
       REFBA    => "00",
       WCKE     => '1',
@@ -534,7 +535,7 @@ begin  -- Behavioral
         end if;
 
       when refresh =>
-        dsel      <= 1;
+        dsel      <= 0;
         bootstart <= '0';
         refstart  <= '1';
         rstart    <= '0';
@@ -562,7 +563,7 @@ begin  -- Behavioral
             ons   <= write;
           end if;
         else
-          ons     <= inchk;
+          ons     <= refresh;
         end if;
 
       when read =>

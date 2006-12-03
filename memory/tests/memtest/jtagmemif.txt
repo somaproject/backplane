@@ -47,6 +47,7 @@ the ram interface to write the data to ram. Once the query returns a
    [12:0]   : target row
    [16]     : 0 = read operation, 1  = write
    [24]     : 1 = start operation, 0 = query
+   [25]     : 1 = clear done bit
 
    query operations are simply for reading out the value of the "done" bit. 
    This is the "MEMDONE" bit from the interface, which is latched 
@@ -55,6 +56,9 @@ the ram interface to write the data to ram. Once the query returns a
    this can be used to make sure that the previous transaction
    has actually completed and avoid the need to have control software
    pad operations with wait states. 
-   
+    
+   Note that we write with [25:24] = 10 to clear the done bit
+
+
    
     

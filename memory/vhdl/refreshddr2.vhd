@@ -26,9 +26,10 @@ architecture Behavioral of refreshddr2 is
   signal lcas : std_logic := '1';
   signal lwe : std_logic := '1';
 
-  type states is (none, refresh, waits, dones);
+  type states is (none, delay, precharge, prewait, refresh,
+                  refwait, dones);
   signal ocs, ons : states := none;
-  signal bcnt : integer range 0 to 15 := 0;
+  signal bcnt : integer range 0 to 31 := 0;
   
   
 begin  -- Behavioral
@@ -65,27 +66,57 @@ begin  -- Behavioral
             lcas <= '1';
             lwe <= '1';
             if START = '1' then
-              ons <= refresh;
+              ons <= delay;
             else
               ons <= none; 
             end if;
-            
-          when refresh =>
-            lcs <= '0';
-            lras <= '0';
-            lcas <= '0';
-            lwe <= '1';
-            ons <= waits; 
-            
-          when waits =>
+
+          when delay =>
             lcs <= '0';
             lras <= '1';
             lcas <= '1';
             lwe <= '1';
-            if bcnt = 14 then
+            if bcnt = 31 then
+              ons <= precharge;
+            else
+              ons <= delay; 
+            end if;
+
+          when precharge =>
+            lcs <= '0';
+            lras <= '0';              
+            lcas <= '1';
+            lwe <= '0';
+            ons <= prewait; 
+            
+          when prewait =>
+            lcs <= '0';
+            lras <= '1';
+            lcas <= '1';
+            lwe <= '1';
+            if bcnt = 31 then
+              ons <= refresh; 
+            else
+              ons <= prewait; 
+            end if;
+            
+
+          when refresh =>
+            lcs <= '0';
+            lras <= '0';              
+            lcas <= '0';
+            lwe <= '1';
+            ons <= refwait; 
+            
+          when refwait =>
+            lcs <= '0';
+            lras <= '1';
+            lcas <= '1';
+            lwe <= '1';
+            if bcnt = 30 then
               ons <= dones;
             else
-              ons <= waits; 
+              ons <= refwait; 
             end if;
             
           when dones =>

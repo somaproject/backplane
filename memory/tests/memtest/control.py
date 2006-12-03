@@ -20,16 +20,6 @@ USER2 = 0x3C3
 USER3 = 0x3E2
 USER4 = 0x3E3
 
-
-def bytereverse(x):
-    res = 0
-    for i in range(8):
-        # xtract 
-        b = (x >> i) & 0x1
-        res |= (b << (7-i))
-    return res
-
-
 xc3sprog = "~/XC3Sprog/xc3sprog"
 
 def readbuffer(pos, rowtgt):
@@ -45,7 +35,7 @@ def readbuffer(pos, rowtgt):
         if i > 0: # because the first read doesn't return real values
             for b in bytes:
                 print "%2.2X" % b, 
-        print
+            print
 
             
 def readDataBuffer(pos, rowtgt):
@@ -55,7 +45,10 @@ def readDataBuffer(pos, rowtgt):
 
     
     performAction(pos, rowtgt, 'read')
+    writequery(pos)
+    
     queryDoneBlock(pos)
+    
 
     dataout = n.zeros(256, dtype=n.uint32)
 
@@ -68,8 +61,11 @@ def readDataBuffer(pos, rowtgt):
         bytes = [int(b, 16) for b in bytesstr]
         
         if i > 0: # because the first read doesn't return real values
+            #for b in bytes:
+                #print "%2.2X " % b, 
+            #print
             if bytes[-1] == 0x80:
-                
+
                 # this is a write
                 addr = bytes[5]
                 data = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)
@@ -92,12 +88,58 @@ def writeword(pos, addr, val):
 
     fid = os.popen(cmdstr)
 
+    (dones, csregwr, rdsreg, wrsreg, dummy)  = query(pos)
+    
+    fid = file('/tmp/writeword.log', 'a')
+    fid.write("%2.2X %8.8X " % (addr, val))
+    fid.write("%2.2X " % dones)
+    for i in csregwr:
+        fid.write("%2.2X " % i)
+    fid.write(" | ")
+
+    for i in wrsreg:
+        fid.write("%2.2X " % i)
+    fid.write(" | ")
+
+    for i in dummy:
+        fid.write("%2.2X " % i)
+    fid.write(" | ")
+
+    
+    
+    fid.write('\n')
+    
+    
 
 def queryDoneBlock(pos):
     # block on reading the query and waiting for done bit
-    res = performAction(pos, 0,  "query")
+    time.sleep(0.1)
+    print "Beginning queryDoneBlock done wait"
+    res = query(pos)[0]
+    qpos = 0
     while not res:
-        res = performAction(pos, 0,  "query")
+        results = query(pos)
+        print results
+        res = results[0]
+        qpos += 1
+    print "queryDoneBlock done wait took ", qpos, " ticks"
+
+    print "Beginning queryDoneBlock done clear"
+    time.sleep(0.1)
+
+    res = performAction(pos, 0, "resetdone")
+    res = query(pos)[0]
+    qpos = 0
+    while res:
+        time.sleep(0.1)
+
+        res = performAction(pos, 0, "resetdone")
+        results = query(pos)
+        print results
+        res = results[0]
+        qpos += 1
+    print "queryDoneBlock done clear took ", qpos, " ticks"
+  
     
     
 def writeConstBuffer(pos, rowtgt, const):
@@ -121,9 +163,49 @@ def writeDataBuffer(pos, rowtgt, data):
     for i in range(256):
         writeword(pos, i, data[i])
     performAction(pos, rowtgt, 'write')
+    print "WriteDataBuffer query() =", query(pos)
+    
     queryDoneBlock(pos)
     
+
+def writequery(pos):
+    (dones, csregwr, rdsreg, wrsreg, dummy)  = query(pos)
     
+    fid = file('/tmp/query.log', 'a')
+    for i in csregwr:
+        fid.write("%2.2X " % i)
+    fid.write(" | ")
+
+    for i in wrsreg:
+        fid.write("%2.2X " % i)
+    fid.write(" | ")
+    
+    for i in rdsreg:
+        fid.write("%2.2X " % i)
+    fid.write(" | ")
+
+    for i in dummy:
+        fid.write("%2.2X " % i)
+    fid.write(" | ")
+
+    
+    
+    fid.write('\n')
+
+
+def query(pos):
+    cmdstr = xc3sprog + (' %d 0x%3.3X "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"' % (pos, USER1))
+    
+    fid = os.popen(cmdstr) 
+    bytesstr = fid.read().split()
+    bytes = [int(b, 16) for b in bytesstr]
+    dones = bytes[0] & 0x1
+    csregwr = bytes[1:3]
+    rdsreg = bytes[3:11]
+    wrsreg = bytes[11:16]
+    dummy = bytes[16:18]
+    
+    return (dones, csregwr, rdsreg, wrsreg, dummy)
 
 
 def performAction(pos, rowtgt, action):
@@ -144,17 +226,28 @@ def performAction(pos, rowtgt, action):
         fid = os.popen(cmdstr)
         return False
     elif action == "query" :
-        cmdstr = xc3sprog + (' %d 0x%3.3X "00 00 00 00 00"' % (pos, USER1))
+        cmdstr = xc3sprog + (' %d 0x%3.3X "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"' % (pos, USER1))
         
         fid = os.popen(cmdstr) 
         bytesstr = fid.read().split()
         bytes = [int(b, 16) for b in bytesstr]
-        print bytes
+        print "bytestr: ", bytesstr
+        dones = bytes[0] & 0x1
+        csregwr = bytes[1:3]
+        rdsreg = bytes[4:12]
+        wrsreg = bytes[13:18]
+        wrsreg = bytes[19:21]
+        
+        
         if (bytes[0] & 0x01 == 1):
             return True
         else:
             return False
         
+    elif action == "resetdone" :
+        cmdstr = xc3sprog + (' %d 0x%3.3X "00 00 00 02 00"' % (pos, USER1)) 
+        fid = os.popen(cmdstr) 
+       
        
     else:
         raise "invalid action"
@@ -168,6 +261,8 @@ def readStatus(pos):
     bytes = [int(b, 16) for b in bytesstr]
     print " %2.2X%2.2X%2.2X%2.2X%2.2X" % (bytes[4], bytes[3], bytes[2],
                                           bytes[1], bytes[0])
+    print "the high bits have delay", bytes[3]
+    print "the low bits have delay ", bytes[1]
 
 def manwrite():
     row = random.randint(1000)
@@ -181,23 +276,70 @@ def manwrite():
     readbuffer(1, row)
     
 
-def randwrite():
+def randwrite(pos, row = None):
     """
     Fill a random row with random data, try and read it back, and look
     at the resulting bit error pattern.
     """
     
     datain = (n.random.rand(256) * 2**32).astype(n.uint32)
-    row = random.randint(1000)
-    writeDataBuffer(1, row, datain)
-    dataout = readDataBuffer(1, row)
+    if row == None:
+        row = random.randint(2**15)
+    print "trying row ", row
+    writeDataBuffer(pos, row, datain)
+    dataout = readDataBuffer(pos, row)
     for i in range(256):
         errorbits =  datain[i] ^ dataout[i]
-        print "%3d : %8.8X %8.8X %8.8X %d" % (i, datain[i], dataout[i],
-                                              errorbits, errorbits)
+        if errorbits > 0 :
+            print "ERROR : %3d : %8.8X %8.8X %8.8X %d" % (i, datain[i], dataout[i],
+                                                  errorbits, errorbits)
        
 
-print "getting status:"
-readStatus(1)
-randwrite()
+def rangetest(pos, start, stop, justread=False):
 
+    N = stop - start + 1 # inclusive range.
+
+    errnum = 0
+    
+    datain = (n.random.rand(N, 256) * 2**32).astype(n.uint32)
+    #datain = n.zeros((N, 256), dtype=n.uint32)
+    
+    # write all of them
+    if not justread:
+        for row in range(N):
+            print "writing row ", start + row*20
+            writeDataBuffer(pos, start + row*20, datain[row])
+
+    # read all back
+    M = 1
+    dataout = n.zeros((N, M, 256), dtype=n.uint32)
+
+    for row in range(N):
+        print "reading row", start + row*20, "..."
+        for p in range(M):
+            print "Try", p, ":" 
+            dataout[row, p] = readDataBuffer(pos, start+ row*20)
+    return (datain, dataout)
+
+def errcnt(row, rows):
+    """
+    returns the number of non-matching rows
+    """
+    results = []
+    for r in rows :
+        results.append(((r - row) != 0).sum())
+    return results
+
+def compare(din, dout):
+    res = []
+    for i in range(len(din)):
+        res.append(n.argmin(errcnt(dout[i], din)))
+    return res
+
+#print "getting status:"
+#readStatus(1)
+#(datain, dataout) = rangetest(1, 120, 121, False)
+#res = []
+
+#randwrite(1, 1200)
+#manwrite()
