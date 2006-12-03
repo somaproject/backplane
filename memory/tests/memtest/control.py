@@ -114,17 +114,17 @@ def writeword(pos, addr, val):
 def queryDoneBlock(pos):
     # block on reading the query and waiting for done bit
     time.sleep(0.1)
-    print "Beginning queryDoneBlock done wait"
+    #print "Beginning queryDoneBlock done wait"
     res = query(pos)[0]
     qpos = 0
     while not res:
         results = query(pos)
-        print results
+        #print results
         res = results[0]
         qpos += 1
-    print "queryDoneBlock done wait took ", qpos, " ticks"
+    #print "queryDoneBlock done wait took ", qpos, " ticks"
 
-    print "Beginning queryDoneBlock done clear"
+    #print "Beginning queryDoneBlock done clear"
     time.sleep(0.1)
 
     res = performAction(pos, 0, "resetdone")
@@ -135,10 +135,10 @@ def queryDoneBlock(pos):
 
         res = performAction(pos, 0, "resetdone")
         results = query(pos)
-        print results
+        #print results
         res = results[0]
         qpos += 1
-    print "queryDoneBlock done clear took ", qpos, " ticks"
+    #print "queryDoneBlock done clear took ", qpos, " ticks"
   
     
     
@@ -158,12 +158,17 @@ def writeSeqBuffer(pos, rowtgt):
     
     
 def writeDataBuffer(pos, rowtgt, data):
+    """
+    Write the entire row of 256xn.uint32 data to
+    the targeted row.
+    """
+    
     assert len(data) == 256
     
     for i in range(256):
         writeword(pos, i, data[i])
     performAction(pos, rowtgt, 'write')
-    print "WriteDataBuffer query() =", query(pos)
+    #print "WriteDataBuffer query() =", query(pos)
     
     queryDoneBlock(pos)
     
@@ -296,30 +301,48 @@ def randwrite(pos, row = None):
        
 
 def rangetest(pos, start, stop, justread=False):
+    """
+    for rows between [start, stop] inclusive:
+    
+    write random data, spaced by _spacing_
+    read that data back
 
+    return the two sets of data for analysis
+    """
+    
     N = stop - start + 1 # inclusive range.
 
     errnum = 0
-    
+
+    spacing = 1 
     datain = (n.random.rand(N, 256) * 2**32).astype(n.uint32)
     #datain = n.zeros((N, 256), dtype=n.uint32)
     
     # write all of them
     if not justread:
         for row in range(N):
-            print "writing row ", start + row*20
-            writeDataBuffer(pos, start + row*20, datain[row])
+            print "writing row ", start + row*spacing
+            writeDataBuffer(pos, start + row*spacing, datain[row])
 
     # read all back
     M = 1
     dataout = n.zeros((N, M, 256), dtype=n.uint32)
 
     for row in range(N):
-        print "reading row", start + row*20, "..."
+        print "reading row", start + row*spacing, "..."
         for p in range(M):
-            print "Try", p, ":" 
-            dataout[row, p] = readDataBuffer(pos, start+ row*20)
+            #print "Try", p, ":" 
+            dataout[row, p] = readDataBuffer(pos, start+ row*spacing)
     return (datain, dataout)
+
+def datacompare(din, dout):
+
+    res = n.zeros(len(din), dtype=n.uint32)
+    
+    for i in range(len(din)):
+        e = n.sum(din[i]^ dout[i])
+        res[i] = e
+    return res
 
 def errcnt(row, rows):
     """

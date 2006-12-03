@@ -398,3 +398,19 @@ It seems pretty obvious that this is a row problem. Some row errors are caused b
 
 
 Added precharge for all. 
+
+--------------------------------------- 
+
+3 December 2006 
+
+So ultimately there was a race condition in our jtagmemif, where csel
+from the jtag interface was not being properly registered prior to
+action in the CLK domain. Damn, that's like digital design 101.
+
+We wrote some pretty sweet analysis code, so now you can do: 
+
+>>> import control
+>>> (din, dout) = control.rangetest(1, 0, 63)
+>>> control.datacompare(din, dout)
+
+to see how many errors there are. This should be a vector of zeros!
