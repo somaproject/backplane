@@ -47,10 +47,14 @@ begin  -- Behavioral
         CAS <= lcas;
         WE <= lwe;
         
-        if ocs = none or ocs = dones then
+        if ocs = none or ocs = dones or ocs = precharge then
           bcnt <= 0;
         else
-          bcnt <= bcnt + 1;
+          if bcnt = 31 then
+            bcnt <= 0;
+          else
+            bcnt <= bcnt + 1;
+          end if;
           
         end if;
         

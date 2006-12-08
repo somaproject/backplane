@@ -18,6 +18,12 @@ in stock at mouser We can safely assume we're not pulling in 20 W
 through a connector, so we'll need to generate 3.3V, 5V, 1.2V, 2.8V,
 and 1.8V.
 
+For this supply it claims we can pick between a 2.1mm and 2.5mm plug, and there are distinct part numbers for each. At the moment mouser appears to ahve the 2.5mm one in stock, so we go with it! Mouser part 418-TR100A120-02. 
+
+We're going to use SC1048-ND or SC1050-ND for power panel jacks, and just have the assembly house build up a custom cable. 
+
+
+
 We've  selected  TI's  new  T2  generation  of  point-of-load  voltage
 regulators.  PTH08T220W  and  PTH08T240W  have identical  pinouts  and
 accept  wide input  voltage  ranges,  with the  former  being the  16A
@@ -92,3 +98,5 @@ appropriately-sized LDO. We're using the TPS76201 SOT-3 100mA part which
 has wide availability and can generate the low 0.9 V voltage needed. 
 
 
+----------------------------------------------------------------------
+----------------------------------------------------------------------

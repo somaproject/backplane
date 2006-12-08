@@ -410,7 +410,8 @@ begin  -- Behavioral
 
       when pktout =>
         onext <= '0';
-        if olen(10 downto 1) -1 = oaddr then
+        if olen(10 downto 1) = oaddr then
+          
           ons <= done;
         else
           ons <= pktout;

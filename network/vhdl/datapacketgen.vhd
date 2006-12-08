@@ -366,6 +366,8 @@ begin  -- Behavioral
         datawe  <= '0';
         if hdrdone = '1' then
           ins    <= seqwl;
+        else
+          ins <= headerw; 
         end if;
 
       when seqwl =>

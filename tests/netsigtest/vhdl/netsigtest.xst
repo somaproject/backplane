@@ -1,16 +1,16 @@
 set -tmpdir build
 set -xsthdpdir ./xst
 run
--ifn memtest.prj
+-ifn netsigtest.prj
 -ifmt mixed
--ofn memtest
+-ofn netsigtest
 -ofmt NGC
 -p xc4vlx25-10-ff668
--top memtest
+-top netsigtest
 -opt_mode Speed
 -opt_level 2
 -iuc NO
--keep_hierarchy YES
+-keep_hierarchy SOFT
 -glob_opt AllClockNets
 -rtlview Yes
 -read_cores YES

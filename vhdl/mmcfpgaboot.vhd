@@ -60,8 +60,8 @@ architecture Behavioral of mmcfpgaboot is
   signal addr : std_logic_vector(15 downto 0) := (others => '0');
 
   type states is (none, fprogs, fprogw, fproge, mmcwait, nextbl,
-                  enddone, blreads, blreadw, bitwrite, bitsclk, bitsclk0, bits,
-                  clk0, bitnext, bitnext2);
+                  enddone, blreads, blreadw, bitwrite, bitsclk, bitsclk0, 
+                   bitnext, bitnext2);
   signal cs, ns : states := none;
 
    component bootserialize
@@ -404,10 +404,10 @@ begin  -- Behavioral
 
   eventbuffer : RAMB16_S1_S9
     generic map (
-      INIT_A              => "0",
-      INIT_B              => X"000",
-      SRVAL_A             => "0",
-      SRVAL_B             => X"000",
+      INIT_A              => X"000000000",
+      INIT_B              => X"000000000",
+      SRVAL_A             => X"000000000",
+      SRVAL_B             => X"000000000",
       SIM_COLLISION_CHECK => "NONE"
       )
 

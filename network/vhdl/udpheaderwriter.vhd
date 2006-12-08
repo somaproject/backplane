@@ -69,7 +69,7 @@ begin  -- Behavioral
   ain(10 downto 1) <= WLEN;
   udplen           <= ain + X"0008";
   iplen            <= ain + X"001c";
-  framelen         <= ain + X"002c";
+  framelen         <= ain + X"002a";
 
   doutint <= DESTMAC(47 downto 32) when dmux = 0  else
              DESTMAC(31 downto 16) when dmux = 1  else

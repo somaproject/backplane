@@ -366,3 +366,17 @@ def compare(din, dout):
 
 #randwrite(1, 1200)
 #manwrite()
+
+if __name__ == "__main__":
+    readStatus(1)
+    rstart = 120
+    rstop = 130
+    (datain, dataout) = rangetest(1, rstart, rstop, False)
+    # simple verify
+    errcnt = 0 
+    for i in range(rstop - rstart + 1) :
+        errcnt += n.sum(datain[i] - dataout[i])
+        
+    print "There were ", errcnt, "errors" 
+        
+    

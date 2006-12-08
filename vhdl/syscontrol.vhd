@@ -253,7 +253,7 @@ begin  -- Behavioral
   end process main;
 
 
-  fsm : process(cs, ECYCLE, evalid, eoutd, bootevt)
+  fsm : process(cs, ECYCLE, evalid, eoutd, bootevt, bootmask)
   begin
     case cs is
       when none   =>

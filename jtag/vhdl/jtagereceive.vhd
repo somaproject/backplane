@@ -94,10 +94,10 @@ begin  -- Behavioral
 
   eventbuffer_inst : RAMB16_S18_S18
     generic map (
-      SRVAL_B             => X"00000",  --  Port B ouput value upon SSR assertion
-      WRITE_MODE_A        => "WRITE_FIRST",  --  WRITE_FIRST, READ_FIRST or NO_CHANGE
-      WRITE_MODE_B        => "WRITE_FIRST",  --  WRITE_FIRST, READ_FIRST or NO_CHANGE
-      SIM_COLLISION_CHECK => "ALL",     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
+      SRVAL_B             => X"000000000",
+      WRITE_MODE_A        => "WRITE_FIRST",
+      WRITE_MODE_B        => "WRITE_FIRST",
+      SIM_COLLISION_CHECK => "ALL",     
       -- Address 0 to 255
       INIT_00             => X"AAA1AAA2AAA3AAA4AAA5AAA6AAA7AAA8AAA9AAA01AAAA32AAFEDCB9876543210",
       INIT_01             => X"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB0DC2",
@@ -406,7 +406,7 @@ begin  -- Behavioral
       TDO        => '0') ; 
 
   
-  jtagout : process(SMDRCK, smupdate)
+  jtagout : process(SMDRCK, smupdate, smaskreg)
   begin
     if SMUPDATE = '1' then
       smaskregl <= smaskreg; 
@@ -420,7 +420,7 @@ begin  -- Behavioral
   end process jtagout;
 
 
-  infsm: process (ics, evalid, smask, addra, addrb)
+  infsm: process (ics, evalid, smask, addra, addrb, fifocnt)
     begin
       case ics is
         when ewaita =>

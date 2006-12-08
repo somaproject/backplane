@@ -21,8 +21,9 @@ run
 -case maintain
 -slice_utilization_ratio 100
 -verilog2001 YES
--fsm_extract YES -fsm_encoding One-Hot
+-fsm_extract YES 
 -safe_implementation Yes
+-fsm_encoding One-Hot
 -fsm_style lut
 -ram_extract Yes
 -ram_style Auto

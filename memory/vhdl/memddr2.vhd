@@ -45,17 +45,8 @@ end memddr2;
 
 architecture Behavioral of memddr2 is
 
-  signal lcas : std_logic := '1';
 
   signal dsel : integer range 0 to 3 := 0;
-
-  signal lcke  : std_logic                     := '0';
-  signal lras  : std_logic                     := '1';
-  signal lcs   : std_logic                     := '1';
-  signal lwe   : std_logic                     := '1';
-  signal laddr : std_logic_vector(12 downto 0) := (others => '0');
-  signal lba   : std_logic_vector(1 downto 0)  := (others => '0');
-  signal lts   : std_logic                     := '0';
 
   signal startl : std_logic := '0';
   

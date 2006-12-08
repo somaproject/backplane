@@ -13,9 +13,9 @@
 #   make parsim: post-place-and-route simulation 
 #   make multipar : multiple attemt place and route
 ######################################################################
-PROJECT = memtest
+PROJECT = netsigtest
 
-bitfile: $(PROJECT).bit
+bitfile: $(PROJECT).bit 
 export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
 export  XIL_MAP_SKIP_LOGICAL_DRC=TRUE
 SOURCES = *.vhd 
@@ -104,12 +104,6 @@ synthsim: build/$(PROJECT).ngc
 transsim: build/$(PROJECT).ngd
 	netgen -intstyle ise -rpw 100 -tpw 0 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngd $(PROJECT)_transsim.vhd
 
-
-# update roms
-# updaterom: $(PROJECT)_bd.bmm $(PROJECT).mem
-# 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt $(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).new.bit
-# 	mv $(PROJECT).bit $(PROJECT).original.bit
-# 	cp $(PROJECT).new.bit $(PROJECT).bit
 
 clean:
 	rm -Rf xst build

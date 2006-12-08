@@ -26,7 +26,8 @@ print readreg(0)
 print "pointers: "
 print readreg(6)
 print readreg(7)
+print "status:"
 
-for i in range(13, 18):
+for i in range(15, 18):
     print i, readreg(i)
 

@@ -169,11 +169,11 @@ begin  -- Behavioral
 
   RAMB16_S9_S18_inst : RAMB16_S9_S18
     generic map (
-      INIT_A              => X"000",    --  Value of output RAM registers on Port A at startup
-      INIT_B              => X"00000",  --  Value of output RAM registers on Port B at startup
-      WRITE_MODE_A        => "WRITE_FIRST",  --  WRITE_FIRST, READ_FIRST or NO_CHANGE
-      WRITE_MODE_B        => "WRITE_FIRST",  --  WRITE_FIRST, READ_FIRST or NO_CHANGE
-      SIM_COLLISION_CHECK => "NONE"     -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL
+      INIT_A              => X"000000000",   
+      INIT_B              => X"000000000", 
+      WRITE_MODE_A        => "WRITE_FIRST",  
+      WRITE_MODE_B        => "WRITE_FIRST",  
+      SIM_COLLISION_CHECK => "NONE"     
       )
     port map (
       DOA                 => open,

@@ -34,12 +34,19 @@ entity nettest is
     NICDIN       : in    std_logic_vector(15 downto 0);
     NICNEXTFRAME : out   std_logic;
     NICDINEN     : in    std_logic;
-    NICCLK       : out   std_logic;
-    DEBUG        : out   std_logic_vector(3 downto 0);
-    RAMDQ        : inout std_logic_vector(15 downto 0);
+    NICIOCLK     : out   std_logic;
+    RAMCLKOUT_P  : out   std_logic;
+    RAMCLKOUT_N  : out   std_logic;
+    RAMCKE       : out   std_logic := '0';
+    RAMCAS       : out   std_logic;
+    RAMRAS       : out   std_logic;
+    RAMCS        : out   std_logic;
     RAMWE        : out   std_logic;
-    RAMADDR      : out   std_logic_vector(16 downto 0);
-    RAMCLK       : out   std_logic
+    RAMADDR      : out   std_logic_vector(12 downto 0);
+    RAMBA        : out   std_logic_vector(1 downto 0);
+    RAMDQSH      : inout std_logic;
+    RAMDQSL      : inout std_logic;
+    RAMDQ        : inout std_logic_vector(15 downto 0)
 
     );
 end nettest;
@@ -173,8 +180,12 @@ architecture Behavioral of nettest is
 
   component network
     port (
-      CLK          : in    std_logic;
-      MEMCLK       : in    std_logic;
+      CLK       : in std_logic;
+      MEMCLK    : in std_logic;
+      MEMCLK90  : in std_logic;
+      MEMCLK180 : in std_logic;
+      MEMCLK270 : in std_logic;
+
       RESET        : in    std_logic;
       -- config
       MYIP         : in    std_logic_vector(31 downto 0);
@@ -201,10 +212,16 @@ architecture Behavioral of nettest is
       DIENB        : in    std_logic;
       DINB         : in    std_logic_vector(7 downto 0);
       -- memory interface
-      RAMDQ        : inout std_logic_vector(15 downto 0);
+      RAMCKE       : out   std_logic := '0';
+      RAMCAS       : out   std_logic;
+      RAMRAS       : out   std_logic;
+      RAMCS        : out   std_logic;
       RAMWE        : out   std_logic;
-      RAMADDR      : out   std_logic_vector(16 downto 0);
-      RAMCLK       : out   std_logic
+      RAMADDR      : out   std_logic_vector(12 downto 0);
+      RAMBA        : out   std_logic_vector(1 downto 0);
+      RAMDQSH      : inout std_logic;
+      RAMDQSL      : inout std_logic;
+      RAMDQ        : inout std_logic_vector(15 downto 0)
       );
   end component;
 
@@ -219,18 +236,22 @@ architecture Behavioral of nettest is
 
   signal ECYCLE : std_logic := '0';
 
-  signal EARX    : somabackplane.addrarray      := (others    => (others => '0'));
+  signal EARX    : somabackplane.addrarray      := (others => (others => '0'));
   signal EDRX    : somabackplane.dataarray      := (others => (others => '0'));
-  signal EDSELRX : std_logic_vector(3 downto 0) := (others    => '0');
-  signal EATX    : somabackplane.addrarray      := (others    => (others => '0'));
-  signal EDTX    : std_logic_vector(7 downto 0) := (others    => '0');
+  signal EDSELRX : std_logic_vector(3 downto 0) := (others => '0');
+  signal EATX    : somabackplane.addrarray      := (others => (others => '0'));
+  signal EDTX    : std_logic_vector(7 downto 0) := (others => '0');
   signal RESET   : std_logic                    := '0';
 
   signal lserialboot : std_logic_vector(19 downto 0) := (others => '1');
 
-  signal clk, clkint   : std_logic := '0';
-  signal clkf, clkfint : std_logic := '0';
-  signal memclk        : std_logic := '0';
+  signal clk, clkint             : std_logic := '0';
+  signal memclkb, memclkbint     : std_logic := '0';
+  signal memclk, memclkint       : std_logic := '0';
+  signal memclk90, memclk90int   : std_logic := '0';
+  signal memclk180, memclk180int : std_logic := '0';
+  signal memclk270, memclk270int : std_logic := '0';
+
 
   signal nicclkint : std_logic := '0';
 
@@ -240,13 +261,57 @@ architecture Behavioral of nettest is
   signal mymac         : std_logic_vector(47 downto 0) := (others => '0');
 
   signal nicnextframeint : std_logic := '0';
+
+  signal locked, locked2 : std_logic := '0';
+
 begin  -- Behavioral
 
-  clkgen : DCM_BASE
+
+  -----------------------------------------------------------------------------
+  -- CLOCKING
+  -----------------------------------------------------------------------------
+
+  DCM_BASE_inst : DCM_BASE
     generic map (
-      CLKFX_DIVIDE          => 6,
-      CLKFX_MULTIPLY        => 5,
-      CLKIN_PERIOD          => 15.0,
+      CLKDV_DIVIDE => 2.0,
+
+      CLKFX_DIVIDE          => 1,
+      CLKFX_MULTIPLY        => 3,
+      CLKIN_DIVIDE_BY_2     => false,
+      CLKIN_PERIOD          => 10.0,
+      CLKOUT_PHASE_SHIFT    => "NONE",
+      CLK_FEEDBACK          => "1X",
+      DCM_AUTOCALIBRATION   => true,
+      DFS_FREQUENCY_MODE    => "LOW",
+      DLL_FREQUENCY_MODE    => "LOW",
+      DUTY_CYCLE_CORRECTION => true,
+      STARTUP_WAIT          => true)
+    port map (
+      CLK0                  => clkint,      -- 0 degree DCM CLK ouptput
+      CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
+      CLKFB                 => clk,
+      CLKIN                 => CLKIN,
+      LOCKED                => locked,
+      RST                   => '0'          -- DCM asynchronous reset input
+      );
+
+  clk_bufg : BUFG
+    port map (
+      O => clk,
+      I => clkint);
+
+  memclkb_bufg : BUFG
+    port map (
+      O => memclkb,
+      I => memclkbint);
+
+
+  DCM_BASE_inst2 : DCM_BASE
+    generic map (
+      CLKDV_DIVIDE => 2.0,
+
+      CLKIN_DIVIDE_BY_2     => false,
+      CLKIN_PERIOD          => 10.0,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
       DCM_AUTOCALIBRATION   => true,
@@ -255,31 +320,53 @@ begin  -- Behavioral
       DFS_FREQUENCY_MODE    => "LOW",
       DLL_FREQUENCY_MODE    => "LOW",
       DUTY_CYCLE_CORRECTION => true,
-      FACTORY_JF            => X"F0F0",
-      PHASE_SHIFT           => 0,
-      STARTUP_WAIT          => false)
-    port map(
-      CLKIN                 => CLKIN,
-      CLK0                  => clkfint,
-      CLKFB                 => clkf,
-      CLKFX                 => clkint,
-      RST                   => RESET,
-      LOCKED                => open
+      STARTUP_WAIT          => true)
+    port map (
+      CLK0                  => memclkint,
+      CLK180                => memclk180int,
+      CLK270                => memclk270int,
+      CLK90                 => memclk90int,
+      CLKFB                 => memclk,
+      CLKIN                 => memclkb,
+      LOCKED                => locked2,
+      RST                   => '0'
+
       );
 
-  clk_bufg : BUFG
-    port map (
-      O => clkf,
-      I => clkfint);
+  RESET <= not locked2;
 
-  clksrc_bufg : BUFG
+  memclk_bufg : BUFG
     port map (
-      O => clk,
-      I => clkint);
+      O => memclk,
+      I => memclkint);
+
+  memclk90_bufg : BUFG
+    port map (
+      O => memclk90,
+      I => memclk90int);
+
+  memclk180_bufg : BUFG
+    port map (
+      O => memclk180,
+      I => memclk180int);
+
+  memclk270_bufg : BUFG
+    port map (
+      O => memclk270,
+      I => memclk270int);
+
+  TXIO_obufds : OBUFDS
+    generic map (
+      IOSTANDARD => "DEFAULT")
+    port map (
+      O          => RAMCLKOUT_P,
+      OB         => RAMCLKOUT_N,
+      I          => memclk270
+      );
 
   eventrouter_inst : eventrouter
     port map (
-      CLK     => CLK,
+      CLK     => clk,
       ECYCLE  => ECYCLE,
       EARX    => EARX,
       EDRX    => EDRX,
@@ -289,7 +376,7 @@ begin  -- Behavioral
 
   timer_inst : timer
     port map (
-      CLK     => CLK,
+      CLK     => clk,
       ECYCLe  => ECYCLE,
       EARX    => EARX(0),
       EDRX    => EDRX(0),
@@ -299,7 +386,7 @@ begin  -- Behavioral
 
   syscontrol_inst : syscontrol
     port map (
-      CLK     => CLK,
+      CLK     => clk,
       RESET   => RESET,
       ECYCLe  => ECYCLE,
       EARX    => EARX(1),
@@ -314,7 +401,7 @@ begin  -- Behavioral
       DEVICE => X"02")
 
     port map (
-      CLk     => CLK,
+      CLk     => clk,
       RESET   => RESET,
       ECYCLE  => ECYCLE,
       EARX    => EARX(2),
@@ -331,7 +418,7 @@ begin  -- Behavioral
 
   bootdeserialize_inst : bootdeserialize
     port map (
-      CLK   => CLK,
+      CLK   => clk,
       SERIN => lserialboot(0),
       FPROG => NICFPROG,
       FCLK  => NICFCLK,
@@ -380,11 +467,11 @@ begin  -- Behavioral
       SCS     => NICSCS);
 
   -- dummy
-  process(CLK)
+  process(clk)
     variable blinkcnt : std_logic_vector(21 downto 0)
                := (others => '0');
   begin
-    if rising_edge(CLK) then
+    if rising_edge(clk) then
       blinkcnt := blinkcnt + 1;
       LEDPOWER <= blinkcnt(21);
     end if;
@@ -399,56 +486,65 @@ begin  -- Behavioral
 
   mymac <= X"DEADBEEF1234";
 
-  NICCLK <= nicclkint;
+
+
+
+
   network_inst : network
     port map (
-      CLK          => CLK,
-      MEMCLK       => MEMCLK,
-      RESET        => RESET,
-      MYIP         => myip,
-      MYMAC        => mymac,
-      MYBCAST      => mybcast,
+      CLK       => CLK,
+      MEMCLK    => memclk,
+      MEMCLK90  => memclk90,
+      MEMCLK180 => memclk180,
+      MEMCLK270 => memclk270,
+      RESET     => RESET,
+      -- config
+      MYIP      => MYIP,
+      MYMAC     => mymac,
+      MYBCAST   => mybcast,
+
+      -- input
       NICNEXTFRAME => nicnextframeint,
-      NICDINEN     => NICDINEN,
+      NICDINEN     => nicdinen,
       NICDIN       => NICDIN,
-      --NICDOUT      => NICDOUT,
-      --NICNEWFRAME  => NICNEWFRAME,
-      NICIOCLK     => nicclkint,
+      -- output
+      NICDOUT      => NICDOUT,
+      NICNEWFRAME  => NICNEWFRAME,
+      NICIOCLK     => open, --NICIOCLK,
+      -- event bus
       ECYCLE       => ecycle,
       EARX         => earx(3),
       EDRX         => edrx(3),
       EDSELRX      => edselrx,
       EATX         => eatx(3),
       EDTX         => edtx,
-      DIENA        => '0',
-      DIENB        => '0',
-      DINA         => X"00",
-      DINB         => X"00",
-      RAMDQ        => RAMDQ,
-      RAMWE        => RAMWE,
-      RAMADDR      => RAMADDR,
-      RAMCLK       => RAMCLK);
+
+      -- data bus
+      DIENA => '0',
+      DIENB => '0',
+      DINA  => X"00",
+      DINB  => X"00",
+
+      RAMCKE  => RAMCKE,
+      RAMCAS  => RAMCAS,
+      RAMRAS  => RAMRAS,
+      RAMCS   => RAMCS,
+      RAMWE   => RAMWE,
+      RAMADDR => RAMADDR,
+      RAMBA   => RAMBA,
+      RAMDQSH => RAMDQSH,
+      RAMDQSL => RAMDQSL,
+      RAMDQ   => RAMDQ);
+
 
   NICNEXTFRAME <= nicnextframeint;
+  NICIOCLK <= not clk;
 
-  testrx            : process (CLK)
-    variable niccnt : std_logic_vector(23 downto 0) := (others => '0');
-  begin
-    if rising_edge(CLK) then
-      niccnt                                        := niccnt + 1;
-      DEBUG(0) <= NICDINEN;
-      DEBUG(1) <= nicnextframeint;
-      DEBUG(2) <= NICDIN(0);
-      DEBUG(3) <= NICDIN(1);
-
-    end if;
-  end process testrx;
-
-  udpburst_inst: udpburst
-  port map (
-    CLK      => CLK,
-    NEWFRAME => NICNEWFRAME,
-    DOUT     => NICDOUT); 
-
+  dlyctrl : IDELAYCTRL
+    port map(
+      RDY    => open,
+      REFCLK => clk,
+      RST    => reset
+      );
 
 end Behavioral;

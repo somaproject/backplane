@@ -75,7 +75,7 @@ for s in pktstrs:
     
     # now we print our normal format
     ofile.write("%d " % (len(da)/2 + 1))
-    ofile.write("%4.4X " % (len(da)+2))
+    ofile.write("%4.4X " % (len(da)))
 
     for i in range(len(da) / 2):
         ofile.write("%2.2X%2.2X " % (da[i*2], da[i*2+1]))

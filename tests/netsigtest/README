@@ -1,0 +1,6 @@
+This is a test to check signal integrity across the NIC/backplane interface. 
+
+We simply clock words out of the interface and then wait for them to
+return an appropriate number of ticks later.
+
+We read the resulting bits via jtag. 
