@@ -28,6 +28,6 @@ print readreg(6)
 print readreg(7)
 print "status:"
 
-for i in range(15, 18):
-    print i, readreg(i)
+for i in range(0x15, 0x19):
+    print hex(i), readreg(i)
 

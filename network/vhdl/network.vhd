@@ -550,7 +550,7 @@ begin  -- Behavioral
       EATX        => EATX,
       DOUT        => din0,
       DOEN        => den(0),
-      ARM         => arm(0),
+      ARM         => open, -- arm(0), DEBUGGING
       GRANT       => grant(0),
       RETXID      => widb,
       RETXDOUT    => wdinb,
@@ -574,7 +574,7 @@ begin  -- Behavioral
       DINB        => DINB,
       DOUT        => din1,
       DOEN        => den(1),
-      ARM         => arm(1),
+      ARM         => open, -- arm(1), DEBUGGING
       GRANT       => grant(1),
       RETXID      => wida,
       RETXDONE    => wdonea,
@@ -598,7 +598,7 @@ begin  -- Behavioral
       RETXREQ   => rreqa,
       RETXDONE  => rdonea,
       RETXID    => rida,
-      ARM       => arm(2),
+      ARM       => open, --arm(2), DEBUGGING
       GRANT     => grant(2),
       DOUT      => din2,
       DOEN      => den(2));
@@ -618,7 +618,7 @@ begin  -- Behavioral
       EDSELRX   => EDSELRX,
       DOUT      => din4,
       DOEN      => den(4),
-      ARM       => arm(4),
+      ARM       => open, -- arm(4), DEBUGGING
       GRANT     => grant(4));
 
   eventretxresponse_inst : eventretxresponse
@@ -634,7 +634,7 @@ begin  -- Behavioral
       RETXREQ   => rreqb,
       RETXDONE  => rdoneb,
       RETXID    => ridb,
-      ARM       => arm(3),
+      ARM       => open, --arm(3), DEBUGGING
       GRANT     => grant(3),
       DOUT      => din3,
       DOEN      => den(3));
@@ -709,6 +709,6 @@ begin  -- Behavioral
       RDWE   => memrdwe);
 
 
-  NICIOCLK <= CLK;
+  NICIOCLK <= clk;
   
 end Behavioral;

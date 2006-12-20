@@ -233,6 +233,14 @@ architecture Behavioral of nettest is
       NEWFRAME : out std_logic);        -- (others => '0')
   end component;
 
+  component dincapture
+    port (
+      CLK   : in std_logic;
+      DINEN : in std_logic;
+      DIN   : in std_logic_vector(15 downto 0)
+      );
+  end component;
+
 
   signal ECYCLE : std_logic := '0';
 
@@ -246,6 +254,7 @@ architecture Behavioral of nettest is
   signal lserialboot : std_logic_vector(19 downto 0) := (others => '1');
 
   signal clk, clkint             : std_logic := '0';
+  signal clk180, clk180int       : std_logic := '0';
   signal memclkb, memclkbint     : std_logic := '0';
   signal memclk, memclkint       : std_logic := '0';
   signal memclk90, memclk90int   : std_logic := '0';
@@ -290,6 +299,7 @@ begin  -- Behavioral
       CLK0                  => clkint,      -- 0 degree DCM CLK ouptput
       CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
       CLKFB                 => clk,
+      CLK180                => clk180int,
       CLKIN                 => CLKIN,
       LOCKED                => locked,
       RST                   => '0'          -- DCM asynchronous reset input
@@ -299,6 +309,12 @@ begin  -- Behavioral
     port map (
       O => clk,
       I => clkint);
+
+  clk180_bufg: BUFG
+    port map (
+      I => clk180int,
+      O => clk180); 
+    
 
   memclkb_bufg : BUFG
     port map (
@@ -481,10 +497,10 @@ begin  -- Behavioral
 
 
 
-  myip    <= X"C0a80002";               -- 192.168.0.2
-  mybcast <= X"C0a800FF";
+  myip    <= X"0A000002";               -- 10.0.0.2
+  mybcast <= X"0AFFFFFF";               -- 10.255.255.255
 
-  mymac <= X"DEADBEEF1234";
+  mymac <= X"00ADBEEF1234";
 
 
 
@@ -504,13 +520,13 @@ begin  -- Behavioral
       MYBCAST   => mybcast,
 
       -- input
-      NICNEXTFRAME => nicnextframeint,
+      NICNEXTFRAME => NICNEXTFRAME,
       NICDINEN     => nicdinen,
       NICDIN       => NICDIN,
       -- output
       NICDOUT      => NICDOUT,
       NICNEWFRAME  => NICNEWFRAME,
-      NICIOCLK     => open, --NICIOCLK,
+      NICIOCLK     => open,             --NICIOCLK,
       -- event bus
       ECYCLE       => ecycle,
       EARX         => earx(3),
@@ -537,8 +553,7 @@ begin  -- Behavioral
       RAMDQ   => RAMDQ);
 
 
-  NICNEXTFRAME <= nicnextframeint;
-  NICIOCLK <= not clk;
+  NICIOCLK <= clk;
 
   dlyctrl : IDELAYCTRL
     port map(
@@ -546,5 +561,12 @@ begin  -- Behavioral
       REFCLK => clk,
       RST    => reset
       );
+
+  dincapture_inst : dincapture
+    port map (
+      CLK   => CLK,
+      DIN   => NICDIN,
+      DINEN => NICDINEN);
+
 
 end Behavioral;

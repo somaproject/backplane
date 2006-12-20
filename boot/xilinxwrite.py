@@ -29,6 +29,10 @@ fid.seek(72)
 
 dist = 512 * int(rampos)
 fout.seek(dist)
+"""
+Note that, for example, the network packets start at location "2048"
+
+"""
 
 for i in fid.read():
     #fout.write(flipbits(i))
