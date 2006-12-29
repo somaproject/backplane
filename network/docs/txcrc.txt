@@ -1,0 +1,7 @@
+TX CRC: append an ethernet CRC to the transmitted frame and increase the packet lenght. 
+
+We do this by latching the frame len, adding four, and transmitting
+that, as well as appending the CRC properly.
+
+note that we must be able to perform all of this in < 4 additional cycles so we do not back up the TX. 
+
