@@ -42,10 +42,11 @@ architecture Behavioral of txmux is
   
    signal grantmux : std_logic := '0';
 
-   type states is (start, grants, grantw, chanlat); 
+   type states is (start, grants, grantw, chanlat, delayw); 
    signal cs, ns : states := start;
 
-
+   signal waitcnt : integer range 0 to 15 := 0;
+   
 begin  -- Behavioral
 
   dinmux <= DIN0 when chan = 0 else
@@ -108,10 +109,18 @@ begin  -- Behavioral
          chan <= lchan; 
        end if;
 
+       if cs = grantw  then
+         waitcnt <= '0;
+       else
+         if cs = delayw then
+           waitcnt <= waitcnt + 1; 
+         end if;
+       end if;
+
      end if;
    end process main;
 
-   fsm : process(cs, chan, orarml, denmux)
+   fsm : process(cs, chan, orarml, denmux, waitcnt)
    begin
      case cs is
        when start =>
@@ -137,9 +146,17 @@ begin  -- Behavioral
        when grantw =>
          grantmux <= '0';
          if denmux = '0' then
-           ns     <= start; 
+           ns     <= delayw; 
          else
            ns     <= grantw;
+         end if;
+
+       when delayw =>
+         grantmux <= '0';
+         if waitcnt = 6 then
+           ns     <= start; 
+         else
+           ns     <= delayw;
          end if;
 
        when others =>

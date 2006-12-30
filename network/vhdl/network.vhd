@@ -362,6 +362,16 @@ architecture Behavioral of network is
       );
   end component;
 
+  component crcappend
+    port (
+      CLK    : in  std_logic;
+      DINEN  : in  std_logic;
+      DIN    : in  std_logic_vector(15 downto 0);
+      DOUT   : out std_logic_vector(15 downto 0);
+      DOUTEN : out std_logic
+      );
+  end componen;
+
 -- memory
   signal memstart : std_logic := '0';
   signal memrw    : std_logic := '0';
@@ -415,6 +425,9 @@ architecture Behavioral of network is
   signal grant : std_logic_vector(6 downto 0) := (others => '0');
   signal arm   : std_logic_vector(6 downto 0) := (others => '0');
 
+  signal txdout : std_logic_vector(15 downto  0) := (others => '0');
+  signal txdouten : std_logic := '0';
+  
   -- retx interface
   signal retxdout : std_logic_vector(15 downto 0) := (others => '0');
   signal retxaddr : std_logic_vector(8 downto 0)  := (others => '0');
@@ -479,13 +492,13 @@ begin  -- Behavioral
       PINGSTART  => pinginstart,
       PINGADDR   => pinginaddr,
       PINGDONE   => pingindone,
-      DRETXSTART  => dretxinstart,
-      DRETXADDR   => dretxinaddr,
-      DRETXDONE   => dretxindone,
-      ERETXSTART  => eretxinstart,
-      ERETXADDR   => eretxinaddr,
-      ERETXDONE   => eretxindone,
-      
+      DRETXSTART => dretxinstart,
+      DRETXADDR  => dretxinaddr,
+      DRETXDONE  => dretxindone,
+      ERETXSTART => eretxinstart,
+      ERETXADDR  => eretxinaddr,
+      ERETXDONE  => eretxindone,
+
       ARPSTART   => arpinstart,
       ARPADDR    => arpinaddr,
       ARPDONE    => arpindone,
@@ -507,10 +520,18 @@ begin  -- Behavioral
       DIN6     => din6,
       GRANT    => grant,
       ARM      => arm,
-      DOUT     => NICDOUT,
-      NEWFRAME => NICNEWFRAME);
+      DOUT     => txdout,
+      NEWFRAME => txdouten);
 
-
+  crcappend_inst: crcappend
+    port map (
+      CLK    => CLK,
+      DINEN  => txdouten,
+      DIN    => txdout,
+      DOUT   => NICDOUT,
+      DOUTEN => NICNEXTFRAME);
+  
+    
   arpresponse_inst : arpresponse
     port map (
       CLK       => CLK,
@@ -550,7 +571,7 @@ begin  -- Behavioral
       EATX        => EATX,
       DOUT        => din0,
       DOEN        => den(0),
-      ARM         => open, -- arm(0), DEBUGGING
+      ARM         => open,              -- arm(0), DEBUGGING
       GRANT       => grant(0),
       RETXID      => widb,
       RETXDOUT    => wdinb,
@@ -574,7 +595,7 @@ begin  -- Behavioral
       DINB        => DINB,
       DOUT        => din1,
       DOEN        => den(1),
-      ARM         => open, -- arm(1), DEBUGGING
+      ARM         => open,              -- arm(1), DEBUGGING
       GRANT       => grant(1),
       RETXID      => wida,
       RETXDONE    => wdonea,
@@ -598,7 +619,7 @@ begin  -- Behavioral
       RETXREQ   => rreqa,
       RETXDONE  => rdonea,
       RETXID    => rida,
-      ARM       => open, --arm(2), DEBUGGING
+      ARM       => open,                --arm(2), DEBUGGING
       GRANT     => grant(2),
       DOUT      => din2,
       DOEN      => den(2));
@@ -618,7 +639,7 @@ begin  -- Behavioral
       EDSELRX   => EDSELRX,
       DOUT      => din4,
       DOEN      => den(4),
-      ARM       => open, -- arm(4), DEBUGGING
+      ARM       => open,                -- arm(4), DEBUGGING
       GRANT     => grant(4));
 
   eventretxresponse_inst : eventretxresponse
@@ -634,7 +655,7 @@ begin  -- Behavioral
       RETXREQ   => rreqb,
       RETXDONE  => rdoneb,
       RETXID    => ridb,
-      ARM       => open, --arm(3), DEBUGGING
+      ARM       => open,                --arm(3), DEBUGGING
       GRANT     => grant(3),
       DOUT      => din3,
       DOEN      => den(3));
