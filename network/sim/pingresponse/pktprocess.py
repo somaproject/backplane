@@ -10,6 +10,8 @@ original ethereal dump, such as changing the response/verification ID field
 """
 
 import sys
+sys.path.append('../../crc/code/')
+import frame
 import re
 
 
@@ -21,7 +23,6 @@ def computeIPHeader(octetlist):
         a = int(s, 16)
         if i != 5:
             x += a
-            print hex(a), hex(x) 
     y = ((x & 0xFFFF) + (x >> 16)) 
     return ( ~ y) & 0xFFFF
 
@@ -34,7 +35,6 @@ def updateIPHeader(octetlist):
         o2 = "%2.2X" % (csum & 0xFF)
         octetlist[24] = o1
         octetlist[25] = o2
-        print octetlist[14:14+20]
     else:
         pass
 
@@ -67,12 +67,21 @@ while True:
             l = fid.readline()
 
 
-
-        print outfilename
-        
         updateIPHeader(alloctets)
+        # add on the crc, but only if it's a req, not a resp
+
+        if "req" in outfilename: 
+            # generate string
+            framestr = "".join([chr(int(x, 16)) for x in alloctets])
+            crcstr = frame.generateFCS(framestr)
+            alloctets.append("%2.2X" % ord(crcstr[0]))
+            alloctets.append("%2.2X" % ord(crcstr[1]))
+            alloctets.append("%2.2X" % ord(crcstr[2]))
+            alloctets.append("%2.2X" % ord(crcstr[3]))
+        
         framelen = len(alloctets)
-        ofid.write("%4.4X\n" % (int(framelen) + 2))
+        
+        ofid.write("%4.4X\n" % (int(framelen)))
 
         for i in range(framelen/2):
             ofid.write(alloctets[i*2] +  alloctets[i*2+1] + '\n' )

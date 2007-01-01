@@ -1,5 +1,8 @@
 #!/usr/bin/python
 import numpy as n
+import sys
+sys.path.append('../../crc/code')
+import frame
 
 
 def computeIPHeader(octetlist):
@@ -37,7 +40,8 @@ def toByteList(s):
 
     return da
 
-def writePacketsToFile(pktlist, ofile, update = True):
+def writePacketsToFile(pktlist, ofile,
+                       update = True, fcsappend = False):
     """ take a list of packet bytes
     and writes them to the indicated file """
 
@@ -58,10 +62,21 @@ def writePacketsToFile(pktlist, ofile, update = True):
             da[41] = 0
 
         updateIPHeader(da)
-
+        
+        # generate fcs
+        if fcsappend:
+            dastr = "".join([chr(x) for x in da])
+            crc = frame.generateFCS(dastr)
+            da = n.resize(da, len(da)+4)
+            da[-4] = ord(crc[0])
+            da[-3] = ord(crc[1])
+            da[-2] = ord(crc[2])
+            da[-1] = ord(crc[3])
+        
+        
         # now we print our normal format
         ofile.write("%d " % (len(da)/2 + 1))
-        ofile.write("%4.4X " % (len(da)+2))
+        ofile.write("%4.4X " % (len(da)))
 
         for i in range(len(da) / 2):
             ofile.write("%2.2X%2.2X " % (da[i*2], da[i*2+1]))
@@ -92,13 +107,14 @@ while l != "":
 bytelist.append(toByteList(pktstr))
 
 
-# filter out the TX from the RX by LSB of IP addr:
-os = 14 + 20  
+# filter out the TX from the RX by port
+os = 14 + 20
 clientreq = [pl for pl in bytelist if pl[os+2] == 19 and pl[os+3] == 136]
 
 servresp = [pl for pl in bytelist if pl[os] == 19 and pl[os+1] == 136]
 
-writePacketsToFile(clientreq, file("client_requests.txt", 'w'),  update=False)
+writePacketsToFile(clientreq, file("client_requests.txt", 'w'),
+                   update=False, fcsappend = True)
 writePacketsToFile(servresp, file("server_response.txt", 'w'), update=True)
 
 

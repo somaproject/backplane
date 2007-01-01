@@ -31,7 +31,7 @@ architecture Behavioral of pingresponsetest is
       DONE      : out std_logic;
       INPKTDATA : in  std_logic_vector(15 downto 0);
       INPKTADDR : out std_logic_vector(9 downto 0);
-
+      PKTSUCCESS: out std_logic; 
       -- output
       ARM   : out std_logic;
       GRANT : in  std_logic;
@@ -50,7 +50,8 @@ architecture Behavioral of pingresponsetest is
   signal DOUT  : std_logic_vector(15 downto 0) := (others => '0');
   signal DOEN  : std_logic                     := '0';
 
-
+  signal PKTSUCCESS : std_logic := '0';
+  
   component inputcontrol
     port (
       CLK        : in  std_logic;
@@ -163,6 +164,7 @@ begin  -- Behavioral
       MYIP      => MYIP,
       START     => PINGSTART,
       DONE      => PINGDONE,
+      PKTSUCCESS => PKTSUCCESS, 
       INPKTDATA => PKTDATA,
       INPKTADDR => PINGADDR,
       ARM       => ARM,

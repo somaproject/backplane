@@ -1,0 +1,10 @@
+This is our attempt to verify proper operation of our ICMP echo
+request module.
+
+pingsrc.libpcap is a collection of captured libpcap data for pings
+
+pingsrc.txt is a listing of packet dumps with filenames. 
+
+pktprocess.py takes in pingsrc.txt and spits out various req_*.txt and
+resp_*.txt files which are then used by the testbench for comparison.
+

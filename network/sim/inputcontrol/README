@@ -1,7 +1,15 @@
 Here we take dumps from ethereal and use them to check and see if we
 can identify the relevant packets.
 
+We have various queries, which we have packaged into: 
+
+querytype.txt : the original query packet
+querytype.crc.txt : the query packet with an appended CRC
+querytype.crcerr.txt : the query packet with an appended incorrect crc. 
+
 The packets we wish to test: 
 1. arp query
 2. icmp-echo 
-3. udp....
+3. udp retx req
+
+

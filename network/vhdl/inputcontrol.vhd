@@ -10,26 +10,27 @@ use UNISIM.vcomponents.all;
 entity inputcontrol is
   port (
     CLK        : in  std_logic;
-    RESET : in std_logic; 
+    RESET      : in  std_logic;
     NEXTFRAME  : out std_logic;
     DINEN      : in  std_logic;
     DIN        : in  std_logic_vector(15 downto 0);
     PKTDATA    : out std_logic_vector(15 downto 0);
+    CRCIOERR : out std_logic; 
     -- ICMP echo request IO
     PINGSTART  : out std_logic;
     PINGADDR   : in  std_logic_vector(9 downto 0);
     PINGDONE   : in  std_logic;
     -- data retransmit request 
-    DRETXSTART  : out std_logic;
-    DRETXADDR   : in  std_logic_vector(9 downto 0);
-    DRETXDONE   : in  std_logic;
+    DRETXSTART : out std_logic;
+    DRETXADDR  : in  std_logic_vector(9 downto 0);
+    DRETXDONE  : in  std_logic;
     -- event retransmit request 
-    ERETXSTART  : out std_logic;
-    ERETXADDR   : in  std_logic_vector(9 downto 0);
-    ERETXDONE   : in  std_logic;
+    ERETXSTART : out std_logic;
+    ERETXADDR  : in  std_logic_vector(9 downto 0);
+    ERETXDONE  : in  std_logic;
     -- ARP Request
     ARPSTART   : out std_logic;
-    ARPADDR   : in  std_logic_vector(9 downto 0);
+    ARPADDR    : in  std_logic_vector(9 downto 0);
     ARPDONE    : in  std_logic;
     -- input event
     EVENTSTART : out std_logic;
@@ -47,7 +48,13 @@ architecture Behavioral of inputcontrol is
   signal addra : std_logic_vector(9 downto 0) := (others => '0');
   signal wea   : std_logic                    := '0';
 
-  signal dinl : std_logic_vector(15 downto 0) := (others => '0');
+  signal dinl  : std_logic_vector(15 downto 0) := (others => '0');
+  signal lenin : std_logic_vector(15 downto 0) := (others => '0');
+
+  signal web : std_logic := '0';
+
+  signal crcreset, crcvalid, crcdone : std_logic := '0';
+  signal crcvalidl                   : std_logic := '0';
 
   -- output
   signal intaddrb : std_logic_vector(7 downto 0)  := (others => '0');
@@ -59,79 +66,107 @@ architecture Behavioral of inputcontrol is
   signal start : std_logic := '0';
 
   signal len : std_logic_vector(11 downto 0) := (others => '0');
-  
+
+
 
   -- fsm
-  type states is (none, dinst, dinw, fstart, nextpkt,
+  type states is (none, dinst, dinw, crcvfy, lenupd, fstart, protoread,
+                  nextpkt, crcerr, 
                   arppkt, arpopchk, arpqstart, arpwait,
                   ipchka, icmpchk, udpporta, udpchk, dretxst, dretxwait,
-                  eretxst, eretxwait, 
-                  evtstart, evtwait, 
+                  eretxst, eretxwait,
+                  evtstart, evtwait,
                   echoreq, icmpstart, pingwait);
   signal cs, ns : states := none;
 
 -------------------------------------------------------------------------------
 -- DEBUG
 -------------------------------------------------------------------------------
-component jtagsimpleout 
+  component jtagsimpleout
     generic (
-    JTAG_CHAIN : integer := 0;
-    JTAGN : integer := 32);
-  port (
-    CLK : in std_logic;
-    DIN : in std_logic_vector(JTAGN-1 downto 0));
-end component; 
+      JTAG_CHAIN :    integer := 0;
+      JTAGN      :    integer := 32);
+    port (
+      CLK        : in std_logic;
+      DIN        : in std_logic_vector(JTAGN-1 downto 0));
+  end component;
 
-signal jtagin : std_logic_vector(127 downto 0) := (others => '0');
-signal statedebug : std_logic_vector(7 downto 0) := (others => '0');
+  signal jtagin     : std_logic_vector(127 downto 0) := (others => '0');
+  signal statedebug : std_logic_vector(7 downto 0)   := (others => '0');
 
 -------------------------------------------------------------------------------
+  component crcverify
+    port (
+      CLK      : in  std_logic;
+      DIN      : in  std_logic_vector(15 downto 0);
+      DINEN    : in  std_logic;
+      RESET    : in  std_logic;
+      CRCVALID : out std_logic;
+      DONE     : out std_logic);
+  end component;
 
 
 begin  -- Behavioral
 
-  PKTDATA <= dob; 
+  PKTDATA <= dob;
+  CRCIOERR <= '1' when cs = crcerr else '0'; 
+  lenin <= X"0" & len;
+  crcreset <= '1' when cs = none else '0';
+  
+  crcverify_inst : crcverify
+    port map (
+      CLK      => CLK,
+      DIN      => dinl,
+      DINEN    => wea,
+      RESET    => crcreset,
+      CRCVALID => crcvalid,
+      DONE     => crcdone);
+
   frame_buffer : RAMB16_S18_S18
     generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY") 
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY")
     port map (
-      DOA   => open,
-      DOB   => dob,
-      DOPA  => open,
-      DOPB  => open,
-      ADDRA => addra,
-      ADDRB => addrb,
-      CLKA  => CLK,
-      CLKB  => CLK,
-      DIA   => dinl,
-      DIB   => X"0000",
-      DIPA  => "00",
-      DIPB  => "00",
-      ENA   => '1',
-      ENB   => '1',
-      SSRA  => '0',
-      SSRB  => '0',
-      WEA   => WEA,
-      WEB   =>'0'
+      DOA                 => open,
+      DOB                 => dob,
+      DOPA                => open,
+      DOPB                => open,
+      ADDRA               => addra,
+      ADDRB               => addrb,
+      CLKA                => CLK,
+      CLKB                => CLK,
+      DIA                 => dinl,
+      DIB                 => lenin,
+      DIPA                => "00",
+      DIPB                => "00",
+      ENA                 => '1',
+      ENB                 => '1',
+      SSRA                => '0',
+      SSRB                => '0',
+      WEA                 => wea,
+      WEB                 => web
       );
 
 
   addrb <= "00" & intaddrb when mode = 0 else
            pingaddr        when mode = 1 else
-           dretxaddr        when mode = 2 else
+           dretxaddr       when mode = 2 else
            arpaddr         when mode = 3 else
            eventaddr       when mode = 4 else
-           ERETXADDR when mode = 5 else
+           ERETXADDR       when mode = 5 else
            "0000000000";
 
   -- DEBUGGING
-  
-  jtagin(63 downto 0) <= X"12345678" & X"0" &  LEN & X"00" & statedebug;
+
+  jtagin(63 downto 0)  <= X"12345678" & X"0" & LEN & X"00" & statedebug;
   jtagin(79 downto 64) <= "000000" & addrb;
-  
+
 
 
   -----------------------------------------------------------------------------
+
+  web       <= '1' when cs = lenupd else '0';
+  crcvalidl <= crcvalid;
+
   main : process(CLK, RESET)
   begin
     if RESET = '1' then
@@ -155,9 +190,9 @@ begin  -- Behavioral
 
 
         if wea = '1' and addra = "00000000000" then
-          len <= dinl(11 downto 0); 
+          len <= dinl(11 downto 0) - 4;
         end if;
-        
+
         if start = '1' and mode = 1 then
           PINGSTART <= '1';
         else
@@ -188,17 +223,16 @@ begin  -- Behavioral
           ERETXSTART <= '0';
         end if;
 
-
       end if;
     end if;
   end process main;
 
   fsm : process(CS, WEA, dob, ARPDONE, PINGDONE, DRETXDONE,
-                ERETXDONE, EVENTDONE)
+                ERETXDONE, EVENTDONE, crcvalid, crcdone)
   begin
     case CS is
       when none =>
-        statedebug <= X"00"; 
+        statedebug <= X"00";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -206,7 +240,7 @@ begin  -- Behavioral
         ns         <= dinst;
 
       when dinst =>
-        statedebug <= X"01"; 
+        statedebug <= X"01";
         lnextframe <= '1';
         mode       <= 0;
         start      <= '0';
@@ -218,19 +252,59 @@ begin  -- Behavioral
         end if;
 
       when dinw =>
-        statedebug <= X"02"; 
+        statedebug <= X"02";
         lnextframe <= '1';
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"07";
         if wea = '0' and addra >= len(11 downto 1) then
-          ns       <= fstart;
+          ns       <= crcvfy;
         else
           ns       <= dinw;
         end if;
 
+      when crcvfy =>
+        statedebug <= X"02";
+        lnextframe <= '0';
+        mode       <= 0;
+        start      <= '0';
+        intaddrb   <= X"07";
+        if crcdone = '1' then
+          if crcvalidl = '1' then
+            ns     <= lenupd;
+          else
+            ns     <= crcerr;
+          end if;
+        else
+          ns       <= crcvfy;
+        end if;
+
+      when crcerr =>
+        statedebug <= X"02";
+        lnextframe <= '0';
+        mode       <= 0;
+        start      <= '0';
+        intaddrb   <= X"07";
+        ns <= nextpkt;
+        
+      when lenupd =>
+        statedebug <= X"02";
+        lnextframe <= '0';
+        mode       <= 0;
+        start      <= '0';
+        intaddrb   <= X"00";
+        ns         <= protoread;
+        
+      when protoread =>
+        statedebug <= X"02";
+        lnextframe <= '0';
+        mode       <= 0;
+        start      <= '0';
+        intaddrb   <= X"07";
+        ns         <= fstart;
+        
       when fstart =>
-        statedebug <= X"03"; 
+        statedebug <= X"03";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -244,7 +318,7 @@ begin  -- Behavioral
         end if;
 
       when nextpkt =>
-        statedebug <= X"04"; 
+        statedebug <= X"04";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -252,7 +326,7 @@ begin  -- Behavioral
         ns         <= none;
 
       when arppkt =>
-        statedebug <= X"05"; 
+        statedebug <= X"05";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -260,7 +334,7 @@ begin  -- Behavioral
         ns         <= arpopchk;
 
       when arpopchk =>
-        statedebug <= X"06"; 
+        statedebug <= X"06";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -272,7 +346,7 @@ begin  -- Behavioral
         end if;
 
       when arpqstart =>
-        statedebug <= X"07"; 
+        statedebug <= X"07";
         lnextframe <= '0';
         mode       <= 3;
         start      <= '1';
@@ -280,7 +354,7 @@ begin  -- Behavioral
         ns         <= arpwait;
 
       when arpwait =>
-        statedebug <= X"08"; 
+        statedebug <= X"08";
         lnextframe <= '0';
         mode       <= 3;
         start      <= '0';
@@ -296,7 +370,7 @@ begin  -- Behavioral
         -- IP Check path
         -------------------------------------------------------------------
       when ipchka =>
-        statedebug <= X"09"; 
+        statedebug <= X"09";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -304,7 +378,7 @@ begin  -- Behavioral
         ns         <= icmpchk;
 
       when icmpchk =>
-        statedebug <= X"0A"; 
+        statedebug <= X"0A";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -318,7 +392,7 @@ begin  -- Behavioral
         end if;
 
       when echoreq =>
-        statedebug <= X"0B"; 
+        statedebug <= X"0B";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -330,7 +404,7 @@ begin  -- Behavioral
         end if;
 
       when icmpstart =>
-        statedebug <= X"0C"; 
+        statedebug <= X"0C";
         lnextframe <= '0';
         mode       <= 1;
         start      <= '1';
@@ -338,7 +412,7 @@ begin  -- Behavioral
         ns         <= pingwait;
 
       when pingwait =>
-        statedebug <= X"0D"; 
+        statedebug <= X"0D";
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -349,96 +423,96 @@ begin  -- Behavioral
           ns       <= pingwait;
         end if;
 
-       ------------------------------------------------------------------------
+        ------------------------------------------------------------------------
         -- UDP Packets
         -----------------------------------------------------------------------
 
       when udpporta =>
-        statedebug <= X"0E"; 
+        statedebug <= X"0E";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"13";
         ns         <= udpchk;
-        
+
       when udpchk =>
-        statedebug <= X"0F"; 
+        statedebug <= X"0F";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"13";
         if dob = X"1130" then
-          ns <= dretxst;
+          ns       <= dretxst;
         elsif dob = X"157c" then
-          ns <= eretxst; 
+          ns       <= eretxst;
         elsif dob = X"1388" then
-          ns <= evtstart; 
+          ns       <= evtstart;
         else
-          ns <= nextpkt; 
+          ns       <= nextpkt;
         end if;
-        
+
       when dretxst =>
-        statedebug <= X"10"; 
+        statedebug <= X"10";
         lnextframe <= '0';
         mode       <= 2;
         start      <= '1';
         intaddrb   <= X"13";
-        ns <= dretxwait;
-        
+        ns         <= dretxwait;
+
       when dretxwait =>
-        statedebug <= X"11"; 
+        statedebug <= X"11";
         lnextframe <= '0';
         mode       <= 2;
         start      <= '0';
         intaddrb   <= X"13";
-        if DRETXDONE ='1' then
-          ns <= nextpkt;
+        if DRETXDONE = '1' then
+          ns       <= nextpkt;
         else
-          ns <= dretxwait; 
+          ns       <= dretxwait;
         end if;
-        
+
       when eretxst =>
-        statedebug <= X"10"; 
+        statedebug <= X"10";
         lnextframe <= '0';
         mode       <= 5;
         start      <= '1';
         intaddrb   <= X"13";
-        ns <= eretxwait;
-        
+        ns         <= eretxwait;
+
       when eretxwait =>
-        statedebug <= X"11"; 
+        statedebug <= X"11";
         lnextframe <= '0';
         mode       <= 5;
         start      <= '0';
         intaddrb   <= X"13";
-        if ERETXDONE ='1' then
-          ns <= nextpkt;
+        if ERETXDONE = '1' then
+          ns       <= nextpkt;
         else
-          ns <= eretxwait; 
+          ns       <= eretxwait;
         end if;
-        
+
       when evtstart =>
-        statedebug <= X"12"; 
+        statedebug <= X"12";
         lnextframe <= '0';
         mode       <= 4;
         start      <= '1';
         intaddrb   <= X"13";
-        ns <= evtwait;
-        
+        ns         <= evtwait;
+
       when evtwait =>
-        statedebug <= X"13"; 
+        statedebug <= X"13";
         lnextframe <= '0';
         mode       <= 4;
         start      <= '0';
         intaddrb   <= X"13";
-        if EVENTDONE ='1' then
-          ns <= nextpkt;
+        if EVENTDONE = '1' then
+          ns       <= nextpkt;
         else
-          ns <= evtwait; 
+          ns       <= evtwait;
         end if;
-        
+
       when others =>
-        statedebug <= X"14"; 
+        statedebug <= X"14";
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';

@@ -20,7 +20,7 @@ entity pingresponse is
     DONE      : out std_logic;
     INPKTDATA : in  std_logic_vector(15 downto 0);
     INPKTADDR : out std_logic_vector(9 downto 0);
-
+    PKTSUCCESS : out std_logic; 
     -- output
     ARM   : out std_logic;
     GRANT : in  std_logic;
@@ -53,7 +53,7 @@ architecture Behavioral of pingresponse is
 
 
   type states is (none, ipstarts, ipwait, pingstarts, pingwait, armout, grantw,
-                  pktout, pktdone);
+                  pktout, pktsuc, pktdone);
 
   signal cs, ns : states := none;
 
@@ -160,10 +160,11 @@ begin  -- Behavioral
   ipstart   <= '1' when cs = ipstarts   else '0';
   pingstart <= '1' when cs = pingstarts else '0';
 
-  --ARM <= '1' when cs = armout else '0'; DEBUGGING
+  
   ARM <= '1' when cs = armout or cs = grantw else '0';
   
-
+  PKTSUCCESS <= '1' when cs = pktsuc else '0';
+  
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -244,10 +245,16 @@ begin  -- Behavioral
         DEBUG(7 downto 0) <= X"07"; 
         insel <= '1';
         if addrb >= datalen + "0000010010" then
-          ns  <= pktdone;
+          ns  <= pktsuc;
         else
           ns  <= pktout;
         end if;
+        
+      when pktsuc =>
+        DEBUG(7 downto 0) <= X"08"; 
+        insel <= '1';
+        ns    <= pktdone;
+
 
       when pktdone =>
         DEBUG(7 downto 0) <= X"08"; 

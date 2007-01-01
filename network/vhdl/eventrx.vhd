@@ -14,6 +14,8 @@ entity eventrx is
     INPKTDATA : in  std_logic_vector(15 downto 0);
     START     : in  std_logic;
     DONE      : out std_logic;
+    EVTRXSUC : out std_logic;
+    EVTFIFOFULL : out std_logic; 
     -- input parameters
     MYMAC     : in  std_logic_vector(47 downto 0);
     MYIP      : in  std_logic_vector(31 downto 0);
@@ -133,7 +135,12 @@ begin  -- Behavioral
     
   INPKTADDR <= inaddr when asel = 0 else outaddr;
   DONE <= '1' when cs = dones else '0'; 
-  outaddr <= ebaddr + "0000011000"; 
+  outaddr <= ebaddr + "0000011000";
+
+  EVTRXSUC <= '1' when cs = successt else '0';
+  EVTFIFOFULL <= '1' when cs = failst else '0'; 
+  
+
   main : process(CLK)
   begin
     if rising_edge(CLK) then

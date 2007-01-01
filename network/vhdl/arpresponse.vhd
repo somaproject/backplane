@@ -20,7 +20,7 @@ entity arpresponse is
     DONE      : out std_logic;
     INPKTDATA : in  std_logic_vector(15 downto 0);
     INPKTADDR : out std_logic_vector(9 downto 0);
-
+    PKTSUCCESS : out std_logic; 
     -- output
     ARM   : out std_logic;
     GRANT : in  std_logic;
@@ -46,7 +46,7 @@ architecture Behavioral of arpresponse is
                   destmac1, destmac2, destmac3, destmac4, srcmac1,
                   srcmac2, srcmac3, sendmac1, sendmac2, sendmac3, sendip1,
                   sendip2, tgtmac1, tgtmac2, tgtmac3, tgtmac4, tgtip1,
-                  tgtip2, armout, grantw, pktout, pktdone);
+                  tgtip2, armout, grantw, pktout, pktsuc,  pktdone);
 
   signal cs, ns : states := none;
 
@@ -67,7 +67,7 @@ begin  -- Behavioral
   DONE <= '1' when cs = pktdone else '0';
   ARM  <= '1' when cs = armout  else '0';
 
-
+  PKTSUCCESS <= '1' when cs = pktsuc else '0'; 
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -272,16 +272,23 @@ begin  -- Behavioral
           ns      <= grantw;
         end if;
 
-      when pktout =>
+       when pktout =>
         WEA       <= '0';
         dmux      <= 1;
         addra     <= X"15";
         INPKTADDR <= "0000010000";
         if addrb = "0001000001" then
-          ns      <= pktdone;
+          ns      <= pktsuc;
         else
           ns      <= pktout;
         end if;
+
+       when pktsuc =>
+        WEA       <= '0';
+        dmux      <= 1;
+        addra     <= X"15";
+        INPKTADDR <= "0000010000";
+        ns <= pktdone; 
 
       when pktdone =>
         WEA       <= '0';

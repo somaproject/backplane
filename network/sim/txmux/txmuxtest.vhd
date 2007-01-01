@@ -31,6 +31,7 @@ architecture Behavioral of txmuxtest is
       GRANT    : out std_logic_vector(6 downto 0);
       ARM      : in  std_logic_vector(6 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
+      TXDONE : out std_logic; 
       NEWFRAME : out std_logic
       );
   end component;
@@ -58,7 +59,8 @@ architecture Behavioral of txmuxtest is
                               := (others => '0');
   
   signal NEWFRAME : std_logic := '0';
-
+  signal TXDONE : std_logic := '0';
+  
 begin  -- Behavioral
 
 
@@ -72,7 +74,8 @@ begin  -- Behavioral
       DIN3 => DIN3,
       DIN4 => DIN4,
       DIN5 => DIN5,
-      DIN6 => DIN6, 
+      DIN6 => DIN6,
+      TXDONE => TXDONE, 
       GRANT    => GRANT,
       ARM      => ARM,
       DOUT     => DOUT,

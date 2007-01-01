@@ -27,6 +27,7 @@ architecture Behavioral of inputcontroltest is
       DINEN      : in  std_logic;
       DIN        : in  std_logic_vector(15 downto 0);
       PKTDATA    : out std_logic_vector(15 downto 0);
+      CRCIOERR : out std_logic; 
       -- ICMP echo request IO
       PINGSTART  : out std_logic;
       PINGADDR   : in  std_logic_vector(9 downto 0);
@@ -80,7 +81,8 @@ architecture Behavioral of inputcontroltest is
   signal EVENTADDR  : std_logic_vector(9 downto 0)  := (others => '0');
   signal EVENTDONE  : std_logic                     := '0';
 
-
+  signal CRCIOERR : std_logic := '0';
+  
 begin  -- Behavioral
 
   inputcontrol_uut : inputcontrol
@@ -91,6 +93,7 @@ begin  -- Behavioral
       DINEN      => DINEN,
       DIN        => DIN,
       PKTDATA    => PKTDATA,
+      CRCIOERR => CRCIOERR, 
       PINGSTART  => PINGSTART,
       PINGADDR   => PINGADDR,
       PINGDONE   => PINGDONE,
@@ -116,7 +119,7 @@ begin  -- Behavioral
 
   begin
     -- arp query
-    networkstack.writepkt("arpquery.txt", CLK, DINEN, NEXTFRAME, DIN);
+    networkstack.writepkt("arpquery.txt.crc", CLK, DINEN, NEXTFRAME, DIN);
     wait until rising_edge(CLK) and ARPSTART ='1';
     wait for 20 us;
     ARPDONE <= '1';
@@ -125,7 +128,7 @@ begin  -- Behavioral
 
     -- icmp query
     
-    networkstack.writepkt("icmpechoreq.txt", CLK, DINEN, NEXTFRAME, DIN);
+    networkstack.writepkt("icmpechoreq.txt.crc", CLK, DINEN, NEXTFRAME, DIN);
     wait until rising_edge(CLK) and PINGSTART ='1';
     wait for 20 us;
     PINGDONE <= '1';
@@ -133,6 +136,14 @@ begin  -- Behavioral
     PINGDONE <= '0';
 
     wait for 10 us;
+    networkstack.writepkt("arpquery.txt.crcerror", CLK, DINEN, NEXTFRAME, DIN);
+    wait until rising_edge(CLK) and CRCIOERR ='1';
+    wait for 20 us;
+
+    networkstack.writepkt("icmpechoreq.txt.crcerror", CLK, DINEN,
+                          NEXTFRAME, DIN);
+    wait until rising_edge(CLK) and CRCIOERR ='1';
+    
     assert False report "End of Simulation" severity Failure;
     wait; 
     

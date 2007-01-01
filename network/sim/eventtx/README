@@ -1,8 +1,12 @@
-Here we generate a series of event packets via the linux UDP/IP stack
-and attempt to transmit them; capture them with tcpdump; and then test
-and make sure they look like what we were expecting.
+Here we generate a series of EventTX packets in python and send them via the linux UDP/IP stack, capturing them with tcpdump. This lets us use linux's UDP stack as a reference implementation. 
 
 
+This code only tests proper event sequence, event-set, and address behavior. we do not test the RX interface. 
+
+
+-------------------------------------------------------
+to generate the fake packets
+-------------------------------------------------------
 
 Run eventgen.py and capture the pending packets tcpdump
 
@@ -17,12 +21,8 @@ This gives us:
 
 or 
 
-    
-
-
 Then run dumpparse.py which will: 
   1. extract out the UDP frames
   2. normalize the IP header: remove the sequence number and set the checksum to zero
   3. clear the UDP checksum
   4. packetize it in a format that we can read / validate in vhdl
-

@@ -1,84 +1,55 @@
-Event Receive test. 
-Let's separate packet generation from testing. First, how would we like to test? 
+Event Receive test -- test the proper input of events onto the
+backplane, and verify proper tx/rx packet retransmission behavior.
 
-I think the most robust way of doing this is to generate all possible responses, and then in vhdl pick them. 
+We have the standard fifo-overflow-detection problem here: How do we
+test proper fifo overflow behavior without going through the hassle of
+modelling the entire system in a tick-accruate way? 
 
-We generate a series of event tuples for the intial check. 
+What behaviors do we care about? 
+1. are inbound events from a given IP placed on the event bus at all? 
 
-eventcount
+2. are they placed in the proper order, i.e. is the first event in an inbound packet placed first? 
 
-input packet 
+3. if we send too many events are they committed and rejected in an
+atomic fashion?
 
-output packet
+To generate the packet, we create inbound events from a client and
+generate responses. 
 
-separate event file, listing each EADDR / EDATA combination
+We also read in all events via the eventrxverify module from events.txt
+
+
+---------------------------------------------------------------------
+Data Generation
+---------------------------------------------------------------------
+We have a script, network.py, which has a client mode and a server mode. 
+
+SERVER MODE: the system listens for incoming event sets, and then responds to the sender with an event success reply
+
+to allow for later packet detection and analysis. 
+
+CLIENT MODE: 
+we generate event sets and send them to the server, writing 'events.txt', with all events in hex (suuitable for reading with hread)
+
+OTHER DATA: 
+We need to capture the TX and two RX packets from each eventset via tcpdump: 
 
 tcpdump -i eth2  udp port 5000  -t -xx -s 2000 > data.tcpdump
 
-parse out events and split them into readable chunks from the dump
+we then need to parse the data.tcpdump and turn it into the
+appropriate packets for input into InputControl and comparison with
+the output. This is done by dumpparse.py, which separates the dump by
+source/destination port. The format is wordlen, #bytes, and the client
+requests have the FCS appended.
 
 
-VHDL test pcode: 
---------------------------------------------------------------------------
-Test #1 simple correct response
---------------------------------------------------------------------------
+-------------------------------------------------------------------------
+VHDL testbench organization
+-------------------------------------------------------------------------
 
-Can we send a single event packet to eventrx and
-   a. do the events appear on the bus? 
-   b. do we get a proper UDP response? 
+1. read in the client requests, and push them to the inputcontrol. Record the number of events transmitted in datagram_ecnt; 
 
-1. enable ECYCLE
-2. place expected events into event output verify buffer
-3. send the request packet
-4. wait for the response-success packet and the event output verify buffer to be empty
+2. wait for a response from the server, and if it's a success, do nothing. If it's a failure, use datagram-ecnt and datagram_totalcnt to invalidate the events in the eventverify module. 
 
---------------------------------------------------------------------------
-Test #2 buffer overflow test
---------------------------------------------------------------------------
-
-1. disable ECYCLE
-2. while pendinglen < cnt:   
-   place expected events into output verify buffer
-   send request packet
-   wait for response
-
---------------------------------------------------------------------------
-Test #3 large scale multi-packet fifo test
---------------------------------------------------------------------------
-
-Recognizing that randomized testing will often reveil bugs in either
-design, implementation, or documentation....
-
-We need a good functional definition for "correct operation". One I
-like is "If we receive a success response, then those events will be
-transmitted in the correct contained order. If we receive a failed
-response, then those events are not placed on the event bus."
-
-
-1. enable ecycle
-2. 
-
-
-event verify buffer: 
-1. give a filename of EADDR/EDATAs, it reads all of them in internally
-
-2. all are assumed to be valid unless told otherwise by an INVCLK
-
-3. wait and selectively invalidate ints by the ID
-
-okay, but, but, how do we handle the empty-event case? an "ignore null
-events" option?
-
-So this has an EARX, EDRX, EDRXSEL, ECYCLE, CLK interface
-
-
-
-------------------------------------------------------------------
-Processes
-
-output_verify: 
-wait until output arm'd,
-grant
-perform comparison with existing data except for success bit
-
-
+datagram_ecnt: number of events in current pending datagram
+datagram_totalcnt: number of events sent in total

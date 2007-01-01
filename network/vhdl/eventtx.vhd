@@ -26,6 +26,7 @@ entity eventtx is
     DOEN        : out std_logic;
     GRANT       : in  std_logic;
     ARM         : out std_logic;
+    PKTSUCCESS : out std_logic; 
     -- Retx write interface
     RETXID      : out std_logic_vector(13 downto 0);
     RETXDOUT    : out std_logic_vector(15 downto 0);
@@ -94,7 +95,7 @@ architecture Behavioral of eventtx is
   signal outen         : std_logic                     := '0';
   signal ovalid, onext : std_logic                     := '0';
 
-  type outstates is (none, armw, pktout, done);
+  type outstates is (none, armw, pktout, pktsuc, done);
   signal ocs, ons : outstates := none;
 
   -- retx output side
@@ -223,6 +224,7 @@ begin  -- Behavioral
 
   nextpktsize <= ('0' & ebcnt & "000") + ("00" & datalen );
 
+  PKTSUCCESS <= '1' when ocs = pktsuc else '0'; 
   main_input : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -412,11 +414,13 @@ begin  -- Behavioral
         onext <= '0';
         if olen(10 downto 1) = oaddr then
           
-          ons <= done;
+          ons <= pktsuc;
         else
           ons <= pktout;
         end if;
-
+      when pktsuc =>
+        onext <= '0';
+        ons <= done; 
       when done   =>
         onext <= '1';
         ons   <= none;

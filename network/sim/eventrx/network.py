@@ -16,8 +16,8 @@ import sys
 
 def randEvent():
     e = Event()
-    e.eaddr = (n.rand(10) * 2**8).astype(n.uint8)
-    e.edata = (n.rand(12) * 2**8).astype(n.uint8)
+    e.eaddr = (n.random.rand(10) * 2**8).astype(n.uint8)
+    e.edata = (n.random.rand(12) * 2**8).astype(n.uint8)
 
     return e
 
@@ -57,10 +57,9 @@ def server():
         svrsocket.sendto(respdata, address)
 
 
-
 def sendEvents(eventlist):
 
-    nonce = int(round(n.rand()* (2**16-1)))
+    nonce = int(round(n.random.rand()* (2**16-1)))
     ecnt = len(eventlist)
     
     data = struct.pack(">HH", nonce, ecnt)
@@ -76,7 +75,7 @@ def sendEvents(eventlist):
     assert (len(data) - 4) % 32 == 0
     
     
-    host = "shannon.mwl.mit.edu"
+    host = "10.0.1.100"
     port = 5000
 
     addr = (host,port)
@@ -85,9 +84,8 @@ def sendEvents(eventlist):
     UDPSock.sendto(data,addr)
 
     resp = UDPSock.recv(100)
-    print len(resp)
     (nonceresp, suc) = struct.unpack(">HH", resp)
-    print nonceresp, nonce
+    print nonceresp, nonce, "success = ", suc
     
 def client():
     eventsets = []
@@ -95,7 +93,7 @@ def client():
     for j in range(100):
         el = []
 
-        for i in range(int(round(n.rand() * 8))):
+        for i in range(int(round(n.random.rand() * 8))):
             el.append(randEvent())
         eventsets.append(el)
         

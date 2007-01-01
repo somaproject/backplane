@@ -167,7 +167,7 @@ begin  -- Behavioral
 
   begin
     wait for 2 us;
-    networkstack.writepkt("goodquery.txt", CLK, DINEN, NEXTFRAME, DIN);
+    networkstack.writepkt("goodquery.txt.crc", CLK, DINEN, NEXTFRAME, DIN);
     wait until rising_edge(CLK) and ARPSTART = '1';
     wait until rising_edge(CLK) and ARM = '1';
     wait for 20 us;
@@ -193,7 +193,7 @@ begin  -- Behavioral
     wait until rising_edge(CLK) and ARPDONE = '1';
 
     wait for 2 us;
-    networkstack.writepkt("notusquery.txt", CLK, DINEN, NEXTFRAME, DIN);
+    networkstack.writepkt("notusquery.txt.crc", CLK, DINEN, NEXTFRAME, DIN);
 
     wait until rising_edge(CLK) and ARPDONE = '1';
 

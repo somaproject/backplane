@@ -3,13 +3,22 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
+$(WORKDIR)/crc_combinational/_behavioral.var: ../../crc/vhdl/crc_combinational.vhd
+	$(VHDLC) ../../crc/vhdl/crc_combinational.vhd
+
+$(WORKDIR)/crc16_combinational/_behavioral.var: ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd
+	$(VHDLC) ../../crc/vhdl/crc16_combinational.vhd
+
+$(WORKDIR)/crcverify/_behavioral.var: ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd
+	$(VHDLC) ../../crc/vhdl/crcverify.vhd
+
+$(WORKDIR)/networkstack/prim.var: ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/networkstack.vhd
 	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/inputcontrol/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/inputcontrol.vhd
+$(WORKDIR)/inputcontrol/_behavioral.var: ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/networkstack.vhd ../../vhdl/inputcontrol.vhd
 	$(VHDLC) ../../vhdl/inputcontrol.vhd
 
-hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/inputcontrol/_behavioral.var 
+hw: $(WORKDIR)/crc_combinational/_behavioral.var $(WORKDIR)/crc16_combinational/_behavioral.var $(WORKDIR)/crcverify/_behavioral.var $(WORKDIR)/networkstack/prim.var $(WORKDIR)/inputcontrol/_behavioral.var 
 
 comp: 
 

@@ -222,4 +222,15 @@ begin  -- Behavioral
 
   end process;
 
+  -- writes to the retransmission buffer
+  process
+    begin
+      while true loop
+        wait until rising_edge(CLK) and RETXDONE = '1';
+        RETXPENDING <= '1'; 
+        wait for 1 us;
+        RETXPENDING <= '0'; 
+        
+      end loop;
+    end process; 
 end Behavioral;

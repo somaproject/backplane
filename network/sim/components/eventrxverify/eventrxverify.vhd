@@ -157,6 +157,15 @@ begin  -- Behavioral
           assert edatabus = edatabus_expected
             report "Error reading event bytes" severity error;
 
+          if eaddrbus(77 downto 0) /= eaddrbus_expected(77 downto 0) or
+            edatabus /= edatabus_expected then
+            EVTERROR <= '1';
+          else
+            EVTERROR <= '0';
+            report "Successful read of expected event " & integer'image(eventpos)  severity note;
+            
+          end if; 
+ 
           eventpos := eventpos + 1;
           EVENTPOSOUT <= eventpos;
 
