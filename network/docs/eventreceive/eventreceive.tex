@@ -1,8 +1,8 @@
 \section{Event Receive Packet Processing Module}
 
 The event receiver interface takes events off of the network and
-places them on the event bus.It reads them in and places them in a
-64-deep FIFO, where they are then sent one event at a time on the bus.
+places them on the event bus. They are also placed in a 64-event-deep
+FIFO, where they are then sent one event at a time on the Event Bus.
 
 The Event Protocol used to send events to the backplane is the most
 complex soma protocol, in an attempt to prevent inbound event

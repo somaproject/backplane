@@ -9,8 +9,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="ping.fsm.svg"
-   sodipodi:docbase="/home/jonas/soma/backplane/network/docs"
-   inkscape:version="0.44+devel"
+   sodipodi:docbase="/home/jonas/soma/backplane/network/docs/ping"
+   inkscape:version="0.44.1"
    sodipodi:version="0.32"
    id="svg1996"
    height="328.125"
@@ -48,10 +48,10 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="0"
+     inkscape:window-y="25"
      inkscape:window-x="0"
      inkscape:window-height="1023"
-     inkscape:window-width="1678"
+     inkscape:window-width="1590"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
      gridtolerance="10000"
@@ -63,9 +63,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="344.515"
-     inkscape:cx="59.300276"
-     inkscape:zoom="0.98994949"
+     inkscape:cy="215.77294"
+     inkscape:cx="563.89035"
+     inkscape:zoom="2.8"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -167,7 +167,7 @@
        d="M 90.625,730.625 L 165.625,730.625"
        id="path1955"
        sodipodi:nodetypes="cc" />
-  <g
+    <g
        id="g2164"
        transform="translate(71.875,768.75)">
       <g
@@ -537,9 +537,9 @@
          y="940">ADDRB=DATALEN+18</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
-       d="M 456.25,943.125 L 609.375,943.125 C 609.375,943.125 621.875,943.125 621.875,930.625 C 621.875,918.125 621.875,752.5 621.875,752.5 L 621.875,752.5"
+       d="M 456.25,943.125 L 609.375,943.125 C 609.375,943.125 621.875,943.125 621.875,930.625 L 621.875,833.75"
        id="path2638"
-       sodipodi:nodetypes="ccscc" />
+       sodipodi:nodetypes="ccsc" />
     <g
        id="g5621"
        transform="translate(71.875,981.25)">
@@ -674,5 +674,45 @@
        height="328.125"
        x="0"
        y="661.875" />
+    <g
+       id="g1973"
+       transform="translate(493.75,850)">
+      <g
+         transform="translate(-75,0)"
+         id="g1975">
+        <rect
+           rx="11.607143"
+           style="fill:white;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-miterlimit:3.9000001;stroke-dasharray:none;stroke-opacity:1"
+           id="rect1977"
+           width="62.5"
+           height="37.5"
+           x="171.875"
+           y="-56.875"
+           ry="11.607143" />
+        <rect
+           style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.25;stroke-miterlimit:3.9000001;stroke-dasharray:none;stroke-opacity:1"
+           id="rect1979"
+           width="68.75"
+           height="43.75"
+           x="168.75"
+           y="-60" />
+      </g>
+      <text
+         sodipodi:linespacing="125%"
+         id="text1981"
+         y="-35"
+         x="127.87411"
+         style="font-size:10.19999981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="-35"
+           x="127.87411"
+           id="tspan1983"
+           sodipodi:role="line">PKTSUC</tspan></text>
+    </g>
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       d="M 621.875,131.25 L 621.875,90.625"
+       id="path1985"
+       transform="translate(0,661.875)" />
   </g>
 </svg>

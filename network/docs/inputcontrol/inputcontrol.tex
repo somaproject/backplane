@@ -7,9 +7,10 @@ matches) and if it is:
 
 \begin{itemize}
 \item An inbound event packet
+\item An inbound event retransmission request
 \item An inbound data retransmission request
-\item An ARP Who-Has query for us
-\item A ping packet. 
+\item An ARP who-has query directed at us
+\item An ICMP Echo request (ping) packet. 
 \end{itemize}
 
 It then triggers the correct packet transmission module and provides
@@ -41,12 +42,18 @@ the frame into the buffer. The FSM then examines the contents of the
 frame by setting \signal{INTADDRB} to various values and decoding the
 results.
 
+We validate the inbound CRC-32 checksum using the CRC-Verify module,
+and also modify the length to be four less than the received length
+value, effectively deleting the terminal CRC. 
+
 \begin{itemize}
 \item \textbf{ARP Query} : The FSM checks Ethernet Protocol type and
   ARP query type.
 \item \textbf{ICMP Echo Request}: The FSM checks Ethernet Protocol
-  type, IP protocol type, and ICMP meaning fields.
-\item \textbf{Retransmission Request} : The FSM checks Ethernet
+  type, IP protocol type, and ``ICMP meaning'' fields.
+\item \textbf{Data Retransmission Request} : The FSM checks Ethernet
+  Protocol type, IP protocol type, and port number.
+\item \textbf{Event Retransmission Request} : The FSM checks Ethernet
   Protocol type, IP protocol type, and port number.
 \item \textbf{Inbound events} : The FSM checks Ethernet Protocol type,
   IP protocol type, and port number.

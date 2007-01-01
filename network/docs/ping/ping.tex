@@ -55,7 +55,6 @@ payload.
 \label{ping.fsm}
 \end{figure}
 
-
 The module has two primary components, an IP Writer (which writes
 frame, MAC, and IP header information) and an ICMP Writer, which
 writes the relevant ICMP header information as well as copying the
@@ -66,4 +65,3 @@ buffer; once both have had a chance to write their data, the main FSM
 outputs the packet via the TX Mux.
 
 The design of both components is similar to the UDPHeaderWriter module. 
-
