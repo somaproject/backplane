@@ -1,0 +1,34 @@
+For the data packet generation, we: 
+
+1. Generate a series of data packets with varying src/IDs and data lengths
+2. write these out at varying points during the ecycle on A and B
+3. send them out via UDP
+4. try and match the correct packets
+
+
+Our output is a giant list of:
+
+dataa.txt
+DENA DATA
+
+datab.txt
+DENB DATAB
+
+It will also TX ethernet data, with the assumption that you have a device on your system with IP 192.168.0.2 and subnet mask 255.255.255.0. 
+
+You can capture this data using tcpdump if you're running as root and: 
+ tcpdump -p src host 192.168.0.2 and  udp -t -xx -s 2000 > data.tcpdump
+
+
+Then run dumpparse.py which will: 
+  1. extract out the UDP frames
+  2. normalize the IP header: remove the sequence number and set the checksum to zero
+  3. clear the UDP checksum
+  4. packetize it in a format that we can read / validate in vhdl
+
+
+----------------------------------------------------------------
+To validate the packets we capture them into a temporary buffer
+and then compare them with the expected on-disk results
+
+
