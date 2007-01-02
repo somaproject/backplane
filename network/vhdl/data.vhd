@@ -14,6 +14,8 @@ entity data is
     MYIP        : in  std_logic_vector(31 downto 0);
     MYMAC       : in  std_logic_vector(47 downto 0);
     MYBCAST     : in  std_logic_vector(31 downto 0);
+    FIFOOFERR : out std_logic; 
+
     -- input
     DIENA       : in  std_logic;
     DINA        : in  std_logic_vector(7 downto 0);
@@ -86,6 +88,8 @@ architecture Behavioral of data is
   component datafifo
     port (
       CLK    : in  std_logic;
+      FIFOOFERR : out std_logic; 
+          
       -- input interfaces
       DIN    : in  std_logic_vector(15 downto 0);
       ADDRIN : in  std_logic_vector(8 downto 0);
@@ -160,6 +164,7 @@ begin  -- Behavioral
   datafifo_inst : datafifo
     port map (
       CLK    => CLK,
+      FIFOOFERR => FIFOOFERR, 
       DIN    => fdin,
       ADDRIN => faddr,
       WEIN   => fwe,

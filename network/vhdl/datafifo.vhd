@@ -10,6 +10,7 @@ use UNISIM.vcomponents.all;
 entity datafifo is
   port (
     CLK    : in  std_logic;
+    FIFOOFERR : out std_logic; 
     -- input interfaces
     DIN    : in  std_logic_vector(15 downto 0);
     ADDRIN : in  std_logic_vector(8 downto 0);
@@ -40,7 +41,8 @@ architecture Behavioral of datafifo is
   signal cs, ns : states := none;
 
   signal bcntinc : std_logic := '0';
-
+  signal fifofull : std_logic := '0';
+  
   signal wea : std_logic := '0';
 
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
@@ -72,6 +74,8 @@ begin  -- Behavioral
   addra <= bpin & ADDRIN;
   addrb <= bpout & bcnt;
 
+  fifofull <= '1' when bpinl = (bpout-1) else '0';
+  
   DOUT <= dob;
 
   main_clk : process(CLK)
@@ -80,8 +84,14 @@ begin  -- Behavioral
 
       cs <= ns;
 
-      if INDONE = '1' then
+      if INDONE = '1' and fifofull = '0' then
         bpin <= bpin + 1;
+      end if;
+
+      if INDONE = '1' and fifofull = '1' then
+        FIFOOFERR <= '1';
+      else
+        FIFOOFERR <= '0';
       end if;
 
 
