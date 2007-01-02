@@ -1,0 +1,9 @@
+This is our attempt to make sure the throughput on the data interface is what we expect AND that we can detect a fifo overflow. 
+
+We begin by having \signal{delay}, the output interpacket delay, be something rediculously high like 20 us. We TX a ton of packets and wait until we get 5 fifowerrors, then we decrease delay to 1 ns and try and read packets as fast as we can. 
+
+We check to make sure that we only have 5 missing packets in our output stream. 
+
+
+
+

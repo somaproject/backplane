@@ -37,12 +37,12 @@ hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR
 
 comp: 
 
-$(WORKDIR)/datatest/_behavioral.var: datatest.vhd
-	$(VHDLC) datatest.vhd
+$(WORKDIR)/datathroughputtest/_behavioral.var: datathroughputtest.vhd
+	$(VHDLC) datathroughputtest.vhd
 
-sim: $(WORKDIR)/datatest/_behavioral.var 
+sim: $(WORKDIR)/datathroughputtest/_behavioral.var 
 runsim: all
-	$(VHDLS) datatest
+	$(VHDLS) datathroughputtest
 
 
 clean:

@@ -1,4 +1,12 @@
+There are three classes of behavior we wish to test here:
+
+1. Do we successfully transmit data packets? 
+2. Do we put them in the reTX buffer as expected? 
+
+
+------------------------------------------------------------------------
 For the data packet generation, we: 
+------------------------------------------------------------------------
 
 1. Generate a series of data packets with varying src/IDs and data lengths
 2. write these out at varying points during the ecycle on A and B
@@ -27,8 +35,6 @@ Then run dumpparse.py which will:
   4. packetize it in a format that we can read / validate in vhdl
 
 
-----------------------------------------------------------------
-To validate the packets we capture them into a temporary buffer
-and then compare them with the expected on-disk results
+
 
 

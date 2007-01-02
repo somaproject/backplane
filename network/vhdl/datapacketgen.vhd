@@ -10,22 +10,22 @@ use UNISIM.vcomponents.all;
 entity datapacketgen is
 
   port (
-    CLK       : in  std_logic;
-    ECYCLE    : in  std_logic;
-    MYMAC     : in  std_logic_vector(47 downto 0);
-    MYIP      : in  std_logic_vector(31 downto 0);
-    MYBCAST   : in  std_logic_vector(31 downto 0);
-    ADDRA     : out std_logic_vector(8 downto 0);
-    LENA      : in  std_logic_vector(9 downto 0);
-    DIA       : in  std_logic_vector(15 downto 0);
-    ADDRB     : out std_logic_vector(8 downto 0);
-    LENB      : in  std_logic_vector(9 downto 0);
-    DIB       : in  std_logic_vector(15 downto 0);
+    CLK      : in  std_logic;
+    ECYCLE   : in  std_logic;
+    MYMAC    : in  std_logic_vector(47 downto 0);
+    MYIP     : in  std_logic_vector(31 downto 0);
+    MYBCAST  : in  std_logic_vector(31 downto 0);
+    ADDRA    : out std_logic_vector(8 downto 0);
+    LENA     : in  std_logic_vector(9 downto 0);
+    DIA      : in  std_logic_vector(15 downto 0);
+    ADDRB    : out std_logic_vector(8 downto 0);
+    LENB     : in  std_logic_vector(9 downto 0);
+    DIB      : in  std_logic_vector(15 downto 0);
     -- output interface at 100 MHz
-    DOUT      : out std_logic_vector(15 downto 0);
-    ADDROUT   : out  std_logic_vector(8 downto 0);
-    FWEOUT : out std_logic;
-    FIFONEXT  : out  std_logic
+    DOUT     : out std_logic_vector(15 downto 0);
+    ADDROUT  : out std_logic_vector(8 downto 0);
+    FWEOUT   : out std_logic;
+    FIFONEXT : out std_logic
     );
 
 end datapacketgen;
@@ -45,16 +45,16 @@ architecture Behavioral of datapacketgen is
 
 
   type istates is (none, datachk, nextdata, datas,
-                  dataw, datadone, headers, headerw, seqwl, seqwh, nextfifo);
+                   dataw, datadone, headers, headerw, seqwl, seqwh, nextfifo);
 
   signal ics, ins : istates := none;
-  
+
 
   -- header-related signals
-  signal len, tlen     : std_logic_vector(9 downto 0)  := (others => '0');
-  signal hdraddr : std_logic_vector(9 downto 0)  := (others => '0');
-  signal hdrwe   : std_logic                     := '0';
-  signal hdrdout : std_logic_vector(15 downto 0) := (others => '0');
+  signal len, tlen : std_logic_vector(9 downto 0)  := (others => '0');
+  signal hdraddr   : std_logic_vector(9 downto 0)  := (others => '0');
+  signal hdrwe     : std_logic                     := '0';
+  signal hdrdout   : std_logic_vector(15 downto 0) := (others => '0');
 
   signal hdrstart, hdrdone : std_logic := '0';
 
@@ -65,7 +65,7 @@ architecture Behavioral of datapacketgen is
 
   signal seqa : std_logic_vector(8 downto 0) := (others => '0');
 
-  signal seqwe : std_logic := '0';
+  signal seqwe    : std_logic                     := '0';
   signal destport : std_logic_vector(15 downto 0) := (others => '0');
 
   -- fifo signals
@@ -79,21 +79,21 @@ architecture Behavioral of datapacketgen is
   signal addroutint : std_logic_vector(10 downto 0) := (others => '0');
   signal fifonum    : std_logic_vector(1 downto 0)  := (others => '0');
 
-  signal outen : std_logic := '0';
+  signal outen   : std_logic := '0';
   signal nextpkt : std_logic := '0';
 
   type ostates is (NONE, START, owait, DONE);
   signal ocs, ons : ostates := none;
-  
-  
+
+
   -- components
   component udpheaderwriter
     port (
       CLK      : in  std_logic;
-      SRCMAC    : in  std_logic_vector(47 downto 0);
-      SRCIP     : in  std_logic_vector(31 downto 0);
-      DESTIP  : in  std_logic_vector(31 downto 0);
-      DESTMAC : in std_logic_vector(47 downto 0); 
+      SRCMAC   : in  std_logic_vector(47 downto 0);
+      SRCIP    : in  std_logic_vector(31 downto 0);
+      DESTIP   : in  std_logic_vector(31 downto 0);
+      DESTMAC  : in  std_logic_vector(47 downto 0);
       DESTPORT : in  std_logic_vector(15 downto 0);
       START    : in  std_logic;
       WLEN     : in  std_logic_vector(9 downto 0);
@@ -109,10 +109,10 @@ begin  -- Behavioral
   udpheaderwriter_inst : udpheaderwriter
     port map (
       CLK      => CLK,
-      SRCMAC    => MYMAC,
-      SRCIP     => MYIP,
-      DESTIP  => MYBCAST,
-      DESTMAC => X"FFFFFFFFFFFF", 
+      SRCMAC   => MYMAC,
+      SRCIP    => MYIP,
+      DESTIP   => MYBCAST,
+      DESTMAC  => X"FFFFFFFFFFFF",
       DESTPORT => destport,
       START    => hdrstart,
       WLEN     => tlen,
@@ -123,10 +123,10 @@ begin  -- Behavioral
 
   -- input muxes
   tlen <= len + 2;
-  
+
   len <= LENA(9 downto 0) when bsel = '0' else
          LENB(9 downto 0);
-  di  <= DIA                      when bsel = '0' else DIB;
+  di  <= DIA              when bsel = '0' else DIB;
 
   nbsel <= not bsel;
 
@@ -142,8 +142,8 @@ begin  -- Behavioral
          hdrwe  when dsel = 1 else
          '1';
 
-  fdin <= di                 when dsel = 0 else
-          hdrdout            when dsel = 1 else
+  fdin <= di                  when dsel = 0 else
+          hdrdout             when dsel = 1 else
           seqdo(31 downto 16) when dsel = 2 else
           seqdo(15 downto 0);
 
@@ -156,7 +156,7 @@ begin  -- Behavioral
   seqa <= "0" & typ & src;
 
   destport <= X"0fa0" + ("000000" & seqa);
-  
+
   SEQ_buffer : RAMB16_S36
     generic map (
       INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
@@ -196,7 +196,7 @@ begin  -- Behavioral
 
       ics <= ins;
       ocs <= ons;
-      
+
       if ics = nextdata then
         bsel <= nbsel;
       end if;
@@ -221,33 +221,37 @@ begin  -- Behavioral
       end if;
 
       fifonum <= faddr(10 downto 9);
-      
-      ADDROUT <= addroutint(8 downto 0);
-      FWEOUT <= outen;
-      FIFONEXT <= nextpkt; 
-                  
-      if outen = '1' then
-        addroutint(8 downto 0) <= addroutint(8 downto 0) + 1;
-        
+
+      ADDROUT  <= addroutint(8 downto 0);
+      FWEOUT   <= outen;
+      FIFONEXT <= nextpkt;
+
+      if ocs = none then
+        addroutint(8 downto 0) <= (others => '0');
+
+      else
+        if outen = '1' then
+          addroutint(8 downto 0) <= addroutint(8 downto 0) + 1;
+
+        end if;
       end if;
-      
       if nextpkt = '1' then
         addroutint(10 downto 9) <= addroutint(10 downto 9) + 1;
       end if;
 
-      
+
     end if;
   end process main;
 
-  
+
   FIFO_BufferA_inst : RAMB16_S9_S9
     generic map (
       SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
       -- Address 0 to 255
-      INIT_00             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00" ,       
-      INIT_10             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00",        
-      INIT_20             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00" ,       
-      INIT_30             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00"        
+      INIT_00             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00",
+      INIT_10             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00",
+      INIT_20             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00",
+      INIT_30             => X"000000000000000000000000009C0000080000400000004508000000FFFFFF00"
       )
 
     port map (
@@ -307,9 +311,9 @@ begin  -- Behavioral
         addrinc <= '0';
         datawe  <= '0';
         if ecycle = '1' then
-          ins    <= datachk;
+          ins   <= datachk;
         else
-          ins    <= none;
+          ins   <= none;
         end if;
 
       when datachk =>
@@ -317,9 +321,9 @@ begin  -- Behavioral
         addrinc <= '0';
         datawe  <= '0';
         if len = "0000000000" then
-          ins    <= nextdata;
+          ins   <= nextdata;
         else
-          ins    <= datas;
+          ins   <= datas;
         end if;
 
       when nextdata =>
@@ -327,114 +331,113 @@ begin  -- Behavioral
         addrinc <= '0';
         datawe  <= '0';
         if bsel = '1' then
-          ins    <= none;
+          ins   <= none;
         else
-          ins    <= datachk;
+          ins   <= datachk;
         end if;
 
       when datas =>
         dsel    <= 0;
         addrinc <= '1';
         datawe  <= '0';
-        ins      <= dataw;
+        ins     <= dataw;
 
       when dataw =>
         dsel    <= 0;
         addrinc <= '1';
         datawe  <= '1';
         if len(8 downto 0) = addr then
-          ins    <= datadone;
+          ins   <= datadone;
         else
-          ins    <= dataw;
+          ins   <= dataw;
         end if;
 
       when datadone =>
         dsel    <= 0;
         addrinc <= '0';
         datawe  <= '1';
-        ins      <= headers;
+        ins     <= headers;
 
       when headers =>
         dsel    <= 1;
         addrinc <= '0';
         datawe  <= '0';
-        ins      <= headerw;
+        ins     <= headerw;
 
       when headerw =>
         dsel    <= 1;
         addrinc <= '0';
         datawe  <= '0';
         if hdrdone = '1' then
-          ins    <= seqwl;
+          ins   <= seqwl;
         else
-          ins <= headerw; 
+          ins   <= headerw;
         end if;
 
       when seqwl =>
         dsel    <= 2;
         addrinc <= '0';
         datawe  <= '0';
-        ins      <= seqwh;
+        ins     <= seqwh;
 
       when seqwh =>
         dsel    <= 3;
         addrinc <= '0';
         datawe  <= '0';
-        ins      <= nextfifo;
+        ins     <= nextfifo;
 
       when nextfifo =>
         dsel    <= 0;
         addrinc <= '0';
         datawe  <= '0';
-        ins      <= nextdata;
+        ins     <= nextdata;
       when others   =>
         dsel    <= 0;
         addrinc <= '0';
         datawe  <= '0';
-        ins      <= none;
+        ins     <= none;
     end case;
 
   end process;
 
 
-  ofsm: process(ocs, fifonum, addroutint)
-    begin
-      case ocs is
-        when none =>
-          outen <= '0';
-          nextpkt <= '0';
-          if fifonum /= addroutint(10 downto 9) then
-            ons <= start;
-          else
-            ons <= none; 
-          end if;
+  ofsm : process(ocs, fifonum, addroutint)
+  begin
+    case ocs is
+      when none =>
+        outen   <= '0';
+        nextpkt <= '0';
+        if fifonum /= addroutint(10 downto 9) then
+          ons   <= start;
+        else
+          ons   <= none;
+        end if;
 
-        when start =>
-          outen <= '1';
-          nextpkt <= '0';
-          ons <= owait;
-          
-        when owait =>
-          outen <= '1';
-          nextpkt <= '0';
-          if addroutint(8 downto 0) = "100101111" then
-            ons <= done;
-          else
-            ons <= owait; 
-          end if;
+      when start =>
+        outen   <= '1';
+        nextpkt <= '0';
+        ons     <= owait;
 
-        when done =>
-          outen <= '0';
-          nextpkt <= '1';
-          ons <= none;
+      when owait =>
+        outen   <= '1';
+        nextpkt <= '0';
+        if addroutint(8 downto 0) = "100101111" then
+          ons   <= done;
+        else
+          ons   <= owait;
+        end if;
 
-        when others =>
-          outen <= '0';
-          nextpkt <= '0';
-          ons <= none;
-          
+      when done =>
+        outen   <= '0';
+        nextpkt <= '1';
+        ons     <= none;
 
-      end case;
+      when others => outen            <= '0';
+                              nextpkt <= '0';
+                              ons     <= none;
 
-    end process ofsm; 
+
+    end case;
+
+  end process ofsm; 
 end Behavioral;

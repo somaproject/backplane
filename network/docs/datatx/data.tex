@@ -124,7 +124,7 @@ unfortunate''.
 The fifo is constrained to -always- take input from the packet
 generator, and presents a series of 1k-deep packet interfaces.
 
-
+If the BP of the currently-written packet is one less than the current output pointer, the fifo is full. Thus, attempts to write will fail with the assertion of FIFOOFERR. 
 
 
 \begin{figure}
