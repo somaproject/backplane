@@ -8,24 +8,26 @@ use UNISIM.vcomponents.all;
 
 entity dataretxresponse is
   port (
-    CLK       : in  std_logic;
+    CLK         : in  std_logic;
     -- IO interface
-    START     : in  std_logic;
-    DONE      : out std_logic;
-    INPKTDATA : in  std_logic_vector(15 downto 0);
-    INPKTADDR : out std_logic_vector(9 downto 0);
+    START       : in  std_logic;
+    DONE        : out std_logic;
+    INPKTDATA   : in  std_logic_vector(15 downto 0);
+    INPKTADDR   : out std_logic_vector(9 downto 0);
+    PKTNOTINBUF : out std_logic;
+    RETXSUCCESS : out std_logic;
     -- retx interface
-    RETXDIN   : in  std_logic_vector(15 downto 0);
-    RETXADDR  : in  std_logic_vector(8 downto 0);
-    RETXWE    : in  std_logic;
-    RETXREQ   : out std_logic;
-    RETXDONE  : in  std_logic;
-    RETXID   : out std_logic_vector(13 downto 0);
+    RETXDIN     : in  std_logic_vector(15 downto 0);
+    RETXADDR    : in  std_logic_vector(8 downto 0);
+    RETXWE      : in  std_logic;
+    RETXREQ     : out std_logic;
+    RETXDONE    : in  std_logic;
+    RETXID      : out std_logic_vector(13 downto 0);
     -- output
-    ARM       : out std_logic;
-    GRANT     : in  std_logic;
-    DOUT      : out std_logic_vector(15 downto 0);
-    DOEN      : out std_logic);
+    ARM         : out std_logic;
+    GRANT       : in  std_logic;
+    DOUT        : out std_logic_vector(15 downto 0);
+    DOEN        : out std_logic);
 end dataretxresponse;
 
 architecture Behavioral of dataretxresponse is
@@ -41,29 +43,29 @@ architecture Behavioral of dataretxresponse is
 
 
   type states is (none, getsrctyp, getseqh, getseql,
-                  retxst, retxw, armw, outwrw, dones);
+                  retxst, retxw, armw, outwrw, dones, pktsuc);
 
   signal cs, ns : states := none;
 
   signal addra : std_logic_vector(9 downto 0) := (others => '0');
 
-  signal retxsrc : std_logic_vector(5 downto 0) := (others => '0');
-  signal retxtype : std_logic_vector(1 downto 0) := (others => '0');
-  signal retxseq : std_logic_vector(31 downto 0) := (others => '0');
+  signal retxsrc  : std_logic_vector(5 downto 0)  := (others => '0');
+  signal retxtype : std_logic_vector(1 downto 0)  := (others => '0');
+  signal retxseq  : std_logic_vector(31 downto 0) := (others => '0');
 
-  
-  
+  signal lookupseq : std_logic_vector(31 downto 0) := (others => '0');
+
+
 
 begin  -- Behavioral
 
   addra <= '0' & RETXADDR;
   DOUT  <= dob;
 
-
   DONE <= '1' when cs = dones else '0';
 
   RETXID <= retxtype & retxsrc & retxseq(5 downto 0);
-  
+
   buffer_inst : RAMB16_S18_S18
     generic map (
       SIM_COLLISION_CHECK => "NONE")
@@ -92,10 +94,10 @@ begin  -- Behavioral
 
       cs <= ns;
 
-      RETXREQ   <= lretxreq;
+      RETXREQ    <= lretxreq;
       if cs = getseqh then
-        retxsrc<= INPKTDATA(5 downto 0);
-        retxtype  <= INPKTDATA(9 downto 8);
+        retxsrc  <= INPKTDATA(5 downto 0);
+        retxtype <= INPKTDATA(9 downto 8);
       end if;
 
       if cs = getseql then
@@ -121,6 +123,29 @@ begin  -- Behavioral
       end if;
 
 
+      -- output status
+      if cs = pktsuc and lookupseq = retxseq then
+        RETXSUCCESS <= '1';
+      else
+        RETXSUCCESS <= '0';
+      end if;
+
+      if cs = pktsuc and lookupseq /= retxseq then
+        PKTNOTINBUF <= '1';
+      else
+        PKTNOTINBUF <= '0';
+      end if;
+
+      if RETXWE = '1' then
+        if RETXADDR = ("0" & X"16")  then
+          lookupseq(31 downto 16) <= RETXDIN; 
+        end if;
+        
+        if RETXADDR = ("0" & X"17")  then
+          lookupseq(15 downto 0) <= RETXDIN; 
+        end if;
+        
+      end if;
     end if;
   end process main;
 
@@ -201,6 +226,13 @@ begin  -- Behavioral
         end if;
 
       when dones             =>
+        INPKTADDR <= (others => '0');
+        ARM       <= '0';
+        lretxreq  <= '0';
+        bcntinc   <= '0';
+        ns        <= pktsuc;
+
+      when pktsuc            =>
         INPKTADDR <= (others => '0');
         ARM       <= '0';
         lretxreq  <= '0';

@@ -14,6 +14,8 @@ entity eventretxresponse is
     DONE      : out std_logic;
     INPKTDATA : in  std_logic_vector(15 downto 0);
     INPKTADDR : out std_logic_vector(9 downto 0);
+    PKTNOTINBUF : out std_logic;
+    RETXSUCCESS : out std_logic;
     -- retx interface
     RETXDIN   : in  std_logic_vector(15 downto 0);
     RETXADDR  : in  std_logic_vector(8 downto 0);
@@ -48,7 +50,8 @@ architecture Behavioral of eventretxresponse is
   signal addra : std_logic_vector(9 downto 0) := (others => '0');
 
   signal retxseq : std_logic_vector(31 downto 0) := (others => '0');
-
+  signal lookupseq : std_logic_vector(31 downto 0) := (others => '0');
+  
   
   
 
@@ -114,7 +117,28 @@ begin  -- Behavioral
         len <= dob(9 downto 1);
       end if;
 
+      if retxwe = '1' then
+        if RETXADDR = "0" & X"16" then
+          lookupseq(31 downto 16) <= RETXDIN; 
+        end if;
+        if RETXADDR = "0" & X"17" then
+          lookupseq(15 downto 0) <= RETXDIN; 
+        end if;
+      end if;
 
+      if cs = dones and lookupseq = retxseq then
+        RETXSUCCESS <= '1';
+      else
+        RETXSUCCESS <= '0'; 
+      end if;
+
+      if cs = dones and lookupseq /= retxseq then
+        PKTNOTINBUF<= '1';
+      else
+        PKTNOTINBUF <= '0'; 
+      end if;
+
+      
     end if;
   end process main;
 

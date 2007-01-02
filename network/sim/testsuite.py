@@ -25,6 +25,9 @@ else:
     suite.addTest(vhdlTestCase("eventtx"))
     suite.addTest(vhdlTestCase("datapacketgen"))
     suite.addTest(vhdlTestCase("eventrx"))
+    suite.addTest(vhdlTestCase("data"))
+    suite.addTest(vhdlTestCase("dataretxresponse"))
+    suite.addTest(vhdlTestCase("eventretxresponse"))
     
 runner = unittest.TextTestRunner()
 runner.run(suite)

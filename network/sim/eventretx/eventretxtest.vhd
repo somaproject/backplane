@@ -202,24 +202,26 @@ architecture Behavioral of eventretxtest is
 
   component eventretxresponse
     port (
-      CLK       : in  std_logic;
+      CLK         : in  std_logic;
       -- IO interface
-      START     : in  std_logic;
-      DONE      : out std_logic;
-      INPKTDATA : in  std_logic_vector(15 downto 0);
-      INPKTADDR : out std_logic_vector(9 downto 0);
+      START       : in  std_logic;
+      DONE        : out std_logic;
+      INPKTDATA   : in  std_logic_vector(15 downto 0);
+      INPKTADDR   : out std_logic_vector(9 downto 0);
+      PKTNOTINBUF : out std_logic;
+      RETXSUCCESS : out std_logic;
       -- retx interface
-      RETXDIN   : in  std_logic_vector(15 downto 0);
-      RETXADDR  : in  std_logic_vector(8 downto 0);
-      RETXWE    : in  std_logic;
-      RETXREQ   : out std_logic;
-      RETXDONE  : in  std_logic;
-      RETXID    : out std_logic_vector(13 downto 0);
+      RETXDIN     : in  std_logic_vector(15 downto 0);
+      RETXADDR    : in  std_logic_vector(8 downto 0);
+      RETXWE      : in  std_logic;
+      RETXREQ     : out std_logic;
+      RETXDONE    : in  std_logic;
+      RETXID      : out std_logic_vector(13 downto 0);
       -- output
-      ARM       : out std_logic;
-      GRANT     : in  std_logic;
-      DOUT      : out std_logic_vector(15 downto 0);
-      DOEN      : out std_logic);
+      ARM         : out std_logic;
+      GRANT       : in  std_logic;
+      DOUT        : out std_logic_vector(15 downto 0);
+      DOEN        : out std_logic);
   end component;
 
   component memddr2
