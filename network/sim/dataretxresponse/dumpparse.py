@@ -1,5 +1,8 @@
 #!/usr/bin/python
 import numpy as n
+import sys
+sys.path.append('../../crc/code')
+import frame
 
 
 def computeIPHeader(octetlist):
@@ -66,11 +69,18 @@ for s in pktstrs:
                       
     # now we have the output packets in numerical form; perform the update
     # of the ip sequence and then the relevant header checksum update
-
+    
+    dastr = "".join([chr(x) for x in da])
+    crc = frame.generateFCS(dastr)
+    da = n.resize(da, len(da)+4)
+    da[-4] = ord(crc[0])
+    da[-3] = ord(crc[1])
+    da[-2] = ord(crc[2])
+    da[-1] = ord(crc[3])
     
     # now we print our normal format
     ofile.write("%d " % (len(da)/2 + 1))
-    ofile.write("%4.4X " % (len(da)+2))
+    ofile.write("%4.4X " % len(da))
 
     for i in range(len(da) / 2):
         ofile.write("%2.2X%2.2X " % (da[i*2], da[i*2+1]))

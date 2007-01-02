@@ -1,14 +1,7 @@
+We have two prototype retx packets, pkt1.txt and pkt2.txt, with their
+associated sequence / id properties.
 
-Here we generate some retx request packets and attempt to verify they
-are requesting the right values, and that we ultimately output the
-correct packets.
+We feed these to the inputcontrol, and then verify both the dataretx
+modules' requests of the retxbuffer, and the generated output.
 
-1. generate fake packets, sending to port 4400, along with a file containing their metadata. 
-
-TYP SRC ID for each packet
-
-2. the data is captured via tcpdump
- tcpdump -p src host 192.168.0.2 and  udp -t -xx -s 2000 > data.tcpdump
-
-
-and stored in data.tcpdump
+The third requests results in the retxbuffer-level returning the wrong seq id, and thus verifies proper assertion of the PKTNOTINBUF error counter. 
