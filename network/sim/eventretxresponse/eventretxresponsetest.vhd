@@ -11,13 +11,13 @@ use UNISIM.vcomponents.all;
 library WORK;
 use WORK.networkstack;
 
-entity dataretxresponsetest is
+entity eventretxresponsetest is
 
-end dataretxresponsetest;
+end eventretxresponsetest;
 
-architecture Behavioral of dataretxresponsetest is
+architecture Behavioral of eventretxresponsetest is
 
-  component dataretxresponse
+  component eventretxresponse
     port (
       CLK         : in  std_logic;
       -- IO interface
@@ -28,21 +28,20 @@ architecture Behavioral of dataretxresponsetest is
       PKTNOTINBUF : out std_logic;
       RETXSUCCESS : out std_logic;
       -- retx interface
-      RETXDIN  : in  std_logic_vector(15 downto 0);
-      RETXADDR : in  std_logic_vector(8 downto 0);
-      RETXWE   : in  std_logic;
-      RETXREQ  : out std_logic;
-      RETXDONE : in  std_logic;
-      RETXID   : out std_logic_vector(13 downto 0);
+      RETXDIN     : in  std_logic_vector(15 downto 0);
+      RETXADDR    : in  std_logic_vector(8 downto 0);
+      RETXWE      : in  std_logic;
+      RETXREQ     : out std_logic;
+      RETXDONE    : in  std_logic;
+      RETXID      : out std_logic_vector(13 downto 0);
       -- output
-      ARM      : out std_logic;
-      GRANT    : in  std_logic;
-      DOUT     : out std_logic_vector(15 downto 0);
-      DOEN     : out std_logic);
-  end component;
+      ARM         : out std_logic;
+      GRANT       : in  std_logic;
+      DOUT        : out std_logic_vector(15 downto 0);
+      DOEN        : out std_logic);
+  end component; 
 
-
-  signal CLK : std_logic := '0';
+    signal CLK : std_logic := '0';
 
   -- output
   signal ARM                      : std_logic                     := '0';
@@ -126,13 +125,13 @@ begin  -- Behavioral
   CLK   <= not CLK after 10 ns;
   RESET <= '0'     after 20 ns;
 
-  dataretxresponse_uut : dataretxresponse
+  eventretxresponse_uut : eventretxresponse
     port map (
       CLK         => CLK,
-      START       => DRETXSTART,
-      DONE        => DRETXDONE,
+      START       => ERETXSTART,
+      DONE        => ERETXDONE,
       INPKTDATA   => PKTDATA,
-      INPKTADDR   => DRETXADDR,
+      INPKTADDR   => ERETXADDR,
       RETXSUCCESS => RETXSUCCESS,
       PKTNOTINBUF => PKTNOTINBUF,
       RETXDIN     => RETXDINio,
@@ -174,32 +173,24 @@ begin  -- Behavioral
   process
     file props_file : text;
     variable L      : line;
-    variable srcin  : std_logic_vector(7 downto 0);
-    variable typin  : std_logic_vector(7 downto 0);
     variable idin   : std_logic_vector(31 downto 0);
-    
+
 
   begin
-    ---------------------------------------------------------------------------
--- first attempt
-    ---------------------------------------------------------------------------
+    -------------------------------------------------------------------------
+    -- first attempt
+    -------------------------------------------------------------------------
     wait for 2 us;
     file_open(props_file, "pkt1.props.txt");
     readline(props_file, L);
-    hread(L, typin);
-    hread(L, srcin);
     hread(L, idin);
     file_close(props_file);
 
     networkstack.writepkt("pkt1.txt.crc", CLK, DINEN, NEXTFRAME, DIN);
-    wait until rising_edge(CLK) and DRETXSTART = '1';
+    wait until rising_edge(CLK) and ERETXSTART = '1';
     wait until rising_edge(CLK) and RETXREQ = '1';
 
-    assert typin(1 downto 0) = retxid(13 downto 12)
-      report "Error in acquiring packet TYP" severity error;
-    assert srcin(5 downto 0) = retxid(11 downto 6)
-      report "Error in acquiring packet SRC" severity error;
-    assert idin(5 downto 0) = retxid(5 downto 0)
+    assert idin(10 downto 0) = retxid(10 downto 0)
       report "Error in acquiring packet ID" severity error;
 
     -- now the true test; write fake data
@@ -242,27 +233,22 @@ begin  -- Behavioral
     assert dout = X"0100" report "Error reading first word" severity error;
     wait until rising_edge(CLK) and DOEN = '0';
     assert doutl = X"ABCD" report "Error reading late word" severity error;
-    wait until rising_edge(CLK) and RETXSUCCESS = '1';  -- counter check
+    assert RETXSUCCESS = '1' severity Error;  -- counter check
+    
     -----------------------------------------------------------------------
     -- second attempt
     ------------------------------------------------------------------------
     wait for 2 us;
     file_open(props_file, "pkt2.props.txt");
     readline(props_file, L);
-    hread(L, typin);
-    hread(L, srcin);
     hread(L, idin);
     file_close(props_file);
 
     networkstack.writepkt("pkt2.txt.crc", CLK, DINEN, NEXTFRAME, DIN);
-    wait until rising_edge(CLK) and DRETXSTART = '1';
+    wait until rising_edge(CLK) and ERETXSTART = '1';
     wait until rising_edge(CLK) and RETXREQ = '1';
 
-    assert typin(1 downto 0) = retxid(13 downto 12)
-      report "Error in acquiring packet TYP" severity error;
-    assert srcin(5 downto 0) = retxid(11 downto 6)
-      report "Error in acquiring packet SRC" severity error;
-    assert idin(5 downto 0) = retxid(5 downto 0)
+    assert idin(13 downto 0) = retxid(13 downto 0)
       report "Error in acquiring packet ID" severity error;
 
     -- now the true test; write fake data
@@ -306,7 +292,7 @@ begin  -- Behavioral
     wait until rising_edge(CLK) and DOEN = '0';
     assert doutl = X"1234" report "Error reading late word" severity error;
 
-    wait until rising_edge(CLK) and RETXSUCCESS = '1';  -- counter check
+    assert RETXSUCCESS = '1' severity Error;  -- counter check
 
     -----------------------------------------------------------------------
     -- third attempt, fails
@@ -314,20 +300,14 @@ begin  -- Behavioral
     wait for 2 us;
     file_open(props_file, "pkt2.props.txt");
     readline(props_file, L);
-    hread(L, typin);
-    hread(L, srcin);
     hread(L, idin);
     file_close(props_file);
 
     networkstack.writepkt("pkt2.txt.crc", CLK, DINEN, NEXTFRAME, DIN);
-    wait until rising_edge(CLK) and DRETXSTART = '1';
+    wait until rising_edge(CLK) and ERETXSTART = '1';
     wait until rising_edge(CLK) and RETXREQ = '1';
 
-    assert typin(1 downto 0) = retxid(13 downto 12)
-      report "Error in acquiring packet TYP" severity error;
-    assert srcin(5 downto 0) = retxid(11 downto 6)
-      report "Error in acquiring packet SRC" severity error;
-    assert idin(5 downto 0) = retxid(5 downto 0)
+    assert idin(13 downto 0) = retxid(13 downto 0)
       report "Error in acquiring packet ID" severity error;
 
     -- now the true test; write fake data
@@ -339,15 +319,15 @@ begin  -- Behavioral
     RETXDINio  <= X"0200";
     RETXADDRio <= "000000000";
     RETXWE     <= '1';
-    wait until rising_edge(CLK);        -- write ID MSBs
+    wait until rising_edge(CLK);          -- write ID MSBs
     RETXDINio  <= idin(31 downto 16);
     RETXADDRio <= "000010110";
     RETXWE     <= '1';
-    wait until rising_edge(CLK);        -- write ID LSBs
+    wait until rising_edge(CLK);          -- write ID LSBs
     RETXDINio  <= not idin(15 downto 0);  -- WRONG VALUE
     RETXADDRio <= "000010111";
     RETXWE     <= '1';
-    
+
     wait until rising_edge(CLK);
     RETXDINio  <= X"1234";              -- write  a single data value at
     RETXADDRio <= "011111111";          -- the end
@@ -371,7 +351,7 @@ begin  -- Behavioral
     assert dout = X"0200" report "Error reading first word" severity error;
     wait until rising_edge(CLK) and DOEN = '0';
     assert doutl = X"1234" report "Error reading late word" severity error;
-    wait until rising_edge(CLK) and PKTNOTINBUF = '1';  -- counter check
+    assert PKTNOTINBUF = '1' severity Error;  -- counter check
 
     report "End of Simulation" severity failure;
 

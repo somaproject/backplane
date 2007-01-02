@@ -1,7 +1,7 @@
 We have two prototype retx packets, pkt1.txt and pkt2.txt, with their
 associated sequence / id properties.
 
-We feed these to the inputcontrol, and then verify both the dataretx
+We feed these to the inputcontrol, and then verify both the eventretx
 modules' requests of the retxbuffer, and the generated output.
 
 The third requests results in the retxbuffer-level returning the wrong seq id, and thus verifies proper assertion of the PKTNOTINBUF error counter. 

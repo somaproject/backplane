@@ -18,19 +18,19 @@ $(WORKDIR)/crcverify/_behavioral.var: ../../vhdl/networkstack.vhd ../../crc/vhdl
 $(WORKDIR)/inputcontrol/_behavioral.var: ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/inputcontrol.vhd
 	$(VHDLC) ../../vhdl/inputcontrol.vhd
 
-$(WORKDIR)/dataretxresponse/_behavioral.var: ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/inputcontrol.vhd ../../vhdl/dataretxresponse.vhd
-	$(VHDLC) ../../vhdl/dataretxresponse.vhd
+$(WORKDIR)/eventretxresponse/_behavioral.var: ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/inputcontrol.vhd ../../vhdl/eventretxresponse.vhd
+	$(VHDLC) ../../vhdl/eventretxresponse.vhd
 
-hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/crc_combinational/_behavioral.var $(WORKDIR)/crc16_combinational/_behavioral.var $(WORKDIR)/crcverify/_behavioral.var $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/dataretxresponse/_behavioral.var 
+hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/crc_combinational/_behavioral.var $(WORKDIR)/crc16_combinational/_behavioral.var $(WORKDIR)/crcverify/_behavioral.var $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/eventretxresponse/_behavioral.var 
 
 comp: 
 
-$(WORKDIR)/dataretxresponsetest/_behavioral.var: dataretxresponsetest.vhd
-	$(VHDLC) dataretxresponsetest.vhd
+$(WORKDIR)/eventretxresponsetest/_behavioral.var: eventretxresponsetest.vhd
+	$(VHDLC) eventretxresponsetest.vhd
 
-sim: $(WORKDIR)/dataretxresponsetest/_behavioral.var 
+sim: $(WORKDIR)/eventretxresponsetest/_behavioral.var 
 runsim: all
-	$(VHDLS) dataretxresponsetest.vhd
+	$(VHDLS) eventretxresponsetest.vhd
 
 
 clean:
