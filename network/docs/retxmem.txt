@@ -1,9 +1,10 @@
-The memory retransmission FIFO is a relatively simple interface to the MemDDR2 module to handle the reading and writing of memory. 
+The memory retransmission FIFO is a relatively simple interface to the
+MemDDR2 module to handle the reading and writing of memory.
 
 Since the memddr2 interface is focused on writing 1024-byte rows, one
 at a time, we can store an entire packet in a row and thus have 32768
 spaces for packets. We split this space up evenly into two chunks, A
-and B, each of which has 16k entries.
+and B, each of which has 16k entries (14 address bits).
 
 For the data packets, this lets us store a maximum of 64 packets of
 each possible source/type combo, for ~64 ms of buffer. For events,
@@ -41,6 +42,4 @@ this way we guarantee that we can read out as fast as we like.
 
 This guarantees, for example, that if we run the data input interface
 at 100 MHz, we can always put in two data packets every ecycle.
-
-
 
