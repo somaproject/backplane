@@ -1,3 +1,4 @@
+\section{ReTX Buffer Interface} 
 The memory retransmission FIFO is a relatively simple interface to the
 MemDDR2 module to handle the reading and writing of memory.
 
@@ -9,6 +10,8 @@ and B, each of which has 16k entries (14 address bits).
 For the data packets, this lets us store a maximum of 64 packets of
 each possible source/type combo, for ~64 ms of buffer. For events,
 this works out to ~300 ms of events.
+\subsection{Interface}
+
 
 The interface runs internally at 150 MHz * 32 bits == 300 MB/sec,
 which means we can complete a row transaction in under 2 us -- or
@@ -43,3 +46,4 @@ this way we guarantee that we can read out as fast as we like.
 This guarantees, for example, that if we run the data input interface
 at 100 MHz, we can always put in two data packets every ecycle.
 
+\subsection{Implementation}

@@ -1,0 +1,231 @@
+#! /usr/bin/perl
+#
+# mktb
+#
+# Makes a testbench template from a VHDL model file (vhd)
+#
+#   Last update : 040326
+#
+#   Author : Rick Munden
+#   Begun:   981001
+#
+#   Version 0.1: 981001:  You have to start somewhere
+#   Version 0.2: 981007:  Fully functional? Leaves unwanted commas in places
+#   Version 0.3: 990831:  unwanted commas gone!
+#   Version 0.4: 990902:  changed entity name to be tb$modelname vs $modelname_tb
+#   Version 0.5: 000101:  update for y2k and added URL
+#   Version 0.6: 011107:  update for ConceptHDL
+#   Version 0.7: 030224:  update for ConceptHDL netlists
+#   Version 0.8: 040326:  skip comments in port list (thanks Marie-Nathalie Larue)
+#
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+if ($#ARGV < 0) {
+   print "Usage: mktb filename \n";
+   exit 1;
+   }
+
+#   Command line args
+ 
+$basename = $ARGV[0];              # file base name
+
+open(VHD, "$basename") or die "Couldn't open $basename";
+open(TB, ">tb$basename") or die "Couldn't open tb$basename";
+
+$modelname = $basename;
+$modelname =~ s/\.vhd//;
+print "$modelname\n";
+
+sub today {
+   $date1 = `date`;
+   ($dum, $month, $dum2) = split / /, $date1;
+   $year = `date +%y` ; chop $year;
+   $day  = `date +%d` ; chop $day;
+   return ( $year . " " . $month . " " . $day ) ;
+}
+
+print TB "-" x 80,"\n";
+print TB "--  File Name: tb",$basename,"\n";
+print TB "-" x 80,"\n";
+print TB "--  Copyright (C) 2003 Free Model Foundry; http://eda.org/fmf/\n";
+print TB "-- \n";
+print TB "--  This program is free software; you can redistribute it and/or modify\n";
+print TB "--  it under the terms of the GNU General Public License version 2 as\n";
+print TB "--  published by the Free Software Foundation.\n";
+print TB "-- \n";
+print TB "--  MODIFICATION HISTORY:\n";
+print TB "-- \n";
+print TB "--  version: |  author:  | mod date: | changes made:\n";
+print TB "--    V1.0      mktb       ", today, "   initial release\n" ;
+print TB "-" x 80,"\n";
+print TB "-- $modelname Test Bench\n";
+print TB "-" x 80,"\n\n";
+print TB "LIBRARY IEEE;     USE IEEE.std_logic_1164.ALL;\n";
+print TB "                  USE IEEE.VITAL_timing.ALL;\n";
+print TB "                  USE IEEE.VITAL_primitives.ALL;\n";
+print TB "LIBRARY FMF;      USE FMF.gen_utils.ALL;\n";
+print TB "                  USE FMF.conversions.ALL;\n";
+print TB "\n";
+print TB "ENTITY tb",$modelname," IS END;\n";
+print TB "\n";
+print TB "ARCHITECTURE test_1 of tb",$modelname," IS\n";
+print TB "\n";
+print TB "    COMPONENT $modelname\n";
+print TB "        GENERIC (\n";
+
+$generic = FALSE;
+$port = FALSE;
+$already_found = FALSE;
+while (<VHD>) {
+   chomp;
+   if (($generic eq TRUE ) or ($port eq TRUE )) {
+      print TB $_,"\n";
+      }
+   ($field1, $rest) = split;
+   if ($field1 eq ");" ) {
+      $generic = FALSE;
+      if ($port eq TRUE ) {
+         $port = FALSE;
+         last;
+         }
+      }
+   if ((uc($field1) eq PORT) && ($already_found eq FALSE)) {
+print "already_found = $already_found\n";
+      $port = TRUE;
+      $already_found = TRUE;
+      print "Found PORT\n";
+      print TB "\n";
+      print TB "        PORT (\n";
+      }
+   if (uc($field1) eq GENERIC ) {
+      $generic = TRUE;
+      print "Found GENERIC\n";
+      }
+   }
+close # VHD;
+
+print TB "    END COMPONENT;\n";
+print TB "\n";
+print TB "    for all : $modelname use entity WORK.$modelname(VHDL_BEHAVIORAL);\n";
+print TB "\n";
+print TB "-" x 80,"\n";
+print TB "-- Tester Driven Signals\n";
+print TB "-" x 80,"\n";
+
+$port = FALSE;
+$already_found = FALSE;
+seek (VHD, 0, 0);  # go back to the top of the file
+while (<VHD>) {
+   chomp;
+   if ($port eq TRUE ) {
+      if ($field1 ne "PORT") {
+         if ($field1 ne "--") {
+            printf TB "    SIGNAL T_%-14s : std_logic := 'X';\n",$field1;
+            }
+         }
+      }
+   ($field1, $rest) = split;
+   $field1 =~ s/://;
+   if ($field1 eq ");" ) {
+      $port = FALSE;
+      }
+   if (uc($field1) eq PORT ) {
+      $port = TRUE unless ($already_found eq TRUE);
+      $already_found = TRUE;
+      print "Found PORT (SIGNAL)\n";
+      }
+   }
+
+print TB "\n";
+print TB "BEGIN\n";
+print TB "    -- Functional Component\n";
+print TB "    ",$modelname,"_1 : $modelname\n";
+print TB "        GENERIC MAP(\n";
+
+seek (VHD, 0, 0);  # go back to the top of the file again
+$generic = FALSE;
+$port = FALSE;
+while (<VHD>) {
+   chomp;
+   ($field1, $field2, $field3, $field4, $rest) = split;
+   if ($generic eq TRUE ) {
+      if ($field1 eq "--" ) {
+         print TB "    $_\n";
+      } elsif ($field1 eq ");" ) {
+       #  print TB "    $_\n";
+         print TB "    )\n";
+      } elsif ($field1 ne "") {
+         $tail = chop $rest;
+        $field1 =~ s/://;
+        if ($tail eq ";" ) {
+           print TB "            $field1 => $rest,\n";
+        } else {
+           print TB "            $field1 => $rest",$tail,"\n";
+        }
+         }
+      }
+   if ($field1 eq ");" ) {
+      $generic = FALSE;
+      $port = FALSE;
+      }
+   if ($field1 eq GENERIC ) {
+      $generic = TRUE;
+      print "Found GENERIC\n";
+      }
+   if (uc($field1) eq PORT ) {
+      last;
+      }
+   }
+print TB "\n";
+print TB "        PORT MAP(\n";
+
+$port = FALSE;
+$already_found = FALSE;
+seek (VHD, 0, 0);  # go back to the top of the file
+while (<VHD>) {
+   chomp;
+   ($field1, $rest) = split;
+   if ($port eq TRUE ) {
+      if (uc($field1) ne "PORT") {
+         if ($field1 eq "--" ) {
+            print TB "        $_\n";
+         } elsif ($field1 eq ");" ) {
+            print TB "    $_\n";
+         } else {
+              # check if line ends with ';'
+            $pos = index $_, ";" ; 
+            if ($pos > 0 ) {
+              $comma = ",";
+            } else {
+              $comma = "";
+            }
+            $field1 =~ s/://;
+            printf TB "        %-14s => T_%s%s\n",$field1,$field1,$comma;
+
+            }
+         }
+      }
+   if ($field1 eq ");" ) {
+      if ($port eq TRUE ) {
+         $port = FALSE;
+         last;
+         }
+      }
+   if (uc($field1) eq PORT ) {
+      $port = TRUE unless ($already_found eq TRUE);
+      $already_found = TRUE;
+      print "Found PORT $already_found\n";
+      }
+   }
+
+print TB "\n";
+print TB "Stim: PROCESS\n";
+print TB "    BEGIN\n";
+print TB "        --\n";
+print TB "        WAIT;\n";
+print TB "    END PROCESS stim;\n";
+print TB "END test_1;\n";
+
+close VHD;
+close TB;
+print "tb$basename created\n";

@@ -105,7 +105,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= (others => '0');
         lba   <= "00";
-        if bcnt = 30 then
+        if bcnt = 35000 then
           ons <= bootnop;
         else
           ons <= ckewait;
@@ -119,7 +119,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= (others => '0');
         lba   <= "00";
-        if bcnt = 30000 then
+        if bcnt = 50000 then
           ons <= prewait;
         else
           ons <= bootnop;
@@ -213,7 +213,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        if bcnt = 40000 then
+        if bcnt = 60000 then
           ons <= preall;
         else
           ons <= dlllckw;
@@ -237,7 +237,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        if bcnt = 42000 then
+        if bcnt = 62000 then
           ons <= ref1;
         else
           ons <= ref1w;
@@ -261,7 +261,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        if bcnt = 42500 then
+        if bcnt = 62500 then
           ons <= ref2;
         else
           ons <= ref2w;
@@ -285,7 +285,7 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        if bcnt = 44000 then
+        if bcnt = 64000 then
           ons <= loadmr;
         else
           ons <= dww2;
