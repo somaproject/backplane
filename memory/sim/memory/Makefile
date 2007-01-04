@@ -55,10 +55,16 @@ fmf.sym/switch_pkg/_behavior.var: ../components/freemodel/switch_pkg.vhd
 $(WORKDIR)/mt47h64m16/_vhdl_behavioral.var: ../components/freemodel/mt47h64m16.vhd
 	$(VHDLC) -vital2000 ../components/freemodel/mt47h64m16.vhd
 
-work.sym/memddr2test/_behavioral.var: ../components/freemodel/mt47h64m16.vhd memddr2test.vhd
+$(WORKDIR)/hy5ps121621f_pack/prim.var: ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd
+	$(VHDLC) -vital2000 ../components/hynix/HY5PS121621F_PACK.vhd
+
+$(WORKDIR)/hy5ps121621f/_behavioral_model_hy5ps121621f.var: ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd ../components/hynix/HY5PS121621F.vhd
+	$(VHDLC) -vital2000 ../components/hynix/HY5PS121621F.vhd
+
+work.sym/memddr2test/_behavioral.var: ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd ../components/hynix/HY5PS121621F.vhd memddr2test.vhd
 	$(VHDLC) -vital2000 -work work  memddr2test.vhd
 
-sim: fmf.sym/conversions/prim.var fmf.sym/ecl_package/prim.var fmf.sym/ecl_utils/prim.var fmf.sym/ff_package/prim.var fmf.sym/gen_utils/prim.var fmf.sym/memory/prim.var fmf.sym/state_tab_package/prim.var fmf.sym/switch_pkg/_behavior.var $(WORKDIR)/mt47h64m16/_vhdl_behavioral.var work.sym/memddr2test/_behavioral.var 
+sim: fmf.sym/conversions/prim.var fmf.sym/ecl_package/prim.var fmf.sym/ecl_utils/prim.var fmf.sym/ff_package/prim.var fmf.sym/gen_utils/prim.var fmf.sym/memory/prim.var fmf.sym/state_tab_package/prim.var fmf.sym/switch_pkg/_behavior.var $(WORKDIR)/mt47h64m16/_vhdl_behavioral.var $(WORKDIR)/hy5ps121621f_pack/prim.var $(WORKDIR)/hy5ps121621f/_behavioral_model_hy5ps121621f.var work.sym/memddr2test/_behavioral.var 
 runsim: all
 	$(VHDLS) memddr2test
 
