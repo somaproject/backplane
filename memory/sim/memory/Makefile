@@ -55,10 +55,10 @@ fmf.sym/switch_pkg/_behavior.var: ../components/freemodel/switch_pkg.vhd
 $(WORKDIR)/mt47h64m16/_vhdl_behavioral.var: ../components/freemodel/mt47h64m16.vhd
 	$(VHDLC) -vital2000 ../components/freemodel/mt47h64m16.vhd
 
-$(WORKDIR)/memddr2test/_behavioral.var: ../components/freemodel/mt47h64m16.vhd memddr2test.vhd
-	$(VHDLC) -vital2000 memddr2test.vhd
+work.sym/memddr2test/_behavioral.var: ../components/freemodel/mt47h64m16.vhd memddr2test.vhd
+	$(VHDLC) -vital2000 -work work  memddr2test.vhd
 
-sim: fmf.sym/conversions/prim.var fmf.sym/ecl_package/prim.var fmf.sym/ecl_utils/prim.var fmf.sym/ff_package/prim.var fmf.sym/gen_utils/prim.var fmf.sym/memory/prim.var fmf.sym/state_tab_package/prim.var fmf.sym/switch_pkg/_behavior.var $(WORKDIR)/mt47h64m16/_vhdl_behavioral.var $(WORKDIR)/memddr2test/_behavioral.var 
+sim: fmf.sym/conversions/prim.var fmf.sym/ecl_package/prim.var fmf.sym/ecl_utils/prim.var fmf.sym/ff_package/prim.var fmf.sym/gen_utils/prim.var fmf.sym/memory/prim.var fmf.sym/state_tab_package/prim.var fmf.sym/switch_pkg/_behavior.var $(WORKDIR)/mt47h64m16/_vhdl_behavioral.var work.sym/memddr2test/_behavioral.var 
 runsim: all
 	$(VHDLS) memddr2test
 

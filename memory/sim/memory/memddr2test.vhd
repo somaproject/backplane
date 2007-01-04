@@ -2,9 +2,11 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
+USE IEEE.VITAL_timing.ALL;
+USE IEEE.VITAL_primitives.ALL;
 
-library work;
-use WORK.HY5PS121621F_PACK.all;
+LIBRARY FMF;       USE FMF.gen_utils.ALL;
+                   USE FMF.conversions.ALL;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -79,32 +81,175 @@ architecture Behavioral of memddr2test is
   signal RDDATA : std_logic_vector(31 downto 0) := (others => '0');
   signal RDWE   : std_logic                     := '0';
 
-  component HY5PS121621F
-    generic (
-      TimingCheckFlag :       boolean                       := true;
-      PUSCheckFlag    :       boolean                       := false;
-      Part_Number     :       PART_NUM_TYPE                 := B400);
-    port
-      ( DQ            : inout std_logic_vector(15 downto 0) := (others => 'Z');
-        LDQS          : inout std_logic                     := 'Z';
-        LDQSB         : inout std_logic                     := 'Z';
-        UDQS          : inout std_logic                     := 'Z';
-        UDQSB         : inout std_logic                     := 'Z';
-        LDM           : in    std_logic;
-        WEB           : in    std_logic;
-        CASB          : in    std_logic;
-        RASB          : in    std_logic;
-        CSB           : in    std_logic;
-        BA            : in    std_logic_vector(1 downto 0);
-        ADDR          : in    std_logic_vector(12 downto 0);
-        CKE           : in    std_logic;
-        CLK           : in    std_logic;
-        CLKB          : in    std_logic;
-        UDM           : in    std_logic;
-        odelay        : in    time                          := 0 ps);
-  end component;
+--   component HY5PS121621F
+--     generic (
+--       TimingCheckFlag :       boolean                       := true;
+--       PUSCheckFlag    :       boolean                       := false;
+--       Part_Number     :       PART_NUM_TYPE                 := B400);
+--     port
+--       ( DQ            : inout std_logic_vector(15 downto 0) := (others => 'Z');
+--         LDQS          : inout std_logic                     := 'Z';
+--         LDQSB         : inout std_logic                     := 'Z';
+--         UDQS          : inout std_logic                     := 'Z';
+--         UDQSB         : inout std_logic                     := 'Z';
+--         LDM           : in    std_logic;
+--         WEB           : in    std_logic;
+--         CASB          : in    std_logic;
+--         RASB          : in    std_logic;
+--         CSB           : in    std_logic;
+--         BA            : in    std_logic_vector(1 downto 0);
+--         ADDR          : in    std_logic_vector(12 downto 0);
+--         CKE           : in    std_logic;
+--         CLK           : in    std_logic;
+--         CLKB          : in    std_logic;
+--         UDM           : in    std_logic;
+--         odelay        : in    time                          := 0 ps);
+--   end component;
 
   component mt47h64m16
+        GENERIC (
+        -- tipd delays: interconnect path delays
+        tipd_ODT          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_CK           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_CKNeg        : VitalDelayType01 := VitalZeroDelay01;
+        tipd_CKE          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_CSNeg        : VitalDelayType01 := VitalZeroDelay01;
+        tipd_RASNeg       : VitalDelayType01 := VitalZeroDelay01;
+        tipd_CASNeg       : VitalDelayType01 := VitalZeroDelay01;
+        tipd_WENeg        : VitalDelayType01 := VitalZeroDelay01;
+        tipd_LDM          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_UDM          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_BA0          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_BA1          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_BA2          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A0           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A1           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A2           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A3           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A4           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A5           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A6           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A7           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A8           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A9           : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A10          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A11          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_A12          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ0          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ1          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ2          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ3          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ4          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ5          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ6          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ7          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ8          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ9          : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ10         : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ11         : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ12         : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ13         : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ14         : VitalDelayType01 := VitalZeroDelay01;
+        tipd_DQ15         : VitalDelayType01 := VitalZeroDelay01;
+        tipd_UDQS         : VitalDelayType01 := VitalZeroDelay01;
+        tipd_UDQSNeg      : VitalDelayType01 := VitalZeroDelay01;
+        tipd_LDQS         : VitalDelayType01 := VitalZeroDelay01;
+        tipd_LDQSNeg      : VitalDelayType01 := VitalZeroDelay01;
+
+        -- tpd delays
+        tpd_CK_DQ0        : VitalDelayType01Z := UnitDelay01Z; -- tAC(max), tHZ
+        tpd_CK_DQ1        : VitalDelayType := UnitDelay; -- tAC(min)
+        tpd_CK_LDQS       : VitalDelayType01Z := UnitDelay01Z; -- tDQSCK(max)
+
+        -- tsetup values
+        tsetup_DQ0_LDQS   : VitalDelayType := UnitDelay; -- tDSb
+        tsetup_A0_CK      : VitalDelayType := UnitDelay; -- tISb
+        tsetup_LDQS_CK_CL3_negedge_posedge: VitalDelayType := UnitDelay; -- tDSS
+        tsetup_LDQS_CK_CL4_negedge_posedge: VitalDelayType := UnitDelay; -- tDSS
+        tsetup_LDQS_CK_CL5_negedge_posedge: VitalDelayType := UnitDelay; -- tDSS
+        tsetup_LDQS_CK_CL6_negedge_posedge: VitalDelayType := UnitDelay; -- tDSS
+        -- thold values
+        thold_DQ0_LDQS    : VitalDelayType := UnitDelay; -- tDHb
+        thold_A0_CK       : VitalDelayType := UnitDelay; -- tIHb
+        thold_LDQS_CK_CL3_posedge_posedge : VitalDelayType := UnitDelay; -- tDSH
+        thold_LDQS_CK_CL4_posedge_posedge : VitalDelayType := UnitDelay; -- tDSH
+        thold_LDQS_CK_CL5_posedge_posedge : VitalDelayType := UnitDelay; -- tDSH
+        thold_LDQS_CK_CL6_posedge_posedge : VitalDelayType := UnitDelay; -- tDSH
+        -- tpw values
+        tpw_CK_CL3_posedge: VitalDelayType := UnitDelay; -- tCHAVG
+        tpw_CK_CL3_negedge: VitalDelayType := UnitDelay; -- tCLAVG
+        tpw_CK_CL4_posedge: VitalDelayType := UnitDelay; -- tCHAVG
+        tpw_CK_CL4_negedge: VitalDelayType := UnitDelay; -- tCLAVG
+        tpw_CK_CL5_posedge: VitalDelayType := UnitDelay; -- tCHAVG
+        tpw_CK_CL5_negedge: VitalDelayType := UnitDelay; -- tCLAVG
+        tpw_CK_CL6_posedge: VitalDelayType := UnitDelay; -- tCHAVG
+        tpw_CK_CL6_negedge: VitalDelayType := UnitDelay; -- tCLAVG
+        tpw_A0_CL3        : VitalDelayType := UnitDelay; -- tIPW
+        tpw_A0_CL4        : VitalDelayType := UnitDelay; -- tIPW
+        tpw_A0_CL5        : VitalDelayType := UnitDelay; -- tIPW
+        tpw_A0_CL6        : VitalDelayType := UnitDelay; -- tIPW
+        tpw_DQ0_CL3       : VitalDelayType := UnitDelay; -- tDIPW
+        tpw_DQ0_CL4       : VitalDelayType := UnitDelay; -- tDIPW
+        tpw_DQ0_CL5       : VitalDelayType := UnitDelay; -- tDIPW
+        tpw_DQ0_CL6       : VitalDelayType := UnitDelay; -- tDIPW
+        tpw_LDQS_normCL3_posedge : VitalDelayType := UnitDelay; -- tDQSH
+        tpw_LDQS_normCL3_negedge : VitalDelayType := UnitDelay; -- tDQSL
+        tpw_LDQS_normCL4_posedge : VitalDelayType := UnitDelay; -- tDQSH
+        tpw_LDQS_normCL4_negedge : VitalDelayType := UnitDelay; -- tDQSL
+        tpw_LDQS_normCL5_posedge : VitalDelayType := UnitDelay; -- tDQSH
+        tpw_LDQS_normCL5_negedge : VitalDelayType := UnitDelay; -- tDQSL
+        tpw_LDQS_normCL6_posedge : VitalDelayType := UnitDelay; -- tDQSH
+        tpw_LDQS_normCL6_negedge : VitalDelayType := UnitDelay; -- tDQSL
+        tpw_LDQS_preCL3_negedge  : VitalDelayType := UnitDelay; -- tWPRE
+        tpw_LDQS_preCL4_negedge  : VitalDelayType := UnitDelay; -- tWPRE
+        tpw_LDQS_preCL5_negedge  : VitalDelayType := UnitDelay; -- tWPRE
+        tpw_LDQS_preCL6_negedge  : VitalDelayType := UnitDelay; -- tWPRE
+        tpw_LDQS_postCL3_negedge : VitalDelayType := UnitDelay; -- tWPST
+        tpw_LDQS_postCL4_negedge : VitalDelayType := UnitDelay; -- tWPST
+        tpw_LDQS_postCL5_negedge : VitalDelayType := UnitDelay; -- tWPST
+        tpw_LDQS_postCL6_negedge : VitalDelayType := UnitDelay; -- tWPST
+
+        -- tperiod values
+        tperiod_CK_CL3    : VitalDelayType := UnitDelay; -- tCKAVG(min)
+        tperiod_CK_CL4    : VitalDelayType := UnitDelay; -- tCKAVG(min)
+        tperiod_CK_CL5    : VitalDelayType := UnitDelay; -- tCKAVG(min)
+        tperiod_CK_CL6    : VitalDelayType := UnitDelay; -- tCKAVG(min)
+        -- tskew values
+        tskew_CK_LDQS_CL3_posedge_posedge: VitalDelayType := UnitDelay; -- tDQSS
+        tskew_CK_LDQS_CL4_posedge_posedge: VitalDelayType := UnitDelay; -- tDQSS
+        tskew_CK_LDQS_CL5_posedge_posedge: VitalDelayType := UnitDelay; -- tDQSS
+        tskew_CK_LDQS_CL6_posedge_posedge: VitalDelayType := UnitDelay; -- tDQSS
+
+        -- tdevice values: values for internal delays
+        tdevice_tRC       : VitalDelayType    := 54 ns; -- tRC
+        tdevice_tRRD      : VitalDelayType    := 10 ns; -- tRRD
+        tdevice_tRCD      : VitalDelayType    := 12 ns; -- tRCD
+        tdevice_tFAW      : VitalDelayType    := 50 ns; -- tFAW
+        tdevice_tRASMIN   : VitalDelayType    := 40 ns; -- tRAS(min)
+        tdevice_tRASMAX   : VitalDelayType    := 70 us; -- tRAS(max)
+        tdevice_tRTP      : VitalDelayType    := 7.5 ns; -- tRTP
+        tdevice_tWR       : VitalDelayType    := 15 ns; -- tWR
+        tdevice_tWTR      : VitalDelayType    := 7.5 ns; -- tWTR
+        tdevice_tRP       : VitalDelayType    := 12 ns; -- tRP
+        tdevice_tRFCMIN   : VitalDelayType    := 127.5 ns; -- tRFC(min)
+        tdevice_tRFCMAX   : VitalDelayType    := 70 us; -- tRFC(max)
+        tdevice_REFPer    : VitalDelayType    := 64 ms; -- refresh period
+        tdevice_tCKAVGMAX : VitalDelayType    := 8 ns; -- tCKAVG(max)
+
+        -- generic control parameters
+        InstancePath      : string    := DefaultInstancePath;
+        TimingChecksOn    : boolean   := DefaultTimingChecks;
+        MsgOn             : boolean   := DefaultMsgOn;
+        XOn               : boolean   := DefaultXon;
+
+        -- memory file to be loaded
+        mem_file_name     : string    := "none";
+        UserPreload       : boolean   := FALSE;
+
+        -- For FMF SDF technology file usage
+        TimingModel       : string    := DefaultTimingModel); 
+
+
     PORT (
         ODT             : IN    std_ulogic := 'U';
         CK              : IN    std_ulogic := 'U';
@@ -241,143 +386,94 @@ begin  -- Behavioral
 
   memory_inst: mt47h64m16
     generic map (
-          GENERIC (
-        -- tipd delays: interconnect path delays
-        tipd_ODT          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_CK           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_CKNeg        : VitalDelayType01 := VitalZeroDelay01;
-        tipd_CKE          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_CSNeg        : VitalDelayType01 := VitalZeroDelay01;
-        tipd_RASNeg       : VitalDelayType01 := VitalZeroDelay01;
-        tipd_CASNeg       : VitalDelayType01 := VitalZeroDelay01;
-        tipd_WENeg        : VitalDelayType01 := VitalZeroDelay01;
-        tipd_LDM          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_UDM          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_BA0          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_BA1          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_BA2          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A0           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A1           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A2           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A3           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A4           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A5           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A6           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A7           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A8           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A9           : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A10          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A11          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_A12          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ0          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ1          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ2          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ3          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ4          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ5          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ6          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ7          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ8          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ9          : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ10         : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ11         : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ12         : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ13         : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ14         : VitalDelayType01 := VitalZeroDelay01;
-        tipd_DQ15         : VitalDelayType01 := VitalZeroDelay01;
-        tipd_UDQS         : VitalDelayType01 := VitalZeroDelay01;
-        tipd_UDQSNeg      : VitalDelayType01 := VitalZeroDelay01;
-        tipd_LDQS         : VitalDelayType01 := VitalZeroDelay01;
-        tipd_LDQSNeg      : VitalDelayType01 := VitalZeroDelay01;
-
-        -- tpd delays
-        tpd_CK_DQ0        : VitalDelayType01Z := UnitDelay01Z; -- tAC(max), tHZ
-        tpd_CK_DQ1        : VitalDelayType := UnitDelay; -- tAC(min)
-        tpd_CK_LDQS       : VitalDelayType01Z := UnitDelay01Z; -- tDQSCK(max)
+--         -- tpd delays
+--         tpd_CK_DQ0        : VitalDelayType01Z := UnitDelay01Z; -- tAC(max), tHZ
+--         tpd_CK_DQ1        : VitalDelayType := UnitDelay; -- tAC(min)
+--         tpd_CK_LDQS       : VitalDelayType01Z := UnitDelay01Z; -- tDQSCK(max)
 
         -- tsetup values
-        tsetup_DQ0_LDQS  => 0.15, 
-        tsetup_A0_CK     => 0.35, 
-        tsetup_LDQS_CK_CL3_negedge_posedge => 1,
-        tsetup_LDQS_CK_CL4_negedge_posedge => 1, 
-        tsetup_LDQS_CK_CL5_negedge_posedge => 0, 
-        tsetup_LDQS_CK_CL6_negedge_posedge => 0, 
+        tsetup_DQ0_LDQS  => 0.1 ns, 
+        tsetup_A0_CK     => 0.2 ns, 
+        tsetup_LDQS_CK_CL3_negedge_posedge => 0.6 ns,
+        tsetup_LDQS_CK_CL4_negedge_posedge => 0.75 ns, 
+        tsetup_LDQS_CK_CL5_negedge_posedge => 1 ns, 
+        tsetup_LDQS_CK_CL6_negedge_posedge => 0 ns, 
 
         -- thold values
-        thold_DQ0_LDQS    => 0.275, 
-        thold_A0_CK       => 0.475, 
-        thold_LDQS_CK_CL3_posedge_posedge : VitalDelayType := UnitDelay; -- tDSH
-        thold_LDQS_CK_CL4_posedge_posedge : VitalDelayType := UnitDelay; -- tDSH
-        thold_LDQS_CK_CL5_posedge_posedge : VitalDelayType := UnitDelay; -- tDSH
-        thold_LDQS_CK_CL6_posedge_posedge : VitalDelayType := UnitDelay; -- tDSH
+        thold_DQ0_LDQS    => 0.175 ns, 
+        thold_A0_CK       => 0.275 ns, 
+        thold_LDQS_CK_CL3_posedge_posedge => 1 ns,  -- tDSH
+        thold_LDQS_CK_CL4_posedge_posedge => 0.75 ns, -- tDSH
+        thold_LDQS_CK_CL5_posedge_posedge => 0.6 ns,  -- tDSH
+        thold_LDQS_CK_CL6_posedge_posedge => 0 ns, -- tDSH
 
         -- tpw values
-        tpw_CK_CL3_posedge: VitalDelayType := UnitDelay; -- tCHAVG
-        tpw_CK_CL3_negedge: VitalDelayType := UnitDelay; -- tCLAVG
-        tpw_CK_CL4_posedge: VitalDelayType := UnitDelay; -- tCHAVG
-        tpw_CK_CL4_negedge: VitalDelayType := UnitDelay; -- tCLAVG
-        tpw_CK_CL5_posedge: VitalDelayType := UnitDelay; -- tCHAVG
-        tpw_CK_CL5_negedge: VitalDelayType := UnitDelay; -- tCLAVG
-        tpw_CK_CL6_posedge: VitalDelayType := UnitDelay; -- tCHAVG
-        tpw_CK_CL6_negedge: VitalDelayType := UnitDelay; -- tCLAVG
-        tpw_A0_CL3        : VitalDelayType := UnitDelay; -- tIPW
-        tpw_A0_CL4        : VitalDelayType := UnitDelay; -- tIPW
-        tpw_A0_CL5        : VitalDelayType := UnitDelay; -- tIPW
-        tpw_A0_CL6        : VitalDelayType := UnitDelay; -- tIPW
-        tpw_DQ0_CL3       : VitalDelayType := UnitDelay; -- tDIPW
-        tpw_DQ0_CL4       : VitalDelayType := UnitDelay; -- tDIPW
-        tpw_DQ0_CL5       : VitalDelayType := UnitDelay; -- tDIPW
-        tpw_DQ0_CL6       : VitalDelayType := UnitDelay; -- tDIPW
-        tpw_LDQS_normCL3_posedge : VitalDelayType := UnitDelay; -- tDQSH
-        tpw_LDQS_normCL3_negedge : VitalDelayType := UnitDelay; -- tDQSL
-        tpw_LDQS_normCL4_posedge : VitalDelayType := UnitDelay; -- tDQSH
-        tpw_LDQS_normCL4_negedge : VitalDelayType := UnitDelay; -- tDQSL
-        tpw_LDQS_normCL5_posedge : VitalDelayType := UnitDelay; -- tDQSH
-        tpw_LDQS_normCL5_negedge : VitalDelayType := UnitDelay; -- tDQSL
-        tpw_LDQS_normCL6_posedge : VitalDelayType := UnitDelay; -- tDQSH
-        tpw_LDQS_normCL6_negedge : VitalDelayType := UnitDelay; -- tDQSL
-        tpw_LDQS_preCL3_negedge  : VitalDelayType := UnitDelay; -- tWPRE
-        tpw_LDQS_preCL4_negedge  : VitalDelayType := UnitDelay; -- tWPRE
-        tpw_LDQS_preCL5_negedge  : VitalDelayType := UnitDelay; -- tWPRE
-        tpw_LDQS_preCL6_negedge  : VitalDelayType := UnitDelay; -- tWPRE
-        tpw_LDQS_postCL3_negedge : VitalDelayType := UnitDelay; -- tWPST
-        tpw_LDQS_postCL4_negedge : VitalDelayType := UnitDelay; -- tWPST
-        tpw_LDQS_postCL5_negedge : VitalDelayType := UnitDelay; -- tWPST
-        tpw_LDQS_postCL6_negedge : VitalDelayType := UnitDelay; -- tWPST
+        tpw_CK_CL3_posedge => 2.4 ns,  -- tCHAVG
+        tpw_CK_CL3_negedge => 2.4 ns,  -- tCLAVG
+        tpw_CK_CL4_posedge=> 1.8 ns, -- tCHAVG
+        tpw_CK_CL4_negedge=> 1.8 ns, -- tCLAVG
+        tpw_CK_CL5_posedge=> 1.44 ns, -- tCHAVG
+        tpw_CK_CL5_negedge=> 1.44 ns, -- tCLAVG
+        tpw_CK_CL6_posedge=> 0 ns,  -- tCHAVG
+        tpw_CK_CL6_negedge=> 0 ns,  -- tCLAVG
+        tpw_A0_CL3        => 3 ns, 
+        tpw_A0_CL4        => 2.25 ns, 
+        tpw_A0_CL5        => 1.8 ns,
+        tpw_A0_CL6        => 0 ns, 
+        tpw_DQ0_CL3       => 1.75 ns, 
+        tpw_DQ0_CL4       => 1.312 ns, 
+        tpw_DQ0_CL5       => 1.05 ns, 
+        tpw_DQ0_CL6       => 0 ns, 
+        tpw_LDQS_normCL3_posedge => 1.75 ns,  -- tDQSH
+        tpw_LDQS_normCL3_negedge => 1.75 ns,  -- tDQSL
+        tpw_LDQS_normCL4_posedge => 1.312 ns,  -- tDQSH
+        tpw_LDQS_normCL4_negedge => 1.312 ns,  -- tDQSL
+        tpw_LDQS_normCL5_posedge => 1.05 ns,  -- tDQSH
+        tpw_LDQS_normCL5_negedge => 1.05 ns,  -- tDQSL
+        tpw_LDQS_normCL6_posedge => 0 ns,  -- tDQSH
+        tpw_LDQS_normCL6_negedge => 0 ns,  -- tDQSL
+        tpw_LDQS_preCL3_negedge  => 1.75 ns,  -- tWPRE
+        tpw_LDQS_preCL4_negedge  => 1.312 ns,  -- tWPRE
+        tpw_LDQS_preCL5_negedge  => 1.05 ns, -- tWPRE
+        tpw_LDQS_preCL6_negedge  => 0 ns, -- tWPRE
+        tpw_LDQS_postCL3_negedge => 2 ns,  -- tWPST
+        tpw_LDQS_postCL4_negedge => 1.5 ns,  -- tWPST
+        tpw_LDQS_postCL5_negedge => 1.2 ns, -- tWPST
+        tpw_LDQS_postCL6_negedge => 0 ns, -- tWPST
 
         -- tperiod values
-        tperiod_CK_CL3    : VitalDelayType := UnitDelay; -- tCKAVG(min)
-        tperiod_CK_CL4    : VitalDelayType := UnitDelay; -- tCKAVG(min)
-        tperiod_CK_CL5    : VitalDelayType := UnitDelay; -- tCKAVG(min)
-        tperiod_CK_CL6    : VitalDelayType := UnitDelay; -- tCKAVG(min)
+        tperiod_CK_CL3    => 5 ns, 
+        tperiod_CK_CL4    => 3.75 ns, 
+        tperiod_CK_CL5    => 3 ns, 
+        tperiod_CK_CL6    => 0 ns, 
 
         -- tskew values
-        tskew_CK_LDQS_CL3_posedge_posedge: VitalDelayType := UnitDelay; -- tDQSS
-        tskew_CK_LDQS_CL4_posedge_posedge: VitalDelayType := UnitDelay; -- tDQSS
-        tskew_CK_LDQS_CL5_posedge_posedge: VitalDelayType := UnitDelay; -- tDQSS
-        tskew_CK_LDQS_CL6_posedge_posedge: VitalDelayType := UnitDelay; -- tDQSS
+        tskew_CK_LDQS_CL3_posedge_posedge => 1.25 ns, 
+        tskew_CK_LDQS_CL4_posedge_posedge => 0.937 ns,
+        tskew_CK_LDQS_CL5_posedge_posedge => 0.75 ns,
+        tskew_CK_LDQS_CL6_posedge_posedge => 0 ns, 
 
-        -- tdevice values: values for internal delays
-        tdevice_tRC       : VitalDelayType    := 54 ns; -- tRC
-        tdevice_tRRD      : VitalDelayType    := 10 ns; -- tRRD
-        tdevice_tRCD      : VitalDelayType    := 12 ns; -- tRCD
-        tdevice_tFAW      : VitalDelayType    := 50 ns; -- tFAW
-        tdevice_tRASMIN   : VitalDelayType    := 40 ns; -- tRAS(min)
-        tdevice_tRASMAX   : VitalDelayType    := 70 us; -- tRAS(max)
-        tdevice_tRTP      : VitalDelayType    := 7.5 ns; -- tRTP
-        tdevice_tWR       : VitalDelayType    := 15 ns; -- tWR
-        tdevice_tWTR      : VitalDelayType    := 7.5 ns; -- tWTR
-        tdevice_tRP       : VitalDelayType    := 12 ns; -- tRP
-        tdevice_tRFCMIN   : VitalDelayType    := 127.5 ns; -- tRFC(min)
-        tdevice_tRFCMAX   : VitalDelayType    := 70 us; -- tRFC(max)
-        tdevice_REFPer    : VitalDelayType    := 64 ms; -- refresh period
-        tdevice_tCKAVGMAX : VitalDelayType    := 8 ns; -- tCKAVG(max)
+        -- tdevice values: values for internal delays ( use defaults)
+--         tdevice_tRC       : VitalDelayType    := 54 ns; -- tRC
+--         tdevice_tRRD      : VitalDelayType    := 10 ns; -- tRRD
+--         tdevice_tRCD      : VitalDelayType    := 12 ns; -- tRCD
+--         tdevice_tFAW      : VitalDelayType    := 50 ns; -- tFAW
+--         tdevice_tRASMIN   : VitalDelayType    := 40 ns; -- tRAS(min)
+--         tdevice_tRASMAX   : VitalDelayType    := 70 us; -- tRAS(max)
+--         tdevice_tRTP      : VitalDelayType    := 7.5 ns; -- tRTP
+--         tdevice_tWR       : VitalDelayType    := 15 ns; -- tWR
+--         tdevice_tWTR      : VitalDelayType    := 7.5 ns; -- tWTR
+--         tdevice_tRP       : VitalDelayType    := 12 ns; -- tRP
+--         tdevice_tRFCMIN   : VitalDelayType    := 127.5 ns; -- tRFC(min)
+--         tdevice_tRFCMAX   : VitalDelayType    := 70 us; -- tRFC(max)
+--         tdevice_REFPer    : VitalDelayType    := 64 ms; -- refresh period
+--         tdevice_tCKAVGMAX : VitalDelayType    := 8 ns; -- tCKAVG(max)
 
         -- generic control parameters
         TimingChecksOn    => True, 
         MsgOn             => True, 
 
-      TimingModel => "MT47H64M16BT-5E" )
+      TimingModel => "MT47H64M16BT-3" )
     port map (
       ODT    => '0',
       CK    => memCLK,

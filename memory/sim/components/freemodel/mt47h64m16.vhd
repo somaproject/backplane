@@ -3863,11 +3863,14 @@ BEGIN
                     IF CK_cnt < 1 THEN
                         CK_cnt := CK_cnt + 1;
                     ELSE
-                        IF Command = LM AND to_nat(BAIn) = 1 AND
-                        to_nat(AIn(9 DOWNTO 7)) = 7 THEN
+                        IF Command = LM AND to_nat(BAIn) = 1 then
+                        IF to_nat(AIn(9 DOWNTO 7)) = 7 THEN
                             Next_state := init11;
                             CK_cnt := 0;
+                        else
+                          report "Incorrect AIN = " & integer'image(to_nat(AIn(9 downto 7))) severity Warning;
                         END IF;
+                        end IF; 
                     END IF;
                 WHEN init11 =>
                     IF CK_cnt < 1 THEN

@@ -42,7 +42,7 @@ architecture Behavioral of bootddr2 is
 
   type states is ( none, ckewait,
                    bootnop,
-                   prewait,
+                   prewait, prewaitw, 
                    loademr2, loademr2w,
                    loademr3, loademr3w, lemrden, lmrdrst, dlllckw, preall,
                    ref1w, ref1, ref2, ref2w, dww, dw, dww2, loadmr,
@@ -133,8 +133,24 @@ begin  -- Behavioral
         lwe   <= '0';
         laddr <= X"0400";
         lba   <= "00";
-        ons   <= loademr2;
+        ons   <= prewaitw;
 
+        
+      when prewaitw =>
+        lcke  <= '1';
+        lcs   <= '0';
+        lras  <= '1';
+        lcas  <= '1';
+        lwe   <= '1';
+        laddr <= X"0400";
+        lba   <= "00";
+        if bcnt = 50010 then
+          ons <= loademr2;
+        else
+          ons <= prewaitw; 
+        end if;
+
+        
       when loademr2 =>
         lcke  <= '1';
         lcs   <= '0';
@@ -309,7 +325,11 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons   <= lemren0;
+        if bcnt = 64005 then
+          ons   <= lemren0;
+        else
+          ons   <= loadmrw;
+        end if;
 
       when lemren0 =>
         lcke  <= '1';
@@ -317,7 +337,7 @@ begin  -- Behavioral
         lras  <= '0';
         lcas  <= '0';
         lwe   <= '0';
-        laddr <= "000" & EMR;
+        laddr <= "0000001110000000";
         lba   <= "01";
         ons   <= lemren0w;
 
@@ -329,7 +349,11 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons   <= lemrex0;
+        if bcnt = 64010 then
+          ons   <= lemrex0;
+        else
+          ons <= lemren0w; 
+        end if;
 
 
       when lemrex0 =>
@@ -350,7 +374,11 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        ons   <= dones;
+        if bcnt = 64020 then
+          ons   <= dones;
+        else
+          ons <= lemrex0w; 
+        end if;
 
       when dones =>
         lcke  <= '1';
