@@ -1,15 +1,19 @@
 
-% add wave -pos 40 :memddr2test:memory_inst:udqs_ipd :memddr2test:memory_inst:udqsneg_ipd
-% add wave -pos 42 :memddr2test:memory_inst:udqsneg_nwv :memddr2test:memory_inst:ldqsneg_nwv
-% add wave -pos 42 :memddr2test:memory_inst:behavior:ldqsout
-% add wave -pos 45 :memddr2test:memory_inst:behavior:udqsout_zd :memddr2test:memory_inst:behavior:udqsnegout_zd
-% add wave -pos 47 :memddr2test:memory_inst:behavior:ldqsdiff :memddr2test:memory_inst:behavior:udqsdiff
-% 
-% add wave -pos 42 :memddr2test:memory_inst:behavior:Outdata:burst_cnt
-% add wave -pos 42 :memddr2test:memory_inst:behavior:Outdata:burst_seq
-% add wave -pos 42 :memddr2test:memory_inst:behavior:Outdata:start_bank
-% add wave -pos 42 :memddr2test:memory_inst:behavior:Outdata:start_row
-% add wave -pos 42 :memddr2test:memory_inst:behavior:Outdata:start_col
-% add wave -pos 42 :memddr2test:memory_inst:behavior:Outdata:preamble_allow
-% add wave -pos 42 :memddr2test:memory_inst:behavior:Outdata:preamble_done
+add wave :memddr2test:memory_inst:udqs_ipd :memddr2test:memory_inst:udqsneg_ipd
+add wave :memddr2test:memory_inst:udqsneg_nwv :memddr2test:memory_inst:ldqsneg_nwv
+add wave :memddr2test:memory_inst:behavior:ldqsout
+add wave :memddr2test:memory_inst:behavior:udqsout_zd :memddr2test:memory_inst:behavior:udqsnegout_zd
+add wave :memddr2test:memory_inst:behavior:ldqsdiff :memddr2test:memory_inst:behavior:udqsdiff
 
+add wave :memddr2test:memory_inst:behavior:Outdata:burst_cnt
+add wave :memddr2test:memory_inst:behavior:Outdata:burst_seq
+add wave :memddr2test:memory_inst:behavior:Outdata:start_bank
+add wave :memddr2test:memory_inst:behavior:Outdata:start_row
+add wave :memddr2test:memory_inst:behavior:Outdata:start_col
+add wave :memddr2test:memory_inst:behavior:Outdata:preamble_allow
+add wave :memddr2test:memory_inst:behavior:Outdata:preamble_done
+add wave :memddr2test:memory_inst:behavior:CKint
+add wave :memddr2test:memory_inst:behavior:EMR
+add wave :memddr2test:memory_inst:behavior:MR
+add wave :memddr2test:memory_inst:behavior:UDQSOUT_zd
+add wave  :memddr2test:memory_inst:behavior:out_data
