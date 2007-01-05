@@ -80,7 +80,7 @@ begin  -- Behavioral
       ocs <= ons;
 
       BA   <= lba;
-      TS   <= tssreg(3); 
+      TS   <= tssreg(4);
       DOUT <= doutsreg(1);
 
       CS  <= lcs;
@@ -198,7 +198,7 @@ begin  -- Behavioral
         lcas    <= '1';
         lwe     <= '1';
         if acnt = "011111111" then
-          ons   <= extrats;
+          ons   <= prenopw;
         else
           ons   <= write;
         end if;
@@ -211,7 +211,7 @@ begin  -- Behavioral
         lras    <= '1';
         lcas    <= '1';
         lwe     <= '1';
-        if acnt = "100000001" then    
+        if acnt = "100000000" then    
           ons   <= prenopw;
         else
           ons   <= extrats;

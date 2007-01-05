@@ -1,19 +1,31 @@
 
-add wave :memddr2test:memory_inst:udqs_ipd :memddr2test:memory_inst:udqsneg_ipd
-add wave :memddr2test:memory_inst:udqsneg_nwv :memddr2test:memory_inst:ldqsneg_nwv
-add wave :memddr2test:memory_inst:behavior:ldqsout
-add wave :memddr2test:memory_inst:behavior:udqsout_zd :memddr2test:memory_inst:behavior:udqsnegout_zd
-add wave :memddr2test:memory_inst:behavior:ldqsdiff :memddr2test:memory_inst:behavior:udqsdiff
+add wave :memory_inst:udqs_ipd :memory_inst:udqsneg_ipd
+add wave :memory_inst:udqsneg_nwv :memory_inst:ldqsneg_nwv
+add wave :memory_inst:behavior:ldqsout
+add wave :memory_inst:behavior:udqsout_zd :memory_inst:behavior:udqsnegout_zd
+add wave :memory_inst:behavior:ldqsdiff :memory_inst:behavior:udqsdiff
 
-add wave :memddr2test:memory_inst:behavior:Outdata:burst_cnt
-add wave :memddr2test:memory_inst:behavior:Outdata:burst_seq
-add wave :memddr2test:memory_inst:behavior:Outdata:start_bank
-add wave :memddr2test:memory_inst:behavior:Outdata:start_row
-add wave :memddr2test:memory_inst:behavior:Outdata:start_col
-add wave :memddr2test:memory_inst:behavior:Outdata:preamble_allow
-add wave :memddr2test:memory_inst:behavior:Outdata:preamble_done
-add wave :memddr2test:memory_inst:behavior:CKint
-add wave :memddr2test:memory_inst:behavior:EMR
-add wave :memddr2test:memory_inst:behavior:MR
-add wave :memddr2test:memory_inst:behavior:UDQSOUT_zd
-add wave  :memddr2test:memory_inst:behavior:out_data
+add wave :memory_inst:behavior:Outdata:burst_cnt
+add wave :memory_inst:behavior:Outdata:burst_seq
+add wave :memory_inst:behavior:Outdata:start_bank
+add wave :memory_inst:behavior:Outdata:start_row
+add wave :memory_inst:behavior:Outdata:start_col
+add wave :memory_inst:behavior:Outdata:preamble_allow
+add wave :memory_inst:behavior:Outdata:preamble_done
+add wave :memory_inst:behavior:CKint
+add wave :memory_inst:behavior:EMR
+add wave :memory_inst:behavior:MR
+add wave :memory_inst:behavior:UDQSOUT_zd
+add wave :memory_inst:behavior:out_data
+add wave :memory_inst:behavior:CKDiff
+add wave :memory_inst:behavior:DLL_delay
+add wave :memory_inst:behavior:CKtemp
+add wave :memory_inst:behavior:CKPeriod
+add wave :memory_inst:behavior:CKHalfPer
+add wave :memory_inst:behavior:Ckdlldelay
+add wave :memory_inst:behavior:Ckdiff
+add wave :memory_inst:tpd_ck_dq1
+
+
+
+

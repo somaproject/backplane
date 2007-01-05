@@ -8,38 +8,38 @@ use UNISIM.vcomponents.all;
 
 entity memddr2 is
   port (
-    CLK    : in    std_logic;
-    CLK90  : in    std_logic;
-    CLK180 : in    std_logic;
-    CLK270 : in    std_logic;
-    RESET  : in    std_logic;
+    CLK         : in    std_logic;
+    CLK90       : in    std_logic;
+    CLK180      : in    std_logic;
+    CLK270      : in    std_logic;
+    RESET       : in    std_logic;
     -- RAM!
-    CKE    : out   std_logic := '0';
-    CAS    : out   std_logic;
-    RAS    : out   std_logic;
-    CS     : out   std_logic;
-    WE     : out   std_logic;
-    ADDR   : out   std_logic_vector(12 downto 0);
-    BA     : out   std_logic_vector(1 downto 0);
-    DQSH   : inout std_logic;
-    DQSL   : inout std_logic;
-    DQ     : inout std_logic_vector(15 downto 0);
+    CKE         : out   std_logic := '0';
+    CAS         : out   std_logic;
+    RAS         : out   std_logic;
+    CS          : out   std_logic;
+    WE          : out   std_logic;
+    ADDR        : out   std_logic_vector(12 downto 0);
+    BA          : out   std_logic_vector(1 downto 0);
+    DQSH        : inout std_logic := '0';
+    DQSL        : inout std_logic := '0';
+    DQ          : inout std_logic_vector(15 downto 0);
     -- interface
-    START  : in    std_logic;
-    RW     : in    std_logic;
-    DONE   : out   std_logic;
-    ROWTGT : in  std_logic_vector(14 downto 0);
+    START       : in    std_logic;
+    RW          : in    std_logic;
+    DONE        : out   std_logic;
+    ROWTGT      : in    std_logic_vector(14 downto 0);
     -- write interface
-    WRADDR : out std_logic_vector(7 downto 0);
-    WRDATA : in  std_logic_vector(31 downto 0);
+    WRADDR      : out   std_logic_vector(7 downto 0);
+    WRDATA      : in    std_logic_vector(31 downto 0);
     -- read interface
-    RDADDR : out std_logic_vector(7 downto 0);
-    RDDATA : out std_logic_vector(31 downto 0);
-    RDWE   : out std_logic;
+    RDADDR      : out   std_logic_vector(7 downto 0);
+    RDDATA      : out   std_logic_vector(31 downto 0);
+    RDWE        : out   std_logic;
     -- debugging
-    DQALIGNPOSL : out std_logic_vector(7 downto 0);
-    DQALIGNPOSH : out std_logic_vector(7 downto 0);
-    DEBUG : out std_logic_vector(31 downto 0)
+    DQALIGNPOSL : out   std_logic_vector(7 downto 0);
+    DQALIGNPOSH : out   std_logic_vector(7 downto 0);
+    DEBUG       : out   std_logic_vector(31 downto 0)
     );
 end memddr2;
 
@@ -49,7 +49,7 @@ architecture Behavioral of memddr2 is
   signal dsel : integer range 0 to 3 := 0;
 
   signal startl : std_logic := '0';
-  
+
   -- per-module signals
 
   -- Refresh module
@@ -107,7 +107,7 @@ architecture Behavioral of memddr2 is
   signal emr, mr : std_logic_vector(12 downto 0) := (others => '0');
 
   signal readcnt, writecnt : std_logic_vector(7 downto 0) := (others => '0');
- 
+
   -- write module
   -- 
   component writeddr2
@@ -144,26 +144,26 @@ architecture Behavioral of memddr2 is
 
 
   component readddr2
-    port (      CLK         : in  std_logic;
-      START       : in  std_logic;
-      DONE        : out std_logic;
-      -- ram interface
-      CS          : out std_logic;
-      RAS         : out std_logic;
-      CAS         : out std_logic;
-      WE          : out std_logic;
-      ADDR        : out std_logic_vector(12 downto 0);
-      BA          : out std_logic_vector(1 downto 0);
-      DIN         : in  std_logic_vector(31 downto 0);
-      -- input data interface
-      ROWTGT      : in  std_logic_vector(14 downto 0);
-      RADDR       : out std_logic_vector(7 downto 0);
-      RDATA       : out std_logic_vector(31 downto 0);
-      RWE         : out std_logic;
-      NOTERMINATE : in  std_logic;
-      LATENCYEXTRA : in std_logic_vector(1 downto 0);
-      READOFFSET: in std_logic_vector(1 downto 0)
-      );
+    port ( CLK          : in  std_logic;
+           START        : in  std_logic;
+           DONE         : out std_logic;
+           -- ram interface
+           CS           : out std_logic;
+           RAS          : out std_logic;
+           CAS          : out std_logic;
+           WE           : out std_logic;
+           ADDR         : out std_logic_vector(12 downto 0);
+           BA           : out std_logic_vector(1 downto 0);
+           DIN          : in  std_logic_vector(31 downto 0);
+           -- input data interface
+           ROWTGT       : in  std_logic_vector(14 downto 0);
+           RADDR        : out std_logic_vector(7 downto 0);
+           RDATA        : out std_logic_vector(31 downto 0);
+           RWE          : out std_logic;
+           NOTERMINATE  : in  std_logic;
+           LATENCYEXTRA : in  std_logic_vector(1 downto 0);
+           READOFFSET   : in  std_logic_vector(1 downto 0)
+           );
   end component;
 
   signal rstart, rdone : std_logic := '0';
@@ -183,16 +183,17 @@ architecture Behavioral of memddr2 is
       CLK90        : in    std_logic;
       CLK180       : in    std_logic;
       CLK270       : in    std_logic;
-      DQS          : inout std_logic;
+      DQS          : inout std_logic := '0';
       DQ           : inout std_logic_vector(7 downto 0);
-      TS           : in    std_logic;
+      DQSTS        : in    std_logic;
+      DQTS         : in    std_logic;
       DIN          : in    std_logic_vector(15 downto 0);
       DOUT         : out   std_logic_vector(15 downto 0);
       START        : in    std_logic;
       DONE         : out   std_logic;
       LATENCYEXTRA : out   std_logic;
-    POSOUT : out std_logic_vector(7 downto 0)
-      
+      POSOUT       : out   std_logic_vector(7 downto 0)
+
       );
   end component;
 
@@ -216,7 +217,7 @@ architecture Behavioral of memddr2 is
   signal doutl, douth : std_logic_vector(15 downto 0) := (others => '0');
 
   signal latencyextra : std_logic_vector(1 downto 0) := (others => '0');
-  
+
   component memcontmux
     port (
       CLK      : in  std_logic;
@@ -265,15 +266,15 @@ architecture Behavioral of memddr2 is
   end component;
 
   signal rddataint : std_logic_vector(31 downto 0) := (others => '0');
-  
+  signal dqts     : std_logic                     := '0';
 begin  -- Behavioral
 
-  
-  din <= dinh & dinl; 
-  
+
+  din <= dinh & dinl;
+
   doutl <= dout(15 downto 0);
   douth <= dout(31 downto 16);
-  
+
   refreshddr2_inst : refreshddr2
     port map (
       CLK   => CLK,
@@ -321,26 +322,26 @@ begin  -- Behavioral
 
   readaddr2_inst : readddr2
     port map (
-      CLK         => CLK,
-      START       => rstart,
-      DONE        => rdone,
-      CS          => rcs,
-      RAS         => rras,
-      CAS         => rcas,
-      WE          => rwe,
-      ADDR        => raddr,
-      BA          => rba,
-      DIN         => din,
-      ROWTGT      => rowtgt,
-      RADDR       => RDADDR,
-      RDATA       => RDDATAint,
-      RWE         => RDWE,
-      NOTERMINATE => noterm,
+      CLK          => CLK,
+      START        => rstart,
+      DONE         => rdone,
+      CS           => rcs,
+      RAS          => rras,
+      CAS          => rcas,
+      WE           => rwe,
+      ADDR         => raddr,
+      BA           => rba,
+      DIN          => din,
+      ROWTGT       => rowtgt,
+      RADDR        => RDADDR,
+      RDATA        => RDDATAint,
+      RWE          => RDWE,
+      NOTERMINATE  => noterm,
       LATENCYEXTRA => latencyextra,
-      READOFFSET => "00");
-  
-  RDDATA <= rddataint; 
-  
+      READOFFSET   => "00");
+
+  RDDATA <= rddataint;
+
   dqalign_inst_low : dqalign
     port map (
       CLK          => CLK,
@@ -349,13 +350,14 @@ begin  -- Behavioral
       CLK270       => CLK270,
       DQS          => DQSL,
       DQ           => DQ(7 downto 0),
-      TS           => ts,
+      DQSTS        => ts,
+      DQTS         => dqts,
       DIN          => doutl,
       DOUT         => dinl,
       START        => alstart,
       DONE         => aldonel,
-      LATENCYEXTRA => latencyextra(0), 
-      POSOUT => DQALIGNPOSL);
+      LATENCYEXTRA => latencyextra(0),
+      POSOUT       => DQALIGNPOSL);
 
   dqalign_inst_high : dqalign
     port map (
@@ -365,19 +367,20 @@ begin  -- Behavioral
       CLK270       => CLK270,
       DQS          => DQSH,
       DQ           => DQ(15 downto 8),
-      TS           => ts,
+      DQSTS        => ts,
+      DQTS         => dqts,
       DIN          => douth,
       DOUT         => dinh,
       START        => alstart,
       DONE         => aldoneh,
       LATENCYEXTRA => latencyextra(1),
-      POSOUT => DQALIGNPOSH
+      POSOUT       => DQALIGNPOSH
       );
 
   DEBUG(1 downto 0) <= latencyextra;
-  DEBUG(3) <= rstart;
-  
-    
+  DEBUG(3)          <= rstart;
+
+
   aldone <= aldonel and aldoneh;
 
   memcontmux_inst : memcontmux
@@ -422,7 +425,7 @@ begin  -- Behavioral
 
 
 
-  mr <=  "0010001010010"; 
+  mr <= "0010001010010";
 
   emr <= "0010000000000";
 
@@ -438,10 +441,10 @@ begin  -- Behavioral
         ocs <= ons;
 
         if ocs = readdone or ocs = writedone then
-          startl <= '0';
+          startl   <= '0';
         else
           if START = '1' then
-            startl <= '1'; 
+            startl <= '1';
           end if;
         end if;
 
@@ -461,6 +464,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '1';
         ons       <= boot;
 
       when boot =>
@@ -471,6 +475,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '1';
         if bootdone = '1' then
           ons     <= dumbread;
         else
@@ -485,6 +490,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '1';
         alstart   <= '0';
+        dqts     <= '1';
         ons       <= aligns;
 
       when aligns =>
@@ -495,6 +501,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '1';
         alstart   <= '1';
+        dqts     <= '1';
         ons       <= alignw;
 
       when alignw =>
@@ -505,6 +512,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '1';
         alstart   <= '0';
+        dqts     <= '1';
         if aldone = '1' then
           ons     <= drw;
         else
@@ -519,6 +527,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '1';
         if rdone = '1' then
           ons     <= refresh;
         else
@@ -533,6 +542,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '1';
         if refdone = '1' then
           ons     <= inchk;
         else
@@ -540,13 +550,14 @@ begin  -- Behavioral
         end if;
 
       when inchk =>
-        dsel      <= 1;
+        dsel      <= 2;
         bootstart <= '0';
         refstart  <= '0';
         rstart    <= '0';
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '1';
         if startl = '1' then
           if rw = '0' then
             ons   <= read;
@@ -565,6 +576,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '1';
         if rdone = '1' then
           ons     <= readdone;
         else
@@ -579,6 +591,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '1';
         ons       <= refresh;
 
       when write =>
@@ -589,6 +602,7 @@ begin  -- Behavioral
         wstart    <= '1';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '0';
         if wdone = '1' then
           ons     <= writedone;
         else
@@ -603,6 +617,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '0';
         ons       <= refresh;
 
       when others =>
@@ -613,6 +628,7 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
+        dqts     <= '1';
         ons       <= none;
     end case;
 

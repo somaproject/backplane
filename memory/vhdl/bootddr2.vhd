@@ -42,7 +42,7 @@ architecture Behavioral of bootddr2 is
 
   type states is ( none, ckewait,
                    bootnop,
-                   prewait, prewaitw, 
+                   prewait, prewaitw,
                    loademr2, loademr2w,
                    loademr3, loademr3w, lemrden, lmrdrst, dlllckw, preall,
                    ref1w, ref1, ref2, ref2w, dww, dw, dww2, loadmr,
@@ -55,7 +55,7 @@ architecture Behavioral of bootddr2 is
 
 begin  -- Behavioral
 
-  DONE <= '1' when ocs = lemrex0w else '0';
+  DONE <= '1' when ocs = dones else '0';
 
   main : process(CLK)
   begin
@@ -72,9 +72,14 @@ begin  -- Behavioral
       BA   <= lba;
 
       if ocs = none or ocs = dones then
-        bcnt <= 0;
+        bcnt   <= 0;
       else
-        bcnt <= bcnt + 1;
+        if bcnt = 2**16-1 then
+          bcnt <= 0;
+        else
+
+          bcnt <= bcnt + 1;
+        end if;
       end if;
 
     end if;
@@ -135,7 +140,7 @@ begin  -- Behavioral
         lba   <= "00";
         ons   <= prewaitw;
 
-        
+
       when prewaitw =>
         lcke  <= '1';
         lcs   <= '0';
@@ -147,10 +152,10 @@ begin  -- Behavioral
         if bcnt = 50010 then
           ons <= loademr2;
         else
-          ons <= prewaitw; 
+          ons <= prewaitw;
         end if;
 
-        
+
       when loademr2 =>
         lcke  <= '1';
         lcs   <= '0';
@@ -326,9 +331,9 @@ begin  -- Behavioral
         laddr <= X"0000";
         lba   <= "00";
         if bcnt = 64005 then
-          ons   <= lemren0;
+          ons <= lemren0;
         else
-          ons   <= loadmrw;
+          ons <= loadmrw;
         end if;
 
       when lemren0 =>
@@ -350,9 +355,9 @@ begin  -- Behavioral
         laddr <= X"0000";
         lba   <= "00";
         if bcnt = 64010 then
-          ons   <= lemrex0;
+          ons <= lemrex0;
         else
-          ons <= lemren0w; 
+          ons <= lemren0w;
         end if;
 
 
@@ -374,10 +379,10 @@ begin  -- Behavioral
         lwe   <= '1';
         laddr <= X"0000";
         lba   <= "00";
-        if bcnt = 64020 then
-          ons   <= dones;
+        if bcnt = 65000 then
+          ons <= dones;
         else
-          ons <= lemrex0w; 
+          ons <= lemrex0w;
         end if;
 
       when dones =>

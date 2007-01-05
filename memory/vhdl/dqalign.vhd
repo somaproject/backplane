@@ -11,17 +11,19 @@ entity dqalign is
   port (
     CLK          : in    std_logic;
     CLK90        : in    std_logic;
+-- CLK90n : in std_logic;
     CLK180       : in    std_logic;
     CLK270       : in    std_logic;
-    DQS          : inout std_logic;
+    DQS          : inout std_logic := 'Z';
     DQ           : inout std_logic_vector(7 downto 0);
-    TS           : in    std_logic;
+    DQSTS        : in    std_logic;
+    DQTS         : in    std_logic;
     DIN          : in    std_logic_vector(15 downto 0);
     DOUT         : out   std_logic_vector(15 downto 0);
     START        : in    std_logic;
     DONE         : out   std_logic;
-    LATENCYEXTRA : out   std_logic; 
-    POSOUT : out std_logic_vector(7 downto 0)
+    LATENCYEXTRA : out   std_logic;
+    POSOUT       : out   std_logic_vector(7 downto 0)
     );
 
 end dqalign;
@@ -37,20 +39,20 @@ architecture Behavioral of dqalign is
   signal dqsq1, dqsq2 : std_logic := '0';
   signal dqsamp       : std_logic := '0';
 
-  signal dqsq1l, dqsq2l : std_logic := '0';
+  signal dqsq1l, dqsq2l   : std_logic := '0';
   signal dqsq1ll, dqsq2ll : std_logic := '0';
 
   -- data signals
   signal dqdelay              : std_logic_vector(7 downto 0)
-    := (others => '0');
+                                          := (others => '0');
   signal ddq1, ddq2           : std_logic_vector(7 downto 0)
-    := (others => '0');
+                                          := (others => '0');
   signal ddq1l, ddq2l, ddq2ll : std_logic_vector(7 downto 0)
-    := (others => '0');
+                                          := (others => '0');
   signal dinddr               : std_logic_vector(7 downto 0)
-    := (others => '0');
-  signal dqinc                : std_logic                    := '0';
-  signal dqce                 : std_logic                    := '0';
+                                          := (others => '0');
+  signal dqinc                : std_logic := '0';
+  signal dqce                 : std_logic := '0';
 
   signal ince : std_logic                    := '1';
   signal dqi  : std_logic_vector(7 downto 0) := (others => '0');
@@ -75,10 +77,10 @@ architecture Behavioral of dqalign is
 
   signal startwcnt : integer range 0 to 31 := 0;
 
-  signal tsint, tsintl : std_logic := '0';
+  signal dqstsint, tsintl : std_logic := '1';
+  signal dqtsint          : std_logic := '1';
 
-  signal clk90n : std_logic := '0';
-  
+
 begin  -- Behavioral
 
   LATENCYEXTRA <= osel;
@@ -100,28 +102,34 @@ begin  -- Behavioral
     port map (
       O  => dqsin,
       IO => DQS,
-      I  => CLK90n,                      -- This passes timing; clk270 does
-                                         -- not. WTF? 
-      T  => TSint
+      I  => CLK270,                     -- This passes timing; clk270 does
+                                        -- not. WTF? 
+      T  => dqstsint
       );
 
-  clk90n <= not clk90;                  -- This passes timing
 
   process(clk90)
-    begin
-      if rising_edge(clk90) then
-        tsint <= TS; 
-      end if;
-    end process; 
-               
-  iogen       : for i in 0 to 7 generate
+  begin
+    if rising_edge(clk90) then
+      dqstsint <= DQSTS;
+    end if;
+  end process;
+
+  process(clk180)
+  begin
+    if rising_edge(clk180) then
+      dqtsint <= DQTS;
+    end if;
+  end process;
+
+  iogen : for i in 0 to 7 generate
 
     IOBUF_dq : IOBUF
       port map (
-        O  => dqi(i),                  
-        IO => dq(i),                   
-        I  => dinddr(i),               
-        T  => tsint                    
+        O  => dqi(i),
+        IO => dq(i),
+        I  => dinddr(i),
+        T  => dqtsint
         );
 
 
@@ -198,8 +206,8 @@ begin  -- Behavioral
       -- dqs components
       if dqsamp = '1' then
 
-        dqsq1l  <= dqsq1;
-        dqsq2l  <= dqsq2;
+        dqsq1l <= dqsq1;
+        dqsq2l <= dqsq2;
       end if;
 
       if inrst = '1' then
@@ -211,13 +219,13 @@ begin  -- Behavioral
       end if;
 
       if cs = resetall then
-        startwcnt <= 0;
+        startwcnt     <= 0;
       else
         if cs = startw then
           if startwcnt = 31 then
-            null; 
+            null;
           else
-          startwcnt <= startwcnt + 1;             
+            startwcnt <= startwcnt + 1;
           end if;
 
         end if;
@@ -236,11 +244,11 @@ begin  -- Behavioral
         ddq2l <= ddq2;
       end if;
 
-      ddq2ll              <= ddq2l;
-      
-      if osel = '0' then                
-        DOUT(15 downto 8) <= ddq2ll;
-        DOUT(7 downto 0)  <= ddq1l;    -- total hack; this doesn't currently
+      ddq2ll <= ddq2l;
+
+      if osel = '0' then
+        DOUT(15 downto 8)   <= ddq2ll;
+        DOUT(7 downto 0)    <= ddq1l;   -- total hack; this doesn't currently
                                         -- work. 
       else
         -- What follows is the crudest hack of my engineering career
@@ -250,13 +258,13 @@ begin  -- Behavioral
           DOUT(15 downto 8) <= ddq1l;
           DOUT(7 downto 0)  <= ddq2ll;
         else
-        -- synthesis on
+          -- synthesis on
           DOUT(15 downto 8) <= ddq2ll;
           DOUT(7 downto 0)  <= ddq1l;
-        -- synthesis off
+          -- synthesis off
         end if;
         -- synthesis on
-        
+
       end if;
 
       if cs = propw4 then
@@ -267,7 +275,7 @@ begin  -- Behavioral
         end if;
       end if;
 
-      POSOUT <= "00" & dqscnt; 
+      POSOUT <= "00" & dqscnt;
 
     end if;
   end process main;
@@ -307,9 +315,9 @@ begin  -- Behavioral
         dqinc  <= '0';
         dqce   <= '0';
         if startwcnt = 30 then
-          ns <= startw3;
+          ns   <= startw3;
         else
-          ns <= startw; 
+          ns   <= startw;
         end if;
 
       when startw3 =>
