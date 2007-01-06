@@ -160,7 +160,8 @@ architecture Behavioral of memtest is
     ctdo, ctdi : std_logic := '0';
 
   signal csreg : std_logic_vector(39 downto 0) := (others => '0');
-
+  signal reset1, reset2 : std_logic := '0';
+  
 begin
 
   jtagmemif_inst : jtagmemif
@@ -267,10 +268,11 @@ begin
       CLKFB                 => clk,
       CLKIN                 => clkbfast,
       LOCKED                => locked2,
-      RST                   => '0'
-
+      RST                   => reset1
       );
 
+  reset1 <= not locked;
+  reset2 <= not locked2; 
   RESET <= not locked2;
 
   clk_bufg : BUFG
