@@ -215,6 +215,7 @@ begin  -- Behavioral
       -- dqs components
       dqsq1l <= dqsq1;        
       dqsq2l <= dqsq2;        
+
       if dqsamp = '1' then
         dqsq1ll <= dqsq1l;
         dqsq2ll <= dqsq2l;
@@ -258,13 +259,10 @@ begin  -- Behavioral
 
       if osel = '0' then
         DOUT(15 downto 8)   <= ddq2ll;
-        DOUT(7 downto 0)    <= ddq1l;   -- total hack; this doesn't currently
-                                        -- work. 
+        DOUT(7 downto 0)    <= ddq1l;
       else
-        -- What follows is the crudest hack of my engineering career
-        --
-          DOUT(15 downto 8) <= ddq1l;
-          DOUT(7 downto 0)  <= ddq2ll;
+        DOUT(15 downto 8) <= ddq2l;
+        DOUT(7 downto 0)  <= ddq1l;
       end if;
 
       if cs = propw4 then
