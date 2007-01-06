@@ -261,7 +261,7 @@ begin  -- Behavioral
         DOUT(15 downto 8)   <= ddq2ll;
         DOUT(7 downto 0)    <= ddq1l;
       else
-        DOUT(15 downto 8) <= ddq2l;
+        DOUT(15 downto 8) <= ddq2ll;
         DOUT(7 downto 0)  <= ddq1l;
       end if;
 
