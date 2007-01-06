@@ -387,5 +387,4 @@ if __name__ == "__main__":
         
     
     readStatus(1)
-    
     manwrite()
