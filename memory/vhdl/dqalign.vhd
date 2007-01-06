@@ -77,7 +77,7 @@ architecture Behavioral of dqalign is
 
   signal startwcnt : integer range 0 to 31 := 0;
 
-  signal dqstsint, tsintl : std_logic := '1';
+  signal dqstsint, dqstsint2 : std_logic := '1';
   signal dqtsint          : std_logic := '1';
 
 
@@ -108,12 +108,21 @@ begin  -- Behavioral
       );
 
 
+  process(clk270)
+  begin
+    if rising_edge(clk270) then
+      dqstsint2 <= DQSTS;
+    end if;
+  end process;
+
   process(clk90)
   begin
     if rising_edge(clk90) then
-      dqstsint <= DQSTS;
+      dqstsint <= dqstsint2;
     end if;
   end process;
+
+  
 
   process(clk180)
   begin
@@ -204,10 +213,11 @@ begin  -- Behavioral
       cs <= ns;
 
       -- dqs components
+      dqsq1l <= dqsq1;        
+      dqsq2l <= dqsq2;        
       if dqsamp = '1' then
-
-        dqsq1l <= dqsq1;
-        dqsq2l <= dqsq2;
+        dqsq1ll <= dqsq1l;
+        dqsq2ll <= dqsq2l;
       end if;
 
       if inrst = '1' then
@@ -253,18 +263,8 @@ begin  -- Behavioral
       else
         -- What follows is the crudest hack of my engineering career
         --
-        -- synthesis off
-        if true then
           DOUT(15 downto 8) <= ddq1l;
           DOUT(7 downto 0)  <= ddq2ll;
-        else
-          -- synthesis on
-          DOUT(15 downto 8) <= ddq2ll;
-          DOUT(7 downto 0)  <= ddq1l;
-          -- synthesis off
-        end if;
-        -- synthesis on
-
       end if;
 
       if cs = propw4 then
@@ -281,7 +281,7 @@ begin  -- Behavioral
   end process main;
 
 
-  fsm : process(cs, START, dqsq1l, dqsq2l, dqsq1, dqcnt, dqscnt,
+  fsm : process(cs, START, dqsq1ll, dqsq2ll, dqsq1l, dqcnt, dqscnt,
                 startwcnt)
   begin
     case cs is
@@ -363,7 +363,7 @@ begin  -- Behavioral
         dqsce  <= '0';
         dqinc  <= '0';
         dqce   <= '0';
-        if dqsq1 /= dqsq1l then
+        if dqsq1l /= dqsq1ll then
           ns   <= datainc;
         else
           ns   <= nexttick;

@@ -80,7 +80,7 @@ begin  -- Behavioral
       ocs <= ons;
 
       BA   <= lba;
-      TS   <= tssreg(4);
+      TS   <= tssreg(3);
       DOUT <= doutsreg(1);
 
       CS  <= lcs;
@@ -106,8 +106,6 @@ begin  -- Behavioral
 
       tssreg   <= tssreg(9 downto 0) & (not tsassert);
       doutsreg <= doutsreg(9 downto 0) & WDATA;
-
-
 
       if ocs = none then
         precnt <= 0;

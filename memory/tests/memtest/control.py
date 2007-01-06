@@ -1,3 +1,4 @@
+
 #!/usr/bin/python
 """
 Takes the hacked-up output from our xc3sprog and extracts out an event
@@ -368,15 +369,23 @@ def compare(din, dout):
 #manwrite()
 
 if __name__ == "__main__":
-    readStatus(1)
-    rstart = 120
-    rstop = 130
-    (datain, dataout) = rangetest(1, rstart, rstop, False)
-    # simple verify
-    errcnt = 0 
-    for i in range(rstop - rstart + 1) :
-        errcnt += n.sum(datain[i] - dataout[i])
+##     readStatus(1)
+##     rstart = 120
+##     rstop = 121
+##     (datain, dataout) = rangetest(1, rstart, rstop, False)
+##     for i in range(10):
+##         print "%8.8X %8.8X" % (datain[0][i], dataout[0][0][i])
+    
+                   
+##     # simple verify
+##     errcnt = 0 
+    
+##     for i in range(rstop - rstart + 1) :
+##         errcnt += n.sum(datain[i] - dataout[i])
         
-    print "There were ", errcnt, "errors" 
+##     print "There were ", errcnt, "errors" 
         
     
+    readStatus(1)
+    
+    manwrite()

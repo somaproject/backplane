@@ -5087,7 +5087,6 @@ BEGIN
                 DQOut_zd <= out_buffer;
             END IF;
         ELSIF CKInt'EVENT AND burst_cnt > 0 AND burst_cnt < burst_len THEN
-            report "In main section of outdata";
             ReadStart <= TRUE;
             In_col := Start_col + burst_seq(burst_cnt);
             burst_cnt := burst_cnt + 1;
