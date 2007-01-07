@@ -81,7 +81,7 @@ begin  -- Behavioral
 
       BA   <= lba;
       TS   <= tssreg(3);
-      DOUT <= doutsreg(1);
+      DOUT <= doutsreg(2);
 
       CS  <= lcs;
       RAS <= lras;

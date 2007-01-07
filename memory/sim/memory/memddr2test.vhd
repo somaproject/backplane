@@ -391,52 +391,52 @@ begin  -- Behavioral
   memory_inst : mt47h64m16
     generic map (
       -- tipd delays: interconnect path delays
-      tipd_ODT     => (3.8 ns, 3.8 ns),
-      tipd_BA0     => (3.8 ns, 3.8 ns),
-      tipd_BA1     => (3.8 ns, 3.8 ns),
-      tipd_BA2     => (3.8 ns, 3.8 ns),
-      tipd_UDM     => (3.8 ns, 3.8 ns),
-      tipd_LDM     => (3.8 ns, 3.8 ns),
-      tipd_DQ0     => (3.8 ns, 3.8 ns),
-      tipd_DQ1     => (3.8 ns, 3.8 ns),
-      tipd_DQ2     => (3.8 ns, 3.8 ns),
-      tipd_DQ3     => (3.8 ns, 3.8 ns),
-      tipd_DQ4     => (3.8 ns, 3.8 ns),
-      tipd_DQ5     => (3.8 ns, 3.8 ns),
-      tipd_DQ6     => (3.8 ns, 3.8 ns),
-      tipd_DQ7     => (3.8 ns, 3.8 ns),
-      tipd_DQ8     => (3.8 ns, 3.8 ns),
-      tipd_DQ9     => (3.8 ns, 3.8 ns),
-      tipd_DQ10    => (3.8 ns, 3.8 ns),
-      tipd_DQ11    => (3.8 ns, 3.8 ns),
-      tipd_DQ12    => (3.8 ns, 3.8 ns),
-      tipd_DQ13    => (3.8 ns, 3.8 ns),
-      tipd_DQ14    => (3.8 ns, 3.8 ns),
-      tipd_DQ15    => (3.8 ns, 3.8 ns),
-      tipd_UDQS    => (3.8 ns, 3.8 ns),
-      tipd_UDQSNeg => (3.8 ns, 3.8 ns),
-      tipd_LDQS    => (3.8 ns, 3.8 ns),
-      tipd_LDQSNeg => (3.8 ns, 3.8 ns),
-      tipd_A0      => (3.8 ns, 3.8 ns),
-      tipd_A1      => (3.8 ns, 3.8 ns),
-      tipd_A2      => (3.8 ns, 3.8 ns),
-      tipd_A3      => (3.8 ns, 3.8 ns),
-      tipd_A4      => (3.8 ns, 3.8 ns),
-      tipd_A5      => (3.8 ns, 3.8 ns),
-      tipd_A6      => (3.8 ns, 3.8 ns),
-      tipd_A7      => (3.8 ns, 3.8 ns),
-      tipd_A8      => (3.8 ns, 3.8 ns),
-      tipd_A9      => (3.8 ns, 3.8 ns),
-      tipd_A10     => (3.8 ns, 3.8 ns),
-      tipd_A11     => (3.8 ns, 3.8 ns),
-      tipd_A12     => (3.8 ns, 3.8 ns),
-      tipd_CK      => (3.8 ns, 3.8 ns),
-      tipd_CKNeg   => (3.8 ns, 3.8 ns),
-      tipd_CKE     => (3.8 ns, 3.8 ns),
-      tipd_WENeg   => (3.8 ns, 3.8 ns),
-      tipd_RASNeg  => (3.8 ns, 3.8 ns),
-      tipd_CSNeg   => (3.8 ns, 3.8 ns),
-      tipd_CASNeg  => (3.8 ns, 3.8 ns),
+      tipd_ODT     => (0.5 ns, 0.5 ns),
+      tipd_BA0     => (0.5 ns, 0.5 ns),
+      tipd_BA1     => (0.5 ns, 0.5 ns),
+      tipd_BA2     => (0.5 ns, 0.5 ns),
+      tipd_UDM     => (0.5 ns, 0.5 ns),
+      tipd_LDM     => (0.5 ns, 0.5 ns),
+      tipd_DQ0     => (0.5 ns, 0.5 ns),
+      tipd_DQ1     => (0.5 ns, 0.5 ns),
+      tipd_DQ2     => (0.5 ns, 0.5 ns),
+      tipd_DQ3     => (0.5 ns, 0.5 ns),
+      tipd_DQ4     => (0.5 ns, 0.5 ns),
+      tipd_DQ5     => (0.5 ns, 0.5 ns),
+      tipd_DQ6     => (0.5 ns, 0.5 ns),
+      tipd_DQ7     => (0.5 ns, 0.5 ns),
+      tipd_DQ8     => (0.5 ns, 0.5 ns),
+      tipd_DQ9     => (0.5 ns, 0.5 ns),
+      tipd_DQ10    => (0.5 ns, 0.5 ns),
+      tipd_DQ11    => (0.5 ns, 0.5 ns),
+      tipd_DQ12    => (0.5 ns, 0.5 ns),
+      tipd_DQ13    => (0.5 ns, 0.5 ns),
+      tipd_DQ14    => (0.5 ns, 0.5 ns),
+      tipd_DQ15    => (0.5 ns, 0.5 ns),
+      tipd_UDQS    => (0.5 ns, 0.5 ns),
+      tipd_UDQSNeg => (0.5 ns, 0.5 ns),
+      tipd_LDQS    => (0.5 ns, 0.5 ns),
+      tipd_LDQSNeg => (0.5 ns, 0.5 ns),
+      tipd_A0      => (0.5 ns, 0.5 ns),
+      tipd_A1      => (0.5 ns, 0.5 ns),
+      tipd_A2      => (0.5 ns, 0.5 ns),
+      tipd_A3      => (0.5 ns, 0.5 ns),
+      tipd_A4      => (0.5 ns, 0.5 ns),
+      tipd_A5      => (0.5 ns, 0.5 ns),
+      tipd_A6      => (0.5 ns, 0.5 ns),
+      tipd_A7      => (0.5 ns, 0.5 ns),
+      tipd_A8      => (0.5 ns, 0.5 ns),
+      tipd_A9      => (0.5 ns, 0.5 ns),
+      tipd_A10     => (0.5 ns, 0.5 ns),
+      tipd_A11     => (0.5 ns, 0.5 ns),
+      tipd_A12     => (0.5 ns, 0.5 ns),
+      tipd_CK      => (0.5 ns, 0.5 ns),
+      tipd_CKNeg   => (0.5 ns, 0.5 ns),
+      tipd_CKE     => (0.5 ns, 0.5 ns),
+      tipd_WENeg   => (0.5 ns, 0.5 ns),
+      tipd_RASNeg  => (0.5 ns, 0.5 ns),
+      tipd_CSNeg   => (0.5 ns, 0.5 ns),
+      tipd_CASNeg  => (0.5 ns, 0.5 ns),
 
       tpd_CK_DQ0  => UnitDelay01Z,
       tpd_CK_DQ1  => UnitDelay,
@@ -591,7 +591,11 @@ begin  -- Behavioral
 
   begin
     if rising_edge(CLK) then
-      WRDATA <= ( (burstcnt & wraddrl) & (not (burstcnt & wraddrl) ));
+       WRDATA <= (wraddrl(5 downto 0) & "00" &
+                  wraddrl(5 downto 0) & "01" &
+                  wraddrl(5 downto 0) & "10" &
+                  wraddrl(5 downto 0) & "11"); 
+                  
       wraddrl := WRADDR;
 
     end if;
@@ -668,8 +672,11 @@ begin  -- Behavioral
 
       while DONE /= '1' loop
         if RDWE = '1' then
-          if rddata = ((burstcnt & rdaddr) & (not (burstcnt & rdaddr))) then
-            wrdcnt <= wrdcnt + 1;
+          if rddata = (rdaddr(5 downto 0) & "00" &
+                  rdaddr(5 downto 0) & "01" &
+                  rdaddr(5 downto 0) & "10" &
+                  rdaddr(5 downto 0) & "11")  then
+            wrdcnt <= wrdcnt + 1; 
           else
             report "error reading back data" severity error;
           end if;

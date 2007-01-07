@@ -102,8 +102,7 @@ begin  -- Behavioral
     port map (
       O  => dqsin,
       IO => DQS,
-      I  => CLK270,                     -- This passes timing; clk270 does
-                                        -- not. WTF? 
+      I  => CLK270,                     
       T  => dqstsint
       );
 
@@ -178,7 +177,7 @@ begin  -- Behavioral
         SRTYPE       => "SYNC")
       port map (
         Q            => dinddr(i),
-        C            => CLK,
+        C            => CLK180,
         CE           => '1',
         D1           => DIN(i+8),
         D2           => DIN(i),
@@ -258,7 +257,7 @@ begin  -- Behavioral
       ddq2ll <= ddq2l;
 
       if osel = '0' then
-        DOUT(15 downto 8)   <= ddq2ll;
+        DOUT(15 downto 8)   <= ddq2l;
         DOUT(7 downto 0)    <= ddq1l;
       else
         DOUT(15 downto 8) <= ddq2ll;

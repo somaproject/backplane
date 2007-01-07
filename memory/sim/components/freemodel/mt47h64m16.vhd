@@ -902,7 +902,7 @@ BEGIN
         CKtemp <= NOT CKtemp AFTER CKHalfPer;
     END PROCESS CK_temp;
 
-    CKInt <= TRANSPORT CKtemp; -- AFTER CKDLLDelay; DEBUGGING BY ERIC JONAS
+    CKInt <= TRANSPORT ckdiff; -- AFTER CKDLLDelay; DEBUGGING BY ERIC JONAS
 
     Power_up: PROCESS(CK_stable)
     BEGIN

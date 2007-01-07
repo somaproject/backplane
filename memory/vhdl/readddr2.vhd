@@ -108,10 +108,10 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgtl(12
 
 
 
-   RWE <=  rwesreg(10) when  latencyextra(0) = '0' else
+   RWE <=  rwesreg(11) when  latencyextra(0) = '0' else
             rwesreg(11); 
 
-   RADDR <= raddrsreg(10) when latencyextra(0) = '0' else
+   RADDR <= raddrsreg(11) when latencyextra(0) = '0' else
             raddrsreg(11); 
 
   fsm : process(ocs, start, acnt, rwesreg)
