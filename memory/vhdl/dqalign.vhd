@@ -256,20 +256,26 @@ begin  -- Behavioral
 
       ddq2ll <= ddq2l;
 
-      if osel = '0' then
-        DOUT(15 downto 8)   <= ddq2l;
-        DOUT(7 downto 0)    <= ddq1l;
-      else
-        DOUT(15 downto 8) <= ddq2ll;
-        DOUT(7 downto 0)  <= ddq1l;
-      end if;
+--       if osel = '0' then
+      DOUT(15 downto 8)   <= ddq1l;
+      DOUT(7 downto 0)    <= ddq2l;
+--       else
+        -- osel = '1'
+--        DOUT(15 downto 8) <= ddq2ll;
+--        DOUT(7 downto 0)  <= ddq1l;
+--      end if;
 
       if cs = propw4 then
-        if dqscnt >= PPOS then
-          osel <= '0';
-        else
-          osel <= '1';
-        end if;
+--         if dqscnt >= PPOS then
+--           osel <= '0';
+--         else
+--           osel <= '1';
+--         end if;
+         if dqscnt >= 16 then
+           osel <= '0';
+         else
+           osel <= '1';
+         end if;
       end if;
 
       POSOUT <= "00" & dqscnt;
@@ -278,7 +284,8 @@ begin  -- Behavioral
   end process main;
 
 
-  fsm : process(cs, START, dqsq1ll, dqsq2ll, dqsq1l, dqcnt, dqscnt,
+  fsm : process(cs, START,
+                dqsq1ll, dqsq2ll, dqsq1l, dqcnt, dqscnt,
                 startwcnt)
   begin
     case cs is
