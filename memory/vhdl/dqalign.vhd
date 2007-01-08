@@ -256,25 +256,20 @@ begin  -- Behavioral
 
       ddq2ll <= ddq2l;
 
---       if osel = '0' then
-      DOUT(15 downto 8)   <= ddq1l;
-      DOUT(7 downto 0)    <= ddq2l;
---       else
+      if osel = '0' then
+        DOUT(15 downto 8)   <= ddq1l;
+        DOUT(7 downto 0)    <= ddq2l;
+      else
         -- osel = '1'
---        DOUT(15 downto 8) <= ddq2ll;
---        DOUT(7 downto 0)  <= ddq1l;
---      end if;
+        DOUT(15 downto 8) <= ddq2ll;
+        DOUT(7 downto 0)  <= ddq1l;
+     end if;
 
       if cs = propw4 then
---         if dqscnt >= PPOS then
---           osel <= '0';
---         else
---           osel <= '1';
---         end if;
-         if dqscnt >= 16 then
-           osel <= '0';
-         else
+         if dqscnt >= 20 then
            osel <= '1';
+         else
+           osel <= '0';
          end if;
       end if;
 
