@@ -369,22 +369,31 @@ def compare(din, dout):
 #manwrite()
 
 if __name__ == "__main__":
-##     readStatus(1)
-##     rstart = 120
-##     rstop = 121
-##     (datain, dataout) = rangetest(1, rstart, rstop, False)
-##     for i in range(10):
-##         print "%8.8X %8.8X" % (datain[0][i], dataout[0][0][i])
-    
-                   
-##     # simple verify
-##     errcnt = 0 
-    
-##     for i in range(rstop - rstart + 1) :
-##         errcnt += n.sum(datain[i] - dataout[i])
-        
-##     print "There were ", errcnt, "errors" 
-        
-    
     readStatus(1)
-    manwrite()
+    rstart = 120
+    rstop = 125
+    (datain, dataout) = rangetest(1, rstart, rstop, False)
+    worderrcnt = 0
+    for i in range(120, 121 + 1):
+        for j in range(256):
+            errmask = (datain[i - rstart][j] ^ dataout[i - rstart][0][j])
+            if errmask > 0:
+                worderrcnt += 1
+                print "%4.4X %4.4X" % ( i, j), 
+                print "%8.8X" % datain[i - rstart][j],
+                print "%8.8X" % dataout[i - rstart][0][j],
+                print "%8.8X" % errmask
+    if worderrcnt > 0:            
+        print "There are ",  worderrcnt, "errors"
+    else:
+        print "No Errors reported"
+    
+        
+##     for i in range(100):
+##         print "%8.8X %8.8X %8.8X" % (datain[0][i],
+##                                      dataout[0][0][i],
+##                                      datain[0][i] ^ dataout[0][0][i])
+        
+                   
+##    readStatus(1)
+#3    manwrite()
