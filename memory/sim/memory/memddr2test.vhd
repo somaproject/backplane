@@ -365,28 +365,6 @@ begin  -- Behavioral
 
   mainclk <= not mainclk after (clk_period / 2);
 
--- memory_inst : HY5PS121621F
--- generic map (
--- TimingCheckFlag => true,
--- PUSCheckFlag => true,
--- PArt_number => B400)
--- port map (
--- DQ => DQ,
--- LDQS => DQSL,
--- UDQS => DQSH,
--- WEB => WE,
--- LDM => '0',
--- UDM => '0',
--- CASB => CAS,
--- RASB => RAS,
--- CSB => CS,
--- BA => BA,
--- ADDR => ADDR,
--- CKE => CKE,
--- CLK => memCLK,
--- CLKB => memCLKN,
--- odelay => odelay);
-
 
   memory_inst : mt47h64m16
     generic map (

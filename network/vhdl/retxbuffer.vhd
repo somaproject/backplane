@@ -291,8 +291,8 @@ begin  -- Behavioral
     end if;
   end process himain;
 
-  rena <= '1' when lraddra <= "1000000000" else '0';
-  renb <= '1' when lraddrb <= "1000000000" else '0';
+  rena <= '1' when lraddra /= "1000000001" else '0';
+  renb <= '1' when lraddrb /= "1000000001" else '0';
 
 
   main : process(CLK)
