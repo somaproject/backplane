@@ -104,7 +104,7 @@ begin  -- Behavioral
       IO => DQS,
       I  => CLK270,                     
       T  => dqstsint
-      );
+      );        
 
 
   process(clk270)
@@ -114,9 +114,9 @@ begin  -- Behavioral
     end if;
   end process;
 
-  process(clk90)
+  process(clk180)                       --
   begin
-    if rising_edge(clk90) then
+    if rising_edge(clk180) then
       dqstsint <= dqstsint2;
     end if;
   end process;
