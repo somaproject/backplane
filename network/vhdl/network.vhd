@@ -127,6 +127,7 @@ architecture Behavioral of network is
       DONE      : out std_logic;
       INPKTDATA : in  std_logic_vector(15 downto 0);
       INPKTADDR : out std_logic_vector(9 downto 0);
+      PKTSUCCESS : out std_logic; 
       -- output
       ARM       : out std_logic;
       GRANT     : in  std_logic;
@@ -144,6 +145,7 @@ architecture Behavioral of network is
       DONE      : out std_logic;
       INPKTDATA : in  std_logic_vector(15 downto 0);
       INPKTADDR : out std_logic_vector(9 downto 0);
+      PKTSUCCESS : out std_logic;   
       -- output
       ARM       : out std_logic;
       GRANT     : in  std_logic;
@@ -167,6 +169,7 @@ architecture Behavioral of network is
       DOEN        : out std_logic;
       GRANT       : in  std_logic;
       ARM         : out std_logic;
+      PKTSUCCESS : out std_logic; 
       -- Retx write interface
       RETXID      : out std_logic_vector(13 downto 0);
       RETXDOUT    : out std_logic_vector(15 downto 0);
@@ -370,7 +373,7 @@ architecture Behavioral of network is
       DOUT   : out std_logic_vector(15 downto 0);
       DOUTEN : out std_logic
       );
-  end componen;
+  end component;
 
 -- memory
   signal memstart : std_logic := '0';
@@ -529,7 +532,7 @@ begin  -- Behavioral
       DINEN  => txdouten,
       DIN    => txdout,
       DOUT   => NICDOUT,
-      DOUTEN => NICNEXTFRAME);
+      DOUTEN => NICNEWFRAME);
   
     
   arpresponse_inst : arpresponse

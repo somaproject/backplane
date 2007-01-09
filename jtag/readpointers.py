@@ -18,6 +18,8 @@ def readreg(val):
     e = None
     while e == None:
         e = events.readEvent()
+        if e == None:
+            events.sendEvent(a)
     return e
 
 
@@ -28,6 +30,6 @@ print readreg(6)
 print readreg(7)
 print "status:"
 
-for i in range(0x15, 0x19):
+for i in range(0x0, 0x19):
     print hex(i), readreg(i)
 
