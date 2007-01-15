@@ -574,7 +574,7 @@ begin  -- Behavioral
       EATX        => EATX,
       DOUT        => din0,
       DOEN        => den(0),
-      ARM         => open,              -- arm(0), DEBUGGING
+      ARM         => open,         -- arm(0), DEBUGGING
       GRANT       => grant(0),
       RETXID      => widb,
       RETXDOUT    => wdinb,

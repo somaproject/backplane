@@ -502,10 +502,6 @@ begin  -- Behavioral
 
   mymac <= X"00ADBEEF1234";
 
-
-
-
-
   network_inst : network
     port map (
       CLK       => CLK,
