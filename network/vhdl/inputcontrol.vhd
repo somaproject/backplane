@@ -15,7 +15,7 @@ entity inputcontrol is
     DINEN      : in  std_logic;
     DIN        : in  std_logic_vector(15 downto 0);
     PKTDATA    : out std_logic_vector(15 downto 0);
-    CRCIOERR : out std_logic; 
+    CRCIOERR   : out std_logic; 
     -- ICMP echo request IO
     PINGSTART  : out std_logic;
     PINGADDR   : in  std_logic_vector(9 downto 0);

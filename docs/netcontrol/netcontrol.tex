@@ -1,0 +1,22 @@
+NetControl handles all layer 3 and above control and status
+information. At the moment this includes IP-settings and various
+network status counters.
+
+CMD A: from any address, DATA[0] says what we write:
+    DATA[0] = 0x0001 : DATA[2:3] is IP address
+    DATA[1] = 0x0002 : DATA[2:3] is IP bcast address
+    DATA[2] = 0x0003 : DATA[2:4] is MAC address
+
+pending any of these, we broadcast the updated data to all parties. 
+
+Network Counters:
+
+these are all 32-bit counters that contain packet counts, with: 
+CMDA : reset (with associated bitfield)
+CMDB : query DATA[0] = requested register
+   gets a response with 
+   CMDB: DATA[0] = register
+
+   also, we periodically broadcast to everyone the register values,
+   say every 100 us.
+
