@@ -4,8 +4,8 @@ network status counters.
 
 CMD A: from any address, DATA[0] says what we write:
     DATA[0] = 0x0001 : DATA[2:3] is IP address
-    DATA[1] = 0x0002 : DATA[2:3] is IP bcast address
-    DATA[2] = 0x0003 : DATA[2:4] is MAC address
+    DATA[0] = 0x0002 : DATA[2:3] is IP bcast address
+    DATA[0] = 0x0003 : DATA[2:4] is MAC address
 
 pending any of these, we broadcast the updated data to all parties. 
 
@@ -20,3 +20,24 @@ CMDB : query DATA[0] = requested register
    also, we periodically broadcast to everyone the register values,
    say every 100 us.
 
+
+--------------------------------------------
+1. read event
+2. act on event
+3. check periodic counter
+4. send if necessary
+5. 
+---------------------------------------
+
+Counter read addresses / positions
+
+0: 0x12345678 // verification
+1: RXIOCRCERR count
+2. RX packet count
+
+8 : TX0LEN (byte length of TX Port 0)
+...
+15 : TX7LEN (byte length of TX port 7)
+16 : TX0CNT (packet count of TX port 0)
+...
+23 : TX7CNT (packet count)
