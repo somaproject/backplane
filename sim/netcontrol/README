@@ -1,2 +1,18 @@
-Here we test our serial NIC interface. 
+This is our attemt to verify that our network control settings are
+working as we expect them to.
+
+The sending device here has ID 0x04, and the receiving (uut) has 0x01. 
+
+
+1. send a no-op event and verify we don't respond
+
+2. Network settings: 
+We test this by writing to, and check for the update-event from, 
+the following net settings: 
+
+MAC
+IP broadcast address
+IP address
+
+
 
