@@ -2,12 +2,25 @@ NetControl handles all layer 3 and above control and status
 information. At the moment this includes IP-settings and various
 network status counters.
 
-CMD A: from any address, DATA[0] says what we write:
+------------------------------------------------------------------------
+Network Settings
+------------------------------------------------------------------------
+
+CMDNETWRITE : 0x42
+from any address, DATA[0] says what we write:
     DATA[0] = 0x0001 : DATA[2:3] is IP address
     DATA[0] = 0x0002 : DATA[2:3] is IP bcast address
     DATA[0] = 0x0003 : DATA[2:4] is MAC address
 
-pending any of these, we broadcast the updated data to all parties. 
+CMDNETQUERY : 0x43
+
+queries the current value, with DATA[0] being the requested word,
+returned as above.
+
+both of these respond with CMDNETRESPONSE, with Data[0] indicating
+the word and the relevant bits as above. 
+
+------------------------------------------------------------------------
 
 Network Counters:
 

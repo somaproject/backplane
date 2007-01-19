@@ -20,7 +20,9 @@ architecture Behavioral of netcontroltest is
       CMDCNTQUERY :     std_logic_vector(7 downto 0) := X"40";
       CMDCNTRST   :     std_logic_vector(7 downto 0) := X"41";
       CMDNETWRITE :     std_logic_vector(7 downto 0) := X"42";
-      CMDNETQUERY :     std_logic_vector(7 downto 0) := X"43"
+      CMDNETQUERY :     std_logic_vector(7 downto 0) := X"43";
+      CMDNETRESP  :     std_logic_vector(7 downto 0) := X"50";
+      CMDCNTRESP  :     std_logic_vector(7 downto 0) := X"51"
       );
     port (
       CLK         : in  std_logic;
@@ -91,9 +93,23 @@ architecture Behavioral of netcontroltest is
   type settings is (none, noop, noopdone,
                     writemac, writemacdone,
                     writeip, writeipdone,
-                    writebcast, writebcastdone);
+                    writebcast, writebcastdone,
+                    rxiocrccnt, rxiocrccntdone,
+                    txiocnt6, txiocnt6done);
 
   signal state : settings := none;
+
+
+  constant DEVICE      : std_logic_vector(7 downto 0) := X"01";
+  constant CMDCNTQUERY : std_logic_vector(7 downto 0) := X"40";
+  constant CMDCNTRST   : std_logic_vector(7 downto 0) := X"41";
+  constant CMDNETWRITE : std_logic_vector(7 downto 0) := X"42";
+  constant CMDNETQUERY : std_logic_vector(7 downto 0) := X"43";
+  constant CMDNETRESP  : std_logic_vector(7 downto 0) := X"50";
+  constant CMDCNTRESP  : std_logic_vector(7 downto 0) := X"51";
+
+  signal receivedcntid : std_logic_vector(15 downto 0) := (others => '0');
+  signal receivedcnt   : std_logic_vector(31 downto 0) := (others => '0');
 
 begin  -- Behavioral
 
@@ -102,26 +118,29 @@ begin  -- Behavioral
 
   netcontrol_uut : netcontrol
     generic map (
-      DEVICE     => x"01")
+      DEVICE      => DEVICE,
+      CMDCNTQUERY => CMDCNTQUERY,
+      CMDCNTRST   => CMDCNTRST,
+      CMDNETWRITE => CMDNETWRITE,
+      CMDNETQUERY => CMDNETQUERY,
+      CMDNETRESP  => CMDNETRESP,
+      CMDCNTRESP  => CMDCNTRESP )
     port map (
-      CLK        => CLK,
-      RESET      => RESET,
-      ECYCLE     => ECYCLE,
-      EARx       => EARX,
-      EDRX       => EDRX,
-      EDSELRX    => EDSELRX,
-      EDTX       => EDTX,
-      EATX       => EATX,
-      TXPKTLENEN => TXPKTLENEN,
-      TXPKTLEN   => TXPKTLEN,
-      TXCHAN     => TXCHAN,
-      RXIOCRCERR => RXIOCRCERR,
-      MYMAC      => MYMAC,
-      MYBCAST    => MYBCAST,
-      MYIP       => MYIP);
-
-
-
+      CLK         => CLK,
+      RESET       => RESET,
+      ECYCLE      => ECYCLE,
+      EARx        => EARX,
+      EDRX        => EDRX,
+      EDSELRX     => EDSELRX,
+      EDTX        => EDTX,
+      EATX        => EATX,
+      TXPKTLENEN  => TXPKTLENEN,
+      TXPKTLEN    => TXPKTLEN,
+      TXCHAN      => TXCHAN,
+      RXIOCRCERR  => RXIOCRCERR,
+      MYMAC       => MYMAC,
+      MYBCAST     => MYBCAST,
+      MYIP        => MYIP);
 
 
   ecycle_generation : process(CLK)
@@ -185,81 +204,369 @@ begin  -- Behavioral
       error;
     state <= noopdone;
 
-    -- now send a "write MAC address" event
+    -------------------------------------------------------------------------
+    -- write MAC
+    -------------------------------------------------------------------------
+    -- send the event
     wait until rising_edge(CLK) and ECYCLE = '1';
     state             <= writemac;
-    eventinputs(4)(0) <= X"4204";
-    eventinputs(4)(1) <= X"0000";
+    eventinputs(4)(0) <= CMDNETWRITE & X"04";
+    eventinputs(4)(1) <= X"0003";
     eventinputs(4)(2) <= X"ABCD";
     eventinputs(4)(3) <= X"EF89";
     eventinputs(4)(4) <= X"1234";
     eventinputs(4)(5) <= X"0000";
     EATX(0)           <= '0';
     EATX(4)           <= '1';
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    EATX              <= eazeros;
 
-    assert MYMAC = X"ABCDEF891234" report "Error setting MYMAC output value" severity error;
-
-    wait;
 
     -- now try and acquire the event
     while EARX(4) /= '1' loop
       wait until rising_edge(CLK) and ECYCLE = '1';
       EATX <= eazeros;
+      wait until rising_edge(CLK);
+
+
     end loop;
 
     wait for 3 ns;
     EDSELRX <= "0000";
     wait until rising_edge(CLK);
-    assert EDRX = X"30"
-      report "1 : invalid transmitted event : command ID" severity error;
+    assert EDRX = CMDNETRESP
+      report "1 : error receiving net response" severity error;
 
--- wait for 3 ns;
--- EDSELRX <= "0001";
--- wait until rising_edge(CLK);
--- assert EDRX = X"01"
--- report "1 : invalid transmitted event : device" severity error;
+    EDSELRX <= "0011";
+    wait until rising_edge(CLK);
+    assert EDRX = X"03"
+      report "1 : error receiving mac addr response" severity error;
+
+    EDSELRX <= "0100";
+    wait until rising_edge(CLK);
+    assert EDRX = X"AB"
+      report "1 : error receiving mac byte 0 response" severity error;
+
+    EDSELRX <= "0101";
+    wait until rising_edge(CLK);
+    assert EDRX = X"CD"
+      report "1 : error receiving mac byte 1 response" severity error;
+
+    EDSELRX <= "0110";
+    wait until rising_edge(CLK);
+    assert EDRX = X"EF"
+      report "1 : error receiving mac byte 2 response" severity error;
 
 
--- wait for 3 ns;
--- EDSELRX <= "0011";
--- wait until rising_edge(CLK);
--- assert EDRX = X"01"
--- report "1 : invalid transmitted event : success" severity error;
 
--- wait for 3 ns;
--- EDSELRX <= "0100";
--- wait until rising_edge(CLK);
--- assert EDRX = X"AB"
--- report "1 : invalid transmitted event : response" severity error;
+    assert MYMAC = X"ABCDEF891234" report
+      "Error setting MYMAC output value" severity error;
 
--- wait for 3 ns;
--- EDSELRX <= "0101";
--- wait until rising_edge(CLK);
--- assert EDRX = X"CD"
--- report "1 : invalid transmitted event : response" severity error;
+    state <= writemacdone;
 
--- wait for 3 ns;
--- EDSELRX <= "0110";
--- wait until rising_edge(CLK);
--- assert EDRX = X"EF"
--- report "1 : invalid transmitted event : response" severity error;
+    -------------------------------------------------------------------------
+    -- write IP
+    -------------------------------------------------------------------------
+    -- send the event
+    --wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    state             <= writeip;
+    eventinputs(4)(0) <= CMDNETWRITE & X"04";
+    eventinputs(4)(1) <= X"0001";
+    eventinputs(4)(2) <= X"AABB";
+    eventinputs(4)(3) <= X"CCDD";
+    eventinputs(4)(4) <= X"0000";
+    eventinputs(4)(5) <= X"0000";
+    EATX(0)           <= '0';
+    EATX(4)           <= '1';
 
--- wait for 3 ns;
--- EDSELRX <= "0111";
--- wait until rising_edge(CLK);
--- assert EDRX = X"12"
--- report "1 : invalid transmitted event : response" severity error;
+    -- now try and acquire the event
+    wait until rising_edge(CLK);
+    while EARX(4) /= '1' loop
+      wait until rising_edge(CLK) and ECYCLE = '1';
+      EATX <= eazeros;
+      wait until rising_edge(CLK);
 
--- state <= firstwritedone;
+
+    end loop;
+
+    wait for 3 ns;
+    EDSELRX <= "0000";
+    wait until rising_edge(CLK);
+    assert EDRX = CMDNETRESP
+      report "2 : error receiving net response" severity error;
+
+    EDSELRX <= "0011";
+    wait until rising_edge(CLK);
+    assert EDRX = X"01"
+      report "2 : error receiving ip addr response" severity error;
+
+    EDSELRX <= "0100";
+    wait until rising_edge(CLK);
+    assert EDRX = X"AA"
+      report "2 : error receiving ip byte 0 response" severity error;
+
+    EDSELRX <= "0101";
+    wait until rising_edge(CLK);
+    assert EDRX = X"BB"
+      report "2 : error receiving io byte 1 response" severity error;
+
+    EDSELRX <= "0110";
+    wait until rising_edge(CLK);
+    assert EDRX = X"CC"
+      report "1 : error receiving io byte 2 response" severity error;
+
+
+
+
+    assert MYIP = X"AABBCCDD" report "Error setting MYIP output value" severity error;
+
+    state <= writeipdone;
+
+
+    -------------------------------------------------------------------------
+    -- write BCAST IP
+    -------------------------------------------------------------------------
+    -- send the event
+    --wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    state             <= writebcast;
+    eventinputs(4)(0) <= CMDNETWRITE & X"04";
+    eventinputs(4)(1) <= X"0002";
+    eventinputs(4)(2) <= X"1122";
+    eventinputs(4)(3) <= X"3456";
+    eventinputs(4)(4) <= X"0000";
+    eventinputs(4)(5) <= X"0000";
+    EATX(0)           <= '0';
+    EATX(4)           <= '1';
+
+    -- now try and acquire the event
+    wait until rising_edge(CLK);
+    while EARX(4) /= '1' loop
+      wait until rising_edge(CLK) and ECYCLE = '1';
+      EATX <= eazeros;
+      wait until rising_edge(CLK);
+
+
+    end loop;
+
+    wait for 3 ns;
+    EDSELRX <= "0000";
+    wait until rising_edge(CLK);
+    assert EDRX = CMDNETRESP
+      report "3 : error receiving net response" severity error;
+
+    EDSELRX <= "0011";
+    wait until rising_edge(CLK);
+    assert EDRX = X"02"
+      report "3 : error receiving ip bcast addr response" severity error;
+
+    EDSELRX <= "0100";
+    wait until rising_edge(CLK);
+    assert EDRX = X"11"
+      report "3 : error receiving ip bcast byte 0 response" severity error;
+
+    EDSELRX <= "0101";
+    wait until rising_edge(CLK);
+    assert EDRX = X"22"
+      report "3 : error receiving io bcast byte 1 response" severity error;
+
+    EDSELRX <= "0110";
+    wait until rising_edge(CLK);
+    assert EDRX = X"34"
+      report "3 : error receiving io bcast byte 2 response" severity error;
+
+
+    assert MYBCAST = X"11223456"
+      report "Error setting MYBCAST output value" severity error;
+
+    state <= writebcastdone;
+
+    ---------------------------------------------------------------------------
+    -- counter writing and reading
+    ---------------------------------------------------------------------------
+    for j in 0 to 19 loop
+      for i in 0 to 7 loop
+        wait until rising_edge(CLK);
+        wait until rising_edge(CLK);
+        txchan     <= std_logic_vector(TO_UNSIGNED(i, 3));
+        wait until rising_edge(CLK);
+        txpktlen   <= std_logic_vector(to_unsigned(i, 8)) & X"17";
+        wait until rising_edge(CLK);
+        txpktlenen <= '1';
+        wait until rising_edge(CLK);
+        txpktlenen <= '0';
+        wait until rising_edge(CLK);
+      end loop;  -- i
+    end loop;  -- j
+
+    -- two rx fifo errors
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '1';
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '0';
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '1';
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '0';
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '1';
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '0';
+
+    -- now, we explicitly query two of the counters
+
+    -------------------------------------------------------------------------
+    -- query RXIOCRCERRCNT 
+    -------------------------------------------------------------------------
+    -- send the event
+    --wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    state             <= rxiocrccnt;
+    eventinputs(4)(0) <= CMDCNTQUERY& X"04";
+    eventinputs(4)(1) <= X"0001";
+    eventinputs(4)(2) <= X"0000";
+    eventinputs(4)(3) <= X"0000";
+    eventinputs(4)(4) <= X"0000";
+    eventinputs(4)(5) <= X"0000";
+    EATX(0)           <= '0';
+    EATX(4)           <= '1';
+
+    -- now try and acquire the event
+    wait until rising_edge(CLK);
+    while EARX(4) /= '1' loop
+      wait until rising_edge(CLK) and ECYCLE = '1';
+      EATX <= eazeros;
+      wait until rising_edge(CLK);
+    end loop;
+
+    wait for 1 ns;
+    EDSELRX <= "0001";
+    wait until rising_edge(CLK);
+    assert EDRX = X"01"
+      report "4 : invalid received command" severity error;
+
+    wait for 1 ns;
+    EDSELRX <= "1001";
+    wait until rising_edge(CLK);
+    assert EDRX = X"03"
+      report "4 : invalid value in rxiocrcerr count" severity error;
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    state   <= rxiocrccntdone;
+
+
+    -------------------------------------------------------------------------
+    -- query TXERRCNT 6
+    -------------------------------------------------------------------------
+    -- send the event
+    --wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    state <= txiocnt6;
+
+    eventinputs(4)(0) <= CMDCNTQUERY & X"04";
+    eventinputs(4)(1) <= X"001C";
+    eventinputs(4)(2) <= X"0000";
+    eventinputs(4)(3) <= X"0000";
+    eventinputs(4)(4) <= X"0000";
+    eventinputs(4)(5) <= X"0000";
+    EATX(0)           <= '0';
+    EATX(4)           <= '1';
+
+    -- now try and acquire the event
+    wait until rising_edge(CLK);
+    while EARX(4) /= '1' loop
+      wait until rising_edge(CLK) and ECYCLE = '1';
+      EATX <= eazeros;
+      wait until rising_edge(CLK);
+    end loop;
+
+    wait for 1 ns;
+    EDSELRX <= "0011";
+    wait until rising_edge(CLK);
+    assert EDRX = X"1C"
+      report "4 : invalid received command" severity error;
+
+    wait for 1 ns;
+    EDSELRX <= "1000";                  -- 8 
+    wait until rising_edge(CLK);
+    assert EDRX = X"79"
+      report "4 : invalid value in txiolen 06" severity error;
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+
+    wait for 1 ns;
+    EDSELRX <= "1001";                  -- 9 
+    wait until rising_edge(CLK);
+    assert EDRX = X"CC"
+      report "4 : invalid value in txiolen 06" severity error;
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    state   <= txiocnt6done;
+
+
+
+    -------------------------------------------------------------------------
+    -- broadcast values
+    -------------------------------------------------------------------------
+
+    for i in 0 to 2 loop
+
+      wait until rising_edge(CLK) and ECYCLE = '1';
+
+      wait until rising_edge(CLK);
+      while EARX(4) /= '1' loop
+        wait until rising_edge(CLK) and ECYCLE = '1';
+        EATX <= eazeros;
+        wait until rising_edge(CLK);
+      end loop;
+
+      wait for 3 ns;
+      EDSELRX <= "0000";
+      wait until rising_edge(CLK);
+      assert EDRX = CMDCNTRESP
+        report "5 : error receiving net response" severity error;
+
+      wait for 1 ns;
+      EDSELRX                    <= "0010";
+      wait until rising_edge(CLK);
+      receivedcntid(15 downto 8) <= EDRX;
+
+      wait for 1 ns;
+      EDSELRX                   <= "0011";
+      wait until rising_edge(CLK);
+      receivedcntid(7 downto 0) <= EDRX;
+
+      -- read the first 32 bits of the count
+      wait for 1 ns;
+      EDSELRX                     <= "0110";
+      wait until rising_edge(CLK);
+      receivedcnt(31 downto 24) <= EDRX;
+      EDSELRX                     <= "0111";
+      wait until rising_edge(CLK);
+      receivedcnt(23 downto 16) <= EDRX;
+      EDSELRX                     <= "1000";
+      wait until rising_edge(CLK);
+      receivedcnt(15 downto 8)  <= EDRX;
+      EDSELRX                     <= "1001";
+      wait until rising_edge(CLK);
+      receivedcnt(7 downto 0)   <= EDRX;
+
+      if receivedcntid = X"0000" then
+        assert receivedcnt = X"456789AB"
+          report "Error reading counter 0" severity Error;
+      elsif receivedcntid = X"0001" then 
+        assert receivedcnt = X"000079cc"
+          report "Error reading counter 1" severity Error;
+      elsif receivedcntid = X"0002" then 
+        assert receivedcnt = X"00000000"
+          report "Error reading counter 2" severity Error;
+      end if; 
+
+    end loop;  -- i
+
 
 
 
     assert false report "End of Simulation" severity failure;
-
-
-
 
 
   end process main;

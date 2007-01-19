@@ -15,7 +15,9 @@ entity netcontrol is
     CMDCNTQUERY :     std_logic_vector(7 downto 0) := X"40";
     CMDCNTRST   :     std_logic_vector(7 downto 0) := X"41";
     CMDNETWRITE :     std_logic_vector(7 downto 0) := X"42";
-    CMDNETQUERY :     std_logic_vector(7 downto 0) := X"43"
+    CMDNETQUERY :     std_logic_vector(7 downto 0) := X"43";
+    CMDNETRESP  :     std_logic_vector(7 downto 0) := X"50";
+    CMDCNTRESP  :     std_logic_vector(7 downto 0) := X"51"
     );
   port (
     CLK         : in  std_logic;
@@ -114,11 +116,16 @@ architecture Behavioral of netcontrol is
   signal eosel         : integer range 0 to 2          := 0;
 
   -- event output
-  signal bcastsel, bcastval : std_logic                      := '0';
-  signal learx              : std_logic_vector(N-1 downto 0) := (others => '0');
-  signal edrxall            : std_logic_vector(95 downto 0)  := (others => '0');
-  signal edrxin             : std_logic_vector(95 downto 0)  := (others => '0');
-  signal cntrsten           : std_logic                      := '0';
+  signal bcastsel, bcastval : std_logic := '0';
+
+  signal learx : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+
+  signal srcdec : std_logic_vector(255 downto 0) := (others => '0');
+
+  signal edrxall  : std_logic_vector(95 downto 0) := (others => '0');
+  signal edrxin   : std_logic_vector(95 downto 0) := (others => '0');
+  signal cntrsten : std_logic                     := '0';
+
 
   -- states
   type states is (none, cmdchk, ldaddr, ldword1, ldword2, ldword3,
@@ -126,6 +133,7 @@ architecture Behavioral of netcontrol is
                   netwrite, netwait);
 
   signal cs, ns : states := none;
+
 
 
   component rxeventfifo
@@ -190,7 +198,7 @@ architecture Behavioral of netcontrol is
 
 begin  -- Behavioral
 
-  rxeventfifo_inst: rxeventfifo
+  rxeventfifo_inst : rxeventfifo
     port map (
       CLK    => CLK,
       RESET  => RESET,
@@ -200,8 +208,8 @@ begin  -- Behavioral
       EOUTD  => eoutd,
       EOUTA  => eouta,
       EVALID => evalid,
-      ENEXT  => enext); 
-    
+      ENEXT  => enext);
+
   txcounter_inst : txcounter
     port map (
       CLK      => CLK,
@@ -281,10 +289,20 @@ begin  -- Behavioral
 
   cntsel     <= cntpos          when bcastsel = '1'   else addr(4 downto 0);
   netsettyp  <= addr(1 downto 0);
-  netsetting <= mac             when netsettyp = "00" else
-                bcast & X"0000" when netsettyp = "01" else
-                ip & X"0000"    when netsettyp = "10" else
+  netsetting <= mac             when netsettyp = "11" else
+                bcast & X"0000" when netsettyp = "10" else
+                ip & X"0000"    when netsettyp = "01" else
                 X"000000000000";
+
+
+
+  srcdec_set : process (srcl)
+  begin
+    srcdec                     <= (others => '0');
+    srcdec(conv_integer(srcl)) <= '1';
+  end process srcdec_set;
+
+
 
   MYMAC   <= mac;
   MYBCAST <= bcast;
@@ -294,6 +312,20 @@ begin  -- Behavioral
             netsettingevt when eosel = 1 else
             (others => '0');
 
+  -- response events
+  netsettingevt(15 downto 0)  <= CMDNETRESP & DEVICE;
+  netsettingevt(31 downto 16) <= addr;
+  netsettingevt(47 downto 32) <= netsetting(47 downto 32);
+  netsettingevt(63 downto 48) <= netsetting(31 downto 16);
+  netsettingevt(79 downto 64) <= netsetting(15 downto 0);
+
+  countervalevt(15 downto 0)  <= CMDCNTRESP & DEVICE;
+  countervalevt(31 downto 16) <= addr;
+  countervalevt(47 downto 32) <= cntval(47 downto 32);
+  countervalevt(63 downto 48) <= cntval(31 downto 16);
+  countervalevt(79 downto 64) <= cntval(15 downto 0);
+
+  learx <= srcdec(somabackplane.N - 1 downto 0) when bcastsel = '0' else (others => bcastval);
 
   main : process(CLK)
   begin
@@ -314,7 +346,7 @@ begin  -- Behavioral
       end if;
 
       if cs = ldaddr then
-              addr <= EOUTD;
+        addr <= EOUTD;
       end if;
 
       if cs = ldword1 then
@@ -343,14 +375,26 @@ begin  -- Behavioral
       -- network id update
 
       if cs = netwrite then
-        if addr = X"0000" then
-          mac   <= dataword;
-        elsif addr = X"0001" then
-          bcast <= dataword(47 downto 16);
+        if addr = X"0001" then
+          ip    <= dataword(47 downto 16);
         elsif addr = X"0002" then
           bcast <= dataword(47 downto 16);
+        elsif addr = X"0003" then
+          mac   <= dataword;
         end if;
       end if;
+
+
+      -- counters
+      if dataword(1) = '1' then
+        rxiocrcerrcnt   <= (others => '0');
+      else
+        if RXIOCRCERR = '1' then
+          rxiocrcerrcnt <= rxiocrcerrcnt + 1;
+        end if;
+      end if;
+
+      
     end if;
   end process main;
 
@@ -465,7 +509,7 @@ begin  -- Behavioral
         EOUTA    <= "000";
         bcastsel <= '0';
         bcastval <= '0';
-        eosel    <= 1;
+        eosel    <= 0;
         ns       <= cntbcw;
 
 
@@ -475,7 +519,7 @@ begin  -- Behavioral
         bcastval <= '1';
         eosel    <= 0;
         if ECYCLE = '1' then
-          ns     <= evtdone;
+          ns     <= none;
         else
           ns     <= cntbcw;
         end if;

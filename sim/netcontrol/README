@@ -14,5 +14,12 @@ MAC
 IP broadcast address
 IP address
 
+3. we write some values to all of the counters ,and then read back 
+RXIOCRCERROR
+TXCNT6 
+TXLEN6
+
+4. We then wait a while and try and read the broadcast values. 
+
 
 
