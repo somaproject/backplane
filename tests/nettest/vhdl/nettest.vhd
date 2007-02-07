@@ -221,10 +221,59 @@ architecture Behavioral of nettest is
       RAMBA        : out   std_logic_vector(1 downto 0);
       RAMDQSH      : inout std_logic;
       RAMDQSL      : inout std_logic;
-      RAMDQ        : inout std_logic_vector(15 downto 0)
+      RAMDQ        : inout std_logic_vector(15 downto 0);
+      -- error signals and counters
+      RXIOCRCERR   : out   std_logic;
+      UNKNOWNETHER : out   std_logic;
+      UNKNOWNIP    : out   std_logic;
+      UNKNOWNUDP   : out   std_logic;
+      UNKNOWNARP   : out   std_logic;
+      TXPKTLENEN   : out   std_logic;
+      TXPKTLEN     : out   std_logic_vector(15 downto 0);
+      TXCHAN       : out   std_logic_vector(2 downto 0)
       );
   end component;
 
+
+  component netcontrol
+    generic (
+      DEVICE       :     std_logic_vector(7 downto 0) := X"01";
+      CMDCNTQUERY  :     std_logic_vector(7 downto 0) := X"40";
+      CMDCNTRST    :     std_logic_vector(7 downto 0) := X"41";
+      CMDNETWRITE  :     std_logic_vector(7 downto 0) := X"42";
+      CMDNETQUERY  :     std_logic_vector(7 downto 0) := X"43";
+      CMDNETRESP   :     std_logic_vector(7 downto 0) := X"50";
+      CMDCNTRESP   :     std_logic_vector(7 downto 0) := X"51"
+      );
+    port (
+      CLK          : in  std_logic;
+      RESET        : in  std_logic;
+      -- standard event-bus interface
+      ECYCLE       : in  std_logic;
+      EDTX         : in  std_logic_vector(7 downto 0);
+      EATX         : in  std_logic_vector(somabackplane.N - 1 downto 0);
+      EARX         : out std_logic_vector(somabackplane.N - 1 downto 0);
+      EDRX         : out std_logic_vector(7 downto 0);
+      EDSELRX      : in  std_logic_vector(3 downto 0);
+      -- tx counter input
+      TXPKTLENEN   : in  std_logic;
+      TXPKTLEN     : in  std_logic_vector(15 downto 0);
+      TXCHAN       : in  std_logic_vector(2 downto 0);
+      -- other counters
+      RXIOCRCERR   : in  std_logic;
+      UNKNOWNETHER : in  std_logic;
+      UNKNOWNIP    : in  std_logic;
+      UNKNOWNARP   : in  std_logic;
+      UNKNOWNUDP   : in  std_logic;
+
+      -- output network control settings
+      MYMAC   : out std_logic_vector(47 downto 0);
+      MYBCAST : out std_logic_vector(31 downto 0);
+      MYIP    : out std_logic_vector(31 downto 0)
+
+      );
+
+  end component;
 
   component pingdump
     port (
@@ -269,9 +318,25 @@ architecture Behavioral of nettest is
   signal myip, mybcast : std_logic_vector(31 downto 0) := (others => '0');
   signal mymac         : std_logic_vector(47 downto 0) := (others => '0');
 
+  -- error signals and counters
+  signal rxiocrcerr   : std_logic                     := '0';
+  signal UNKNOWNETHER : std_logic                     := '0';
+  signal UNKNOWNIP    : std_logic                     := '0';
+  signal UNKNOWNUDP   : std_logic                     := '0';
+  signal UNKNOWNARP   : std_logic                     := '0';
+  signal txpktlenen   : std_logic                     := '0';
+  signal txpktlen     : std_logic_vector(15 downto 0) := (others => '0');
+  signal txchan       : std_logic_vector(2 downto 0)  := (others => '0');
+
+
   signal nicnextframeint : std_logic := '0';
 
   signal locked, locked2 : std_logic := '0';
+
+  signal niciointclk : std_logic                     := '0';
+  signal nicdinl     : std_logic_vector(15 downto 0) := (others => '0');
+  signal nicdinenl   : std_logic                     := '0';
+
 
 begin  -- Behavioral
 
@@ -300,6 +365,7 @@ begin  -- Behavioral
       CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
       CLKFB                 => clk,
       CLK180                => clk180int,
+      CLK90 => niciointclk, 
       CLKIN                 => CLKIN,
       LOCKED                => locked,
       RST                   => '0'          -- DCM asynchronous reset input
@@ -310,11 +376,11 @@ begin  -- Behavioral
       O => clk,
       I => clkint);
 
-  clk180_bufg: BUFG
+  clk180_bufg : BUFG
     port map (
       I => clk180int,
-      O => clk180); 
-    
+      O => clk180);
+
 
   memclkb_bufg : BUFG
     port map (
@@ -517,8 +583,8 @@ begin  -- Behavioral
 
       -- input
       NICNEXTFRAME => NICNEXTFRAME,
-      NICDINEN     => nicdinen,
-      NICDIN       => NICDIN,
+      NICDINEN     => nicdinenl,
+      NICDIN       => nicdinl,
       -- output
       NICDOUT      => NICDOUT,
       NICNEWFRAME  => NICNEWFRAME,
@@ -546,9 +612,45 @@ begin  -- Behavioral
       RAMBA   => RAMBA,
       RAMDQSH => RAMDQSH,
       RAMDQSL => RAMDQSL,
-      RAMDQ   => RAMDQ);
+      RAMDQ   => RAMDQ,
 
+      -- counters
+      RXIOCRCERR   => rxiocrcerr,
+      UNKNOWNETHER => unknownether,
+      UNKNOWNIP    => unknownip,
+      UNKNOWNUDP   => unknownudp,
+      UNKNOWNARP   => unknownarp,
+      TXPKTLENEN   => txpktlenen,
+      TXPKTLEN     => txpktlen,
+      TXCHAN       => txchan);
 
+  netcontrol_inst : netcontrol
+    generic map (
+      DEVICE       => X"04")
+    port map (
+      CLK          => CLK,
+      RESET        => RESET,
+      ECYCLE       => ECYCLE,
+      EDTX         => EDTX,
+      EATX         => EATX(4),
+      EARX         => EARX(4),
+      EDRX         => EDRX(4),
+      EDSELRX      => EDSELRX,
+      TXPKTLENEN   => txpktlenen,
+      TXPKTLEN     => txpktlen,
+      TXCHAN       => txchan,
+      RXIOCRCERR   => rxiocrcerr,
+      UNKNOWNETHER => unknownether,
+      UNKNOWNIP    => unknownip,
+      UNKNOWNARP   => unknownarp,
+      UNKNOWNUDP   => unknownudp
+-- MYMAC => mymac,
+-- MYBCAST => mybcast,
+-- MYIP => myip
+
+      );
+
+  --niciointclk <= clk180; 
   NICIOCLK <= clk;
 
   dlyctrl : IDELAYCTRL
@@ -558,11 +660,20 @@ begin  -- Behavioral
       RST    => reset
       );
 
-  dincapture_inst : dincapture
-    port map (
-      CLK   => CLK,
-      DIN   => NICDIN,
-      DINEN => NICDINEN);
+ dincapture_inst : dincapture
+ port map (
+ CLK => clk,
+ DIN => nicdinl,
+ DINEN => nicdinenl);
 
+  process(niciointclk)
+  begin
 
+    if rising_edge(niciointclk) then
+      nicdinenl <= NICDINEN;
+      nicdinl   <= NICDIN;
+
+    end if;
+
+  end process;
 end Behavioral;

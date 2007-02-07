@@ -103,7 +103,9 @@ begin  -- Beh
         end if;
 
         if dinenl ='0' and dinenll = '1' then
-          framecnt <= framecnt + 1; 
+          if framecnt /= "11" then
+            framecnt <= framecnt + 1;             
+          end if;
         end if;
                   
       end if;

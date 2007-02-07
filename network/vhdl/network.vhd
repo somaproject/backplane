@@ -15,17 +15,12 @@ use UNISIM.vcomponents.all;
 
 entity network is
   port (
-    CLK       : in std_logic;
-    MEMCLK    : in std_logic;
-    MEMCLK90  : in std_logic;
-    MEMCLK180 : in std_logic;
-    MEMCLK270 : in std_logic;
-
+    CLK          : in    std_logic;
+    MEMCLK       : in    std_logic;
+    MEMCLK90     : in    std_logic;
+    MEMCLK180    : in    std_logic;
+    MEMCLK270    : in    std_logic;
     RESET        : in    std_logic;
-    -- config
-    MYIP         : in    std_logic_vector(31 downto 0);
-    MYMAC        : in    std_logic_vector(47 downto 0);
-    MYBCAST      : in    std_logic_vector(31 downto 0);
     -- input
     NICNEXTFRAME : out   std_logic;
     NICDINEN     : in    std_logic;
@@ -56,8 +51,20 @@ entity network is
     RAMBA        : out   std_logic_vector(1 downto 0);
     RAMDQSH      : inout std_logic;
     RAMDQSL      : inout std_logic;
-    RAMDQ        : inout std_logic_vector(15 downto 0)
-
+    RAMDQ        : inout std_logic_vector(15 downto 0);
+    -- config
+    MYIP         : in    std_logic_vector(31 downto 0);
+    MYMAC        : in    std_logic_vector(47 downto 0);
+    MYBCAST      : in    std_logic_vector(31 downto 0);
+    -- error signals and counters
+    RXIOCRCERR   : out   std_logic;
+    UNKNOWNETHER : out   std_logic;
+    UNKNOWNIP    : out   std_logic;
+    UNKNOWNUDP   : out   std_logic;
+    UNKNOWNARP   : out   std_logic;
+    TXPKTLENEN   : out   std_logic;
+    TXPKTLEN     : out   std_logic_vector(15 downto 0); 
+    TXCHAN : out std_logic_vector(2 downto 0) 
     );
 end network;
 
@@ -66,12 +73,19 @@ architecture Behavioral of network is
 
   component inputcontrol
     port (
-      CLK        : in  std_logic;
-      RESET      : in  std_logic;
-      NEXTFRAME  : out std_logic;
-      DINEN      : in  std_logic;
-      DIN        : in  std_logic_vector(15 downto 0);
-      PKTDATA    : out std_logic_vector(15 downto 0);
+      CLK          : in  std_logic;
+      RESET        : in  std_logic;
+      NEXTFRAME    : out std_logic;
+      DINEN        : in  std_logic;
+      DIN          : in  std_logic_vector(15 downto 0);
+      PKTDATA      : out std_logic_vector(15 downto 0);
+      -- error counters
+      CRCIOERR     : out std_logic;
+      UNKNOWNETHER : out std_logic;
+      UNKNOWNIP    : out std_logic;
+      UNKNOWNUDP   : out std_logic;
+      UNKNOWNARP   : out std_logic;
+
       -- ICMP echo request IO
       PINGSTART  : out std_logic;
       PINGADDR   : in  std_logic_vector(9 downto 0);
@@ -112,45 +126,49 @@ architecture Behavioral of network is
       GRANT    : out std_logic_vector(6 downto 0);
       ARM      : in  std_logic_vector(6 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
-      NEWFRAME : out std_logic
+      NEWFRAME : out std_logic;
+      -- staus output
+      PKTLEN   : out std_logic_vector(15 downto 0);
+      PKTLENEN : out std_logic;
+      TXCHAN : out std_logic_vector(2 downto 0)
       );
   end component;
 
 
   component arpresponse
     port (
-      CLK       : in  std_logic;
-      MYMAC     : in  std_logic_vector(47 downto 0);
-      MYIP      : in  std_logic_vector(31 downto 0);
+      CLK        : in  std_logic;
+      MYMAC      : in  std_logic_vector(47 downto 0);
+      MYIP       : in  std_logic_vector(31 downto 0);
       -- IO interface
-      START     : in  std_logic;
-      DONE      : out std_logic;
-      INPKTDATA : in  std_logic_vector(15 downto 0);
-      INPKTADDR : out std_logic_vector(9 downto 0);
-      PKTSUCCESS : out std_logic; 
+      START      : in  std_logic;
+      DONE       : out std_logic;
+      INPKTDATA  : in  std_logic_vector(15 downto 0);
+      INPKTADDR  : out std_logic_vector(9 downto 0);
+      PKTSUCCESS : out std_logic;
       -- output
-      ARM       : out std_logic;
-      GRANT     : in  std_logic;
-      DOUT      : out std_logic_vector(15 downto 0);
-      DOEN      : out std_logic);
+      ARM        : out std_logic;
+      GRANT      : in  std_logic;
+      DOUT       : out std_logic_vector(15 downto 0);
+      DOEN       : out std_logic);
   end component;
 
   component pingresponse
     port (
-      CLK       : in  std_logic;
-      MYMAC     : in  std_logic_vector(47 downto 0);
-      MYIP      : in  std_logic_vector(31 downto 0);
+      CLK        : in  std_logic;
+      MYMAC      : in  std_logic_vector(47 downto 0);
+      MYIP       : in  std_logic_vector(31 downto 0);
       -- IO interface
-      START     : in  std_logic;
-      DONE      : out std_logic;
-      INPKTDATA : in  std_logic_vector(15 downto 0);
-      INPKTADDR : out std_logic_vector(9 downto 0);
-      PKTSUCCESS : out std_logic;   
+      START      : in  std_logic;
+      DONE       : out std_logic;
+      INPKTDATA  : in  std_logic_vector(15 downto 0);
+      INPKTADDR  : out std_logic_vector(9 downto 0);
+      PKTSUCCESS : out std_logic;
       -- output
-      ARM       : out std_logic;
-      GRANT     : in  std_logic;
-      DOUT      : out std_logic_vector(15 downto 0);
-      DOEN      : out std_logic);
+      ARM        : out std_logic;
+      GRANT      : in  std_logic;
+      DOUT       : out std_logic_vector(15 downto 0);
+      DOEN       : out std_logic);
   end component;
 
   component eventtx
@@ -169,7 +187,7 @@ architecture Behavioral of network is
       DOEN        : out std_logic;
       GRANT       : in  std_logic;
       ARM         : out std_logic;
-      PKTSUCCESS : out std_logic; 
+      PKTSUCCESS  : out std_logic;
       -- Retx write interface
       RETXID      : out std_logic_vector(13 downto 0);
       RETXDOUT    : out std_logic_vector(15 downto 0);
@@ -428,9 +446,9 @@ architecture Behavioral of network is
   signal grant : std_logic_vector(6 downto 0) := (others => '0');
   signal arm   : std_logic_vector(6 downto 0) := (others => '0');
 
-  signal txdout : std_logic_vector(15 downto  0) := (others => '0');
-  signal txdouten : std_logic := '0';
-  
+  signal txdout   : std_logic_vector(15 downto 0) := (others => '0');
+  signal txdouten : std_logic                     := '0';
+
   -- retx interface
   signal retxdout : std_logic_vector(15 downto 0) := (others => '0');
   signal retxaddr : std_logic_vector(8 downto 0)  := (others => '0');
@@ -482,6 +500,8 @@ architecture Behavioral of network is
   signal rwroutb : std_logic                      := '0';
   signal rclkb   : std_logic                      := '0';
 
+
+
 begin  -- Behavioral
 
   inputcontrol_inst : inputcontrol
@@ -507,7 +527,14 @@ begin  -- Behavioral
       ARPDONE    => arpindone,
       EVENTSTART => eventinstart,
       EVENTADDR  => eventinaddr,
-      EVENTDONE  => eventindone);
+      EVENTDONE  => eventindone,
+
+      CRCIOERR     => RXIOCRCERR,
+      UNKNOWNETHER => UNKNOWNETHER,
+      UNKNOWNIP    => UNKNOWNIP,
+      UNKNOWNUDP   => UNKNOWNUDP,
+      UNKNOWNARP   => UNKNOWNARP
+      );
 
 
   txmux_inst : txmux
@@ -524,17 +551,21 @@ begin  -- Behavioral
       GRANT    => grant,
       ARM      => arm,
       DOUT     => txdout,
-      NEWFRAME => txdouten);
+      NEWFRAME => txdouten,
+      PKTLEN   => TXPKTLEN, 
+      PKTLENEN => TXPKTLENEN,
+      TXCHAN => TXCHAN 
+      );
 
-  crcappend_inst: crcappend
+  crcappend_inst : crcappend
     port map (
       CLK    => CLK,
       DINEN  => txdouten,
       DIN    => txdout,
       DOUT   => NICDOUT,
       DOUTEN => NICNEWFRAME);
-  
-    
+
+
   arpresponse_inst : arpresponse
     port map (
       CLK       => CLK,
@@ -574,7 +605,7 @@ begin  -- Behavioral
       EATX        => EATX,
       DOUT        => din0,
       DOEN        => den(0),
-      ARM         => open,         -- arm(0), DEBUGGING
+      ARM         => open,              -- arm(0), DEBUGGING
       GRANT       => grant(0),
       RETXID      => widb,
       RETXDOUT    => wdinb,
@@ -734,5 +765,5 @@ begin  -- Behavioral
 
 
   NICIOCLK <= clk;
-  
+
 end Behavioral;

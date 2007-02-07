@@ -25,7 +25,11 @@ entity txmux is
     ARM      : in  std_logic_vector(6 downto 0);
     DOUT     : out std_logic_vector(15 downto 0);
     TXDONE   : out std_logic; 
-    NEWFRAME : out std_logic
+    NEWFRAME : out std_logic;
+    -- staus output
+    PKTLEN : out std_logic_vector(15 downto 0);
+    PKTLENEN : out std_logic;
+    TXCHAN : out std_logic_vector(2 downto 0)
     );
 
 end txmux;
@@ -35,7 +39,7 @@ architecture Behavioral of txmux is
 
 
   signal dinmux : std_logic_vector(15 downto 0) := (others => '0');
-  signal denmux : std_logic                     := '0';
+  signal denmux, denmuxl : std_logic                     := '0';
 
   signal lchan, chan : integer range 0 to 6         := 0;
   signal arml        : std_logic_vector(6 downto 0) := (others => '0');
@@ -57,7 +61,16 @@ begin  -- Behavioral
             DIN4 when chan = 4 else
             DIN5 when chan = 5 else
             DIN6;
+  TXCHAN <= "000" when chan = 0 else
+            "001" when chan = 1 else
+            "010" when chan = 2 else
+            "011" when chan = 3 else
+            "100" when chan = 4 else
+            "101" when chan = 5 else
+            "110" when chan = 6 else
+            "111";
 
+  
   denmux <= DEN(chan);
 
   -- priority encoder
@@ -112,6 +125,15 @@ begin  -- Behavioral
       DOUT     <= dinmux;
       NEWFRAME <= denmux;
 
+      denmuxl <= denmux;
+      PKTLEN <= dinmux;
+      if denmux = '1' and denmuxl = '0' then
+        PKTLENEN <= '1';
+      else
+        PKTLENEN <= '0'; 
+      end if;
+
+      
       if cs = chanlat then
         chan <= lchan;
       end if;

@@ -17,6 +17,8 @@ vhdl work "../../../jtag/vhdl/jtagereceive.vhd"
 vhdl work "../../../vhdl/ether/nicserialio.vhd"
 vhdl work "../../../vhdl/ether/ethercontrol.vhd"
 vhdl work "../../../vhdl/ether/ether.vhd"
+vhdl work "../../../vhdl/netcontrol/txcounter.vhd"
+vhdl work "../../../vhdl/netcontrol/netcontrol.vhd"
 
 vhdl work "../../../vhdl/jtagsimpleout.vhd"
 vhdl work "../../../network/vhdl/ipchecksum.vhd"
@@ -60,6 +62,8 @@ vhdl work "../../../memory/vhdl/memcontmux.vhd"
 vhdl work "../../../memory/vhdl/refreshddr2.vhd"
 vhdl work "../../../memory/vhdl/writeddr2.vhd"
 vhdl work "../../../memory/vhdl/memddr2.vhd" 
+
+
 
 vhdl work "udpburst.vhd"
 vhdl work "dincapture.vhd"
