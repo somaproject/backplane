@@ -24,12 +24,12 @@ entity txmux is
     GRANT    : out std_logic_vector(6 downto 0);
     ARM      : in  std_logic_vector(6 downto 0);
     DOUT     : out std_logic_vector(15 downto 0);
-    TXDONE   : out std_logic; 
+    TXDONE   : out std_logic;
     NEWFRAME : out std_logic;
     -- staus output
-    PKTLEN : out std_logic_vector(15 downto 0);
+    PKTLEN   : out std_logic_vector(15 downto 0);
     PKTLENEN : out std_logic;
-    TXCHAN : out std_logic_vector(2 downto 0)
+    TXCHAN   : out std_logic_vector(2 downto 0)
     );
 
 end txmux;
@@ -38,7 +38,7 @@ end txmux;
 architecture Behavioral of txmux is
 
 
-  signal dinmux : std_logic_vector(15 downto 0) := (others => '0');
+  signal dinmux          : std_logic_vector(15 downto 0) := (others => '0');
   signal denmux, denmuxl : std_logic                     := '0';
 
   signal lchan, chan : integer range 0 to 6         := 0;
@@ -54,13 +54,14 @@ architecture Behavioral of txmux is
 
 begin  -- Behavioral
 
-  dinmux <= DIN0 when chan = 0 else
-            DIN1 when chan = 1 else
-            DIN2 when chan = 2 else
-            DIN3 when chan = 3 else
-            DIN4 when chan = 4 else
-            DIN5 when chan = 5 else
+  dinmux <= DIN0  when chan = 0 else
+            DIN1  when chan = 1 else
+            DIN2  when chan = 2 else
+            DIN3  when chan = 3 else
+            DIN4  when chan = 4 else
+            DIN5  when chan = 5 else
             DIN6;
+
   TXCHAN <= "000" when chan = 0 else
             "001" when chan = 1 else
             "010" when chan = 2 else
@@ -70,7 +71,7 @@ begin  -- Behavioral
             "110" when chan = 6 else
             "111";
 
-  
+
   denmux <= DEN(chan);
 
   -- priority encoder
@@ -104,10 +105,10 @@ begin  -- Behavioral
           grant(i) <= '0';
         end if;
 
-        if waitcnt = 6 then
-          TXDONE  <= '1';
+        if waitcnt = 14 then
+          TXDONE <= '1';
         else
-          TXDONE <= '0'; 
+          TXDONE <= '0';
         end if;
 
       end if;
@@ -125,15 +126,15 @@ begin  -- Behavioral
       DOUT     <= dinmux;
       NEWFRAME <= denmux;
 
-      denmuxl <= denmux;
-      PKTLEN <= dinmux;
+      denmuxl    <= denmux;
+      PKTLEN     <= dinmux;
       if denmux = '1' and denmuxl = '0' then
         PKTLENEN <= '1';
       else
-        PKTLENEN <= '0'; 
+        PKTLENEN <= '0';
       end if;
 
-      
+
       if cs = chanlat then
         chan <= lchan;
       end if;
@@ -182,7 +183,7 @@ begin  -- Behavioral
 
       when delayw =>
         grantmux <= '0';
-        if waitcnt = 6 then
+        if waitcnt = 14 then
           ns     <= start;
         else
           ns     <= delayw;

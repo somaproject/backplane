@@ -660,11 +660,11 @@ begin  -- Behavioral
       RST    => reset
       );
 
- dincapture_inst : dincapture
- port map (
- CLK => clk,
- DIN => nicdinl,
- DINEN => nicdinenl);
+--  dincapture_inst : dincapture
+--  port map (
+--  CLK => clk,
+--  DIN => nicdinl,
+--  DINEN => nicdinenl);
 
   process(niciointclk)
   begin

@@ -119,7 +119,7 @@ architecture Behavioral of inputcontrol is
 begin  -- Behavioral
 
   PKTDATA  <= dob;
-  lenin    <= X"0" & len;
+  lenin    <= X"0" & (len - 4);
   crcreset <= '1' when cs = none else '0';
 
   -- error status / signals
@@ -131,13 +131,13 @@ begin  -- Behavioral
   UNKNOWNARP   <= '1' when cs = arpunk   else '0';
   UNKNOWNUDP   <= '1' when cs = udpunk   else '0';
 
---   jtagsimpleout_inst : jtagsimpleout
---     generic map (
---       JTAG_CHAIN => 4,
---       JTAGN      => 160)
---     port map (
---       CLK        => CLK,
---       DIN        => jtagin);
+   jtagsimpleout_inst : jtagsimpleout
+     generic map (
+       JTAG_CHAIN => 4,
+       JTAGN      => 160)
+     port map (
+       CLK        => CLK,
+       DIN        => jtagin);
 
 
 
@@ -221,7 +221,7 @@ begin  -- Behavioral
 
 
         if wea = '1' and addra = "00000000000" then
-          len <= dinl(11 downto 0) - 4;
+          len <= dinl(11 downto 0);
         end if;
 
         if start = '1' and mode = 1 then
@@ -293,7 +293,7 @@ begin  -- Behavioral
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"07";
-        if wea = '0' then -- and addra >= len(11 downto 1) then
+        if addra >= len(11 downto 1) then
           ns       <= crcvfy;
         else
           ns       <= dinw;

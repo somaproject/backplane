@@ -447,7 +447,7 @@ architecture Behavioral of network is
   signal arm   : std_logic_vector(6 downto 0) := (others => '0');
 
   signal txdout   : std_logic_vector(15 downto 0) := (others => '0');
-  signal txdouten : std_logic                     := '0';
+  signal txdouten, txdoutenl : std_logic                     := '0';
 
   -- retx interface
   signal retxdout : std_logic_vector(15 downto 0) := (others => '0');
@@ -500,7 +500,9 @@ architecture Behavioral of network is
   signal rwroutb : std_logic                      := '0';
   signal rclkb   : std_logic                      := '0';
 
-
+  signal lnicdout : std_logic_vector(15 downto 0);
+  signal lnicnewframe : std_logic := '0';
+  signal txdoutenl2 : std_logic := '0';
 
 begin  -- Behavioral
 
@@ -530,8 +532,8 @@ begin  -- Behavioral
       EVENTDONE  => eventindone,
 
       CRCIOERR     => RXIOCRCERR,
-      UNKNOWNETHER => UNKNOWNETHER,
-      UNKNOWNIP    => UNKNOWNIP,
+--      UNKNOWNETHER => UNKNOWNETHER,
+--      UNKNOWNIP    => UNKNOWNIP,
       UNKNOWNUDP   => UNKNOWNUDP,
       UNKNOWNARP   => UNKNOWNARP
       );
@@ -562,8 +564,8 @@ begin  -- Behavioral
       CLK    => CLK,
       DINEN  => txdouten,
       DIN    => txdout,
-      DOUT   => NICDOUT,
-      DOUTEN => NICNEWFRAME);
+      DOUT   => lNICDOUT,
+      DOUTEN => lNICNEWFRAME);
 
 
   arpresponse_inst : arpresponse
@@ -764,6 +766,32 @@ begin  -- Behavioral
       RDWE   => memrdwe);
 
 
+  process(CLK)
+    variable newframel, newframel2 : std_logic := '0';
+    begin
+      if rising_edge(CLK) then
+        txdoutenl2 <= txdouten; 
+        txdoutenl <= lnicnewframe; 
+        NICDOUT <= lnicdout;
+        NICNEWFRAME <= lnicnewframe;
+        
+        if txdoutenl = '1' and lnicnewframe = '0' then
+          UNKNOWNIP  <= '1';
+        else
+          UNKNOWNIP <= '0'; 
+        end if;
+
+        if txdoutenl2 = '1' and txdouten = '0' then
+         UNKNOWNETHER  <= '1';
+        else
+         UNKNOWNETHER <= '0'; 
+        end if;
+
+        
+        
+        
+      end if;
+    end process; 
   NICIOCLK <= clk;
 
 end Behavioral;
