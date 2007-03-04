@@ -9,8 +9,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="ping.icmp.svg"
-   sodipodi:docbase="/home/jonas/soma/backplane/network/docs"
-   inkscape:version="0.44+devel"
+   sodipodi:docbase="/home/jonas/soma/backplane/network/docs/ping"
+   inkscape:version="0.43+0.44pre2"
    sodipodi:version="0.32"
    id="svg1996"
    height="406.25"
@@ -151,72 +151,68 @@
          id="tspan2177"
          x="312.5"
          y="687.125">DMUX</tspan></text>
-    <g
-       id="g2229"
-       transform="translate(-231.25,-65.625)">
-      <rect
-         y="733.75"
-         x="403.125"
-         height="56.25"
-         width="103.125"
-         id="rect2231"
-         style="fill:white;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-      <text
-         sodipodi:linespacing="121%"
-         id="text2234"
-         y="746.25"
-         x="406.25"
-         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="746.25"
-           x="406.25"
-           id="tspan2236"
-           sodipodi:role="line">DIN[15:0]</tspan></text>
-      <text
-         sodipodi:linespacing="121%"
-         id="text2238"
-         y="765"
-         x="406.25"
-         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="765"
-           x="406.25"
-           id="tspan2240"
-           sodipodi:role="line">LD</tspan></text>
-      <text
-         sodipodi:linespacing="121%"
-         id="text2242"
-         y="783.75"
-         x="406.25"
-         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="783.75"
-           x="406.25"
-           id="tspan2244"
-           sodipodi:role="line">EN</tspan></text>
-      <text
-         sodipodi:linespacing="121%"
-         id="text2247"
-         y="765"
-         x="437.5"
-         style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="765"
-           x="437.5"
-           id="tspan2249"
-           sodipodi:role="line">CHKOUT[15:0]</tspan></text>
-      <text
-         sodipodi:linespacing="121%"
-         id="text2251"
-         y="730.625"
-         x="403.125"
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="730.625"
-           x="403.125"
-           id="tspan2253"
-           sodipodi:role="line">IP Checksum</tspan></text>
-    </g>
+    <rect
+       style="fill:white;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2231"
+       width="103.125"
+       height="56.25"
+       x="171.875"
+       y="668.125" />
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="175"
+       y="680.625"
+       id="text2234"
+       sodipodi:linespacing="121%"><tspan
+         sodipodi:role="line"
+         id="tspan2236"
+         x="175"
+         y="680.625">DIN[15:0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="175"
+       y="699.375"
+       id="text2238"
+       sodipodi:linespacing="121%"><tspan
+         sodipodi:role="line"
+         id="tspan2240"
+         x="175"
+         y="699.375">LD</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="175"
+       y="718.125"
+       id="text2242"
+       sodipodi:linespacing="121%"><tspan
+         sodipodi:role="line"
+         id="tspan2244"
+         x="175"
+         y="718.125">EN</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="206.25"
+       y="699.375"
+       id="text2247"
+       sodipodi:linespacing="121%"><tspan
+         sodipodi:role="line"
+         id="tspan2249"
+         x="206.25"
+         y="699.375">CHKOUT[15:0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:121.00000381%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="171.875"
+       y="665"
+       id="text2251"
+       sodipodi:linespacing="121%"><tspan
+         sodipodi:role="line"
+         id="tspan2253"
+         x="171.875"
+         y="665">IP Checksum</tspan></text>
     <path
        style="opacity:1;color:black;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 142.25,643.125 L 142.25,636.875"
