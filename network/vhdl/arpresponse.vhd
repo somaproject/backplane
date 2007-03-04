@@ -9,12 +9,10 @@ use UNISIM.vcomponents.all;
 
 
 entity arpresponse is
-
   port (
     CLK   : in std_logic;
     MYMAC : in std_logic_vector(47 downto 0);
     MYIP  : in std_logic_vector(31 downto 0);
-
     -- IO interface
     START     : in  std_logic;
     DONE      : out std_logic;
@@ -67,7 +65,8 @@ begin  -- Behavioral
   DONE <= '1' when cs = pktdone else '0';
   ARM  <= '1' when cs = armout  else '0';
 
-  PKTSUCCESS <= '1' when cs = pktsuc else '0'; 
+  PKTSUCCESS <= '1' when cs = pktsuc else '0';
+  
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -277,7 +276,7 @@ begin  -- Behavioral
         dmux      <= 1;
         addra     <= X"15";
         INPKTADDR <= "0000010000";
-        if addrb = "0001000001" then
+        if addrb = "0000011111" then
           ns      <= pktsuc;
         else
           ns      <= pktout;

@@ -24,7 +24,7 @@ payload.
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{ping.ip.svg}
+\includegraphics[scale=0.8]{pingipwriter.svg}
 \end{centering}
 \caption{ICMP Echo response packet processing module}
 \label{ping.ip}
@@ -32,7 +32,7 @@ payload.
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{ping.ip.fsm.svg}
+\includegraphics[scale=0.8]{pingipwriter.fsm.svg}
 \end{centering}
 \caption{ICMP Echo response packet processing module FSM}
 \label{ping.ip.fsm}
@@ -41,7 +41,7 @@ payload.
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{ping.icmp.svg}
+\includegraphics[scale=0.8]{pingicmpwriter.svg}
 \end{centering}
 \caption{ICMP Echo response packet processing module}
 \label{ping}
@@ -49,7 +49,7 @@ payload.
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{ping.icmp.fsm.svg}
+\includegraphics[scale=0.8]{pingicmpwriter.fsm.svg}
 \end{centering}
 \caption{ICMP Echo response packet processing module FSM}
 \label{ping.fsm}
@@ -65,3 +65,5 @@ buffer; once both have had a chance to write their data, the main FSM
 outputs the packet via the TX Mux.
 
 The design of both components is similar to the UDPHeaderWriter module. 
+
+The DATALEN is the length of the IP payload in bytes, i.e. the PING portion of the packet. 

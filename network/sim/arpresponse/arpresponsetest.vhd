@@ -114,7 +114,8 @@ architecture Behavioral of arpresponsetest is
 
   signal dexpected : std_logic_vector(15 downto 0) := (others => '0');
   signal doutl     : std_logic_vector(15 downto 0) := (others => '0');
-
+  signal doenl : std_logic := '0';
+  
 begin  -- Behavioral
 
   CLK   <= not CLK after 10 ns;
@@ -204,6 +205,23 @@ begin  -- Behavioral
 
   end process;
 
+ doencnt: process(CLK)
+   variable doencnt : integer := 0;
+   
+   begin
+     if rising_edge(CLK) then
 
+       if doenl = '0' and DOEN = '1' then
+         doencnt := 1;
+       elsif doenl = '1' and doen = '0' then
+         report "DOEN was high for " & integer'image(doencnt) severity note;
+       elsif DOEN = '1'  then
+         doencnt := doencnt + 1;
+         
+       end if;
+       doenl <= DOEN;
+     end if;
+
+   end process; 
 
 end Behavioral;

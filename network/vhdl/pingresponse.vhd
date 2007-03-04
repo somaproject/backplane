@@ -44,7 +44,8 @@ architecture Behavioral of pingresponse is
   signal wea : std_logic := '0';
 
   signal datalen : std_logic_vector(15 downto 0) := (others => '0');
-
+  signal txlen : std_logic_vector(15 downto 0) := (others => '0');
+  
   signal pingdone, ipdone   : std_logic := '0';
   signal pingstart, ipstart : std_logic := '0';
   signal abort              : std_logic := '0';
@@ -164,6 +165,8 @@ begin  -- Behavioral
   ARM <= '1' when cs = armout or cs = grantw else '0';
   
   PKTSUCCESS <= '1' when cs = pktsuc else '0';
+  -- transmit body length in bytes
+  txlen <= datalen + "0000100110";
   
   main : process(CLK)
   begin
@@ -183,7 +186,7 @@ begin  -- Behavioral
   end process main;
 
   fsm : process(cs, INPKTDATA, start, abort, ipdone,
-                pingdone, grant, addrb, datalen)
+                pingdone, grant, addrb, datalen, txlen)
 
   begin
     case cs is
@@ -244,7 +247,7 @@ begin  -- Behavioral
       when pktout =>
         DEBUG(7 downto 0) <= X"07"; 
         insel <= '1';
-        if addrb >= datalen + "0000010010" then
+        if addrb >= ('0' & txlen(15 downto 1)) then
           ns  <= pktsuc;
         else
           ns  <= pktout;
