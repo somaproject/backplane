@@ -103,11 +103,15 @@ begin  -- Behavioral
       RETXPENDING => RETXPENDING,
       RETXWE      => RETXWE);
 
+  myip    <= X"0A000002";               -- 10.0.0.2
+  mybcast <= X"FFFFFFFF";               -- 10.255.255.255
 
-  MYMAC <= X"0011d882a689";
+  mymac <= X"00ADBEEF1234";
 
-  MYIP    <= X"c0a80002";
-  MYBCAST <= X"c0a800FF";
+--   MYMAC <= X"0011d882a689";
+
+--   MYIP    <= X"c0a80002";
+--   MYBCAST <= X"c0a800FF";
 
   -- basic clocking
   CLK <= not CLK after 10 ns;

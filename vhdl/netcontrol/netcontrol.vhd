@@ -11,34 +11,39 @@ use work.somabackplane;
 
 entity netcontrol is
   generic (
-    DEVICE      :     std_logic_vector(7 downto 0) := X"01";
-    CMDCNTQUERY :     std_logic_vector(7 downto 0) := X"40";
-    CMDCNTRST   :     std_logic_vector(7 downto 0) := X"41";
-    CMDNETWRITE :     std_logic_vector(7 downto 0) := X"42";
-    CMDNETQUERY :     std_logic_vector(7 downto 0) := X"43";
-    CMDNETRESP  :     std_logic_vector(7 downto 0) := X"50";
-    CMDCNTRESP  :     std_logic_vector(7 downto 0) := X"51"
+    DEVICE       :     std_logic_vector(7 downto 0) := X"01";
+    CMDCNTQUERY  :     std_logic_vector(7 downto 0) := X"40";
+    CMDCNTRST    :     std_logic_vector(7 downto 0) := X"41";
+    CMDNETWRITE  :     std_logic_vector(7 downto 0) := X"42";
+    CMDNETQUERY  :     std_logic_vector(7 downto 0) := X"43";
+    CMDNETRESP   :     std_logic_vector(7 downto 0) := X"50";
+    CMDCNTRESP   :     std_logic_vector(7 downto 0) := X"51"
     );
   port (
-    CLK         : in  std_logic;
-    RESET       : in  std_logic;
+    CLK          : in  std_logic;
+    RESET        : in  std_logic;
     -- standard event-bus interface
-    ECYCLE      : in  std_logic;
-    EDTX        : in  std_logic_vector(7 downto 0);
-    EATX        : in  std_logic_vector(somabackplane.N - 1 downto 0);
-    EARX        : out std_logic_vector(somabackplane.N - 1 downto 0);
-    EDRX        : out std_logic_vector(7 downto 0);
-    EDSELRX     : in  std_logic_vector(3 downto 0);
+    ECYCLE       : in  std_logic;
+    EDTX         : in  std_logic_vector(7 downto 0);
+    EATX         : in  std_logic_vector(somabackplane.N - 1 downto 0);
+    EARX         : out std_logic_vector(somabackplane.N - 1 downto 0);
+    EDRX         : out std_logic_vector(7 downto 0);
+    EDSELRX      : in  std_logic_vector(3 downto 0);
     -- tx counter input
-    TXPKTLENEN  : in  std_logic;
-    TXPKTLEN    : in  std_logic_vector(15 downto 0);
-    TXCHAN      : in  std_logic_vector(2 downto 0);
+    TXPKTLENEN   : in  std_logic;
+    TXPKTLEN     : in  std_logic_vector(15 downto 0);
+    TXCHAN       : in  std_logic_vector(2 downto 0);
     -- other counters
-    RXIOCRCERR  : in  std_logic;
+    RXIOCRCERR   : in  std_logic;
+    UNKNOWNETHER : in  std_logic;
+    UNKNOWNIP    : in  std_logic;
+    UNKNOWNARP   : in  std_logic;
+    UNKNOWNUDP   : in  std_logic;
+
     -- output network control settings
-    MYMAC       : out std_logic_vector(47 downto 0);
-    MYBCAST     : out std_logic_vector(31 downto 0);
-    MYIP        : out std_logic_vector(31 downto 0)
+    MYMAC   : out std_logic_vector(47 downto 0);
+    MYBCAST : out std_logic_vector(31 downto 0);
+    MYIP    : out std_logic_vector(31 downto 0)
 
     );
 
@@ -68,7 +73,11 @@ architecture Behavioral of netcontrol is
 
   -- counters
 
-  signal rxiocrcerrcnt : std_logic_vector(47 downto 0) := (others => '0');
+  signal rxiocrcerrcnt   : std_logic_vector(47 downto 0) := (others => '0');
+  signal unknownethercnt : std_logic_vector(47 downto 0) := (others => '0');
+  signal unknownipcnt    : std_logic_vector(47 downto 0) := (others => '0');
+  signal unknownarpcnt   : std_logic_vector(47 downto 0) := (others => '0');
+  signal unknownudpcnt   : std_logic_vector(47 downto 0) := (others => '0');
 
   signal txch0len : std_logic_vector(47 downto 0) := (others => '0');
   signal txch0cnt : std_logic_vector(47 downto 0) := (others => '0');
@@ -243,6 +252,10 @@ begin  -- Behavioral
 
   cntval <= X"0123456789AB" when cntsel = "00000" else
             rxiocrcerrcnt   when cntsel = "00001" else
+            unknownethercnt when cntsel = "00010" else
+            unknownipcnt    when cntsel = "00011" else
+            unknownarpcnt   when cntsel = "00100" else
+            unknownudpcnt   when cntsel = "00101" else
             txch0len        when cntsel = "10000" else
             txch0cnt        when cntsel = "10001" else
             txch1len        when cntsel = "10010" else
@@ -394,7 +407,39 @@ begin  -- Behavioral
         end if;
       end if;
 
-      
+      if dataword(2) = '1' then
+        unknownethercnt   <= (others => '0');
+      else
+        if UNKNOWNETHER = '1' then
+          unknownethercnt <= unknownethercnt + 1;
+        end if;
+      end if;
+
+      if dataword(3) = '1' then
+        unknownipcnt   <= (others => '0');
+      else
+        if UNKNOWNIP = '1' then
+          unknownipcnt <= unknownipcnt + 1;
+        end if;
+      end if;
+
+      if dataword(4) = '1' then
+        unknownarpcnt   <= (others => '0');
+      else
+        if UNKNOWNARP = '1' then
+          unknownarpcnt <= unknownarpcnt + 1;
+        end if;
+      end if;
+
+      if dataword(5) = '1' then
+        unknownudpcnt   <= (others => '0');
+      else
+        if UNKNOWNUDP = '1' then
+          unknownudpcnt <= unknownudpcnt + 1;
+        end if;
+      end if;
+
+
     end if;
   end process main;
 
@@ -407,15 +452,15 @@ begin  -- Behavioral
         bcastsel <= '1';
         bcastval <= '0';
         eosel    <= 0;
-        if bcastdelay = X"0000" then
-          ns     <= cntbcast;
-        else
+--         if bcastdelay = X"0000" then
+--           ns     <= cntbcast;
+--         else
           if EVALID = '1' then
             ns   <= cmdchk;
           else
             ns   <= none;
           end if;
-        end if;
+--         end if;
 
       when cmdchk =>
         EOUTA    <= "001";

@@ -16,34 +16,38 @@ architecture Behavioral of netcontroltest is
 
   component netcontrol
     generic (
-      DEVICE      :     std_logic_vector(7 downto 0) := X"01";
-      CMDCNTQUERY :     std_logic_vector(7 downto 0) := X"40";
-      CMDCNTRST   :     std_logic_vector(7 downto 0) := X"41";
-      CMDNETWRITE :     std_logic_vector(7 downto 0) := X"42";
-      CMDNETQUERY :     std_logic_vector(7 downto 0) := X"43";
-      CMDNETRESP  :     std_logic_vector(7 downto 0) := X"50";
-      CMDCNTRESP  :     std_logic_vector(7 downto 0) := X"51"
+      DEVICE       :     std_logic_vector(7 downto 0) := X"01";
+      CMDCNTQUERY  :     std_logic_vector(7 downto 0) := X"40";
+      CMDCNTRST    :     std_logic_vector(7 downto 0) := X"41";
+      CMDNETWRITE  :     std_logic_vector(7 downto 0) := X"42";
+      CMDNETQUERY  :     std_logic_vector(7 downto 0) := X"43";
+      CMDNETRESP   :     std_logic_vector(7 downto 0) := X"50";
+      CMDCNTRESP   :     std_logic_vector(7 downto 0) := X"51"
       );
     port (
-      CLK         : in  std_logic;
-      RESET       : in  std_logic;
+      CLK          : in  std_logic;
+      RESET        : in  std_logic;
       -- standard event-bus interface
-      ECYCLE      : in  std_logic;
-      EARX        : out std_logic_vector(somabackplane.N - 1 downto 0);
-      EDRX        : out std_logic_vector(7 downto 0);
-      EDSELRX     : in  std_logic_vector(3 downto 0);
-      EDTX        : in  std_logic_vector(7 downto 0);
-      EATX        : in  std_logic_vector(somabackplane.N - 1 downto 0);
+      ECYCLE       : in  std_logic;
+      EARX         : out std_logic_vector(somabackplane.N - 1 downto 0);
+      EDRX         : out std_logic_vector(7 downto 0);
+      EDSELRX      : in  std_logic_vector(3 downto 0);
+      EDTX         : in  std_logic_vector(7 downto 0);
+      EATX         : in  std_logic_vector(somabackplane.N - 1 downto 0);
       -- tx counter inputdtx
-      TXPKTLENEN  : in  std_logic;
-      TXPKTLEN    : in  std_logic_vector(15 downto 0);
-      TXCHAN      : in  std_logic_vector(2 downto 0);
+      TXPKTLENEN   : in  std_logic;
+      TXPKTLEN     : in  std_logic_vector(15 downto 0);
+      TXCHAN       : in  std_logic_vector(2 downto 0);
       -- other counters
-      RXIOCRCERR  : in  std_logic;
+      RXIOCRCERR   : in  std_logic;
+      UNKNOWNETHER : in  std_logic;
+      UNKNOWNIP    : in  std_logic;
+      UNKNOWNARP   : in  std_logic;
+      UNKNOWNUDP   : in  std_logic;
       -- output network control settings
-      MYMAC       : out std_logic_vector(47 downto 0);
-      MYBCAST     : out std_logic_vector(31 downto 0);
-      MYIP        : out std_logic_vector(31 downto 0)
+      MYMAC        : out std_logic_vector(47 downto 0);
+      MYBCAST      : out std_logic_vector(31 downto 0);
+      MYIP         : out std_logic_vector(31 downto 0)
 
       );
 
@@ -76,15 +80,20 @@ architecture Behavioral of netcontroltest is
   signal eazeros : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
 
 
-  signal TXPKTLENEN : std_logic                     := '0';
-  signal TXPKTLEN   : std_logic_vector(15 downto 0) := (others => '0');
-  signal TXCHAN     : std_logic_vector(2 downto 0)  := (others => '0');
+  signal TXPKTLENEN   : std_logic                     := '0';
+  signal TXPKTLEN     : std_logic_vector(15 downto 0) := (others => '0');
+  signal TXCHAN       : std_logic_vector(2 downto 0)  := (others => '0');
   -- other counters
-  signal RXIOCRCERR : std_logic                     := '0';
+  signal RXIOCRCERR   : std_logic                     := '0';
+  signal UNKNOWNETHER : std_logic                     := '0';
+  signal UNKNOWNIP    : std_logic                     := '0';
+  signal UNKNOWNARP   : std_logic                     := '0';
+  signal UNKNOWNUDP   : std_logic                     := '0';
+
   -- output network control settings
-  signal MYMAC      : std_logic_vector(47 downto 0);
-  signal MYBCAST    : std_logic_vector(31 downto 0);
-  signal MYIP       : std_logic_vector(31 downto 0);
+  signal MYMAC   : std_logic_vector(47 downto 0);
+  signal MYBCAST : std_logic_vector(31 downto 0);
+  signal MYIP    : std_logic_vector(31 downto 0);
 
 
   signal pos : integer range 0 to 999 := 980;
@@ -138,6 +147,10 @@ begin  -- Behavioral
       TXPKTLEN    => TXPKTLEN,
       TXCHAN      => TXCHAN,
       RXIOCRCERR  => RXIOCRCERR,
+      UNKNOWNETHER => UNKNOWNETHER,
+      UNKNOWNIP => UNKNOWNIP,
+      UNKNOWNARP => UNKNOWNARP,
+      UNKNOWNUDP => UNKNOWNUDP,
       MYMAC       => MYMAC,
       MYBCAST     => MYBCAST,
       MYIP        => MYIP);
@@ -537,33 +550,31 @@ begin  -- Behavioral
 
       -- read the first 32 bits of the count
       wait for 1 ns;
-      EDSELRX                     <= "0110";
+      EDSELRX                   <= "0110";
       wait until rising_edge(CLK);
       receivedcnt(31 downto 24) <= EDRX;
-      EDSELRX                     <= "0111";
+      EDSELRX                   <= "0111";
       wait until rising_edge(CLK);
       receivedcnt(23 downto 16) <= EDRX;
-      EDSELRX                     <= "1000";
+      EDSELRX                   <= "1000";
       wait until rising_edge(CLK);
       receivedcnt(15 downto 8)  <= EDRX;
-      EDSELRX                     <= "1001";
+      EDSELRX                   <= "1001";
       wait until rising_edge(CLK);
       receivedcnt(7 downto 0)   <= EDRX;
 
       if receivedcntid = X"0000" then
         assert receivedcnt = X"456789AB"
-          report "Error reading counter 0" severity Error;
-      elsif receivedcntid = X"0001" then 
+          report "Error reading counter 0" severity error;
+      elsif receivedcntid = X"0001" then
         assert receivedcnt = X"000079cc"
-          report "Error reading counter 1" severity Error;
-      elsif receivedcntid = X"0002" then 
+          report "Error reading counter 1" severity error;
+      elsif receivedcntid = X"0002" then
         assert receivedcnt = X"00000000"
-          report "Error reading counter 2" severity Error;
-      end if; 
+          report "Error reading counter 2" severity error;
+      end if;
 
     end loop;  -- i
-
-
 
 
     assert false report "End of Simulation" severity failure;

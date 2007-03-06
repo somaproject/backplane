@@ -564,7 +564,7 @@ begin  -- Behavioral
 
 
   myip    <= X"0A000002";               -- 10.0.0.2
-  mybcast <= X"0AFFFFFF";               -- 10.255.255.255
+  mybcast <= X"FFFFFFFF";               -- 10.255.255.255
 
   mymac <= X"00ADBEEF1234";
 
