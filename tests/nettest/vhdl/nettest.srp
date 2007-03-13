@@ -2,11 +2,11 @@ Release 8.1i - xst I.24
 Copyright (c) 1995-2005 Xilinx, Inc.  All rights reserved.
 --> 
 Parameter TMPDIR set to build
-CPU : 0.00 / 0.07 s | Elapsed : 0.00 / 0.00 s
+CPU : 0.00 / 0.06 s | Elapsed : 0.00 / 0.00 s
  
 --> 
 Parameter xsthdpdir set to ./xst
-CPU : 0.00 / 0.07 s | Elapsed : 0.00 / 0.00 s
+CPU : 0.00 / 0.06 s | Elapsed : 0.00 / 0.00 s
  
 --> 
 
@@ -220,11 +220,9 @@ Compiling vhdl file "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" 
 Entity <nettest> compiled.
 Entity <nettest> (Architecture <behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/backplane/tests/nettest/vhdl/dincapture.vhd" in Library work.
-Entity <dincapture> compiled.
-Entity <dincapture> (Architecture <Behavioral>) compiled.
+Architecture behavioral of Entity dincapture is up to date.
 Compiling vhdl file "/home/jonas/soma/backplane/tests/nettest/vhdl/udpburst.vhd" in Library work.
-Entity <udpburst> compiled.
-Entity <udpburst> (Architecture <Behavioral>) compiled.
+Architecture behavioral of Entity udpburst is up to date.
 Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/datamemarbit.vhd" in Library work.
 Architecture behavioral of Entity datamemarbit is up to date.
 
@@ -232,12 +230,12 @@ Architecture behavioral of Entity datamemarbit is up to date.
 *                            HDL Analysis                               *
 =========================================================================
 Analyzing Entity <nettest> (Architecture <behavioral>).
-WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 480: Unconnected output port 'DEBUG' of component 'boot'.
-WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 523: Unconnected output port 'DEBUG' of component 'jtagereceive'.
-WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 571: Unconnected output port 'NICIOCLK' of component 'network'.
-WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 627: Unconnected output port 'MYMAC' of component 'netcontrol'.
-WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 627: Unconnected output port 'MYBCAST' of component 'netcontrol'.
-WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 627: Unconnected output port 'MYIP' of component 'netcontrol'.
+WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 488: Unconnected output port 'DEBUG' of component 'boot'.
+WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 532: Unconnected output port 'DEBUG' of component 'jtagereceive'.
+WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 580: Unconnected output port 'NICIOCLK' of component 'network'.
+WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 636: Unconnected output port 'MYMAC' of component 'netcontrol'.
+WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 636: Unconnected output port 'MYBCAST' of component 'netcontrol'.
+WARNING:Xst:753 - "/home/jonas/soma/backplane/tests/nettest/vhdl/nettest.vhd" line 636: Unconnected output port 'MYIP' of component 'netcontrol'.
 Entity <nettest> analyzed. Unit <nettest> generated.
 
 Analyzing Entity <eventrouter> (Architecture <behavioral>).
@@ -2378,21 +2376,16 @@ WARNING:Xst:1781 - Signal <EDRX<77:8>> is used but never assigned. Tied to defau
 WARNING:Xst:653 - Signal <EDRX<6>> is used but never assigned. Tied to value 00000000.
 WARNING:Xst:1780 - Signal <nicnextframeint> is never used or assigned.
 WARNING:Xst:646 - Signal <clk180> is assigned but never used.
-WARNING:Xst:646 - Signal <locked> is assigned but never used.
 WARNING:Xst:1781 - Signal <EARX<77:8>> is used but never assigned. Tied to default value.
 WARNING:Xst:653 - Signal <EARX<6>> is used but never assigned. Tied to value 000000000000000000000000000000000000000000000000000000000000000000000000000000.
 WARNING:Xst:1780 - Signal <nicclkint> is never used or assigned.
 WARNING:Xst:646 - Signal <EATX<77:8>> is assigned but never used.
 WARNING:Xst:646 - Signal <EATX<6>> is assigned but never used.
-    Found 1-bit register for signal <LEDPOWER>.
-    Found 22-bit adder for signal <$n0012> created at line 557.
-    Found 22-bit up counter for signal <blinkcnt>.
     Found 1-bit register for signal <nicdinenl>.
     Found 16-bit register for signal <nicdinl>.
+    Found 8-bit register for signal <resetint>.
     Summary:
-	inferred   1 Counter(s).
-	inferred  18 D-type flip-flop(s).
-	inferred   1 Adder/Subtractor(s).
+	inferred  25 D-type flip-flop(s).
 Unit <nettest> synthesized.
 
 
@@ -2400,7 +2393,7 @@ Unit <nettest> synthesized.
 HDL Synthesis Report
 
 Macro Statistics
-# Adders/Subtractors                                   : 66
+# Adders/Subtractors                                   : 65
  10-bit adder                                          : 5
  11-bit adder                                          : 1
  12-bit subtractor                                     : 1
@@ -2408,7 +2401,6 @@ Macro Statistics
  16-bit subtractor                                     : 2
  17-bit adder                                          : 10
  2-bit adder                                           : 2
- 22-bit adder                                          : 1
  32-bit adder                                          : 1
  5-bit adder                                           : 6
  5-bit subtractor                                      : 1
@@ -2417,7 +2409,7 @@ Macro Statistics
  7-bit adder                                           : 6
  9-bit adder                                           : 5
  9-bit subtractor                                      : 2
-# Counters                                             : 95
+# Counters                                             : 94
  10-bit up counter                                     : 13
  11-bit up counter                                     : 2
  14-bit up counter                                     : 1
@@ -2425,7 +2417,6 @@ Macro Statistics
  16-bit up counter                                     : 2
  19-bit up counter                                     : 1
  2-bit up counter                                      : 4
- 22-bit up counter                                     : 1
  3-bit up counter                                      : 4
  32-bit up counter                                     : 1
  4-bit up counter                                      : 13
@@ -2442,7 +2433,7 @@ Macro Statistics
  48-bit up accumulator                                 : 8
  9-bit up accumulator                                  : 1
 # Registers                                            : 1322
- 1-bit register                                        : 1173
+ 1-bit register                                        : 1172
  10-bit register                                       : 6
  11-bit register                                       : 1
  12-bit register                                       : 1
@@ -2461,7 +2452,7 @@ Macro Statistics
  6-bit register                                        : 5
  7-bit register                                        : 9
  78-bit register                                       : 7
- 8-bit register                                        : 26
+ 8-bit register                                        : 27
  80-bit register                                       : 2
  9-bit register                                        : 9
  96-bit register                                       : 6
@@ -3218,6 +3209,10 @@ Synthesizing (advanced) Unit <dataretxbuf>.
 	Found 2-bit shift register for signal <fposll<2>>.
 Unit <dataretxbuf> synthesized (advanced).
 
+Synthesizing (advanced) Unit <nettest>.
+	Found 8-bit shift register for signal <resetint<7>>.
+Unit <nettest> synthesized (advanced).
+
 Synthesizing (advanced) Unit <readddr2>.
 	Found 10-bit shift register for signal <rwesreg<9>>.
 	Found 2-bit shift register for signal <rwesreg<11>>.
@@ -3336,22 +3331,22 @@ WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch  <edrxall_66> (witho
 WARNING:Xst:1291 - FF/Latch <srcl_7> is unconnected in block <ethercontrol>.
 INFO:Xst:2261 - The FF/Latch <edrxall_0> in Unit <ethercontrol> is equivalent to the following 3 FFs/Latches, which will be removed : <edrxall_2> <edrxall_12> <edrxall_13> 
 INFO:Xst:2261 - The FF/Latch <PKTLEN_11> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_11> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_15> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_15> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_1> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_1> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_2> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_2> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_9> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_9> 
 INFO:Xst:2261 - The FF/Latch <denmuxl> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <NEWFRAME> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_12> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_12> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_3> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_3> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_4> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_4> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_8> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_8> 
 INFO:Xst:2261 - The FF/Latch <PKTLEN_10> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_10> 
 INFO:Xst:2261 - The FF/Latch <PKTLEN_6> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_6> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_7> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_7> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_8> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_8> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_14> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_14> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_9> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_9> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_1> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_1> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_12> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_12> 
 INFO:Xst:2261 - The FF/Latch <PKTLEN_13> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_13> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_4> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_4> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_0> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_0> 
-INFO:Xst:2261 - The FF/Latch <PKTLEN_3> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_3> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_15> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_15> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_14> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_14> 
 INFO:Xst:2261 - The FF/Latch <PKTLEN_5> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_5> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_0> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_0> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_2> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_2> 
+INFO:Xst:2261 - The FF/Latch <PKTLEN_7> in Unit <txmux> is equivalent to the following FF/Latch, which will be removed : <DOUT_7> 
 WARNING:Xst:1291 - FF/Latch <lenint_0> is unconnected in block <dataacquire>.
 WARNING:Xst:1291 - FF/Latch <tssreg_4> is unconnected in block <writeddr2>.
 WARNING:Xst:1291 - FF/Latch <tssreg_5> is unconnected in block <writeddr2>.
@@ -4265,7 +4260,7 @@ Advanced HDL Synthesis Report
 
 Macro Statistics
 # FSMs                                                 : 42
-# Adders/Subtractors                                   : 66
+# Adders/Subtractors                                   : 65
  10-bit adder                                          : 5
  11-bit adder                                          : 1
  12-bit subtractor                                     : 1
@@ -4273,7 +4268,6 @@ Macro Statistics
  16-bit subtractor                                     : 2
  17-bit adder                                          : 10
  2-bit adder                                           : 2
- 22-bit adder                                          : 1
  32-bit adder                                          : 1
  5-bit adder                                           : 6
  5-bit subtractor                                      : 1
@@ -4282,14 +4276,13 @@ Macro Statistics
  7-bit adder                                           : 6
  9-bit adder                                           : 5
  9-bit subtractor                                      : 2
-# Counters                                             : 94
+# Counters                                             : 93
  10-bit up counter                                     : 13
  11-bit up counter                                     : 2
  14-bit up counter                                     : 1
  16-bit up counter                                     : 2
  19-bit up counter                                     : 1
  2-bit up counter                                      : 4
- 22-bit up counter                                     : 1
  3-bit up counter                                      : 4
  32-bit up counter                                     : 1
  4-bit up counter                                      : 13
@@ -4305,16 +4298,17 @@ Macro Statistics
  16-bit up accumulator                                 : 2
  48-bit up accumulator                                 : 8
  9-bit up accumulator                                  : 1
-# Registers                                            : 4334
- Flip-Flops                                            : 4334
+# Registers                                            : 4333
+ Flip-Flops                                            : 4333
 # Latches                                              : 1
  80-bit latch                                          : 1
-# Shift Registers                                      : 51
+# Shift Registers                                      : 52
  10-bit shift register                                 : 1
  12-bit shift register                                 : 8
  2-bit shift register                                  : 7
  3-bit shift register                                  : 1
  4-bit shift register                                  : 34
+ 8-bit shift register                                  : 1
 # Comparators                                          : 45
  10-bit comparator equal                               : 2
  10-bit comparator greater                             : 1
@@ -4430,8 +4424,8 @@ WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch  <ADDR_3> (without i
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch  <ADDR_5> (without init value) has a constant value of 0 in block <bootddr2>.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch  <ADDR_11> (without init value) has a constant value of 0 in block <bootddr2>.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch  <ADDR_12> (without init value) has a constant value of 0 in block <bootddr2>.
-INFO:Xst:2261 - The FF/Latch <ADDR_1> in Unit <bootddr2> is equivalent to the following FF/Latch, which will be removed : <ADDR_6> 
 INFO:Xst:2261 - The FF/Latch <ADDR_8> in Unit <bootddr2> is equivalent to the following FF/Latch, which will be removed : <ADDR_9> 
+INFO:Xst:2261 - The FF/Latch <ADDR_1> in Unit <bootddr2> is equivalent to the following FF/Latch, which will be removed : <ADDR_6> 
 
 Optimizing unit <nettest> ...
 
@@ -5446,6 +5440,8 @@ Building and optimizing final netlist ...
 INFO:Xst:2261 - The FF/Latch <GRANT_1> in Unit <txmux_inst> is equivalent to the following 3 FFs/Latches, which will be removed : <GRANT_4> <GRANT_2> <GRANT_3> 
 INFO:Xst:2261 - The FF/Latch <addrl_3> in Unit <datapacketgen_inst> is equivalent to the following FF/Latch, which will be removed : <addrl_4> 
 Found area constraint ratio of 100 (+ 5) on block nettest, actual ratio is 51.
+Replicating register resetint_7 to handle IOB=TRUE attribute
+
 FlipFlop network_inst/memddr2_inst/dqalign_inst_high/cs_FFd11 has been replicated 1 time(s)
 FlipFlop network_inst/memddr2_inst/dqalign_inst_high/cs_FFd4 has been replicated 1 time(s)
 FlipFlop network_inst/memddr2_inst/dqalign_inst_low/cs_FFd11 has been replicated 1 time(s)
@@ -5469,10 +5465,10 @@ Design Statistics
 # IOs                              : 110
 
 Cell Usage :
-# BELS                             : 11985
+# BELS                             : 11878
 #      GND                         : 49
-#      INV                         : 3
-#      LUT1                        : 1368
+#      INV                         : 2
+#      LUT1                        : 1326
 #      LUT1_L                      : 56
 #      LUT2                        : 1188
 #      LUT2_D                      : 10
@@ -5484,15 +5480,15 @@ Cell Usage :
 #      LUT4_D                      : 88
 #      LUT4_L                      : 188
 #      MULT_AND                    : 3
-#      MUXCY                       : 1619
+#      MUXCY                       : 1577
 #      MUXF5                       : 368
 #      MUXF6                       : 98
 #      MUXF7                       : 48
 #      MUXF8                       : 19
 #      VCC                         : 47
-#      XORCY                       : 1477
-# FlipFlops/Latches                : 5474
-#      FD                          : 1001
+#      XORCY                       : 1455
+# FlipFlops/Latches                : 5453
+#      FD                          : 980
 #      FDC                         : 122
 #      FDCE                        : 16
 #      FDCPE                       : 160
@@ -5508,8 +5504,8 @@ Cell Usage :
 #      ODDR                        : 16
 # RAMS                             : 53
 #      RAMB16                      : 53
-# Shift Registers                  : 51
-#      SRL16                       : 50
+# Shift Registers                  : 52
+#      SRL16                       : 51
 #      SRL16E                      : 1
 # Clock Buffers                    : 8
 #      BUFG                        : 8
@@ -5532,11 +5528,11 @@ Device utilization summary:
 
 Selected Device : 4vlx25ff668-10 
 
- Number of Slices:                    5465  out of  10752    50%  
- Number of Slice Flip Flops:          5452  out of  21504    25%  
- Number of 4 input LUTs:              8305  out of  21504    38%  
-    Number used as logic: 8254
-    Number used as Shift registers: 51
+ Number of Slices:                    5444  out of  10752    50%  
+ Number of Slice Flip Flops:          5431  out of  21504    25%  
+ Number of 4 input LUTs:              8264  out of  21504    38%  
+    Number used as logic: 8212
+    Number used as Shift registers: 52
  Number of bonded IOBs:                110  out of    448    24%  
     IOB Flip Flops: 22
  Number of FIFO16/RAMB16s:              53  out of     72    73%  
@@ -5558,7 +5554,7 @@ Clock Information:
 Clock Signal                                               | Clock buffer(FF name)                    | Load  |
 -----------------------------------------------------------+------------------------------------------+-------+
 CLKIN                                                      | DCM_BASE_inst:CLK90                      | 17    |
-CLKIN                                                      | DCM_BASE_inst:CLK0                       | 4426  |
+CLKIN                                                      | DCM_BASE_inst:CLK0                       | 4406  |
 jtagsend_inst/drck1                                        | BUFG                                     | 174   |
 jtagsend_inst/update                                       | NONE                                     | 1     |
 jtagreceive_inst/smdrck1                                   | BUFG                                     | 80    |
@@ -5672,7 +5668,7 @@ Offset:              1.303ns (Levels of Logic = 0)
 =========================================================================
 Timing constraint: Default period analysis for Clock 'CLKIN'
   Clock period: 16.761ns (frequency: 59.661MHz)
-  Total number of paths / destination ports: 436317 / 11702
+  Total number of paths / destination ports: 436044 / 11681
 -------------------------------------------------------------------------
 Delay:               5.587ns (Levels of Logic = 5)
   Source:            network_inst/memddr2_inst/dqalign_inst_high/dqscnt_3 (FF)
@@ -6002,14 +5998,14 @@ Offset:              0.894ns (Levels of Logic = 0)
                                        (40.3% logic, 59.7% route)
 
 =========================================================================
-CPU : 1076.04 / 1076.13 s | Elapsed : 1287.00 / 1287.00 s
+CPU : 1079.77 / 1079.86 s | Elapsed : 1167.00 / 1167.00 s
  
 --> 
 
 
-Total memory usage is 462432 kilobytes
+Total memory usage is 462164 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings : 2173 (   0 filtered)
+Number of warnings : 2172 (   0 filtered)
 Number of infos    :   92 (   0 filtered)
 

@@ -332,6 +332,7 @@ architecture Behavioral of nettest is
   signal nicnextframeint : std_logic := '0';
 
   signal locked, locked2 : std_logic := '0';
+  signal resetint        : std_logic_vector(7 downto 0) := (others => '1');
 
   signal niciointclk : std_logic                     := '0';
   signal nicdinl     : std_logic_vector(15 downto 0) := (others => '0');
@@ -352,7 +353,7 @@ begin  -- Behavioral
       CLKFX_DIVIDE          => 1,
       CLKFX_MULTIPLY        => 3,
       CLKIN_DIVIDE_BY_2     => false,
-      CLKIN_PERIOD          => 10.0,
+      CLKIN_PERIOD          => 20.0,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
       DCM_AUTOCALIBRATION   => true,
@@ -365,7 +366,7 @@ begin  -- Behavioral
       CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
       CLKFB                 => clk,
       CLK180                => clk180int,
-      CLK90 => niciointclk, 
+      CLK90                 => niciointclk,
       CLKIN                 => CLKIN,
       LOCKED                => locked,
       RST                   => '0'          -- DCM asynchronous reset input
@@ -387,6 +388,13 @@ begin  -- Behavioral
       O => memclkb,
       I => memclkbint);
 
+  process(CLK)
+    begin
+      if rising_edge(CLK) then
+        resetint <= resetint(6 downto 0) & (not locked); 
+      end if;
+    end process; 
+  
 
   DCM_BASE_inst2 : DCM_BASE
     generic map (
@@ -411,7 +419,7 @@ begin  -- Behavioral
       CLKFB                 => memclk,
       CLKIN                 => memclkb,
       LOCKED                => locked2,
-      RST                   => '0'
+      RST                   => resetint(7)
 
       );
 
@@ -508,8 +516,9 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
-  LEDEVENT <= '1';
-
+  LEDEVENT <= resetint(7); 
+  LEDPOWER <= locked2;
+    
   jtagsend_inst : jtagesend
     generic map (
       JTAG_CHAIN => 1)
@@ -555,7 +564,7 @@ begin  -- Behavioral
   begin
     if rising_edge(clk) then
       blinkcnt := blinkcnt + 1;
-      LEDPOWER <= blinkcnt(21);
+
     end if;
   end process;
 
@@ -660,11 +669,11 @@ begin  -- Behavioral
       RST    => reset
       );
 
---  dincapture_inst : dincapture
---  port map (
---  CLK => clk,
---  DIN => nicdinl,
---  DINEN => nicdinenl);
+-- dincapture_inst : dincapture
+-- port map (
+-- CLK => clk,
+-- DIN => nicdinl,
+-- DINEN => nicdinenl);
 
   process(niciointclk)
   begin
