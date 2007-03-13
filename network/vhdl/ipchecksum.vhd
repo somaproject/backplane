@@ -14,18 +14,16 @@ entity ipchecksum is
 end ipchecksum;
 
 architecture Behavioral of ipchecksum is
-  signal sum, suml : std_logic_vector(15 downto 0) := (others => '0');
+  signal sum, suml : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal a, b : std_logic_vector(16 downto 0) := (others => '0');
+  signal a, b, c : std_logic_vector(16 downto 0) := (others => '0');
 
 
 begin  -- Behavioral
 
-  a <= ('0' & din(15 downto 0)) + ('0' & suml(15 downto 0));
-  b <= a + (X"0000" & a(16) ) ;
-  sum <= b(15 downto 0) ;
+  sum <= (X"0000" & DIN) + suml;
   
-  CHKOUT <= not suml; 
+  CHKOUT <= not (suml(15 downto 0) + suml(31 downto 16)); 
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -34,7 +32,7 @@ begin  -- Behavioral
         if ld = '0' then
           suml <= sum;
         else
-          suml <= DIN; 
+          suml <= X"0000" & DIN; 
         end if;
       end if;
 
