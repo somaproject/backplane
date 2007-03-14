@@ -419,7 +419,7 @@ begin  -- Behavioral
       CLKFB                 => memclk,
       CLKIN                 => memclkb,
       LOCKED                => locked2,
-      RST                   => resetint(7)
+      RST                   => '0' --, --resetint(7)
 
       );
 
