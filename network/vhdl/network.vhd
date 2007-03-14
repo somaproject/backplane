@@ -532,8 +532,8 @@ begin  -- Behavioral
       EVENTDONE  => eventindone,
 
       CRCIOERR     => RXIOCRCERR,
---      UNKNOWNETHER => UNKNOWNETHER,
---      UNKNOWNIP    => UNKNOWNIP,
+      UNKNOWNETHER => UNKNOWNETHER,
+      UNKNOWNIP    => UNKNOWNIP,
       UNKNOWNUDP   => UNKNOWNUDP,
       UNKNOWNARP   => UNKNOWNARP
       );
@@ -691,7 +691,7 @@ begin  -- Behavioral
       RETXREQ   => rreqb,
       RETXDONE  => rdoneb,
       RETXID    => ridb,
-      ARM       => open,                --arm(3), DEBUGGING
+      ARM       => arm(3),
       GRANT     => grant(3),
       DOUT      => din3,
       DOEN      => den(3));
@@ -774,20 +774,6 @@ begin  -- Behavioral
         txdoutenl <= lnicnewframe; 
         NICDOUT <= lnicdout;
         NICNEWFRAME <= lnicnewframe;
-        
-        if txdoutenl = '1' and lnicnewframe = '0' then
-          UNKNOWNIP  <= '1';
-        else
-          UNKNOWNIP <= '0'; 
-        end if;
-
-        if txdoutenl2 = '1' and txdouten = '0' then
-         UNKNOWNETHER  <= '1';
-        else
-         UNKNOWNETHER <= '0'; 
-        end if;
-
-        
         
         
       end if;

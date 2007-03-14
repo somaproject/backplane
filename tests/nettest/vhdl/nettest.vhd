@@ -401,7 +401,7 @@ begin  -- Behavioral
       CLKDV_DIVIDE => 2.0,
 
       CLKIN_DIVIDE_BY_2     => false,
-      CLKIN_PERIOD          => 10.0,
+      CLKIN_PERIOD          => 6.0,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
       DCM_AUTOCALIBRATION   => true,
@@ -410,7 +410,7 @@ begin  -- Behavioral
       DFS_FREQUENCY_MODE    => "LOW",
       DLL_FREQUENCY_MODE    => "LOW",
       DUTY_CYCLE_CORRECTION => true,
-      STARTUP_WAIT          => true)
+      STARTUP_WAIT          => false)
     port map (
       CLK0                  => memclkint,
       CLK180                => memclk180int,
@@ -419,7 +419,7 @@ begin  -- Behavioral
       CLKFB                 => memclk,
       CLKIN                 => memclkb,
       LOCKED                => locked2,
-      RST                   => '0' --, --resetint(7)
+      RST                   => resetint(7)
 
       );
 

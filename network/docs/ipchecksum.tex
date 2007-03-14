@@ -1,0 +1,10 @@
+\section{IP Checksum}
+
+\subsection{Interface}
+New data is presented on \signal{DIN[15:0]} with the assertion of \signal{EN}. The assertion of \signal{EN} and \signal{LD} loads the current \signal{DIN} into the register and resets the pending checksum. 
+
+\subsection{Implementation}
+
+The current IP Checksum implementation is fragile with respect to xst synthesis. To that end, we simply compute the 32-bit-wide sum and then add the MSBs to the LSBs (and then invert). This should be enough for $2^{16}$ 16-bit words, far more than we'll ever see in a packet. 
+
+

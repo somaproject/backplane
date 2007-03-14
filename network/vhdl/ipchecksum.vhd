@@ -29,10 +29,10 @@ begin  -- Behavioral
     if rising_edge(CLK) then
 
       if EN = '1' then
-        if ld = '0' then
-          suml <= sum;
-        else
+        if ld = '1' then
           suml <= X"0000" & DIN; 
+        else
+          suml <= sum;
         end if;
       end if;
 

@@ -28,6 +28,7 @@ else:
     suite.addTest(vhdlTestCase("data"))
     suite.addTest(vhdlTestCase("dataretxresponse"))
     suite.addTest(vhdlTestCase("eventretxresponse"))
+    suite.addTest(vhdlTestCase("ipchecksum"))
     
 runner = unittest.TextTestRunner()
 runner.run(suite)

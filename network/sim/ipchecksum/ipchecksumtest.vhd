@@ -109,7 +109,7 @@ begin  -- Behavioral
  
       assert CHKOUT = X"10F0" report "Error in longl checksum" severity Error;
 
-      wait;
+      report "End of Simulation" severity Failure;
       
     end process test; 
 
