@@ -1,0 +1,20 @@
+The fiberdebug interface should be simple, except for the complication
+that the RX on a single fiber stream is just a bit too
+bandwidth-intensive for a single event stream.
+
+A fiber stream has 10 16-bit samples (2 events) at 32ksps, whereas an
+event stream can only handle a single event at 50 ksps. So we're 640
+kB/sec vs 500 kB/sec.
+
+We solve this by taking _two_ event streams/addrs. It's not clear if
+this is a good idea or not, but we do have some extra unallocated
+event IDs, so we'll do it for now. 
+
+We'd like events-sent-on-the-same-ecycle to reflect samples acquired
+at the same time.
+
+The solution is to have an A data and a B data event, and periodically
+send events whenever the command status situation changes. Since there
+are 50k event slots per second but only 32k are used by data events
+(god, did I just write "Data Events"?) this won't be a problem.
+
