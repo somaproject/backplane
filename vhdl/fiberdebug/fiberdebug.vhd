@@ -71,7 +71,7 @@ architecture Behavioral of fiberdebug is
       EDRXA   : out std_logic_vector(7 downto 0);
       EARXB   : out std_logic_vector(somabackplane.N - 1 downto 0);
       EDRXB   : out std_logic_vector(7 downto 0);
-      EDSELRX : out std_logic_vector(3 downto 0);
+      EDSELRX : in std_logic_vector(3 downto 0);
       -- Fiber interfaces
       FIBERIN : in std_logic
       );

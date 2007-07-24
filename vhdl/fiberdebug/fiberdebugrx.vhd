@@ -22,7 +22,7 @@ entity fiberdebugrx is
     EDRXA   : out std_logic_vector(7 downto 0);
     EARXB   : out std_logic_vector(somabackplane.N - 1 downto 0);
     EDRXB   : out std_logic_vector(7 downto 0);
-    EDSELRX : out std_logic_vector(3 downto 0);
+    EDSELRX : in std_logic_vector(3 downto 0);
 
     -- Fiber interfaces
     FIBERIN : in std_logic
@@ -32,8 +32,8 @@ end fiberdebugrx;
 
 architecture Behavioral of fiberdebugrx is
 
-  constant DATAEVENTA : std_logic_vector(7 downto 0) := X"80";
-  constant DATAEVENTB : std_logic_vector(7 downto 0) := X"81";
+  constant CMDDATAEVENTA : std_logic_vector(7 downto 0) := X"80";
+  constant CMDDATAEVENTB : std_logic_vector(7 downto 0) := X"81";
 
   constant CMDINEVENT : std_logic_vector(7 downto 0) := X"82";
 
@@ -63,7 +63,7 @@ architecture Behavioral of fiberdebugrx is
 
   signal sendevent : std_logic := '0';
 
-  signal etypsel : integer range 0 to 1 := 0;
+  signal etypesel : integer range 0 to 1 := 0;
 
   -- decoder IO
   signal decodedout : std_logic := '0';
@@ -112,13 +112,14 @@ architecture Behavioral of fiberdebugrx is
       EVENTIN  : in  std_logic_vector(95 downto 0);
       EADDRIN  : in  std_logic_vector(somabackplane.N -1 downto 0);
       NEWEVENT : in  std_logic;
+      ECYCLE : in std_logic; 
       -- outputs
       EDRX     : out std_logic_vector(7 downto 0);
-      EDRXSEL  : out std_logic_vector(2 downto 0);
+      EDRXSEL  : in std_logic_vector(3 downto 0);
       EARX     : out std_logic_vector(somabackplane.N - 1 downto 0));
   end component;
 
-  type states is none, chksamp, newcmd, newsamp;
+  type states is (none, chksamp, newcmd, newsamp);
   signal cs, ns : states := none;
 
 
@@ -126,8 +127,8 @@ architecture Behavioral of fiberdebugrx is
 
 begin  -- Behavioral
 
-  eina <= dataeventa when etype = 0 else cmdevent;
-  einb <= dataeventb when etype = 0 else cmdevent;
+  eina <= dataeventa when etypesel = 0 else cmdevent;
+  einb <= dataeventb when etypesel = 0 else cmdevent;
 
   -- construct the event packets
   dataeventa <= SAMPLEAC &
@@ -135,14 +136,14 @@ begin  -- Behavioral
                 SAMPLEA3 &
                 SAMPLEA2 &
                 SAMPLEA1 &
-                DEVICE & DATAEVENTA;
+                DEVICE & CMDDATAEVENTA;
 
   dataeventb <= SAMPLEBC &
                 SAMPLEB4 &
                 SAMPLEB3 &
                 SAMPLEB2 &
                 SAMPLEB1 &
-                DEVICE & DATAEVENTB;
+                DEVICE & CMDDATAEVENTB;
 
 
   cmdevent <= X"0000" &
@@ -152,6 +153,29 @@ begin  -- Behavioral
                 X"000" & cmdid &
                 DEVICE & CMDINEVENT;
 
+
+  txeventbuffer_a: txeventbuffer
+    port map (
+      CLK      => CLK,
+      EVENTIN  => eina,
+      EADDRIN  => eaddrin,
+      NEWEVENT => sendevent,
+      ECYCLE   => ECYCLE,
+      EDRX     => EDRXA,
+      EDRXSEL  => EDSELRX,
+      EARX     => EARXA); 
+    
+  txeventbuffer_b: txeventbuffer
+    port map (
+      CLK      => CLK,
+      EVENTIN  => einb,
+      EADDRIN  => eaddrin,
+      NEWEVENT => sendevent,
+      ECYCLE   => ECYCLE,
+      EDRX     => EDRXB,
+      EDRXSEL  => EDSELRX,
+      EARX     => EARXB); 
+    
   main : process (CLK, RESET)
   begin  -- process main
     if RESET = '1' then
@@ -184,7 +208,7 @@ begin  -- Behavioral
       when chksamp =>
         etypesel <= 0;
         sendevent <= '0';
-        if cmdid /= cmdidl or cmdsts /= cmdstsl 
+        if cmdid /= cmdidl or cmdsts /= cmdstsl  then
           ns <= newcmd;
         else
           ns <= newsamp; 
@@ -204,8 +228,7 @@ begin  -- Behavioral
         etypesel <= 0;
         sendevent <= '0';
         ns <= none; 
-
     end case;
-  end proces fsm;
+  end process fsm;
 
 end Behavioral;

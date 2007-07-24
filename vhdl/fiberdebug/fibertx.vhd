@@ -44,7 +44,6 @@ architecture Behavioral of fibertx is
   signal cs, ns : states := none;
 
 
-
   component encode8b10b
     port (
       din  : in  std_logic_vector(7 downto 0);

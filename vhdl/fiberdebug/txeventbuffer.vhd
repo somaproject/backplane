@@ -17,9 +17,10 @@ entity txeventbuffer is
     EVENTIN  : in  std_logic_vector(95 downto 0);
     EADDRIN  : in  std_logic_vector(somabackplane.N -1 downto 0);
     NEWEVENT : in  std_logic;
+    ECYCLE : in std_logic;
     -- outputs
     EDRX     : out std_logic_vector(7 downto 0);
-    EDRXSEL  : out std_logic_vector(2 downto 0);
+    EDRXSEL  : in std_logic_vector(3 downto 0);
     EARX     : out std_logic_vector(somabackplane.N - 1 downto 0));
 end txeventbuffer;
 
@@ -28,7 +29,7 @@ architecture Behavioral of txeventbuffer is
   -- counters
   signal incnt           : std_logic_vector(3 downto 0) := (others => '0');
   signal outcnt, outcntl : std_logic_vector(3 downto 0) := (others => '0');
-  signal outenl          : std_logic                    := '0';
+  signal outen, outenl          : std_logic                    := '0';
 
   signal eventout : std_logic_vector(95 downto 0) := (others => '0');
   signal eaddrout : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
@@ -62,7 +63,7 @@ begin  -- Behavioral
     EARX(i) <= eaddrout(i) and outenl; 
   end generate eaddrbuffer;
 
-  outen <= '1' when outcnt != incnt else '0';
+  outen <= '1' when outcnt /= incnt else '0';
   
   main: process(CLK)
     begin
@@ -71,7 +72,7 @@ begin  -- Behavioral
           incnt <= incnt + 1; 
         end if;
 
-        if ecycle = '1' and outen = '1' then
+        if ECYCLE = '1' and outen = '1' then
           outcnt <= outcnt + 1; 
         end if;
 
