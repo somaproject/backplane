@@ -1,0 +1,17 @@
+There are basically two sets of functionality we care about here:
+Event TX and RX.
+
+
+To generate the behavioral for the coregen 8b10b encoders: 
+
+coregen -e decode8b10b.xco
+coregen -e encode8b10b.xco
+
+
+-----------------------------------------------------------------
+Event TX
+-----------------------------------------------------------------
+
+Event TX is tested by sending a series of events to verify that we can
+TX the bits.
+
