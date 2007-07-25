@@ -27,55 +27,61 @@ end txeventbuffer;
 architecture Behavioral of txeventbuffer is
   
   -- counters
-  signal incnt           : std_logic_vector(3 downto 0) := (others => '0');
-  signal outcnt, outcntl : std_logic_vector(3 downto 0) := (others => '0');
-  signal outen, outenl          : std_logic                    := '0';
+  signal cnt           : std_logic_vector(3 downto 0) := (others => '1');
 
-  signal eventout : std_logic_vector(95 downto 0) := (others => '0');
-  signal eaddrout : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
+  signal empty, dec : std_logic := '0';
+  
+  signal eventout, eol : std_logic_vector(95 downto 0) := (others => '0');
+  signal eaddrout, eal : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
 
   
 begin  -- Behavioral
 
   eventbuffer: for i in 0 to 95 generate
-    
+    eventbuf_srl16e: SRL16E
+      port map (Q => eventout(i),
+                A0 => cnt(0),
+                A1 => cnt(1),
+                A2 => cnt(2),
+                A3 => cnt(3),
+                CE => NEWEVENT,
+                CLK => CLK,
+                D => EVENTIN(i));
   end generate eventbuffer;
 
   eaddrbuffer: for i in 0 to somabackplane.N-1 generate
     eaddrbuf_srl16e: SRL16E
       port map (Q => eaddrout(i),
-                A0 => outcntl(0),
-                A1 => outcntl(1),
-                A2 => outcntl(2),
-                A3 => outcntl(3),
+                A0 => cnt(0),
+                A1 => cnt(1),
+                A2 => cnt(2),
+                A3 => cnt(3),
                 CE => NEWEVENT,
                 CLK => CLK,
                 D => EADDRIN(i));
 
-    EARX(i) <= eaddrout(i) and outenl; 
+    EARX(i) <= eal(i) and nel; 
   end generate eaddrbuffer;
 
-  outen <= '1' when outcnt /= incnt else '0';
+  empty <= '1' when cnt = "1111" else '0';
+
+  dec <= (not empty) and ECYCLE;
   
   main: process(CLK)
     begin
       if rising_edge(CLK) then
-        if NEWEVENT = '1' then
-          incnt <= incnt + 1; 
-        end if;
-
-        if ECYCLE = '1' and outen = '1' then
-          outcnt <= outcnt + 1; 
-        end if;
 
         if ECYCLE = '1' then
-          outenl <= outen;
+          eol <= eventout;
+          eal <= eaddrout;
+          nel <= not empty; 
         end if;
 
-        if ECYCLE = '1' and outen = '1'  then
-          outcntl <= outcnt; 
+        if newevent = '1' and dec = '0' then
+          cnt <= cnt + 1;
+        elsif newevent = '0' and dec = '1' then
+          cnt <= cnt - 1;
         end if;
-
         
       end if;
     end process main; 
