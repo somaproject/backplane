@@ -189,7 +189,30 @@ begin  -- Behavioral
       DATALOCK => decodece,
       RESET    => RESET); 
 
+  framedis_inst: framedis
+    port map (
+      CLK        => CLK,
+      RESET      => RESET,
+      DIN        => decodedout,
+      INWE       => decodece,
+      KIN        => decodekout,
+      ERRIN      => decodecerr,
+      LINKUP     => open,
+      NEWSAMPLES => newsamples,
+      SAMPLEA1   => samplea1,
+      SAMPLEA2   => samplea2,
+      SAMPLEA3   => samplea3,
+      SAMPLEA4   => samplea4,
+      SAMPLEAC   => sampleac,
+      SAMPLEB1   => sampleb1,
+      SAMPLEB2   => sampleb2,
+      SAMPLEB3   => sampleb3,
+      SAMPLEB4   => sampleb4,
+      SAMPLEBC   => samplebc,
+      CMDID      => cmdid,
+      CMDST      => cmdsts);
 
+  
   main : process (CLK, RESET)
   begin  -- process main
     if RESET = '1' then

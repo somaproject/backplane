@@ -18,7 +18,7 @@ entity serialize is
 end serialize;
 
 architecture Behavioral of serialize is
--- SERIALIZE.VHD                        -- strictly behavioral implementation of
+-- SERIALIZE.VHD   : strictly behavioral implementation of
 -- serializer for testbenches. We generate an internal 8 Mhz clock
 -- and then 8b/10b encode the data from the input filename. 
 -- That file has a '1' or a '0' based on whether or not this is

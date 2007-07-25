@@ -13,14 +13,37 @@ def binstr(x):
         outstr = '0' +  outstr
     return outstr
 
+class writeAcq(object):
+    def __init__(self):
+        self.cmdid = 0
+        self.cmdsts = 0
+        self.pktpos = 0
+
+    def sendPacket(self, fid):
+        fid.write('1 10111100\n');
+        fid.write('0 %s\n' % binstr(self.cmdsts));
+        # now the data
+        for i in range(10):
+            datah = (i + self.pktpos) >> 8
+            datal = (i + self.pktpos) & 0xFF
+            fid.write('0 %s\n' % binstr(datah))
+            fid.write('0 %s\n' % binstr(datal))
+        fid.write('0 %s\n' % binstr(self.cmdid))
+        fid.write('0 00000000\n')
+        fid.write('0 00000000\n')
+    
+        self.pktpos = (self.pktpos + 0x1000) % 2**16
+        
+        
+        
+        
 from scipy import *
 
 fid = file('serialdata.dat', 'w')
 
-for i in range(10000):
-    if i % 25 == 0:
-        fid.write('1 10111100\n');
-    else :
-        fid.write('0 %s\n' % binstr(i % 256));
+acq = writeAcq()
 
+for i in range(10000):
+    acq.sendPacket(fid)
+    
     

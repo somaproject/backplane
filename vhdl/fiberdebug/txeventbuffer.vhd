@@ -38,15 +38,7 @@ architecture Behavioral of txeventbuffer is
 begin  -- Behavioral
 
   eventbuffer: for i in 0 to 95 generate
-    eventbuf_srl16e: SRL16E
-      port map (Q => eventout(i),
-                A0 => outcntl(0),
-                A1 => outcntl(1),
-                A2 => outcntl(2),
-                A3 => outcntl(3),
-                CE => NEWEVENT,
-                CLK => CLK,
-                D => EVENTIN(i));
+    
   end generate eventbuffer;
 
   eaddrbuffer: for i in 0 to somabackplane.N-1 generate
