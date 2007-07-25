@@ -66,9 +66,10 @@ architecture Behavioral of fiberdebugrx is
   signal etypesel : integer range 0 to 1 := 0;
 
   -- decoder IO
-  signal decodedout : std_logic := '0';
-  signal decodekin  : std_logic := '0';
-  signal decodeerr  : std_logic := '0';
+  signal decodedout : std_logic_vector(7 downto 0) := (others => '0');
+  signal decodekout  : std_logic := '0';
+  signal decodecerr  : std_logic := '0';
+  signal decodederr  : std_logic := '0';
   signal decodece   : std_logic := '0';
 
 
@@ -154,6 +155,7 @@ begin  -- Behavioral
                 DEVICE & CMDINEVENT;
 
 
+  
   txeventbuffer_a: txeventbuffer
     port map (
       CLK      => CLK,
@@ -175,7 +177,19 @@ begin  -- Behavioral
       EDRX     => EDRXB,
       EDRXSEL  => EDSELRX,
       EARX     => EARXB); 
-    
+
+  decoder_inst: decoder
+    port map (
+      CLK      => CLK,
+      DIN      => FIBERIN,
+      DATAOUT  => decodedout,
+      KOUT     => decodekout,
+      CODE_ERR => decodecerr,
+      DISP_ERR => decodederr,
+      DATALOCK => decodece,
+      RESET    => RESET); 
+
+
   main : process (CLK, RESET)
   begin  -- process main
     if RESET = '1' then

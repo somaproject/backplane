@@ -3,10 +3,8 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 
---library UNISIM;
---use UNISIM.VComponents.all;
 
-entity decoder is
+entity acqboarddecoder is
   port ( CLK      : in  std_logic;
          DIN      : in  std_logic;
          DATAOUT  : out std_logic_vector(7 downto 0);
@@ -15,27 +13,23 @@ entity decoder is
          DISP_ERR : out std_logic;
          DATALOCK : out std_logic;
          RESET    : in  std_logic);
-end decoder;
+end acqboarddecoder;
 
-architecture Behavioral of decoder is
--- DECODER.VHD                          -- 8B/10B deserializer and decoder
+architecture Behavioral of acqboarddecoder is
+-- ACQBOARDDECODER.VHD    -- 8B/10B deserializer and decoder
 -- Very similar to the one used for the DSP board
 
   signal curbit, lastbit       : std_logic := '0';
   signal dout, dout_en         : std_logic := '0';
   signal doutrdy, doutrdyl     : std_logic := '0';
   signal lldatalock, ldatalock : std_logic := '0';
-  signal ldatalockl            : std_logic := '0';
 
   signal ticcnt : std_logic_vector(3 downto 0) := (others => '0');
 
   signal bitcnt : std_logic_vector(3 downto 0) := (others => '0');
 
-  signal datareg, doutreg, dataregl, doutregl :
+  signal datareg, doutreg, doutregl, dataregl :
     std_logic_vector(9 downto 0) := (others => '0');
-
-  signal ldataout                     : std_logic_vector(7 downto 0) := (others => '0');
-  signal lcode_err, ldisp_err, lkout : std_logic                    := '0';
 
 
 -- components
@@ -61,13 +55,13 @@ begin
       lastbit <= curbit;
 
       if lastbit = not curbit then
-        ticcnt   <= "0000";
+        ticcnt <= "0000";
       else
-        if ticcnt = "0101" then
+        if ticcnt = "1000" then
           ticcnt <= "0000";
         else
-          ticcnt <= ticcnt + 1;
-        end if;
+        ticcnt <= ticcnt + 1;
+        end if; 
       end if;
 
       -- shift register, et. al.
@@ -93,26 +87,21 @@ begin
         end if;
       end if;
 
+
+
+
       if bitcnt = "0000" and dout_en = '1' then
         doutreg <= dataregl;
       end if;
 
-      if lldatalock = '1' then
-        doutregl <= doutreg;
-      end if;
-
       doutrdyl  <= doutrdy;
       ldatalock <= lldatalock;
-
-      ldatalockl <= ldatalock;
-      DATALOCK   <= ldatalockl;
-
-      if ldatalockl = '1' then
-        DATAOUT  <= LDATAOUT;
-        KOUT     <= LKOUT;
-        CODE_ERR <= LCODE_ERR;
-        DISP_ERR <= LDISP_ERR;
+      DATALOCK  <= ldatalock;
+      if lldatalock = '1' then
+      doutregl <= doutreg;         
       end if;
+
+
 
     end if;
   end process clocks;
@@ -120,7 +109,7 @@ begin
   lldatalock <= '1' when doutrdyl = '0' and doutrdy = '1' else '0';
 
 
-  dout_en <= '1' when ticcnt = "0010" else '0';
+  dout_en <= '1' when ticcnt = "0110"  else '0';
   doutrdy <= '1' when bitcnt = "0011" else '0';
 
   -- instantiate decoder
@@ -128,11 +117,12 @@ begin
     port map (
       clk      => clk,
       din      => doutregl,
-      dout     => LDATAOUT,
-      kout     => LKOUT,
-      code_err => LCODE_ERR,
-      disp_err => LDISP_ERR,
-      ce       => ldatalock );
+      dout     => DATAOUT,
+      kout     => KOUT,
+      code_err => CODE_ERR,
+      disp_err => DISP_ERR,
+      ce       => lldatalock );
+
 
 
 

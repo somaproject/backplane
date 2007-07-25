@@ -29,7 +29,7 @@ end fiberdebugtx;
 
 architecture Behavioral of fiberdebugtx is
 
-  constant CMDSEND : std_logic_vector(7 downto 0) := (others => '0');
+  constant CMDSEND : std_logic_vector(7 downto 0) := X"82";
 
   signal sendcmd : std_logic := '0';
   
@@ -53,6 +53,21 @@ architecture Behavioral of fiberdebugtx is
            FIBEROUT : out std_logic);
   end component;
 
+  component rxeventfifo 
+  port (
+    CLK    : in  std_logic;
+    RESET  : in  std_logic;
+    ECYCLE : in  std_logic;
+    EATX   : in  std_logic_vector(somabackplane.N -1 downto 0);
+    EDTX   : in  std_logic_vector(7 downto 0); 
+    -- outputs
+    EOUTD  : out std_logic_vector(15 downto 0);
+    EOUTA  : in std_logic_vector(2 downto 0);
+    EVALID : out std_logic;
+    ENEXT  : in  std_logic
+    );
+end component;
+
 begin  -- Behavioral
 
 
@@ -63,6 +78,19 @@ begin  -- Behavioral
       SENDCMD  => sendcmd,
       FIBEROUT => FIBEROUT);
 
+  rxeventfifo_inst: rxeventfifo
+    port map (
+      CLK    => CLK,
+      RESET  => RESET,
+      ECYCLE => ECYCLE,
+      EATX   => EATX,
+      EDTX   => EDTX,
+      EOUTD  => eoutd,
+      EOUTA  => eouta,
+      ENEXT  => enext,
+      EVALID => evalid); 
+    
+  
   main : process(CLK)
   begin
     if RESET = '1' then
@@ -72,15 +100,17 @@ begin  -- Behavioral
         cs <= ns;
 
         if cs = word1en then
-          cmdin(47 downto 32) <= eoutd;
+          cmdin(3 downto 0) <= eoutd(3 downto 0);
+          cmdin(7 downto 4) <= eoutd(11 downto 8);
         end if;
 
         if cs = word2en then
-          cmdin(31 downto 16) <= eoutd;
+          cmdin(39 downto 24) <= eoutd;
         end if;
 
         if cs = word3en then
-          cmdin(15 downto 0) <= eoutd;
+
+          cmdin(23 downto 8) <= eoutd;
         end if;
 
       end if;
@@ -102,7 +132,7 @@ begin  -- Behavioral
         end if;
 
       when chkcmd =>
-        eouta   <= "000";
+        eouta   <= "001";
         sendcmd <= '0';
         enext   <= '0';
         if eoutd(15 downto 8) = CMDSEND then
@@ -112,13 +142,13 @@ begin  -- Behavioral
         end if;
 
       when word1en =>
-        eouta   <= "001";
+        eouta   <= "010";
         sendcmd <= '0';
         enext   <= '0';
         ns      <= word2en;
 
       when word2en =>
-        eouta   <= "010";
+        eouta   <= "011";
         sendcmd <= '0';
         enext   <= '0';
         ns      <= word3en;
@@ -127,7 +157,7 @@ begin  -- Behavioral
         eouta   <= "011";
         sendcmd <= '0';
         enext   <= '0';
-        ns      <= word2en;
+        ns      <= sendevent;
 
       when sendevent =>
         eouta   <= "000";

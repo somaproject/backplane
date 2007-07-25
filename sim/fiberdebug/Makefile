@@ -38,9 +38,18 @@ $(WORKDIR)/encode8b10b/_encode8b10b_a.var: encode8b10b.vhd
 $(WORKDIR)/decode8b10b/_decode8b10b_a.var: encode8b10b.vhd decode8b10b.vhd
 	$(VHDLC) -vital2000 decode8b10b.vhd
 
-comp: $(WORKDIR)/encode8b10b/_encode8b10b_a.var $(WORKDIR)/decode8b10b/_decode8b10b_a.var 
+$(WORKDIR)/acqboarddecoder/_behavioral.var: encode8b10b.vhd decode8b10b.vhd acqboarddecoder.vhd
+	$(VHDLC) -vital2000 acqboarddecoder.vhd
 
-$(WORKDIR)/fiberdebugtest/_behavioral.var: encode8b10b.vhd decode8b10b.vhd fiberdebugtest.vhd
+$(WORKDIR)/acqboardfiberrx/_behavioral.var: encode8b10b.vhd decode8b10b.vhd acqboarddecoder.vhd acqboardfiberrx.vhd
+	$(VHDLC) -vital2000 acqboardfiberrx.vhd
+
+$(WORKDIR)/serialize/_behavioral.var: encode8b10b.vhd decode8b10b.vhd acqboarddecoder.vhd acqboardfiberrx.vhd serialize.vhd
+	$(VHDLC) -vital2000 serialize.vhd
+
+comp: $(WORKDIR)/encode8b10b/_encode8b10b_a.var $(WORKDIR)/decode8b10b/_decode8b10b_a.var $(WORKDIR)/acqboarddecoder/_behavioral.var $(WORKDIR)/acqboardfiberrx/_behavioral.var $(WORKDIR)/serialize/_behavioral.var 
+
+$(WORKDIR)/fiberdebugtest/_behavioral.var: encode8b10b.vhd decode8b10b.vhd acqboarddecoder.vhd acqboardfiberrx.vhd serialize.vhd fiberdebugtest.vhd
 	$(VHDLC) -vital2000 fiberdebugtest.vhd
 
 sim: $(WORKDIR)/fiberdebugtest/_behavioral.var 
