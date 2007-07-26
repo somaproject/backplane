@@ -659,7 +659,7 @@ begin  -- Behavioral
 
       );
 
-  --niciointclk <= clk180; 
+
   NICIOCLK <= clk;
 
   dlyctrl : IDELAYCTRL
