@@ -17,23 +17,24 @@ architecture Behavioral of fiberdebugtest is
 
   component fiberdebug
     generic (
-      DEVICE  :     std_logic_vector(7 downto 0) := X"01"
+      DEVICE   :     std_logic_vector(7 downto 0) := X"01"
       );
     port (
-      CLK     : in  std_logic;
-      TXCLK   : in  std_logic;
-      RESET   : in  std_logic;
+      CLK      : in  std_logic;
+      TXCLK    : in  std_logic;
+      RESET    : in  std_logic;
       -- Event bus interface
-      ECYCLE  : in  std_logic;
-      EARXA   : out std_logic_vector(somabackplane.N - 1 downto 0)
-                                                 := (others => '0');
-      EDRXA   : out std_logic_vector(7 downto 0);
-      EARXB   : out std_logic_vector(somabackplane.N - 1 downto 0)
-                                                 := (others => '0');
-      EDRXB   : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N - 1 downto 0);
-      EDTX    : in  std_logic_vector(7 downto 0);
+      ECYCLE   : in  std_logic;
+      EARXA    : out std_logic_vector(somabackplane.N - 1 downto 0)
+                                                  := (others => '0');
+      EDRXA    : out std_logic_vector(7 downto 0);
+      EARXB    : out std_logic_vector(somabackplane.N - 1 downto 0)
+                                                  := (others => '0');
+      EDRXB    : out std_logic_vector(7 downto 0);
+      EDSELRXA : in  std_logic_vector(3 downto 0);
+      EDSELRXB : in  std_logic_vector(3 downto 0);
+      EATX     : in  std_logic_vector(somabackplane.N - 1 downto 0);
+      EDTX     : in  std_logic_vector(7 downto 0);
 
       -- Fiber interfaces
       FIBERIN  : in  std_logic;
@@ -43,21 +44,22 @@ architecture Behavioral of fiberdebugtest is
   end component;
 
 
-  signal CLK     : std_logic                    := '0';
-  signal TXCLK   : std_logic                    := '0';
-  signal RESET   : std_logic                    := '1';
+  signal CLK      : std_logic                    := '0';
+  signal TXCLK    : std_logic                    := '0';
+  signal RESET    : std_logic                    := '1';
   -- Event bus interface
-  signal ECYCLE  : std_logic                    := '0';
-  signal EARXA   : std_logic_vector(somabackplane.N - 1 downto 0)
-                                                := (others => '0');
-  signal EDRXA   : std_logic_vector(7 downto 0) := (others => '0');
-  signal EARXB   : std_logic_vector(somabackplane.N - 1 downto 0)
-                                                := (others => '0');
-  signal EDRXB   : std_logic_vector(7 downto 0) := (others => '0');
-  signal EDSELRX : std_logic_vector(3 downto 0) := (others => '0');
-  signal EATX    : std_logic_vector(somabackplane.N - 1 downto 0)
-                                                := (others => '0');
-  signal EDTX    : std_logic_vector(7 downto 0) := (others => '0');
+  signal ECYCLE   : std_logic                    := '0';
+  signal EARXA    : std_logic_vector(somabackplane.N - 1 downto 0)
+                                                 := (others => '0');
+  signal EDRXA    : std_logic_vector(7 downto 0) := (others => '0');
+  signal EARXB    : std_logic_vector(somabackplane.N - 1 downto 0)
+                                                 := (others => '0');
+  signal EDRXB    : std_logic_vector(7 downto 0) := (others => '0');
+  signal EDSELRXA : std_logic_vector(3 downto 0) := (others => '0');
+  signal EDSELRXB : std_logic_vector(3 downto 0) := (others => '0');
+  signal EATX     : std_logic_vector(somabackplane.N - 1 downto 0)
+                                                 := (others => '0');
+  signal EDTX     : std_logic_vector(7 downto 0) := (others => '0');
 
   -- Fiber interfaces
   signal FIBERIN  : std_logic := '0';
@@ -104,14 +106,14 @@ architecture Behavioral of fiberdebugtest is
 
 
   component serialize
-    generic (filename :     string := "input.dat");
-    port ( START      : in  std_logic;
-           DOUT       : out std_logic;
-           DONE       : out std_logic);
+    generic (filename    :     string    := "input.dat");
+    port ( START         : in  std_logic;
+           DOUT          : out std_logic;
+           DONE          : out std_logic);
   end component;
-  signal serialize_START : std_logic := '0';
-  signal serialize_DONE : std_logic := '0';
-  
+  signal serialize_START :     std_logic := '0';
+  signal serialize_DONE  :     std_logic := '0';
+
 
 begin  -- Behavioral
 
@@ -133,7 +135,8 @@ begin  -- Behavioral
       EDRXA    => EDRXA,
       EARXB    => EARXB,
       EDRXB    => EDRXB,
-      EDSELRX  => EDSELRX,
+      EDSELRXA => EDSELRXA,
+      EDSELRXB => EDSELRXB,
       EATX     => EATX,
       EDTX     => EDTX,
       FIBERIN  => FIBERIN,
@@ -151,14 +154,14 @@ begin  -- Behavioral
       CMDID   => acq_cmdid,
       CHKSUM  => acq_CHKSUM);
 
-  serialize_inst: serialize
+  serialize_inst : serialize
     generic map (
       filename => "serialdata.dat")
     port map (
-      START => serialize_START,
-      DOUT  => FIBERIN,
-      DONE  => serialize_DONE);
-  
+      START    => serialize_START,
+      DOUT     => FIBERIN,
+      DONE     => serialize_DONE);
+
 
   ecycle_generation : process(CLK)
   begin
@@ -199,7 +202,7 @@ begin  -- Behavioral
   end process;
 
 
-  SEND_EVENT: process
+  SEND_EVENT : process
     --generate the commands, read the outputs
     --
   begin
@@ -252,14 +255,58 @@ begin  -- Behavioral
     wait;
   end process;
 
-  RECEIVE_EVENT: process
-    begin
-      wait until falling_edge(RESET);
-      
-      serialize_start <= '1';
-      wait for 10 ns;
-      serialize_start <= '0';
-      wait;
-    end process;
-    
+  RECEIVE_EVENT_A : process
+  begin
+    wait until falling_edge(RESET);
+
+    serialize_start <= '1';
+    wait for 10 ns;
+    serialize_start <= '0';
+
+
+    -- now, capture events; we should get a cmd event followed by 10 data
+    for cmdid in 0 to 9 loop
+      wait until rising_edge(ECYCLE);
+      wait until rising_edge(CLK);      -- wait an extra tick to check
+      wait until rising_edge(CLK) and EARXA(7) = '1';
+      edselrxA <= "0000";
+      assert EDRXA = X"82" report "Event Port A : Error reading CMDIN packet cmd"
+        severity error;
+
+      -- now get cmd id
+      wait until rising_edge(CLK);
+      EDSELRXA <= "0110";
+      assert EDRXA = std_logic_vector(TO_UNSIGNED(cmdid, 8))
+        report "Event Port A : Error reading set cmdid" severity error;
+
+
+      -- now get cmd status
+      -- NOT IMPLEMENTED
+--         wait until rising_edge(CLK);
+--         EDSELRXA <= "101";
+--         assert EDRXA = std_logic_vector(TO_UNSIGNED(cmdid, 8))
+--           report "Event Port A: Error reading set cmdid" severity Error;
+
+      --------------------------------------------------------------------
+      -- NOW GET THE DATA-CONTAINING EVENTS
+      --------------------------------------------------------------------
+
+      for j in 0 to 9 loop
+        wait until rising_edge(CLK) and ECYCLE = '1';
+        wait until rising_edge(CLK) and EARXA(7) = '1';
+        -- verify CMDID
+        edselrxA <= "0000";
+        assert EDRXA = X"80"
+          report "Event Port A : Error reading data packet cmd"
+          severity error;
+
+
+      end loop;  -- j
+
+
+    end loop;  -- cmdid
+
+    wait;
+  end process RECEIVE_EVENT_A;
+
 end Behavioral;

@@ -34,6 +34,7 @@ architecture Behavioral of txeventbuffer is
   signal eventout, eol : std_logic_vector(95 downto 0) := (others => '0');
   signal eaddrout, eal : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
 
+  signal nel : std_logic := '0';
   
 begin  -- Behavioral
 
@@ -66,7 +67,20 @@ begin  -- Behavioral
   empty <= '1' when cnt = "1111" else '0';
 
   dec <= (not empty) and ECYCLE;
-  
+
+  EDRX <= eol(7 downto 0) when EDRXSEL = X"0" else
+          eol(15 downto 8) when EDRXSEL = X"1" else
+          eol(23 downto 16) when EDRXSEL = X"2" else
+          eol(31 downto 24) when EDRXSEL = X"3" else
+          eol(39 downto 32) when EDRXSEL = X"4" else
+          eol(47 downto 40) when EDRXSEL = X"5" else
+          eol(55 downto 48) when EDRXSEL = X"6" else
+          eol(63 downto 56) when EDRXSEL = X"7" else
+          eol(71 downto 64) when EDRXSEL = X"8" else
+          eol(79 downto 72) when EDRXSEL = X"9" else
+          eol(88 downto 80) when EDRXSEL = X"A" else
+          eol(95 downto 88);
+            
   main: process(CLK)
     begin
       if rising_edge(CLK) then

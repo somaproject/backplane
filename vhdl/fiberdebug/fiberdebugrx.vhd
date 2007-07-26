@@ -22,7 +22,8 @@ entity fiberdebugrx is
     EDRXA   : out std_logic_vector(7 downto 0);
     EARXB   : out std_logic_vector(somabackplane.N - 1 downto 0);
     EDRXB   : out std_logic_vector(7 downto 0);
-    EDSELRX : in std_logic_vector(3 downto 0);
+    EDSELRXA : in std_logic_vector(3 downto 0);
+    EDSELRXB : in std_logic_vector(3 downto 0);
 
     -- Fiber interfaces
     FIBERIN : in std_logic
@@ -128,6 +129,9 @@ architecture Behavioral of fiberdebugrx is
 
 begin  -- Behavioral
 
+  -- DEBUGGING
+  eaddrin(7) <= '1';
+  
   eina <= dataeventa when etypesel = 0 else cmdevent;
   einb <= dataeventb when etypesel = 0 else cmdevent;
 
@@ -164,7 +168,7 @@ begin  -- Behavioral
       NEWEVENT => sendevent,
       ECYCLE   => ECYCLE,
       EDRX     => EDRXA,
-      EDRXSEL  => EDSELRX,
+      EDRXSEL  => EDSELRXA,
       EARX     => EARXA); 
     
   txeventbuffer_b: txeventbuffer
@@ -175,7 +179,7 @@ begin  -- Behavioral
       NEWEVENT => sendevent,
       ECYCLE   => ECYCLE,
       EDRX     => EDRXB,
-      EDRXSEL  => EDSELRX,
+      EDRXSEL  => EDSELRXB,
       EARX     => EARXB); 
 
   decoder_inst: decoder

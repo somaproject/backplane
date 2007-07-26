@@ -303,10 +303,6 @@ begin
     
     assert false report "End of Simulation" severity failure;
 
-
-
-
-
   end process main;
 
 end Behavioral;
