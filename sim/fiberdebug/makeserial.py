@@ -44,7 +44,8 @@ fid = file('serialdata.dat', 'w')
 acq = writeAcq()
 
 for i in range(10):
-    acq.cmdid = i
+    acq.cmdsts = i + 4
+    acq.cmdid = i << 1
     acq.pktpos = 0
     for j in range(10):
         acq.sendPacket(fid)

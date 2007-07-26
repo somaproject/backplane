@@ -78,7 +78,7 @@ begin  -- Behavioral
           eol(63 downto 56) when EDRXSEL = X"7" else
           eol(71 downto 64) when EDRXSEL = X"8" else
           eol(79 downto 72) when EDRXSEL = X"9" else
-          eol(88 downto 80) when EDRXSEL = X"A" else
+          eol(87 downto 80) when EDRXSEL = X"A" else
           eol(95 downto 88);
             
   main: process(CLK)

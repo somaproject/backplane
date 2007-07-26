@@ -11,19 +11,19 @@ use work.somabackplane;
 
 entity fiberdebugrx is
   generic (
-    DEVICE  :     std_logic_vector(7 downto 0) := X"01"
+    DEVICE   :     std_logic_vector(7 downto 0) := X"01"
     );
   port (
-    CLK     : in  std_logic;
-    RESET   : in  std_logic;
+    CLK      : in  std_logic;
+    RESET    : in  std_logic;
     -- Event bus interface
-    ECYCLE  : in  std_logic;
-    EARXA   : out std_logic_vector(somabackplane.N - 1 downto 0);
-    EDRXA   : out std_logic_vector(7 downto 0);
-    EARXB   : out std_logic_vector(somabackplane.N - 1 downto 0);
-    EDRXB   : out std_logic_vector(7 downto 0);
-    EDSELRXA : in std_logic_vector(3 downto 0);
-    EDSELRXB : in std_logic_vector(3 downto 0);
+    ECYCLE   : in  std_logic;
+    EARXA    : out std_logic_vector(somabackplane.N - 1 downto 0);
+    EDRXA    : out std_logic_vector(7 downto 0);
+    EARXB    : out std_logic_vector(somabackplane.N - 1 downto 0);
+    EDRXB    : out std_logic_vector(7 downto 0);
+    EDSELRXA : in  std_logic_vector(3 downto 0);
+    EDSELRXB : in  std_logic_vector(3 downto 0);
 
     -- Fiber interfaces
     FIBERIN : in std_logic
@@ -51,7 +51,7 @@ architecture Behavioral of fiberdebugrx is
   signal sampleb4 : std_logic_vector(15 downto 0) := (others => '0');
   signal samplebc : std_logic_vector(15 downto 0) := (others => '0');
 
-  signal cmdid, cmdidl   : std_logic_vector(3 downto 0) := (others => '0');
+  signal cmdid, cmdidl   : std_logic_vector(3 downto 0) := (others => '1');
   signal cmdsts, cmdstsl : std_logic_vector(3 downto 0) := (others => '0');
 
   -- event control and generation
@@ -68,10 +68,10 @@ architecture Behavioral of fiberdebugrx is
 
   -- decoder IO
   signal decodedout : std_logic_vector(7 downto 0) := (others => '0');
-  signal decodekout  : std_logic := '0';
-  signal decodecerr  : std_logic := '0';
-  signal decodederr  : std_logic := '0';
-  signal decodece   : std_logic := '0';
+  signal decodekout : std_logic                    := '0';
+  signal decodecerr : std_logic                    := '0';
+  signal decodederr : std_logic                    := '0';
+  signal decodece   : std_logic                    := '0';
 
 
   component decoder
@@ -114,10 +114,10 @@ architecture Behavioral of fiberdebugrx is
       EVENTIN  : in  std_logic_vector(95 downto 0);
       EADDRIN  : in  std_logic_vector(somabackplane.N -1 downto 0);
       NEWEVENT : in  std_logic;
-      ECYCLE : in std_logic; 
+      ECYCLE   : in  std_logic;
       -- outputs
       EDRX     : out std_logic_vector(7 downto 0);
-      EDRXSEL  : in std_logic_vector(3 downto 0);
+      EDRXSEL  : in  std_logic_vector(3 downto 0);
       EARX     : out std_logic_vector(somabackplane.N - 1 downto 0));
   end component;
 
@@ -131,36 +131,36 @@ begin  -- Behavioral
 
   -- DEBUGGING
   eaddrin(7) <= '1';
-  
+
   eina <= dataeventa when etypesel = 0 else cmdevent;
   einb <= dataeventb when etypesel = 0 else cmdevent;
 
   -- construct the event packets
-  dataeventa <= SAMPLEAC &
-                SAMPLEA4 &
-                SAMPLEA3 &
-                SAMPLEA2 &
-                SAMPLEA1 &
-                DEVICE & CMDDATAEVENTA;
+  dataeventa <= SAMPLEAC(7 downto 0) & SAMPLEAC(15 downto 8) &
+                 SAMPLEA4(7 downto 0) & SAMPLEA4(15 downto 8) &
+                 SAMPLEA3(7 downto 0) & SAMPLEA3(15 downto 8) &
+                 SAMPLEA2(7 downto 0) & SAMPLEA2(15 downto 8) &
+                 SAMPLEA1(7 downto 0) & SAMPLEA1(15 downto 8) &
+                 DEVICE & CMDDATAEVENTA;
 
-  dataeventb <= SAMPLEBC &
-                SAMPLEB4 &
-                SAMPLEB3 &
-                SAMPLEB2 &
-                SAMPLEB1 &
+  dataeventb <= SAMPLEBC(7 downto 0) & SAMPLEBC(15 downto 8) &
+                SAMPLEB4(7 downto 0) & SAMPLEB4(15 downto 8) &
+                SAMPLEB3(7 downto 0) & SAMPLEB3(15 downto 8) &
+                SAMPLEB2(7 downto 0) & SAMPLEB2(15 downto 8) &
+                SAMPLEB1(7 downto 0) & SAMPLEB1(15 downto 8) &
                 DEVICE & CMDDATAEVENTB;
 
 
   cmdevent <= X"0000" &
-                X"0000" &
-                X"0000" &
-                X"000" & cmdsts &
-                X"000" & cmdid &
-                DEVICE & CMDINEVENT;
+              X"0000" &
+              X"0000" &
+              X"0" & cmdsts & X"00" &
+              X"0" & cmdid & X"00" &
+              DEVICE & CMDINEVENT;
 
 
-  
-  txeventbuffer_a: txeventbuffer
+
+  txeventbuffer_a : txeventbuffer
     port map (
       CLK      => CLK,
       EVENTIN  => eina,
@@ -169,9 +169,9 @@ begin  -- Behavioral
       ECYCLE   => ECYCLE,
       EDRX     => EDRXA,
       EDRXSEL  => EDSELRXA,
-      EARX     => EARXA); 
-    
-  txeventbuffer_b: txeventbuffer
+      EARX     => EARXA);
+
+  txeventbuffer_b : txeventbuffer
     port map (
       CLK      => CLK,
       EVENTIN  => einb,
@@ -180,9 +180,9 @@ begin  -- Behavioral
       ECYCLE   => ECYCLE,
       EDRX     => EDRXB,
       EDRXSEL  => EDSELRXB,
-      EARX     => EARXB); 
+      EARX     => EARXB);
 
-  decoder_inst: decoder
+  decoder_inst : decoder
     port map (
       CLK      => CLK,
       DIN      => FIBERIN,
@@ -191,9 +191,9 @@ begin  -- Behavioral
       CODE_ERR => decodecerr,
       DISP_ERR => decodederr,
       DATALOCK => decodece,
-      RESET    => RESET); 
+      RESET    => RESET);
 
-  framedis_inst: framedis
+  framedis_inst : framedis
     port map (
       CLK        => CLK,
       RESET      => RESET,
@@ -216,7 +216,7 @@ begin  -- Behavioral
       CMDID      => cmdid,
       CMDST      => cmdsts);
 
-  
+
   main : process (CLK, RESET)
   begin  -- process main
     if RESET = '1' then
@@ -238,37 +238,37 @@ begin  -- Behavioral
   begin
     case cs is
       when none =>
-        etypesel <= 0;
+        etypesel  <= 0;
         sendevent <= '0';
         if newsamples = '1' then
-          ns <= chksamp;
+          ns      <= chksamp;
         else
-          ns <= none; 
+          ns      <= none;
         end if;
 
       when chksamp =>
-        etypesel <= 0;
+        etypesel  <= 0;
         sendevent <= '0';
-        if cmdid /= cmdidl or cmdsts /= cmdstsl  then
-          ns <= newcmd;
+        if cmdid /= cmdidl or cmdsts /= cmdstsl then
+          ns      <= newcmd;
         else
-          ns <= newsamp; 
+          ns      <= newsamp;
         end if;
 
       when newcmd =>
-        etypesel <= 1;
+        etypesel  <= 1;
         sendevent <= '1';
-        ns <= newsamp; 
+        ns        <= newsamp;
 
       when newsamp =>
-        etypesel <= 0;
+        etypesel  <= 0;
         sendevent <= '1';
-        ns <= none; 
+        ns        <= none;
 
       when others =>
-        etypesel <= 0;
+        etypesel  <= 0;
         sendevent <= '0';
-        ns <= none; 
+        ns        <= none;
     end case;
   end process fsm;
 

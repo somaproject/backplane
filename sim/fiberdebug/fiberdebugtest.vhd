@@ -256,6 +256,9 @@ begin  -- Behavioral
   end process;
 
   RECEIVE_EVENT_A : process
+    variable recoveredSample :
+      std_logic_vector(15 downto 0) := (others => '0');
+
   begin
     wait until falling_edge(RESET);
 
@@ -270,18 +273,19 @@ begin  -- Behavioral
       wait until rising_edge(CLK);      -- wait an extra tick to check
       wait until rising_edge(CLK) and EARXA(7) = '1';
       edselrxA <= "0000";
+      wait until rising_edge(CLK);
       assert EDRXA = X"82" report "Event Port A : Error reading CMDIN packet cmd"
         severity error;
 
       -- now get cmd id
       wait until rising_edge(CLK);
-      EDSELRXA <= "0110";
+      EDSELRXA <= "0011";
+      wait until rising_edge(CLK);
       assert EDRXA = std_logic_vector(TO_UNSIGNED(cmdid, 8))
         report "Event Port A : Error reading set cmdid" severity error;
 
 
-      -- now get cmd status
-      -- NOT IMPLEMENTED
+      -- now get cmd status             -- NOT IMPLEMENTED
 --         wait until rising_edge(CLK);
 --         EDSELRXA <= "101";
 --         assert EDRXA = std_logic_vector(TO_UNSIGNED(cmdid, 8))
@@ -294,15 +298,34 @@ begin  -- Behavioral
       for j in 0 to 9 loop
         wait until rising_edge(CLK) and ECYCLE = '1';
         wait until rising_edge(CLK) and EARXA(7) = '1';
-        -- verify CMDID
+
         edselrxA <= "0000";
+        wait until rising_edge(CLK);
+
         assert EDRXA = X"80"
           report "Event Port A : Error reading data packet cmd"
           severity error;
 
+        for k in 0 to 4 loop
+
+          edselrxA <= std_logic_vector(TO_UNSIGNED(k*2+2, 4));
+          wait until rising_edge(CLK);
+          recoveredSample(15 downto 8) := EDRXA;
+
+          edselrxA <= std_logic_vector(TO_UNSIGNED(k*2+2+1, 4));
+          wait until rising_edge(CLK);
+          recoveredSample(7 downto 0) := EDRXA;
+          wait until rising_edge(CLK);
+          assert recoveredSample
+             = std_logic_vector(TO_UNSIGNED(4096*j + k, 16))
+            report "Error reading sample on channel A" severity error;
+
+        end loop;  -- k
+        
 
       end loop;  -- j
-
+      report "End of Simulation" severity Failure;
+      
 
     end loop;  -- cmdid
 
