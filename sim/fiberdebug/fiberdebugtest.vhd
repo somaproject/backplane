@@ -35,7 +35,7 @@ architecture Behavioral of fiberdebugtest is
       EDSELRXB : in  std_logic_vector(3 downto 0);
       EATX     : in  std_logic_vector(somabackplane.N - 1 downto 0);
       EDTX     : in  std_logic_vector(7 downto 0);
-
+      EADDRDEST: in std_logic_vector(somabackplane.N -1 downto 0);
       -- Fiber interfaces
       FIBERIN  : in  std_logic;
       FIBEROUT : out std_logic
@@ -58,6 +58,8 @@ architecture Behavioral of fiberdebugtest is
   signal EDSELRXA : std_logic_vector(3 downto 0) := (others => '0');
   signal EDSELRXB : std_logic_vector(3 downto 0) := (others => '0');
   signal EATX     : std_logic_vector(somabackplane.N - 1 downto 0)
+                                                 := (others => '0');
+  signal EADDRDEST     : std_logic_vector(somabackplane.N - 1 downto 0)
                                                  := (others => '0');
   signal EDTX     : std_logic_vector(7 downto 0) := (others => '0');
 
@@ -123,6 +125,8 @@ begin  -- Behavioral
 
   RESET <= '0' after 100 ns;
 
+  EADDRDEST(7) <= '1';
+  
   fiberdebug_uut : fiberdebug
     generic map (
       DEVICE   => X"01")
@@ -139,6 +143,7 @@ begin  -- Behavioral
       EDSELRXB => EDSELRXB,
       EATX     => EATX,
       EDTX     => EDTX,
+      EADDRDEST => EADDRDEST, 
       FIBERIN  => FIBERIN,
       FIBEROUT => FIBEROUT);
 

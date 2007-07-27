@@ -29,6 +29,7 @@ entity fiberdebug is
     EDSELRXB : in  std_logic_vector(3 downto 0);
     EATX    : in  std_logic_vector(somabackplane.N - 1 downto 0);
     EDTX    : in  std_logic_vector(7 downto 0);
+    EADDRDEST  : std_logic_vector(somabackplane.N -1 downto 0); 
 
     -- Fiber interfaces
     FIBERIN  : in  std_logic;
@@ -74,6 +75,8 @@ architecture Behavioral of fiberdebug is
       EDRXB   : out std_logic_vector(7 downto 0);
       EDSELRXA : in std_logic_vector(3 downto 0);
       EDSELRXB : in std_logic_vector(3 downto 0);
+      EADDRIN   : in std_logic_vector(somabackplane.N - 1 downto 0);
+
       -- Fiber interfaces
       FIBERIN : in std_logic
       );
@@ -107,6 +110,7 @@ begin  -- Behavioral
       EDRXB   => EDRXB,
       EDSELRXA => EDSELRXA,
       EDSELRXB => EDSELRXB,
+      EADDRIN => EADDRDEST, 
       FIBERIN => FIBERIN); 
     
 
