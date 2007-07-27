@@ -14,39 +14,42 @@ use UNISIM.VComponents.all;
 
 entity nettest is
   port (
-    CLKIN        : in    std_logic;
-    SERIALBOOT   : out   std_logic_vector(19 downto 0);
-    SDOUT        : out   std_logic;
-    SDIN         : in    std_logic;
-    SCLK         : out   std_logic;
-    SCS          : out   std_logic;
-    LEDPOWER     : out   std_logic;
-    LEDEVENT     : out   std_logic;
-    NICFCLK      : out   std_logic;
-    NICFDIN      : out   std_logic;
-    NICFPROG     : out   std_logic;
-    NICSCLK      : out   std_logic;
-    NICSIN       : in    std_logic;
-    NICSOUT      : out   std_logic;
-    NICSCS       : out   std_logic;
-    NICDOUT      : out   std_logic_vector(15 downto 0);
-    NICNEWFRAME  : out   std_logic;
-    NICDIN       : in    std_logic_vector(15 downto 0);
-    NICNEXTFRAME : out   std_logic;
-    NICDINEN     : in    std_logic;
-    NICIOCLK     : out   std_logic;
-    RAMCLKOUT_P  : out   std_logic;
-    RAMCLKOUT_N  : out   std_logic;
-    RAMCKE       : out   std_logic := '0';
-    RAMCAS       : out   std_logic;
-    RAMRAS       : out   std_logic;
-    RAMCS        : out   std_logic;
-    RAMWE        : out   std_logic;
-    RAMADDR      : out   std_logic_vector(12 downto 0);
-    RAMBA        : out   std_logic_vector(1 downto 0);
-    RAMDQSH      : inout std_logic;
-    RAMDQSL      : inout std_logic;
-    RAMDQ        : inout std_logic_vector(15 downto 0)
+    CLKIN         : in    std_logic;
+    SERIALBOOT    : out   std_logic_vector(19 downto 0);
+    SDOUT         : out   std_logic;
+    SDIN          : in    std_logic;
+    SCLK          : out   std_logic;
+    SCS           : out   std_logic;
+    LEDPOWER      : out   std_logic;
+    LEDEVENT      : out   std_logic;
+    NICFCLK       : out   std_logic;
+    NICFDIN       : out   std_logic;
+    NICFPROG      : out   std_logic;
+    NICSCLK       : out   std_logic;
+    NICSIN        : in    std_logic;
+    NICSOUT       : out   std_logic;
+    NICSCS        : out   std_logic;
+    NICDOUT       : out   std_logic_vector(15 downto 0);
+    NICNEWFRAME   : out   std_logic;
+    NICDIN        : in    std_logic_vector(15 downto 0);
+    NICNEXTFRAME  : out   std_logic;
+    NICDINEN      : in    std_logic;
+    NICIOCLK      : out   std_logic;
+    RAMCLKOUT_P   : out   std_logic;
+    RAMCLKOUT_N   : out   std_logic;
+    RAMCKE        : out   std_logic := '0';
+    RAMCAS        : out   std_logic;
+    RAMRAS        : out   std_logic;
+    RAMCS         : out   std_logic;
+    RAMWE         : out   std_logic;
+    RAMADDR       : out   std_logic_vector(12 downto 0);
+    RAMBA         : out   std_logic_vector(1 downto 0);
+    RAMDQSH       : inout std_logic;
+    RAMDQSL       : inout std_logic;
+    RAMDQ         : inout std_logic_vector(15 downto 0);
+    FIBERDEBUGOUT : out   std_logic;
+    FIBERDEBUGIN  : in    std_logic
+
 
     );
 end nettest;
@@ -290,6 +293,35 @@ architecture Behavioral of nettest is
       );
   end component;
 
+  component fiberdebug
+    generic (
+      DEVICE    :     std_logic_vector(7 downto 0) := X"01"
+      );
+    port (
+      CLK       : in  std_logic;
+      TXCLK     : in  std_logic;
+      RESET     : in  std_logic;
+      -- Event bus interface
+      ECYCLE    : in  std_logic;
+      EARXA     : out std_logic_vector(somabackplane.N - 1 downto 0)
+                                                   := (others => '0');
+      EDRXA     : out std_logic_vector(7 downto 0);
+      EARXB     : out std_logic_vector(somabackplane.N - 1 downto 0)
+                                                   := (others => '0');
+      EDRXB     : out std_logic_vector(7 downto 0);
+      EDSELRXA  : in  std_logic_vector(3 downto 0);
+      EDSELRXB  : in  std_logic_vector(3 downto 0);
+      EATX      : in  std_logic_vector(somabackplane.N - 1 downto 0);
+      EDTX      : in  std_logic_vector(7 downto 0);
+      EADDRDEST :     std_logic_vector(somabackplane.N -1 downto 0);
+
+      -- Fiber interfaces
+      FIBERIN  : in  std_logic;
+      FIBEROUT : out std_logic
+      );
+
+  end component;
+
 
   signal ECYCLE : std_logic := '0';
 
@@ -331,7 +363,7 @@ architecture Behavioral of nettest is
 
   signal nicnextframeint : std_logic := '0';
 
-  signal locked, locked2 : std_logic := '0';
+  signal locked, locked2 : std_logic                    := '0';
   signal resetint        : std_logic_vector(7 downto 0) := (others => '1');
 
   signal niciointclk : std_logic                     := '0';
@@ -389,12 +421,12 @@ begin  -- Behavioral
       I => memclkbint);
 
   process(CLK)
-    begin
-      if rising_edge(CLK) then
-        resetint <= resetint(6 downto 0) & (not locked); 
-      end if;
-    end process; 
-  
+  begin
+    if rising_edge(CLK) then
+      resetint <= resetint(6 downto 0) & (not locked);
+    end if;
+  end process;
+
 
   DCM_BASE_inst2 : DCM_BASE
     generic map (
@@ -516,9 +548,9 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
-  LEDEVENT <= resetint(7); 
+  LEDEVENT <= resetint(7);
   LEDPOWER <= locked2;
-    
+
   jtagsend_inst : jtagesend
     generic map (
       JTAG_CHAIN => 1)
@@ -556,6 +588,26 @@ begin  -- Behavioral
       SIN     => NICSIN,
       SCLK    => NICSCLK,
       SCS     => NICSCS);
+
+  fiberdebug_inst : fiberdebug
+    generic map (
+      DEVICE => X"4C")
+    port map (
+      CLK       => CLK,
+      TXCLK     => open,
+      RESET     => reset,
+      ECYCLE    => ecycle,
+      EARXA     => earx(70),
+      EDRXA     => edrx(70),
+      EDSELRXA  => edselrx,
+      EARXB     => earx(71),
+      EDRXB     => edrx(71),
+      EDSELRXB  => edselrx,
+      EATX      => eatx(70),
+      EDTX      => edtx,
+      EADDRDEST => ,
+      FIBERIN   => FIBERDEBUGIN,
+      FIBEROUT  => FIBERDEBUGOUT)
 
   -- dummy
   process(clk)
