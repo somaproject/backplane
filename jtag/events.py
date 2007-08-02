@@ -3,9 +3,19 @@
 
 This is a simple event interface to the xc3s-based jtag interface we created
 
-
+"USER1     (111100 0010)," & -- Not available until after configuration
+"USER2     (111100 0011)," & -- Not available until after configuration
+"USER3     (111110 0010)," & -- Not available until after configuration
+"USER4     (111110 0011)," & -- Not available until after configuration
+ 
+import os
 
 """
+USER1 = "0xC2"
+USER2 = "0xC3"
+USER3 = "0xE2"
+USER4 = "0xE3"
+
 import os
 
 import numpy as n
@@ -85,17 +95,17 @@ def callJtag(IR, dr):
     
 
 def sendEvent(e):
-    IR = "0xC2"
+    IR = USER1
     callJtag(IR, e.to_octet_string())
     
     
     
 def setMask(m):
-    IR = "0xE2"
+    IR = USER2
     callJtag(IR, m.to_octet_string())
     
 def readEvent():
-    IR = "0xE3"
+    IR = USER3
     resp = callJtag(IR, "00 00 00 00 00 00 00 00 00 00 00 00")
 
     e = Event()
