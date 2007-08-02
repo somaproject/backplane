@@ -1,11 +1,11 @@
 -- VHDL initialization records.
 --
--- Release 9.1i - Data2MEM J.30, build 1.5.2 Sept 13, 2006
+-- Release 9.1.01i - Data2MEM J.37, build 1.5.4 Dec 1, 2006
 -- Copyright (c) 1995-2007 Xilinx, Inc.  All rights reserved.
 --
 -- Command: data2mem -bm nettest_bd.bmm -bd nettest.mem -bt nettest.bit -o h nettest_mem.vhd -o b nettest.new.bit
 --
--- Created on 03/13/07 10:17 pm, from:
+-- Created on 08/02/07 12:00 am, from:
 --
 --     Map file     - nettest_bd.bmm
 --     Data file(s) - nettest.mem
@@ -89,12 +89,12 @@ package nettest_mem_pkg is
 end nettest_mem_pkg;
 -- VHDL initialization records.
 --
--- Release 9.1i - Data2MEM J.30, build 1.5.2 Sept 13, 2006
+-- Release 9.1.01i - Data2MEM J.37, build 1.5.4 Dec 1, 2006
 -- Copyright (c) 1995-2007 Xilinx, Inc.  All rights reserved.
 --
 -- Command: data2mem -bm nettest_bd.bmm -bd nettest.mem -bt nettest.bit -o h nettest_mem.vhd -o b nettest.new.bit
 --
--- Created on 03/13/07 10:17 pm, from:
+-- Created on 08/02/07 12:00 am, from:
 --
 --     Map file     - nettest_bd.bmm
 --     Data file(s) - nettest.mem
@@ -109,7 +109,7 @@ use ieee.std_logic_1164;
 package nettest_mem_pkg is
 
 -- BRAM 0 in address space [0x00000800:0x00000FFF], bit lane [31:0]
--- INST syscontrol_inst/addrlen_ram LOC = RAMB16_X2Y22;
+-- INST syscontrol_inst/addrlen_ram LOC = RAMB16_X1Y23;
 	constant syscontrol_inst_addrlen_ram_INIT_00  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000001100800";
 	constant syscontrol_inst_addrlen_ram_INIT_01  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_addrlen_ram_INIT_02  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";

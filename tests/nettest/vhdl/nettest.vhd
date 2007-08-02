@@ -371,6 +371,11 @@ architecture Behavioral of nettest is
   signal nicdinenl   : std_logic                     := '0';
 
 
+  signal fiberdebugdest : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+
+  signal fibertxclk, fibertxclkint : std_logic := '0';
+  signal fibertxclkdummy, fibertxclkintdummy : std_logic := '0';
+  
 begin  -- Behavioral
 
 
@@ -563,8 +568,8 @@ begin  -- Behavioral
 
   jtagreceive_inst : jtagereceive
     generic map (
-      JTAG_CHAIN_MASK => 3,
-      JTAG_CHAIN_OUT  => 4 )
+      JTAG_CHAIN_MASK => 2,
+      JTAG_CHAIN_OUT  => 3 )
     port map (
       CLK             => clk,
       ECYCLE          => ecycle,
@@ -589,12 +594,37 @@ begin  -- Behavioral
       SCLK    => NICSCLK,
       SCS     => NICSCS);
 
+
+  DCM_fibertx_inst : DCM_BASE
+    generic map (
+      CLKFX_DIVIDE          => 5,
+      CLKFX_MULTIPLY        => 8,
+      STARTUP_WAIT          => true)
+    port map (
+      CLKFX                 => fibertxclkint, 
+      CLKIN                 => clk,
+      CLK0 => fibertxclkintdummy,
+      CLKFB => fibertxclkdummy, 
+      LOCKED                => open,
+      RST                   => '0'          -- DCM asynchronous reset input
+      );
+
+  clk_fibertx_bufg : BUFG
+    port map (
+      O => fibertxclk,
+      I => fibertxclkint);
+
+  clk_fibertxdummy_bufg : BUFG
+    port map (
+      O => fibertxclkdummy,
+      I => fibertxclkintdummy);
+
   fiberdebug_inst : fiberdebug
     generic map (
       DEVICE => X"4C")
     port map (
       CLK       => CLK,
-      TXCLK     => open,
+      TXCLK     => fibertxclk,
       RESET     => reset,
       ECYCLE    => ecycle,
       EARXA     => earx(70),
@@ -605,9 +635,9 @@ begin  -- Behavioral
       EDSELRXB  => edselrx,
       EATX      => eatx(70),
       EDTX      => edtx,
-      EADDRDEST => ,
+      EADDRDEST => fiberdebugdest,
       FIBERIN   => FIBERDEBUGIN,
-      FIBEROUT  => FIBERDEBUGOUT)
+      FIBEROUT  => FIBERDEBUGOUT);
 
   -- dummy
   process(clk)
@@ -629,6 +659,7 @@ begin  -- Behavioral
 
   mymac <= X"00ADBEEF1234";
 
+  fiberdebugdest(3) <= '1'; 
   network_inst : network
     port map (
       CLK       => CLK,
