@@ -49,10 +49,8 @@ architecture Behavioral of eventretxresponse is
 
   signal retxseq : std_logic_vector(31 downto 0) := (others => '0');
   signal lookupseq : std_logic_vector(31 downto 0) := (others => '0');
-(9 downto 0  
-  
-  
 
+  
 begin  -- Behavioral
 
   addra <= '0' & RETXADDR;
