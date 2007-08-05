@@ -21,46 +21,55 @@ architecture Behavioral of txmuxtest is
     port (
       CLK      : in  std_logic;
       DEN      : in  std_logic_vector(6 downto 0);
-      DIN0 : in std_logic_vector(15 downto 0); 
-      DIN1 : in std_logic_vector(15 downto 0); 
-      DIN2 : in std_logic_vector(15 downto 0); 
-      DIN3 : in std_logic_vector(15 downto 0); 
-      DIN4 : in std_logic_vector(15 downto 0);
-      DIN5 : in std_logic_vector(15 downto 0);
-      DIN6 : in std_Logic_vector(15 downto 0); 
+      DIN0     : in  std_logic_vector(15 downto 0);
+      DIN1     : in  std_logic_vector(15 downto 0);
+      DIN2     : in  std_logic_vector(15 downto 0);
+      DIN3     : in  std_logic_vector(15 downto 0);
+      DIN4     : in  std_logic_vector(15 downto 0);
+      DIN5     : in  std_logic_vector(15 downto 0);
+      DIN6     : in  std_logic_vector(15 downto 0);
       GRANT    : out std_logic_vector(6 downto 0);
       ARM      : in  std_logic_vector(6 downto 0);
       DOUT     : out std_logic_vector(15 downto 0);
-      TXDONE : out std_logic; 
-      NEWFRAME : out std_logic
+      TXDONE   : out std_logic;
+      NEWFRAME : out std_logic;
+      -- staus output
+      PKTLEN   : out std_logic_vector(15 downto 0);
+      PKTLENEN : out std_logic;
+      TXCHAN   : out std_logic_vector(2 downto 0)
       );
+
   end component;
 
 
   signal CLK : std_logic := '0';
 
-  signal DEN   : std_logic_vector(6 downto 0)
-                                        := (others => '0');
+  signal DEN : std_logic_vector(6 downto 0)
+ := (others => '0');
 
-  signal DIN0 : std_logic_vector(15 downto 0) := (others => '0'); 
-  signal DIN1 : std_logic_vector(15 downto 0) := (others => '0'); 
-  signal DIN2 : std_logic_vector(15 downto 0) := (others => '0'); 
-  signal DIN3 : std_logic_vector(15 downto 0) := (others => '0'); 
-  signal DIN4 : std_logic_vector(15 downto 0) := (others => '0'); 
-  signal DIN5 : std_logic_vector(15 downto 0) := (others => '0'); 
-  signal DIN6 : std_logic_vector(15 downto 0) := (others => '0'); 
+  signal DIN0 : std_logic_vector(15 downto 0) := (others => '0');
+  signal DIN1 : std_logic_vector(15 downto 0) := (others => '0');
+  signal DIN2 : std_logic_vector(15 downto 0) := (others => '0');
+  signal DIN3 : std_logic_vector(15 downto 0) := (others => '0');
+  signal DIN4 : std_logic_vector(15 downto 0) := (others => '0');
+  signal DIN5 : std_logic_vector(15 downto 0) := (others => '0');
+  signal DIN6 : std_logic_vector(15 downto 0) := (others => '0');
 
   signal GRANT : std_logic_vector(6 downto 0)
-                                        := (others => '0');
+ := (others => '0');
 
-  signal ARM      : std_logic_vector(6 downto 0)
-                              := (others => '0');
-  signal DOUT     : std_logic_vector(15 downto 0)
-                              := (others => '0');
-  
+  signal ARM  : std_logic_vector(6 downto 0)
+ := (others => '0');
+  signal DOUT : std_logic_vector(15 downto 0)
+ := (others => '0');
+
   signal NEWFRAME : std_logic := '0';
-  signal TXDONE : std_logic := '0';
-  
+  signal TXDONE   : std_logic := '0';
+
+  signal PKTLEN   : std_logic_vector(15 downto 0) := (others => '0');
+  signal PKTLENEN : std_logic                     := '0';
+  signal TXCHAN   : std_logic_vector(2 downto 0)  := (others => '0');
+
 begin  -- Behavioral
 
 
@@ -68,49 +77,53 @@ begin  -- Behavioral
     port map (
       CLK      => CLK,
       DEN      => DEN,
-      DIN0 => DIN0,
-      DIN1 => DIN1,
-      DIN2 => DIN2,
-      DIN3 => DIN3,
-      DIN4 => DIN4,
-      DIN5 => DIN5,
-      DIN6 => DIN6,
-      TXDONE => TXDONE, 
+      DIN0     => DIN0,
+      DIN1     => DIN1,
+      DIN2     => DIN2,
+      DIN3     => DIN3,
+      DIN4     => DIN4,
+      DIN5     => DIN5,
+      DIN6     => DIN6,
+      TXDONE   => TXDONE,
       GRANT    => GRANT,
       ARM      => ARM,
       DOUT     => DOUT,
-      NEWFRAME => NEWFRAME);
+      NEWFRAME => NEWFRAME,
+
+      PKTLEN => PKTLEN,
+      PKTLENEN => PKTLENEN,
+      TXCHAN => TXCHAN );
 
   CLK <= not CLK after 10 ns;
 
-  main: process
+  main : process
   begin  -- process ain
 
     -- port 0
     wait for 1 us;
     wait until rising_edge(CLK);
-    ARM(0) <= '1'; 
+    ARM(0) <= '1';
     wait until rising_edge(CLK);
     ARM(0) <= '0';
-    
+
     wait until rising_edge(CLK) and GRANT(0) = '1';
     -- now test if we really have it
     wait until rising_edge(CLK);
     DEN(0) <= '1';
-    DIN0 <= X"1234";
+    DIN0   <= X"1234";
     wait until rising_edge(CLK);
     DEN(0) <= '1';
-    DIN0 <= X"5678";
+    DIN0   <= X"5678";
     wait until rising_edge(CLK);
 
-    assert NEWFRAME = '1' report "" severity Error;
-    assert DOUT = X"1234" report "" severity Error;
-    
+    assert NEWFRAME = '1' report "" severity error;
+    assert DOUT = X"1234" report "" severity error;
+
     wait until rising_edge(CLK);
     DEN(0) <= '0';
-    DIN0 <= X"9ABC";
-    assert NEWFRAME = '1' report "" severity Error;
-    assert DOUT = X"5678" report "" severity Error;
+    DIN0   <= X"9ABC";
+    assert NEWFRAME = '1' report "" severity error;
+    assert DOUT = X"5678" report "" severity error;
 
     wait until rising_edge(CLK);
     wait until rising_edge(CLK);
@@ -118,13 +131,13 @@ begin  -- Behavioral
 
     wait for 10 us;
 
-    
-    ---------------------------------------------------------------------------
+
+    ------------------------------------------------------------------------
     -- Now test priority
-    ---------------------------------------------------------------------------
+    ------------------------------------------------------------------------
 
     wait until rising_edge(CLK);
-    ARM <= (others => '1'); 
+    ARM <= (others => '1');
     wait until rising_edge(CLK);
 
     -- port 0 
@@ -133,35 +146,35 @@ begin  -- Behavioral
     wait until rising_edge(CLK);
     ARM(0) <= '0';
     DEN(0) <= '1';
-    DIN0 <= X"0011";
+    DIN0   <= X"0011";
     wait until rising_edge(CLK);
     DEN(0) <= '1';
-    DIN0 <= X"2233";
+    DIN0   <= X"2233";
     wait until rising_edge(CLK);
 
-    assert NEWFRAME = '1' report "" severity Error;
-    assert DOUT = X"0011" report "" severity Error;
+    assert NEWFRAME = '1' report "" severity error;
+    assert DOUT = X"0011" report "" severity error;
 
 
     DEN(0) <= '0';
-    DIN0 <= X"0000";
+    DIN0   <= X"0000";
     wait until rising_edge(CLK);
-    assert NEWFRAME = '1' report "" severity Error;
-    assert DOUT = X"2233" report "" severity Error;
-    
+    assert NEWFRAME = '1' report "" severity error;
+    assert DOUT = X"2233" report "" severity error;
+
     -- port 1
     wait until rising_edge(CLK) and GRANT(1) = '1';
     wait until rising_edge(CLK);
     wait until rising_edge(CLK);
     ARM(1) <= '0';
     DEN(1) <= '1';
-    DIN1 <= X"4455";
+    DIN1   <= X"4455";
     wait until rising_edge(CLK);
     DEN(1) <= '1';
-    DIN1 <= X"6677";
+    DIN1   <= X"6677";
     wait until rising_edge(CLK);
     DEN(1) <= '0';
-    DIN1 <= X"0000";
+    DIN1   <= X"0000";
     wait until rising_edge(CLK);
 
     -- port 2
@@ -170,46 +183,46 @@ begin  -- Behavioral
     wait until rising_edge(CLK);
     ARM(2) <= '0';
     DEN(2) <= '1';
-    DIN2 <= X"4455";
+    DIN2   <= X"4455";
     wait until rising_edge(CLK);
     DEN(2) <= '1';
-    DIN2 <= X"6677";
+    DIN2   <= X"6677";
     -- arm port 0
-    ARM(0) <= '1'; 
+    ARM(0) <= '1';
     wait until rising_edge(CLK);
     DEN(2) <= '0';
-    DIN2 <= X"0000";
+    DIN2   <= X"0000";
     wait until rising_edge(CLK);
 
-    
+
     -- port 0 
     wait until rising_edge(CLK) and GRANT(0) = '1';
     wait until rising_edge(CLK);
     wait until rising_edge(CLK);
     ARM(0) <= '0';
     DEN(0) <= '1';
-    DIN0 <= X"0011";
+    DIN0   <= X"0011";
     wait until rising_edge(CLK);
     DEN(0) <= '1';
-    DIN0 <= X"2233";
+    DIN0   <= X"2233";
     wait until rising_edge(CLK);
 
-    assert NEWFRAME = '1' report "" severity Error;
-    assert DOUT = X"0011" report "" severity Error;
+    assert NEWFRAME = '1' report "" severity error;
+    assert DOUT = X"0011" report "" severity error;
 
 
     DEN(0) <= '0';
-    DIN0 <= X"0000";
+    DIN0   <= X"0000";
     wait until rising_edge(CLK);
-    assert NEWFRAME = '1' report "" severity Error;
-    assert DOUT = X"2233" report "" severity Error;
-    
+    assert NEWFRAME = '1' report "" severity error;
+    assert DOUT = X"2233" report "" severity error;
+
 
     wait for 10 us;
-    
-    assert False report "End of Simulation" severity Failure;
 
-        
+    assert false report "End of Simulation" severity failure;
+
+
   end process main;
 
 end Behavioral;

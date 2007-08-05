@@ -1,7 +1,7 @@
 \section{Data Transmission Packet Processing Module}
 
 To transmit data packets from the event bus, the network stack must
-acquire the variable length packets, place them into larger udp
+acquire the variable length packets, place them into larger UDP
 datagrams, set the metadata fields, and transmit them. However, we
 must also save a copy of each packet (for possible retransmission),
 and respond to a retransmission request should one occur during the
@@ -16,7 +16,7 @@ possible to fill the TX fifo and thus need to buffer packets in the
 in-memory FIFO.
 
 This interface is heavily pipelined, as data bus packet transmission
-is not viewed as an event-critical process.
+is not viewed as a latency-critical process.
 
 We have various FIFOs and synchronization interfaces to guarantee our
 goal of, within an ECYCLE, being able to service:
@@ -25,8 +25,8 @@ goal of, within an ECYCLE, being able to service:
 \item The arrival of two new data bus packets and their subsequent
   memory writes to the fifo.
 \item The placement of two packets in the memory fifo into the output
-  FIFO for transmission
-\item The retrieval of one packet for retransmission
+  FIFO for transmission. 
+\item The retrieval of one packet for retransmission. 
 \end{itemize}
 
  \begin{figure}
@@ -37,14 +37,28 @@ goal of, within an ECYCLE, being able to service:
 \label{data}
 \end{figure}
 
+Figure \ref{data} shows the five components comprising the Data Transmission module: 
+\begin{enumerate}
+\item \textbf{Data Bus Acquire}: Acquires data packets from the Data
+  Bus, one for each input data port.
+\item \textbf{Data Bus Packet Gen}: Take in the data bus packets, and
+  wrap them in UDP/IP datagrams.
+\item \textbf{Data TX FIFO} : A fifo to allow queuing for access to
+  the TX Mux.
+\item \textbf{Data ReTX Buffer Interface}: The interface to the retx
+  Buffer, selecting the correct ReTX ID.
+\end{enumerate}
+
 
 \subsection{Data Bus Acquire}
 The data bus acquire interface takes a data bus packet and: 
 
-1. event-cycle aligns it, so it is guaranteed to be available on the
+\begin{enumerate}
+\item event-cycle aligns it, so it is guaranteed to be available on the
    next ecycle.
-2. converts it to a 16-bit-wide packet
-3. measures the length
+\item converts it to a 16-bit-wide packet
+\item measures the length
+\end{enumerate}
 
 \subsubsection{Interface and Implementation} 
  \begin{figure}
@@ -55,7 +69,7 @@ The data bus acquire interface takes a data bus packet and:
 \label{data.acquire}
 \end{figure}
 
-It uses a double-buffer approach. On the cycle following
+We use a double-buffer approach. On the cycle following
 \signal{ECYCLE}-assertion, \signal{LEN[9:0]} contains the length of
 the packet in words, not bytes; if \signal{LEN[9:0]} =0 then there is
 no packet awaiting transmission.
@@ -67,9 +81,9 @@ output word.
 The data bus packet generator generates one or two datagrams every
 event cycle, which are ready for processing at the end of the event
 cycle.
+
 The data bus packet generator also assigns the 32-bit sequence ID to
 each packet based upon packet source and type.
-
 
 \subsubsection{Interface}
 \begin{figure}
@@ -91,8 +105,6 @@ each packet based upon packet source and type.
 The input interface interoperates with the Data Bus Acquire module.
 Output packets are simply written to the downstaream FIFO. 
 
-
-
 \subsubsection{implementation}
 To store a packet, we examine both \signal{LENA[9:0]} and
 \signal{LENB[9:0]} to check for non-zero values each Event Cycle.
@@ -110,7 +122,7 @@ destination port is calculated from the latched \signal{SRC[5:0]} and
 Finally, the sequence ID is written to the fifo and the packet is
 committed by incrementingthe input fifo pointer, \signal{FADDR[10:9]}.
 
-The fifo output stage, running at 100 MHz, simply checks if the input
+The fifo output stage, simply checks if the input
 fifo pointer (registered as \signal{FIFONUM}) is different from the
 output fifo pointer and asserts \signal{FIFOVALID} if so.
 
@@ -126,7 +138,6 @@ generator, and presents a series of 1k-deep packet interfaces.
 
 If the BP of the currently-written packet is one less than the current output pointer, the fifo is full. Thus, attempts to write will fail with the assertion of FIFOOFERR. 
 
-
 \begin{figure}
 \begin{centering}
 \includegraphics[scale=0.8]{data.outputfifo.svg}
@@ -141,5 +152,22 @@ the retransmission buffer, performing the necessary clock-rate
 conversion in the process. It has an internal 8-packet buffer to
 smooth out the requests for buffer writing, since the ReTX Buffer
 could be in the middle of a packet.
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{bufratelim.svg}
+\end{centering}
+\caption{Data Bus Transmission output FIFO.}
+\label{data.outputfifo}
+\end{figure}
+
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{bufratelim.fsm.svg}
+\end{centering}
+\caption{Data Bus Transmission output FIFO FSM.}
+\label{data.outputfifo}
+\end{figure}
 
 

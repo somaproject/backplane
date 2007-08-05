@@ -1,6 +1,6 @@
 
 \section{TX Multiplexer}
-The Transmit Multiplexer selects one of the six inputs for exclusive
+The Transmit Multiplexer selects one of the seven inputs for exclusive
 access to the NIC output on a prioritized basis. The device connected
 to port 0 has greatest priority. The armed status of port 1 is only
 queried when port 0 is in an unarmed state. Thus it is possible, via
@@ -11,6 +11,9 @@ In practice, with the Event Transmitter connected to Port 0, this
 device will only have exclusive access for at most 550 clock ticks,
 leaving almost half of the event cycle for data packet transmission
 and other tasks.
+
+There is also an interface for collecting statistics about transmitted
+packets.
 
 \subsection{Interface}
 The TX input mux selects among armed inputs. To send a packet, a
@@ -25,9 +28,15 @@ control of the output to the NIC. The \signal{DEN} and and
 \signal{DIN[15:0]} are passed through with one-cycle latency.
 
 The transition of \signal{DEN} from high to low on a given port
-indicates the completion of that port's transmission needs. To ensure a sufficient inter-frame space, a six-tick wait cycle is entered. After that, the
-multiplexer will then query the \signal{ARM} status of the next device.
+indicates the completion of that port's transmission needs. To ensure
+a sufficient inter-frame space, a fourteen-tick wait cycle is entered.
+After that, the multiplexer will then query the \signal{ARM} status of
+the next device.
 
+To communicate TX statistics and metadata, \signal{PKTLENEN} is
+asserted with the length of a packet (in bytes) on
+\signal{PKTLEN[15:0]}. This packet is sourced by the channel indicated
+by \signal{TXCHAN[2:0]}.
 
 \subsection{Implementation}
 

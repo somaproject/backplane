@@ -13,6 +13,8 @@ matches) and if it is:
 \item An ICMP Echo request (ping) packet. 
 \end{itemize}
 
+in addition to verifying the suffixed CRC. 
+
 It then triggers the correct packet transmission module and provides
 that module exclusive access to its internal buffer.
 
@@ -35,12 +37,13 @@ allowing the acquisition of another inbound frame.
 The operation of the other \signal{RETXSTART}, \signal{ARPSTART}, and
 \signal{EVENTSTART} interfaces are analogous.
 
+
 \subsection{Implementation} 
 
 We use a dual-ported BlockRAM as a packet storage buffer, and read in
 the frame into the buffer. The FSM then examines the contents of the
 frame by setting \signal{INTADDRB} to various values and decoding the
-results.
+results. 
 
 We validate the inbound CRC-32 checksum using the CRC-Verify module,
 and also modify the length to be four less than the received length
@@ -73,7 +76,7 @@ Packet analysis begins in \signal{NONE}, and terminates in the
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{inputcontrol.fsm.svg}
+\includegraphics[scale=0.7]{inputcontrol.fsm.svg}
 \end{centering}
 \caption{Input Control FSM. Note that the termiating \signal{NEXTPKT} state is repeated for the purpose of clarity. }
 \label{inputcontrol.fsm}

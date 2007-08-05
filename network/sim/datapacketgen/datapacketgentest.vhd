@@ -234,7 +234,8 @@ begin  -- Behavioral
               DATAERROR <= '0';
             end if;
             assert data = outbuffer(i)
-              report "Error reading data " severity error;
+              report "Error reading data at outbuffer addr" &
+              integer'image(i) severity error;
             wait for 50 ps;
 
           end loop;  -- i

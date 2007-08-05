@@ -36,11 +36,9 @@ architecture Behavioral of eventretxresponse is
   signal bcnt     : std_logic_vector(9 downto 0) := (others => '0');
   signal lretxreq : std_logic                    := '0';
 
-
   signal dob : std_logic_vector(15 downto 0) := (others => '0');
 
   signal bcntinc : std_logic := '0';
-
 
   type states is (none, getseqh, getseql,
                   retxst, retxw, armw, outwrw, dones);
@@ -51,7 +49,7 @@ architecture Behavioral of eventretxresponse is
 
   signal retxseq : std_logic_vector(31 downto 0) := (others => '0');
   signal lookupseq : std_logic_vector(31 downto 0) := (others => '0');
-  
+(9 downto 0  
   
   
 

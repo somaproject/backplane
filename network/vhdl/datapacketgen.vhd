@@ -75,6 +75,8 @@ architecture Behavioral of datapacketgen is
 
   signal seqdo, seqdi : std_logic_vector(31 downto 0) := (others => '0');
 
+  signal doa, dob : std_logic_vector(7 downto 0) := (others => '0');
+  
   -- output signals
   signal addroutint : std_logic_vector(10 downto 0) := (others => '0');
   signal fifonum    : std_logic_vector(1 downto 0)  := (others => '0');
@@ -243,8 +245,37 @@ begin  -- Behavioral
     end if;
   end process main;
 
+    BFIFO_BufferB : RAMB16_S9_S9
+    generic map (
+      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
+      -- Address 0 to 255
+      INIT_00             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
+      INIT_10             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
+      INIT_20             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
+      INIT_30             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00"
+      )
 
-  FIFO_BufferA_inst : RAMB16_S9_S9
+    port map (
+      DOA   => open,
+      DOB   => dob, 
+      ADDRA => faddr,
+      ADDRB => addroutint,
+      CLKA  => CLK,
+      CLKB  => CLK,
+      DIA   => fdin(7 downto 0),
+      DIB   => X"00",
+      DIPA  => "0",
+      DIPB  => "0",
+      ENA   => '1',
+      ENB   => '1',
+      SSRA  => '0',
+      SSRB  => '0',
+      WEA   => fwe,
+      WEB   => '0'
+      );
+
+
+  AFIFO_BufferA : RAMB16_S9_S9
     generic map (
       SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
       -- Address 0 to 255
@@ -256,7 +287,7 @@ begin  -- Behavioral
 
     port map (
       DOA   => open,
-      DOB   => DOUT(15 downto 8),
+      DOB   => doa, 
       ADDRA => faddr,
       ADDRB => addroutint,
       CLKA  => CLK,
@@ -274,35 +305,8 @@ begin  -- Behavioral
       );
 
 
-  FIFO_BufferB_inst : RAMB16_S9_S9
-    generic map (
-      SIM_COLLISION_CHECK => "GENERATE_X_ONLY",
-      -- Address 0 to 255
-      INIT_00             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
-      INIT_10             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
-      INIT_20             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00",
-      INIT_30             => X"00000000000000000000000000400000000000110000000000000000FFFFFF00"
-      )
-
-    port map (
-      DOA   => open,
-      DOB   => DOUT(7 downto 0),
-      ADDRA => faddr,
-      ADDRB => addroutint,
-      CLKA  => CLK,
-      CLKB  => CLK,
-      DIA   => fdin(7 downto 0),
-      DIB   => X"00",
-      DIPA  => "0",
-      DIPB  => "0",
-      ENA   => '1',
-      ENB   => '1',
-      SSRA  => '0',
-      SSRB  => '0',
-      WEA   => fwe,
-      WEB   => '0'
-      );
-
+  
+  DOUT <= doa & dob; 
   fsm : process(ics, ECYCLE, len, addr, hdrdone)
   begin
     case ics is
@@ -421,7 +425,7 @@ begin  -- Behavioral
       when owait =>
         outen   <= '1';
         nextpkt <= '0';
-        if addroutint(8 downto 0) = "100101111" then
+        if addroutint(8 downto 0) = "100111111" then
           ons   <= done;
         else
           ons   <= owait;

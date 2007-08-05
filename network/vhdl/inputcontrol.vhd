@@ -7,6 +7,9 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
+library work;
+use work.netports;
+
 entity inputcontrol is
   port (
     CLK          : in  std_logic;
@@ -189,12 +192,9 @@ begin  -- Behavioral
                          & "000000" & wea & lnextframe
                           & X"56" & X"78"
                           & X"0" & LEN & X"AB" & statedebug & X"CD" & X"EF";
-  --jtagin(79 downto 64) <= "000000" & addrb;
 
 
-
-  -----------------------------------------------------------------------------
-
+  
   web       <= '1' when cs = lenupd else '0';
   crcvalidl <= crcvalid;
 
@@ -318,6 +318,7 @@ begin  -- Behavioral
             ns   <= crcvfy;
           end if;
         end if;
+        
       when crcerr =>
         statedebug <= X"04";
         lnextframe <= '0';
@@ -480,11 +481,11 @@ begin  -- Behavioral
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"13";
-        if dob = X"1130" then
+        if dob = netports.DATARETXREQ then
           ns       <= dretxst;
-        elsif dob = X"157c" then
+        elsif dob = netports.EVENTRETXREQ then
           ns       <= eretxst;
-        elsif dob = X"1388" then
+        elsif dob = netports.EVENTRX then
           ns       <= evtstart;
         else
           ns       <= udpunk;

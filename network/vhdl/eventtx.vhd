@@ -10,6 +10,9 @@ use work.somabackplane;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
+library work;
+use work.netports;
+
 entity eventtx is
   port (
     CLK         : in  std_logic;
@@ -171,7 +174,7 @@ begin  -- Behavioral
       SRCIP    => MYIP,
       DESTIP   => MYBCAST,
       DESTMAC  => X"FFFFFFFFFFFF",
-      DESTPORT => X"1388",
+      DESTPORT => netports.EVENTTX,
       START    => hdrstart,
       WLEN     => wlen,
       DOUT     => douthdr,

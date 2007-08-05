@@ -11,7 +11,6 @@ entity dqalign is
   port (
     CLK          : in    std_logic;
     CLK90        : in    std_logic;
--- CLK90n : in std_logic;
     CLK180       : in    std_logic;
     CLK270       : in    std_logic;
     DQS          : inout std_logic := 'Z';
@@ -397,6 +396,7 @@ begin  -- Behavioral
             ns <= datainc;
           end if;
         end if;
+        
       when propdone =>
         inrst  <= '0';
         dqsamp <= '0';
