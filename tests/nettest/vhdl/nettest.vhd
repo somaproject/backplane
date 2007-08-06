@@ -293,6 +293,15 @@ architecture Behavioral of nettest is
       );
   end component;
 
+  component fakedata
+    port (
+      CLK    : in  std_logic;
+      DOUT   : out std_logic_vector(7 downto 0);
+      DOUTEN : out std_logic;
+      ECYCLE : in  std_logic
+      );
+  end component;
+
   component fiberdebug
     generic (
       DEVICE    :     std_logic_vector(7 downto 0) := X"01"
@@ -334,6 +343,13 @@ architecture Behavioral of nettest is
 
   signal lserialboot : std_logic_vector(19 downto 0) := (others => '1');
 
+  signal douta : std_logic_vector(7 downto 0) := (others => '0');
+  signal doutena : std_logic := '0';
+  
+  signal doutb : std_logic_vector(7 downto 0) := (others => '0');
+  signal doutenb : std_logic := '0';
+  
+  
   signal clk, clkint             : std_logic := '0';
   signal clk180, clk180int       : std_logic := '0';
   signal memclkb, memclkbint     : std_logic := '0';
@@ -373,9 +389,9 @@ architecture Behavioral of nettest is
 
   signal fiberdebugdest : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
 
-  signal fibertxclk, fibertxclkint : std_logic := '0';
+  signal fibertxclk, fibertxclkint           : std_logic := '0';
   signal fibertxclkdummy, fibertxclkintdummy : std_logic := '0';
-  
+
 begin  -- Behavioral
 
 
@@ -597,16 +613,16 @@ begin  -- Behavioral
 
   DCM_fibertx_inst : DCM_BASE
     generic map (
-      CLKFX_DIVIDE          => 5,
-      CLKFX_MULTIPLY        => 8,
-      STARTUP_WAIT          => true)
+      CLKFX_DIVIDE   => 5,
+      CLKFX_MULTIPLY => 8,
+      STARTUP_WAIT   => true)
     port map (
-      CLKFX                 => fibertxclkint, 
-      CLKIN                 => clk,
-      CLK0 => fibertxclkintdummy,
-      CLKFB => fibertxclkdummy, 
-      LOCKED                => open,
-      RST                   => '0'          -- DCM asynchronous reset input
+      CLKFX          => fibertxclkint,
+      CLKIN          => clk,
+      CLK0           => fibertxclkintdummy,
+      CLKFB          => fibertxclkdummy,
+      LOCKED         => open,
+      RST            => '0'             -- DCM asynchronous reset input
       );
 
   clk_fibertx_bufg : BUFG
@@ -621,7 +637,7 @@ begin  -- Behavioral
 
   fiberdebug_inst : fiberdebug
     generic map (
-      DEVICE => X"4C")
+      DEVICE    => X"4C")
     port map (
       CLK       => CLK,
       TXCLK     => fibertxclk,
@@ -639,6 +655,14 @@ begin  -- Behavioral
       FIBERIN   => FIBERDEBUGIN,
       FIBEROUT  => FIBERDEBUGOUT);
 
+
+  fakedata1: fakedata
+    port map (
+      clk    => clk,
+      DOUT   => douta,
+      DOUTEN => doutena,
+      ECYCLE => ecycle); 
+    
   -- dummy
   process(clk)
     variable blinkcnt : std_logic_vector(21 downto 0)
@@ -659,7 +683,7 @@ begin  -- Behavioral
 
   mymac <= X"00ADBEEF1234";
 
-  fiberdebugdest(3) <= '1'; 
+  fiberdebugdest(3) <= '1';
   network_inst : network
     port map (
       CLK       => CLK,
@@ -690,11 +714,12 @@ begin  -- Behavioral
       EDTX         => edtx,
 
       -- data bus
-      DIENA => '0',
+      DIENA => doutena,
       DIENB => '0',
-      DINA  => X"00",
+      DINA  => douta,
       DINB  => X"00",
 
+      -- memory interface
       RAMCKE  => RAMCKE,
       RAMCAS  => RAMCAS,
       RAMRAS  => RAMRAS,
