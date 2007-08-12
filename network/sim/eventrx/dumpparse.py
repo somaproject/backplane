@@ -104,14 +104,17 @@ while l != "":
         pktstr = "" 
     else:
         pktstr += l[10:-1]
+
 bytelist.append(toByteList(pktstr))
 
 
 # filter out the TX from the RX by port
 os = 14 + 20
-clientreq = [pl for pl in bytelist if pl[os+2] == 19 and pl[os+3] == 136]
+PORT = 5100
 
-servresp = [pl for pl in bytelist if pl[os] == 19 and pl[os+1] == 136]
+clientreq = [pl for pl in bytelist if pl[os+2] == (PORT / 256) and pl[os+3] ==  (PORT % 256)]
+
+servresp = [pl for pl in bytelist if pl[os] == (PORT / 256) and pl[os+1] == (PORT % 256)]
 
 writePacketsToFile(clientreq, file("client_requests.txt", 'w'),
                    update=False, fcsappend = True)

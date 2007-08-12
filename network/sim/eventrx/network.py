@@ -39,7 +39,7 @@ class Event(object):
         fid.write('\n')
 
 def server():
-    port = 5000
+    port = 5100
 
     svrsocket = socket(AF_INET, SOCK_DGRAM)
 
@@ -75,8 +75,8 @@ def sendEvents(eventlist):
     assert (len(data) - 4) % 32 == 0
     
     
-    host = "10.0.1.100"
-    port = 5000
+    host = "10.0.1.110"
+    port = 5100
 
     addr = (host,port)
     UDPSock = socket(AF_INET,SOCK_DGRAM)

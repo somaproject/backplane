@@ -34,7 +34,7 @@ we generate event sets and send them to the server, writing 'events.txt', with a
 OTHER DATA: 
 We need to capture the TX and two RX packets from each eventset via tcpdump: 
 
-tcpdump -i eth2  udp port 5000  -t -xx -s 2000 > data.tcpdump
+tcpdump -i eth2  udp port 5100  -t -xx -s 2000 > data.tcpdump
 
 we then need to parse the data.tcpdump and turn it into the
 appropriate packets for input into InputControl and comparison with

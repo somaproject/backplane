@@ -21,34 +21,34 @@ architecture Behavioral of eventrxtest is
 
   component eventrx
     port (
-      CLK       : in  std_logic;
-      INPKTADDR : out std_logic_vector(9 downto 0);
-      INPKTDATA : in  std_logic_vector(15 downto 0);
-      START     : in  std_logic;
-      DONE      : out std_logic;
-    EVTRXSUC : out std_logic;
-    EVTFIFOFULL : out std_logic; 
+      CLK         : in  std_logic;
+      INPKTADDR   : out std_logic_vector(9 downto 0);
+      INPKTDATA   : in  std_logic_vector(15 downto 0);
+      START       : in  std_logic;
+      DONE        : out std_logic;
+      EVTRXSUC    : out std_logic;
+      EVTFIFOFULL : out std_logic;
       -- input parameters
-      MYMAC     : in  std_logic_vector(47 downto 0);
-      MYIP      : in  std_logic_vector(31 downto 0);
+      MYMAC       : in  std_logic_vector(47 downto 0);
+      MYIP        : in  std_logic_vector(31 downto 0);
       -- Event interface
-      ECYCLE    : in  std_logic;
-      EARX      : out std_logic_vector(somabackplane.N -1 downto 0);
-      EDRX      : out std_logic_vector(7 downto 0);
-      EDSELRX   : in  std_logic_vector(3 downto 0);
+      ECYCLE      : in  std_logic;
+      EARX        : out std_logic_vector(somabackplane.N -1 downto 0);
+      EDRX        : out std_logic_vector(7 downto 0);
+      EDSELRX     : in  std_logic_vector(3 downto 0);
       -- output to TX interface
-      DOUT      : out std_logic_vector(15 downto 0);
-      DOEN      : out std_logic;
-      ARM       : out std_logic;
-      GRANT     : in  std_logic);
+      DOUT        : out std_logic_vector(15 downto 0);
+      DOEN        : out std_logic;
+      ARM         : out std_logic;
+      GRANT       : in  std_logic);
   end component;
 
   signal RESET : std_logic := '0';
 
-  signal CLK   : std_logic := '0';
-  signal START : std_logic := '0';
-  signal DONE  : std_logic := '0';
-  signal EVTRXSUC : std_logic := '0'; 
+  signal CLK         : std_logic := '0';
+  signal START       : std_logic := '0';
+  signal DONE        : std_logic := '0';
+  signal EVTRXSUC    : std_logic := '0';
   signal EVTFIFOFULL : std_logic := '0';
 
   -- input parameters
@@ -131,10 +131,10 @@ architecture Behavioral of eventrxtest is
   signal epos : integer := 0;
 
   -- counters
-  signal evtrxsuc_cnt  : integer := 0;
+  signal evtrxsuc_cnt : integer := 0;
 
   signal evtfifofull_cnt : integer := 0;
-  
+
   component eventrxverify
     generic (
       EVENTFILENAME : in string);
@@ -165,9 +165,9 @@ architecture Behavioral of eventrxtest is
   signal datagram_totalcnt : integer := 0;
 
   signal success_pktcnt : integer := 0;
-  signal fail_pktcnt : integer := 0;
-  
-  
+  signal fail_pktcnt    : integer := 0;
+
+
 
 begin  -- Behavioral
   MYMAC <= X"00E08105C58C";
@@ -175,23 +175,23 @@ begin  -- Behavioral
 
   eventrx_uut : eventrx
     port map (
-      CLK       => CLK,
-      INPKTADDR => EVENTADDR,
-      INPKTDATA => PKTDATA,
-      START     => EVENTSTART,
-      DONE      => EVENTDONE,
-      EVTRXSUC => EVTRXSUC,
-      EVTfIFOFULL => EVTFIFOFULL, 
-      MYMAC     => MYMAC,
-      MYIP      => MYIP,
-      ECYCLE    => ECYCLE,
-      EARX      => EARX(somabackplane.N-1 downto 0),
-      EDRX      => EDRX,
-      EDSELRX   => EDSELRX,
-      DOUT      => DOUT,
-      DOEN      => DOEN,
-      ARM       => ARM,
-      GRANT     => GRANT);
+      CLK         => CLK,
+      INPKTADDR   => EVENTADDR,
+      INPKTDATA   => PKTDATA,
+      START       => EVENTSTART,
+      DONE        => EVENTDONE,
+      EVTRXSUC    => EVTRXSUC,
+      EVTfIFOFULL => EVTFIFOFULL,
+      MYMAC       => MYMAC,
+      MYIP        => MYIP,
+      ECYCLE      => ECYCLE,
+      EARX        => EARX(somabackplane.N-1 downto 0),
+      EDRX        => EDRX,
+      EDSELRX     => EDSELRX,
+      DOUT        => DOUT,
+      DOEN        => DOEN,
+      ARM         => ARM,
+      GRANT       => GRANT);
 
 
   CLK <= not CLK after 10 ns;
@@ -302,24 +302,24 @@ begin  -- Behavioral
           data_expected <= word;
           if pos = 23 then              -- skip success
             if DOUT(0) = '0' then       -- failure, invalidate these evnts
-              
+
               for i in 0 to datagram_ecnt -1 loop
                 wait for 0.1 ns;
-                invclk  <= '0';
+                invclk <= '0';
                 wait for 0.1 ns;
-                invnum  <= datagram_totalcnt + i;
+                invnum <= datagram_totalcnt + i;
                 wait for 0.1 ns;
-                invclk  <= '1';
+                invclk <= '1';
                 wait for 0.1 ns;
                 wait for 0.1 ns;
-                invclk  <= '0';
+                invclk <= '0';
 
               end loop;  -- i
-              fail_pktcnt <= fail_pktcnt + 1; 
+              fail_pktcnt    <= fail_pktcnt + 1;
             else
-              success_pktcnt <= success_pktcnt + 1; 
+              success_pktcnt <= success_pktcnt + 1;
             end if;
-            
+
             datagram_totalcnt <= datagram_totalcnt + datagram_ecnt;
 
           else
@@ -379,28 +379,28 @@ begin  -- Behavioral
 
   -- counters
   process(CLK)
-    begin
-      if rising_edge(CLK) then
-        if EVTRXSUC = '1' then
-          evtrxsuc_cnt  <=   evtrxsuc_cnt + 1; 
-        end if;
-        
-        if EVTFIFOFULL = '1' then
-          evtfifofull_cnt  <=   evtfifofull_cnt + 1; 
-        end if;
+  begin
+    if rising_edge(CLK) then
+      if EVTRXSUC = '1' then
+        evtrxsuc_cnt <= evtrxsuc_cnt + 1;
       end if;
-    end process; 
+
+      if EVTFIFOFULL = '1' then
+        evtfifofull_cnt <= evtfifofull_cnt + 1;
+      end if;
+    end if;
+  end process;
   -- wait to finish
   process
   begin
     wait for 200 us;
-    
+
     wait until rising_edge(CLK) and eventposout = 2047;
-    report "Received " & integer'image(evtrxsuc_cnt) & " input packets for which we had fifo space and committed to the event bus"  severity Note;
-    
-    report "Received "  & integer'image(evtfifofull_cnt) & " input packets where we didn't have enough fifo space and had to abort" severity Note; 
-    
-    
+    report "Received " & integer'image(evtrxsuc_cnt) & " input packets for which we had fifo space and committed to the event bus" severity note;
+
+    report "Received " & integer'image(evtfifofull_cnt) & " input packets where we didn't have enough fifo space and had to abort" severity note;
+
+
     report "End of Simulation" severity failure;
 
   end process;
