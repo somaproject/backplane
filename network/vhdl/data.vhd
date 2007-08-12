@@ -15,7 +15,6 @@ entity data is
     MYMAC       : in  std_logic_vector(47 downto 0);
     MYBCAST     : in  std_logic_vector(31 downto 0);
     FIFOOFERR : out std_logic; 
-
     -- input
     DIENA       : in  std_logic;
     DINA        : in  std_logic_vector(7 downto 0);
@@ -32,7 +31,9 @@ entity data is
     RETXPENDING : in  std_logic;
     RETXDOUT    : out std_logic_vector(15 downto 0);
     RETXADDR    : out std_logic_vector(8 downto 0);
-    RETXWE      : out std_logic
+    RETXWE      : out std_logic;
+    -- DEBUG interface
+    DEBUG : out std_logic_vector(3 downto 0)
     );
 end data;
 
@@ -174,6 +175,9 @@ begin  -- Behavioral
       DOUT   => DOUT,
       GRANT    => GRANT);
 
+  DEBUG(0) <= FWE;
+  DEBUG(1) <= FNEXT;
+  
   dataretxbuf_inst: dataretxbuf
     port map (
       CLK     => CLK,

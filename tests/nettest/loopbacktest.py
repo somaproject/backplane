@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sys
-import socket
+from socket import *
 import numpy as n
 import struct
 import threading
@@ -71,13 +71,12 @@ class TXEvent:
         return addrstr + eventstr + padstr
 
     
-def sendEvents(TXEventList):
+def sendEvents(nonce, TXEventList):
     """
     We take in a list of TX events, format them, and send them
 
     """
-
-    nonce = 10010
+    
     hdrstr = struct.pack(">HH", nonce, len(TXEventList))
     estr = ""
     for e in TXEventList:
@@ -86,14 +85,9 @@ def sendEvents(TXEventList):
     
     addr = (SOMAIP, EVENTRXPORT)
     
-    UDPSock = socket.socket(socket.AF_INET,
-                            socket.SOCK_DGRAM)
+
+    UDPSock = socket(AF_INET,SOCK_DGRAM)
     UDPSock.sendto(packet, addr)
-    data,addr = UDPSock.recvfrom(1)
-    print data, addr
-
-
-    
     
 def assertContinuous(EventSetPacketList):
     seq = EventSetPacketList[0][0]
@@ -171,20 +165,13 @@ class ReceiveEvents(threading.Thread):
         buflen = 1500
         addr = (host,port)
 
-        UDPSock = socket.socket(socket.AF_INET,
-                                socket.SOCK_DGRAM)
-        print "buffer size is ", UDPSock.getsockopt(socket.SOL_SOCKET,
-                                                    socket.SO_RCVBUF)
+        UDPSock = socket(AF_INET,SOCK_DGRAM)
 
-        UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF,512000)
-        
-        print "buffer size is ", UDPSock.getsockopt(socket.SOL_SOCKET,
-                                                    socket.SO_RCVBUF)
 
-        UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
-        UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        UDPSock.setsockopt(SOL_SOCKET, SO_BROADCAST, True)
+        UDPSock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         UDPSock.bind(addr)
-        datacnt = 100000
+        datacnt = 50000
         data = []
         print "Acquiring events..." 
         for i in xrange(datacnt):
@@ -207,7 +194,7 @@ def sendLoopBack():
     # send command event 200 to all devices, to try and RX it
     txloop = TXEvent()
     
-    txloop.cmd = 150
+    txloop.cmd = 200
     txloop.src = 100
     txloop.data[0] = 0x0123
     txloop.data[1] = 0x4567
@@ -215,38 +202,22 @@ def sendLoopBack():
     txloop.data[3] = 0xCDEF
     txloop.data[4] = 0xAABB
     
-    txloop.addr[:] = True
-    sendEvents(10, [txloop])
-
-
-def sendFiberCmd(nonce, cmd, ID, data):
-
-    assert len(data) == 4 and data.dtype == n.uint8
-
+    txloop.addr[3] = True
+    for i in range(10):
+        sendEvents(i*100, [txloop])
     
-    txloop = TXEvent()
+if __name__ == "__main__":
+
+##     command = sys.argv[1]
+##     if command == "receivedump":
+##         receivedump()
+##     else:
+##         sendLoopBack()
     
-    txloop.cmd = 0x82
-    txloop.src = 0x03
-    txloop.data[0] = (ID << 4) | (cmd & 0xF)
-    txloop.data[1] = 0x0000
-    txloop.data[2] = 0x0000
-    txloop.data[3] = 0x0000
-    txloop.data[4] = 0x0000
-    txloop.addr[:] = True
-
-    sendEvents([txloop])
-    
-
-
-def toGet():
     rethread = ReceiveEvents()
     rethread.start()
 
-    x = n.zeros(4, dtype=n.uint8)
-    
-    sendFiberCmd(0x0127, 0x00, 0x03, x)
-    #sendLoopBack()
+    sendLoopBack()
     
     rethread.join()
     
@@ -260,10 +231,10 @@ def toGet():
     # look for the event
     for e in events:
         if e.cmd == 200 and e.src == 100:
-            pass
+            if e.data[0] == 0x0123 and e.data[1] == 0x4567 and \
+               e.data[2] == 0x89AB and e.data[3] == 0xCDEF and \
+               e.data[4] == 0xAABB :
+                present = True
+    assert present
 
             
-    
-if __name__ == "__main__":
-
-    toGet()

@@ -40,11 +40,16 @@ begin  -- Behavioral
           epos <= epos + 1; 
         end if;
 
-        if epos > 50 then
-          DOUTEN <= '1'; 
-        elsif epos < 150 then
-          DOUTEN <= '0'; 
+        if ecyclecnt = X"00" then
+          if epos > 50 and epos < 150 then
+            DOUTEN <= '1';
+          else
+            DOUTEN <= '0'; 
+          end if;
+        else
+            DOUTEN <= '0'; 
         end if;
+
       end if;
     end process; 
   

@@ -569,7 +569,7 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
-  LEDEVENT <= resetint(7);
+  LEDEVENT <= doutena;
   LEDPOWER <= locked2;
 
   jtagsend_inst : jtagesend

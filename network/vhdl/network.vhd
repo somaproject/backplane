@@ -64,7 +64,9 @@ entity network is
     UNKNOWNARP   : out   std_logic;
     TXPKTLENEN   : out   std_logic;
     TXPKTLEN     : out   std_logic_vector(15 downto 0); 
-    TXCHAN : out std_logic_vector(2 downto 0) 
+    TXCHAN : out std_logic_vector(2 downto 0);
+    -- DEBUG
+    DEBUG : out std_logic_vector(7 downto 0)
     );
 end network;
 
@@ -222,7 +224,9 @@ architecture Behavioral of network is
       RETXPENDING : in  std_logic;
       RETXDOUT    : out std_logic_vector(15 downto 0);
       RETXADDR    : out std_logic_vector(8 downto 0);
-      RETXWE      : out std_logic
+      RETXWE      : out std_logic;
+      -- debug
+      DEBUG : out std_logic_vector(3 downto 0)
       );
   end component;
 
@@ -631,7 +635,7 @@ begin  -- Behavioral
       DINB        => DINB,
       DOUT        => din1,
       DOEN        => den(1),
-      ARM         => open,              -- arm(1), DEBUGGING
+      ARM         => arm(1), 
       GRANT       => grant(1),
       RETXID      => wida,
       RETXDONE    => wdonea,
@@ -655,7 +659,7 @@ begin  -- Behavioral
       RETXREQ   => rreqa,
       RETXDONE  => rdonea,
       RETXID    => rida,
-      ARM       => open,                --arm(2), DEBUGGING
+      ARM       => arm(2), 
       GRANT     => grant(2),
       DOUT      => din2,
       DOEN      => den(2));
@@ -675,7 +679,7 @@ begin  -- Behavioral
       EDSELRX   => EDSELRX,
       DOUT      => din4,
       DOEN      => den(4),
-      ARM       => open,                -- arm(4), DEBUGGING
+      ARM       => arm(4), 
       GRANT     => grant(4));
 
   eventretxresponse_inst : eventretxresponse
