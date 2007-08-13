@@ -115,8 +115,7 @@ begin  -- Behavioral
         -- 
         for i in 0 to 5 loop
           eventarray(eventpos).edata(16*i + 15 downto 16*i)
-                                   := datain(i*16 + 7 downto i* 16 )
-            & datain(i*16 + 15 downto i*16 + 8);
+                                   := datain(i*16 + 15 downto i*16 + 8) & datain(i*16 + 7 downto i* 16 ); 
         end loop;  -- i 
 
         eventpos := eventpos + 1;
@@ -150,10 +149,10 @@ begin  -- Behavioral
         -- first, find a valid event
 
         if eaddrbus /= X"0000000000" then  --heck if this is a null event:
-
+          
           assert eaddrbus(77 downto 0) = eaddrbus_expected(77 downto 0)
             report "Error in event address" severity error;
-
+          
           assert edatabus = edatabus_expected
             report "Error reading event bytes" severity error;
 

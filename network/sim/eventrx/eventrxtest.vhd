@@ -170,8 +170,8 @@ architecture Behavioral of eventrxtest is
 
 
 begin  -- Behavioral
-  MYMAC <= X"00E08105C58C";
-  MYIP  <= X"0A000164";
+  MYMAC <= X"001A9244AD50"; 
+  MYIP  <= X"0A00016e";
 
   eventrx_uut : eventrx
     port map (
@@ -393,7 +393,7 @@ begin  -- Behavioral
   -- wait to finish
   process
   begin
-    wait for 200 us;
+    wait for 700 us;
 
     wait until rising_edge(CLK) and eventposout = 2047;
     report "Received " & integer'image(evtrxsuc_cnt) & " input packets for which we had fifo space and committed to the event bus" severity note;
