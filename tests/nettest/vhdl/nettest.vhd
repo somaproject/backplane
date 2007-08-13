@@ -392,6 +392,9 @@ architecture Behavioral of nettest is
   signal fibertxclk, fibertxclkint           : std_logic := '0';
   signal fibertxclkdummy, fibertxclkintdummy : std_logic := '0';
 
+  signal lnicdout : std_logic_vector(15 downto 0) := (others => '0');
+  signal lnicnewframe : std_logic := '0';
+  
 begin  -- Behavioral
 
 
@@ -702,8 +705,8 @@ begin  -- Behavioral
       NICDINEN     => nicdinenl,
       NICDIN       => nicdinl,
       -- output
-      NICDOUT      => NICDOUT,
-      NICNEWFRAME  => NICNEWFRAME,
+      NICDOUT      => lNICDOUT,
+      NICNEWFRAME  => lNICNEWFRAME,
       NICIOCLK     => open,             --NICIOCLK,
       -- event bus
       ECYCLE       => ecycle,
@@ -777,11 +780,11 @@ begin  -- Behavioral
       RST    => reset
       );
 
--- dincapture_inst : dincapture
--- port map (
--- CLK => clk,
--- DIN => nicdinl,
--- DINEN => nicdinenl);
+dincapture_inst : dincapture
+ port map (
+ CLK => clk,
+ DIN => lnicdout,
+ DINEN => lnicnewframe);
 
   process(niciointclk)
   begin
@@ -793,4 +796,13 @@ begin  -- Behavioral
     end if;
 
   end process;
+
+  process(CLK)
+    begin
+      if rising_edge(CLK) then
+        NICDOUT <= lnicdout;
+        NICNEWFRAME <= lnicnewframe;
+        
+      end if;
+    end process; 
 end Behavioral;

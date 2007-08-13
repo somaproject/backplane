@@ -134,13 +134,13 @@ begin  -- Behavioral
   UNKNOWNARP   <= '1' when cs = arpunk   else '0';
   UNKNOWNUDP   <= '1' when cs = udpunk   else '0';
 
-   jtagsimpleout_inst : jtagsimpleout
-     generic map (
-       JTAG_CHAIN => 4,
-       JTAGN      => 160)
-     port map (
-       CLK        => CLK,
-       DIN        => jtagin);
+--    jtagsimpleout_inst : jtagsimpleout
+--      generic map (
+--        JTAG_CHAIN => 4,
+--        JTAGN      => 160)
+--      port map (
+--        CLK        => CLK,
+--        DIN        => jtagin);
 
 
 

@@ -611,7 +611,7 @@ begin  -- Behavioral
       EATX        => EATX,
       DOUT        => din0,
       DOEN        => den(0),
-      ARM         => arm(0), 
+      ARM         => open, --arm(0),    --debugging
       GRANT       => grant(0),
       RETXID      => widb,
       RETXDOUT    => wdinb,
@@ -635,7 +635,7 @@ begin  -- Behavioral
       DINB        => DINB,
       DOUT        => din1,
       DOEN        => den(1),
-      ARM         => arm(1), 
+      ARM         => open, --arm(1), --DEBUGGING
       GRANT       => grant(1),
       RETXID      => wida,
       RETXDONE    => wdonea,

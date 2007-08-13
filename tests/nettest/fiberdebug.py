@@ -77,7 +77,7 @@ def sendEvents(TXEventList):
 
     """
 
-    nonce = 10010
+    nonce = 10012
     hdrstr = struct.pack(">HH", nonce, len(TXEventList))
     estr = ""
     for e in TXEventList:
@@ -85,10 +85,11 @@ def sendEvents(TXEventList):
     packet = hdrstr + estr
     
     addr = (SOMAIP, EVENTRXPORT)
-    
+
     UDPSock = socket.socket(socket.AF_INET,
                             socket.SOCK_DGRAM)
-    UDPSock.sendto(packet, addr)
+    for i in range(10):
+        UDPSock.sendto(packet, addr)
     data,addr = UDPSock.recvfrom(1)
     print data, addr
 
@@ -240,27 +241,27 @@ def sendFiberCmd(nonce, cmd, ID, data):
 
 
 def toGet():
-    rethread = ReceiveEvents()
-    rethread.start()
+##     rethread = ReceiveEvents()
+##     rethread.start()
 
     x = n.zeros(4, dtype=n.uint8)
     
     sendFiberCmd(0x0127, 0x00, 0x03, x)
     #sendLoopBack()
     
-    rethread.join()
+    #rethread.join()
     
-    eventsetpackets = rethread.process()
-    assertContinuous(eventsetpackets)
-    computeEventStats(eventsetpackets)
-    # extract out the events
+##     eventsetpackets = rethread.process()
+##     assertContinuous(eventsetpackets)
+##     computeEventStats(eventsetpackets)
+##     # extract out the events
     
-    events = getEventsFromSetPackets(eventsetpackets)
-    present = False
-    # look for the event
-    for e in events:
-        if e.cmd == 200 and e.src == 100:
-            pass
+##     events = getEventsFromSetPackets(eventsetpackets)
+##     present = False
+##     # look for the event
+##     for e in events:
+##         if e.cmd == 200 and e.src == 100:
+##             pass
 
             
     
