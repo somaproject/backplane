@@ -62,12 +62,13 @@ class TXEvent:
         addrstr = struct.pack("!HHHHH", addrwords[0],
                               addrwords[1], addrwords[2],
                               addrwords[3], addrwords[4])
-        
-        eventstr = struct.pack("!BBHHHHH", self.cmd, self.src,
+
+        #print self.cmd, self.src, self.data, addrwords
+        eventstr = struct.pack("!BBHHHHH", self.cmd & 0xFF, self.src & 0xFF,
                     self.data[0], self.data[1],
                     self.data[2], self.data[3], self.data[4])
 
-        padstr = struct.pack(">HHHHH", 0, 0, 0, 0, 0)
+        padstr = struct.pack("!HHHHH", 0, 0, 0, 0, 0)
         return addrstr + eventstr + padstr
 
     
@@ -77,7 +78,8 @@ def sendEvents(TXEventList):
 
     """
 
-    nonce = 10012
+    nonce = n.random.randint(2**15)
+
     hdrstr = struct.pack(">HH", nonce, len(TXEventList))
     estr = ""
     for e in TXEventList:
@@ -88,12 +90,11 @@ def sendEvents(TXEventList):
 
     UDPSock = socket.socket(socket.AF_INET,
                             socket.SOCK_DGRAM)
-    for i in range(10):
-        UDPSock.sendto(packet, addr)
-    data,addr = UDPSock.recvfrom(1)
-    print data, addr
-
-
+    
+    UDPSock.sendto(packet, addr)
+    data,addr = UDPSock.recvfrom(4)
+    (rxnonce, rxsuccess) = struct.unpack("!HH", data)
+    assert rxnonce == nonce
     
     
 def assertContinuous(EventSetPacketList):

@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import sys
-from socket import *
+import socket
 import numpy as n
+import time
 import struct
 import threading
 
@@ -71,12 +72,14 @@ class TXEvent:
         return addrstr + eventstr + padstr
 
     
-def sendEvents(nonce, TXEventList):
+def sendEvents(TXEventList):
     """
     We take in a list of TX events, format them, and send them
 
     """
-    
+
+    nonce = n.random.randint(2**15)
+
     hdrstr = struct.pack(">HH", nonce, len(TXEventList))
     estr = ""
     for e in TXEventList:
@@ -84,14 +87,18 @@ def sendEvents(nonce, TXEventList):
     packet = hdrstr + estr
     
     addr = (SOMAIP, EVENTRXPORT)
-    
 
-    UDPSock = socket(AF_INET,SOCK_DGRAM)
-    UDPSock.sendto(packet, addr)
+    UDPSock = socket.socket(socket.AF_INET,
+                            socket.SOCK_DGRAM)
     
+    UDPSock.sendto(packet, addr)
+    data,addr = UDPSock.recvfrom(4)
+    (rxnonce, rxsuccess) = struct.unpack("!HH", data)
+
+    assert rxnonce == nonce
+
 def assertContinuous(EventSetPacketList):
     seq = EventSetPacketList[0][0]
-    
     
 
 def decodeEvents(buffer):
@@ -153,7 +160,8 @@ def getEventsFromSetPackets(EventSetPackets):
     events = []
     for esp in EventSetPackets:
         for e in esp[1]:
-            events.extend(e[:]) 
+            events.extend(e[:])
+
     return events        
     
 class ReceiveEvents(threading.Thread):
@@ -165,11 +173,12 @@ class ReceiveEvents(threading.Thread):
         buflen = 1500
         addr = (host,port)
 
-        UDPSock = socket(AF_INET,SOCK_DGRAM)
+        UDPSock = socket.socket(socket.AF_INET,
+                                socket.SOCK_DGRAM)
 
 
-        UDPSock.setsockopt(SOL_SOCKET, SO_BROADCAST, True)
-        UDPSock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
+        UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         UDPSock.bind(addr)
         datacnt = 50000
         data = []
@@ -185,7 +194,6 @@ class ReceiveEvents(threading.Thread):
         EventSetPackets = []
         for i in xrange(len(self.data)):
             EventSetPackets.append(decodeEvents(self.data[i]))
-        print "received", len(EventSetPackets), "EventSet Packets"
 
         return EventSetPackets
         
@@ -194,47 +202,55 @@ def sendLoopBack():
     # send command event 200 to all devices, to try and RX it
     txloop = TXEvent()
     
-    txloop.cmd = 200
-    txloop.src = 100
-    txloop.data[0] = 0x0123
-    txloop.data[1] = 0x4567
-    txloop.data[2] = 0x89AB
-    txloop.data[3] = 0xCDEF
-    txloop.data[4] = 0xAABB
+##     txloop.cmd = 200
+##     txloop.src = 40
+##     txloop.data[0] = 0x0123
+##     txloop.data[1] = 0x4567
+##     txloop.data[2] = 0x89AB
+##     txloop.data[3] = 0xCDEF
+##     txloop.data[4] = 0xAABB
     
-    txloop.addr[3] = True
+##     txloop.addr[:] = True
+
+    txloop.cmd = 0x41
+    txloop.src = 40
+    txloop.data[0] = 0xFFFF
+    txloop.data[1] = 0xFFFF
+    txloop.data[2] = 0xFFFF
+    txloop.data[3] = 0xFFFF
+    txloop.data[4] = 0xFFFF
+    
+    txloop.addr[:] = True
     for i in range(10):
-        sendEvents(i*100, [txloop])
+        sendEvents([txloop])
     
 if __name__ == "__main__":
 
-##     command = sys.argv[1]
-##     if command == "receivedump":
-##         receivedump()
-##     else:
-##         sendLoopBack()
-    
-    rethread = ReceiveEvents()
-    rethread.start()
+    if sys.argv[1] == "client":
+        sendLoopBack()
+    else:
 
-    sendLoopBack()
-    
-    rethread.join()
-    
-    eventsetpackets = rethread.process()
-    assertContinuous(eventsetpackets)
-    computeEventStats(eventsetpackets)
-    # extract out the events
-    
-    events = getEventsFromSetPackets(eventsetpackets)
-    present = False
-    # look for the event
-    for e in events:
-        if e.cmd == 200 and e.src == 100:
-            if e.data[0] == 0x0123 and e.data[1] == 0x4567 and \
-               e.data[2] == 0x89AB and e.data[3] == 0xCDEF and \
-               e.data[4] == 0xAABB :
-                present = True
-    assert present
+        rethread = ReceiveEvents()
+        rethread.start()
+        time.sleep(0.4)
 
+        time.sleep(0.4)
+
+        rethread.join()
+
+        eventsetpackets = rethread.process()
+        assertContinuous(eventsetpackets)
+        computeEventStats(eventsetpackets)
+        # extract out the events
+
+        events = getEventsFromSetPackets(eventsetpackets)
+        present = False
+        # look for the event
+        for e in events:
+            if e.cmd == 200 and e.src == 40:
+                if e.data[0] == 0x0123 and e.data[1] == 0x4567 and \
+                   e.data[2] == 0x89AB and e.data[3] == 0xCDEF and \
+                   e.data[4] == 0xAABB :
+                    present = True
+        assert present
             

@@ -88,6 +88,7 @@ jtagprog = "/home/jonas/XC3Sprog/xc3sprog"
 jtagpos = 1
 
 def callJtag(IR, dr):
+    
     (ofid, ifid) = os.popen2([jtagprog, str(jtagpos), str(IR), str(dr)])
     x = ifid.read()
     return x

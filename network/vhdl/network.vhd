@@ -63,8 +63,11 @@ entity network is
     UNKNOWNUDP   : out   std_logic;
     UNKNOWNARP   : out   std_logic;
     TXPKTLENEN   : out   std_logic;
-    TXPKTLEN     : out   std_logic_vector(15 downto 0); 
-    TXCHAN : out std_logic_vector(2 downto 0);
+    TXPKTLEN     : out   std_logic_vector(15 downto 0);
+    TXCHAN       : out   std_logic_vector(2 downto 0);
+    EVTRXSUC     : out   std_logic;
+    EVTFIFOFULL  : out   std_logic;
+
     -- DEBUG
     DEBUG : out std_logic_vector(7 downto 0)
     );
@@ -132,7 +135,7 @@ architecture Behavioral of network is
       -- staus output
       PKTLEN   : out std_logic_vector(15 downto 0);
       PKTLENEN : out std_logic;
-      TXCHAN : out std_logic_vector(2 downto 0)
+      TXCHAN   : out std_logic_vector(2 downto 0)
       );
   end component;
 
@@ -226,7 +229,7 @@ architecture Behavioral of network is
       RETXADDR    : out std_logic_vector(8 downto 0);
       RETXWE      : out std_logic;
       -- debug
-      DEBUG : out std_logic_vector(3 downto 0)
+      DEBUG       : out std_logic_vector(3 downto 0)
       );
   end component;
 
@@ -255,24 +258,27 @@ architecture Behavioral of network is
 
   component eventrx
     port (
-      CLK       : in  std_logic;
-      INPKTADDR : out std_logic_vector(9 downto 0);
-      INPKTDATA : in  std_logic_vector(15 downto 0);
-      START     : in  std_logic;
-      DONE      : out std_logic;
+      CLK         : in  std_logic;
+      INPKTADDR   : out std_logic_vector(9 downto 0);
+      INPKTDATA   : in  std_logic_vector(15 downto 0);
+      START       : in  std_logic;
+      DONE        : out std_logic;
+      EVTRXSUC    : out std_logic;
+      EVTFIFOFULL : out std_logic;
+
       -- input parameters
-      MYMAC     : in  std_logic_vector(47 downto 0);
-      MYIP      : in  std_logic_vector(31 downto 0);
+      MYMAC   : in  std_logic_vector(47 downto 0);
+      MYIP    : in  std_logic_vector(31 downto 0);
       -- Event interface
-      ECYCLE    : in  std_logic;
-      EARX      : out std_logic_vector(somabackplane.N -1 downto 0);
-      EDRX      : out std_logic_vector(7 downto 0);
-      EDSELRX   : in  std_logic_vector(3 downto 0);
+      ECYCLE  : in  std_logic;
+      EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
+      EDRX    : out std_logic_vector(7 downto 0);
+      EDSELRX : in  std_logic_vector(3 downto 0);
       -- output to TX interface
-      DOUT      : out std_logic_vector(15 downto 0);
-      DOEN      : out std_logic;
-      ARM       : out std_logic;
-      GRANT     : in  std_logic);
+      DOUT    : out std_logic_vector(15 downto 0);
+      DOEN    : out std_logic;
+      ARM     : out std_logic;
+      GRANT   : in  std_logic);
   end component;
 
   component eventretxresponse
@@ -450,7 +456,7 @@ architecture Behavioral of network is
   signal grant : std_logic_vector(6 downto 0) := (others => '0');
   signal arm   : std_logic_vector(6 downto 0) := (others => '0');
 
-  signal txdout   : std_logic_vector(15 downto 0) := (others => '0');
+  signal txdout              : std_logic_vector(15 downto 0) := (others => '0');
   signal txdouten, txdoutenl : std_logic                     := '0';
 
   -- retx interface
@@ -504,9 +510,9 @@ architecture Behavioral of network is
   signal rwroutb : std_logic                      := '0';
   signal rclkb   : std_logic                      := '0';
 
-  signal lnicdout : std_logic_vector(15 downto 0);
+  signal lnicdout     : std_logic_vector(15 downto 0);
   signal lnicnewframe : std_logic := '0';
-  signal txdoutenl2 : std_logic := '0';
+  signal txdoutenl2   : std_logic := '0';
 
 begin  -- Behavioral
 
@@ -558,9 +564,9 @@ begin  -- Behavioral
       ARM      => arm,
       DOUT     => txdout,
       NEWFRAME => txdouten,
-      PKTLEN   => TXPKTLEN, 
+      PKTLEN   => TXPKTLEN,
       PKTLENEN => TXPKTLENEN,
-      TXCHAN => TXCHAN 
+      TXCHAN   => TXCHAN
       );
 
   crcappend_inst : crcappend
@@ -611,7 +617,7 @@ begin  -- Behavioral
       EATX        => EATX,
       DOUT        => din0,
       DOEN        => den(0),
-      ARM         => open, --arm(0),    --debugging
+      ARM         => arm(0),
       GRANT       => grant(0),
       RETXID      => widb,
       RETXDOUT    => wdinb,
@@ -635,7 +641,7 @@ begin  -- Behavioral
       DINB        => DINB,
       DOUT        => din1,
       DOEN        => den(1),
-      ARM         => open, --arm(1), --DEBUGGING
+      ARM         => arm(1),
       GRANT       => grant(1),
       RETXID      => wida,
       RETXDONE    => wdonea,
@@ -659,28 +665,31 @@ begin  -- Behavioral
       RETXREQ   => rreqa,
       RETXDONE  => rdonea,
       RETXID    => rida,
-      ARM       => arm(2), 
+      ARM       => arm(2),
       GRANT     => grant(2),
       DOUT      => din2,
       DOEN      => den(2));
 
   eventrx_inst : eventrx
     port map (
-      CLK       => CLK,
-      INPKTADDR => eventinaddr,
-      INPKTDATA => pktdata,
-      START     => eventinstart,
-      DONE      => eventindone,
-      MYMAC     => MYMAC,
-      MYIP      => MYIP,
-      ECYCLE    => ECYCLE,
-      EARX      => EARX,
-      EDRX      => EDRX,
-      EDSELRX   => EDSELRX,
-      DOUT      => din4,
-      DOEN      => den(4),
-      ARM       => arm(4), 
-      GRANT     => grant(4));
+      CLK         => CLK,
+      INPKTADDR   => eventinaddr,
+      INPKTDATA   => pktdata,
+      START       => eventinstart,
+      DONE        => eventindone,
+      EVTRXSUC    => EVTRXSUC,
+      EVTFIFOFULL => EVTFIFOFULL,
+
+      MYMAC   => MYMAC,
+      MYIP    => MYIP,
+      ECYCLE  => ECYCLE,
+      EARX    => EARX,
+      EDRX    => EDRX,
+      EDSELRX => EDSELRX,
+      DOUT    => din4,
+      DOEN    => den(4),
+      ARM     => arm(4),
+      GRANT   => grant(4));
 
   eventretxresponse_inst : eventretxresponse
     port map (
@@ -772,16 +781,16 @@ begin  -- Behavioral
 
   process(CLK)
     variable newframel, newframel2 : std_logic := '0';
-    begin
-      if rising_edge(CLK) then
-        txdoutenl2 <= txdouten; 
-        txdoutenl <= lnicnewframe; 
-        NICDOUT <= lnicdout;
-        NICNEWFRAME <= lnicnewframe;
-        
-        
-      end if;
-    end process; 
+  begin
+    if rising_edge(CLK) then
+      txdoutenl2  <= txdouten;
+      txdoutenl   <= lnicnewframe;
+      NICDOUT     <= lnicdout;
+      NICNEWFRAME <= lnicnewframe;
+
+
+    end if;
+  end process;
   NICIOCLK <= clk;
 
 end Behavioral;

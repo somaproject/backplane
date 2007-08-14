@@ -39,6 +39,8 @@ entity netcontrol is
     UNKNOWNIP    : in  std_logic;
     UNKNOWNARP   : in  std_logic;
     UNKNOWNUDP   : in  std_logic;
+    EVTRXSUC     : in  std_logic;
+    EVTFIFOFULL  : in  std_logic;
 
     -- output network control settings
     MYMAC   : out std_logic_vector(47 downto 0);
@@ -78,6 +80,9 @@ architecture Behavioral of netcontrol is
   signal unknownipcnt    : std_logic_vector(47 downto 0) := (others => '0');
   signal unknownarpcnt   : std_logic_vector(47 downto 0) := (others => '0');
   signal unknownudpcnt   : std_logic_vector(47 downto 0) := (others => '0');
+
+  signal eventrxsuccnt    : std_logic_vector(47 downto 0) := (others => '0');
+  signal eventfifofullcnt : std_logic_vector(47 downto 0) := (others => '0');
 
   signal txch0len : std_logic_vector(47 downto 0) := (others => '0');
   signal txch0cnt : std_logic_vector(47 downto 0) := (others => '0');
@@ -250,28 +255,31 @@ begin  -- Behavioral
       CH7CNT   => txch7cnt,
       CH7RST   => txch7rst);
 
-  cntval <= X"0123456789AB" when cntsel = "00000" else
-            rxiocrcerrcnt   when cntsel = "00001" else
-            unknownethercnt when cntsel = "00010" else
-            unknownipcnt    when cntsel = "00011" else
-            unknownarpcnt   when cntsel = "00100" else
-            unknownudpcnt   when cntsel = "00101" else
-            txch0len        when cntsel = "10000" else
-            txch0cnt        when cntsel = "10001" else
-            txch1len        when cntsel = "10010" else
-            txch1cnt        when cntsel = "10011" else
-            txch2len        when cntsel = "10100" else
-            txch2cnt        when cntsel = "10101" else
-            txch3len        when cntsel = "10110" else
-            txch3cnt        when cntsel = "10111" else
-            txch4len        when cntsel = "11000" else
-            txch4cnt        when cntsel = "11001" else
-            txch5len        when cntsel = "11010" else
-            txch5cnt        when cntsel = "11011" else
-            txch6len        when cntsel = "11100" else
-            txch6cnt        when cntsel = "11101" else
-            txch7len        when cntsel = "11110" else
-            txch7cnt        when cntsel = "11111" else
+  cntval <= X"0123456789AB"  when cntsel = "00000" else
+            rxiocrcerrcnt    when cntsel = "00001" else
+            unknownethercnt  when cntsel = "00010" else
+            unknownipcnt     when cntsel = "00011" else
+            unknownarpcnt    when cntsel = "00100" else
+            unknownudpcnt    when cntsel = "00101" else
+            eventrxsuccnt    when cntsel = "00110" else
+            eventfifofullcnt when cntsel = "00111" else
+
+            txch0len when cntsel = "10000" else
+            txch0cnt when cntsel = "10001" else
+            txch1len when cntsel = "10010" else
+            txch1cnt when cntsel = "10011" else
+            txch2len when cntsel = "10100" else
+            txch2cnt when cntsel = "10101" else
+            txch3len when cntsel = "10110" else
+            txch3cnt when cntsel = "10111" else
+            txch4len when cntsel = "11000" else
+            txch4cnt when cntsel = "11001" else
+            txch5len when cntsel = "11010" else
+            txch5cnt when cntsel = "11011" else
+            txch6len when cntsel = "11100" else
+            txch6cnt when cntsel = "11101" else
+            txch7len when cntsel = "11110" else
+            txch7cnt when cntsel = "11111" else
             X"000000000000";
 
   EDRX <= edrxall(7 downto 0)   when EDSELRX = X"1" else
@@ -385,7 +393,7 @@ begin  -- Behavioral
         end if;
       end if;
 
-      -- network id update
+       -- network id update
 
       if cs = netwrite then
         if addr = X"0001" then
@@ -440,6 +448,23 @@ begin  -- Behavioral
       end if;
 
 
+      if dataword(6) = '1' then
+        eventrxsuccnt  <= (others => '0');
+      else
+        if EVTRXSUC = '1' then
+          eventrxsuccnt <= eventrxsuccnt + 1; 
+        end if;
+      end if;
+
+      if dataword(7) = '1' then
+        eventfifofullcnt  <= (others => '0');
+      else
+        if EVTFIFOFULL = '1' then
+          eventfifofullcnt <= eventfifofullcnt + 1; 
+        end if;
+      end if;
+
+      
     end if;
   end process main;
 
@@ -452,15 +477,15 @@ begin  -- Behavioral
         bcastsel <= '1';
         bcastval <= '0';
         eosel    <= 0;
---         if bcastdelay = X"0000" then
---           ns     <= cntbcast;
---         else
-          if EVALID = '1' then
-            ns   <= cmdchk;
-          else
-            ns   <= none;
-          end if;
---         end if;
+-- if bcastdelay = X"0000" then
+-- ns <= cntbcast;
+-- else
+        if EVALID = '1' then
+          ns     <= cmdchk;
+        else
+          ns     <= none;
+        end if;
+-- end if;
 
       when cmdchk =>
         EOUTA    <= "001";

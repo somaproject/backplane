@@ -233,7 +233,12 @@ architecture Behavioral of nettest is
       UNKNOWNARP   : out   std_logic;
       TXPKTLENEN   : out   std_logic;
       TXPKTLEN     : out   std_logic_vector(15 downto 0);
-      TXCHAN       : out   std_logic_vector(2 downto 0)
+      TXCHAN       : out   std_logic_vector(2 downto 0);
+      EVTRXSUC     : out   std_logic;
+      EVTFIFOFULL  : out   std_logic
+
+
+
       );
   end component;
 
@@ -268,6 +273,9 @@ architecture Behavioral of nettest is
       UNKNOWNIP    : in  std_logic;
       UNKNOWNARP   : in  std_logic;
       UNKNOWNUDP   : in  std_logic;
+      EVTRXSUC     : in  std_logic;
+      EVTFIFOFULL  : in  std_logic;
+
 
       -- output network control settings
       MYMAC   : out std_logic_vector(47 downto 0);
@@ -343,13 +351,13 @@ architecture Behavioral of nettest is
 
   signal lserialboot : std_logic_vector(19 downto 0) := (others => '1');
 
-  signal douta : std_logic_vector(7 downto 0) := (others => '0');
-  signal doutena : std_logic := '0';
-  
-  signal doutb : std_logic_vector(7 downto 0) := (others => '0');
-  signal doutenb : std_logic := '0';
-  
-  
+  signal douta   : std_logic_vector(7 downto 0) := (others => '0');
+  signal doutena : std_logic                    := '0';
+
+  signal doutb   : std_logic_vector(7 downto 0) := (others => '0');
+  signal doutenb : std_logic                    := '0';
+
+
   signal clk, clkint             : std_logic := '0';
   signal clk180, clk180int       : std_logic := '0';
   signal memclkb, memclkbint     : std_logic := '0';
@@ -375,6 +383,8 @@ architecture Behavioral of nettest is
   signal txpktlenen   : std_logic                     := '0';
   signal txpktlen     : std_logic_vector(15 downto 0) := (others => '0');
   signal txchan       : std_logic_vector(2 downto 0)  := (others => '0');
+  signal evtrxsuc     : std_logic                     := '0';
+  signal evtfifofull  : std_logic                     := '0';
 
 
   signal nicnextframeint : std_logic := '0';
@@ -392,9 +402,9 @@ architecture Behavioral of nettest is
   signal fibertxclk, fibertxclkint           : std_logic := '0';
   signal fibertxclkdummy, fibertxclkintdummy : std_logic := '0';
 
-  signal lnicdout : std_logic_vector(15 downto 0) := (others => '0');
-  signal lnicnewframe : std_logic := '0';
-  
+  signal lnicdout     : std_logic_vector(15 downto 0) := (others => '0');
+  signal lnicnewframe : std_logic                     := '0';
+
 begin  -- Behavioral
 
 
@@ -659,13 +669,13 @@ begin  -- Behavioral
       FIBEROUT  => FIBERDEBUGOUT);
 
 
-  fakedata1: fakedata
+  fakedata1 : fakedata
     port map (
       clk    => clk,
       DOUT   => douta,
       DOUTEN => doutena,
-      ECYCLE => ecycle); 
-    
+      ECYCLE => ecycle);
+
   -- dummy
   process(clk)
     variable blinkcnt : std_logic_vector(21 downto 0)
@@ -742,7 +752,11 @@ begin  -- Behavioral
       UNKNOWNARP   => unknownarp,
       TXPKTLENEN   => txpktlenen,
       TXPKTLEN     => txpktlen,
-      TXCHAN       => txchan);
+      TXCHAN       => txchan,
+      EVTRXSUC     => evtrxsuc,
+      EVTFIFOFULL  => evtfifofull
+
+      );
 
   netcontrol_inst : netcontrol
     generic map (
@@ -763,7 +777,9 @@ begin  -- Behavioral
       UNKNOWNETHER => unknownether,
       UNKNOWNIP    => unknownip,
       UNKNOWNARP   => unknownarp,
-      UNKNOWNUDP   => unknownudp
+      UNKNOWNUDP   => unknownudp,
+      EVTRXSUC     => evtrxsuc,
+      EVTFIFOFULL  => evtfifofull
 -- MYMAC => mymac,
 -- MYBCAST => mybcast,
 -- MYIP => myip
@@ -780,11 +796,11 @@ begin  -- Behavioral
       RST    => reset
       );
 
-dincapture_inst : dincapture
- port map (
- CLK => clk,
- DIN => lnicdout,
- DINEN => lnicnewframe);
+-- dincapture_inst : dincapture
+-- port map (
+-- CLK => clk,
+-- DIN => lnicdout,
+-- DINEN => lnicnewframe);
 
   process(niciointclk)
   begin
@@ -798,11 +814,11 @@ dincapture_inst : dincapture
   end process;
 
   process(CLK)
-    begin
-      if rising_edge(CLK) then
-        NICDOUT <= lnicdout;
-        NICNEWFRAME <= lnicnewframe;
-        
-      end if;
-    end process; 
+  begin
+    if rising_edge(CLK) then
+      NICDOUT     <= lnicdout;
+      NICNEWFRAME <= lnicnewframe;
+
+    end if;
+  end process;
 end Behavioral;

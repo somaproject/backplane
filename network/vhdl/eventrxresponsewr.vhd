@@ -101,7 +101,7 @@ begin  -- Behavioral
       DESTIP   => DESTIP,
       DESTPORT => DESTPORT,
       START    => hdrstart,
-      WLEN     => "0000000010",
+      WLEN     => "0000010010",
       DOUT     => hdrdout,
       WEOUT    => hdrwe,
       ADDR     => hdraddr,
