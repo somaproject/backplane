@@ -20,7 +20,7 @@ for i in range(0, 32):
     e = events.readEvent()
     nonecnt = 0
     while e == None:
-        events.sendEvent(a)
+        #events.sendEvent(a)
         e = events.readEvent()
         nonecnt += 1
     print e, nonecnt

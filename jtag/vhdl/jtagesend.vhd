@@ -39,8 +39,8 @@ architecture Behavioral of jtagesend is
 
   signal sreg : std_logic_vector(175 downto 0) := (others => '0');
 
-  signal ubit, ubitl : std_logic := '0';
-  signal newdata     : std_logic := '0';
+  signal ubit, ubitl       : std_logic := '0';
+  signal newdata, newdatal : std_logic := '0';
 
   signal data    : std_logic_vector(175 downto 0)    := (others => '0');
   signal edrxall : std_logic_vector(6*16-1 downto 0) := (others => '0');
@@ -97,25 +97,25 @@ begin  -- Behavioral
           edrxall(87 downto 80) when EDSELRX = X"A" else
           edrxall(95 downto 88);
 
-  
+
   main : process(CLK)
   begin
     if rising_edge(CLK) then
-      ubitl <= ubit;
+      newdatal <= newdata;
+      ubitl    <= ubit;
 
-      if ECYCLE = '1' then
-        data   <= (others => '0');
+      if newdatal = '1' then
+        data   <= sreg;
       else
-        if newdata = '1' then
-          data <= sreg;
+        if ECYCLE = '1' then
+          data <= (others => '0');
         end if;
       end if;
 
       if ECYCLE = '1' then
-        EARX    <= data(somabackplane.N -1  downto 0);
+        EARX    <= data(somabackplane.N -1 downto 0);
         edrxall <= data(175 downto 80);
       end if;
-
 
     end if;
   end process;

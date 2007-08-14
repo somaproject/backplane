@@ -126,18 +126,40 @@ def readEvent():
         return e
     
 
-if __name__ == "__main__":
+def loopback_test():
+    
+    # this is a loopback test
+    JTAGADDR = 0x07
+
+    m = Mask()
+
+    m.setAddr(JTAGADDR)
+
+    setMask(m)
+
     
     a = Event()
     a.cmd = 0x30
-    a.src = 0x07
-    a.setAddr(0x5)
-    a.data[2] = 0x03
+    a.src = JTAGADDR
+    a.setAddr(JTAGADDR)
+    a.data[0] = 0x0123
+    a.data[1] = 0x4567
+    a.data[2] = 0x89AB
+    a.data[3] = 0xCDEF
+    a.data[4] = 0xAABB
 
-    m = Mask()
-    m.setAddr(5)
-    m.setAddr(0)
+    sendEvent(a)
+    reads = 0 
+    e = None
+    while e == None:
+        e = readEvent()
+        reads += 1
+        
+    while e != None:
+        print e, reads
+        e = readEvent()
+    
 
-    setMask(m)
-    e = readEvent()
-    print e
+if __name__ == "__main__":
+    loopback_test()
+    
