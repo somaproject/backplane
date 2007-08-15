@@ -291,8 +291,11 @@ begin  -- Behavioral
 
 
       -- final outputs
-      EARX  <= leaout(somabackplane.N - 1 downto 0);
-      EDOUT <= ledout;
+      if ECYCLE = '1' then
+        EARX  <= leaout(somabackplane.N - 1 downto 0);
+        EDOUT <= ledout;        
+      end if;
+
 
 
     end if;

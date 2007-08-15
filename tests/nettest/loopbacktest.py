@@ -202,27 +202,17 @@ def sendLoopBack():
     # send command event 200 to all devices, to try and RX it
     txloop = TXEvent()
     
-##     txloop.cmd = 200
-##     txloop.src = 40
-##     txloop.data[0] = 0x0123
-##     txloop.data[1] = 0x4567
-##     txloop.data[2] = 0x89AB
-##     txloop.data[3] = 0xCDEF
-##     txloop.data[4] = 0xAABB
-    
-##     txloop.addr[:] = True
-
-    txloop.cmd = 0x41
+    txloop.cmd = 200
     txloop.src = 40
-    txloop.data[0] = 0xFFFF
-    txloop.data[1] = 0xFFFF
-    txloop.data[2] = 0xFFFF
-    txloop.data[3] = 0xFFFF
-    txloop.data[4] = 0xFFFF
+    txloop.data[0] = 0x0123
+    txloop.data[1] = 0x4567
+    txloop.data[2] = 0x89AB
+    txloop.data[3] = 0xCDEF
+    txloop.data[4] = 0xAABB
     
-    txloop.addr[:] = True
-    for i in range(10):
-        sendEvents([txloop])
+    txloop.addr[3] = True
+
+    sendEvents([txloop])
     
 if __name__ == "__main__":
 
@@ -233,7 +223,7 @@ if __name__ == "__main__":
         rethread = ReceiveEvents()
         rethread.start()
         time.sleep(0.4)
-
+        sendLoopBack()
         time.sleep(0.4)
 
         rethread.join()

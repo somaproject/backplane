@@ -137,7 +137,7 @@ begin  -- Behavioral
   DONE <= '1' when cs = dones else '0'; 
   outaddr <= ebaddr + "0000011000";
 
-  EVTRXSUC <= '1' when cs = successt else '0';
+  EVTRXSUC <= '1' when cs = dones else '0';
   EVTFIFOFULL <= '1' when cs = failst else '0'; 
   
 
