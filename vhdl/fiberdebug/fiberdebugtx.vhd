@@ -22,14 +22,16 @@ entity fiberdebugtx is
     EATX     : in  std_logic_vector(somabackplane.N - 1 downto 0);
     EDTX     : in  std_logic_vector(7 downto 0);
     -- Fiber interfaces
-    FIBEROUT : out std_logic
+    FIBEROUT : out std_logic;
+    -- debug interface
+    DEBUG: out std_logic_vector(7 downto 0) 
     );
 
 end fiberdebugtx;
 
 architecture Behavioral of fiberdebugtx is
 
-  constant CMDSEND : std_logic_vector(7 downto 0) := X"82";
+  constant CMDSEND : std_logic_vector(7 downto 0) := X"50";
 
   signal sendcmd : std_logic := '0';
   
@@ -70,7 +72,8 @@ end component;
 
 begin  -- Behavioral
 
-
+  DEBUG(0) <= sendcmd;
+  
   fibertx_inst : fibertx
     port map (
       CLK      => TXCLK,

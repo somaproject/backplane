@@ -334,7 +334,8 @@ architecture Behavioral of nettest is
 
       -- Fiber interfaces
       FIBERIN  : in  std_logic;
-      FIBEROUT : out std_logic
+      FIBEROUT : out std_logic;
+      DEBUG : out std_Logic_vector(15 downto 0)
       );
 
   end component;
@@ -405,12 +406,14 @@ architecture Behavioral of nettest is
   signal lnicdout     : std_logic_vector(15 downto 0) := (others => '0');
   signal lnicnewframe : std_logic                     := '0';
 
+  signal fiberdebugdebug : std_logic_vector(15 downto 0) := (others => '0');
+  
 begin  -- Behavioral
 
 
-  -----------------------------------------------------------------------------
+  ---------------------------------------------------------------------------
   -- CLOCKING
-  -----------------------------------------------------------------------------
+  ---------------------------------------------------------------------------
 
   DCM_BASE_inst : DCM_BASE
     generic map (
@@ -582,7 +585,7 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
-  LEDEVENT <= doutena;
+  LEDEVENT <= fiberdebugdebug(0);
   LEDPOWER <= locked2;
 
   jtagsend_inst : jtagesend
@@ -666,7 +669,8 @@ begin  -- Behavioral
       EDTX      => edtx,
       EADDRDEST => fiberdebugdest,
       FIBERIN   => FIBERDEBUGIN,
-      FIBEROUT  => FIBERDEBUGOUT);
+      FIBEROUT  => FIBERDEBUGOUT,
+      DEBUG => fiberdebugdebug);
 
 
   fakedata1 : fakedata

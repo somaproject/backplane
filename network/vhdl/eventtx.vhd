@@ -69,7 +69,7 @@ architecture Behavioral of eventtx is
   -- counters
   signal bits : std_logic_vector(95 downto 0) := (others => '0');
 
-  signal ecnt : integer range 0 to 15 := 0;
+  signal ecnt : integer range 0 to 31 := 0;
 
   signal ebcnt, lebcnt : std_logic_vector(6 downto 0) := (others => '0');
   signal ebcntdone     : std_logic                    := '0';
@@ -292,8 +292,8 @@ begin  -- Behavioral
         hdrstart <= '0';
         osel     <= 2;
         idsel    <= '0';
-        if ecnt = 6 or                  -- we are in the sixth ecycle, so there
-          -- are five in the buffer
+        if ecnt = 26 or            -- we are in the 26 ecycle, so there
+          -- are 25 in the buffer
           (nextpktsize > "00111101000" ) then
           ins    <= hdrs;
         else

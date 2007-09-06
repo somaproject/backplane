@@ -26,7 +26,10 @@ entity fiberdebugrx is
     EDSELRXB : in  std_logic_vector(3 downto 0);
     EADDRIN  : std_logic_vector(somabackplane.N -1 downto 0); 
     -- Fiber interfaces
-    FIBERIN : in std_logic
+    FIBERIN : in std_logic;
+    -- debug interface
+    DEBUG : out std_logic_vector(7 downto 0)
+    
     );
 
 end fiberdebugrx;
@@ -155,8 +158,6 @@ begin  -- Behavioral
               X"0" & cmdsts & X"00" &
               X"0" & cmdid & X"00" &
               DEVICE & CMDINEVENT;
-
-
 
   txeventbuffer_a : txeventbuffer
     port map (

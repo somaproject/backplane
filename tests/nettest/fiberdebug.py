@@ -204,23 +204,6 @@ class ReceiveEvents(threading.Thread):
 
         return EventSetPackets
         
-def sendLoopBack():
-
-    # send command event 200 to all devices, to try and RX it
-    txloop = TXEvent()
-    
-    txloop.cmd = 150
-    txloop.src = 100
-    txloop.data[0] = 0x0123
-    txloop.data[1] = 0x4567
-    txloop.data[2] = 0x89AB
-    txloop.data[3] = 0xCDEF
-    txloop.data[4] = 0xAABB
-    
-    txloop.addr[:] = True
-    sendEvents(10, [txloop])
-
-
 def sendFiberCmd(nonce, cmd, ID, data):
 
     assert len(data) == 4 and data.dtype == n.uint8
@@ -228,9 +211,9 @@ def sendFiberCmd(nonce, cmd, ID, data):
     
     txloop = TXEvent()
     
-    txloop.cmd = 0x82
-    txloop.src = 0x03
-    txloop.data[0] = (ID << 4) | (cmd & 0xF)
+    txloop.cmd = 0x50
+    txloop.src = 0x07
+    txloop.data[0] = (ID << 8) | (cmd & 0xF)
     txloop.data[1] = 0x0000
     txloop.data[2] = 0x0000
     txloop.data[3] = 0x0000
@@ -242,22 +225,26 @@ def sendFiberCmd(nonce, cmd, ID, data):
 
 
 def toGet():
-##     rethread = ReceiveEvents()
-##     rethread.start()
+    rethread = ReceiveEvents()
+    rethread.start()
 
     x = n.zeros(4, dtype=n.uint8)
     
-    sendFiberCmd(0x0127, 0x00, 0x03, x)
+    sendFiberCmd(0x0120, 0x01, 0x04, x)
     #sendLoopBack()
     
-    #rethread.join()
+    rethread.join()
     
-##     eventsetpackets = rethread.process()
-##     assertContinuous(eventsetpackets)
-##     computeEventStats(eventsetpackets)
-##     # extract out the events
+    eventsetpackets = rethread.process()
+    assertContinuous(eventsetpackets)
+    computeEventStats(eventsetpackets)
+    # extract out the events
     
-##     events = getEventsFromSetPackets(eventsetpackets)
+    events = getEventsFromSetPackets(eventsetpackets)
+    for e in events[::-1]:
+        if e.cmd == 128:
+            print e
+            
 ##     present = False
 ##     # look for the event
 ##     for e in events:

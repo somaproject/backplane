@@ -33,7 +33,9 @@ entity fiberdebug is
 
     -- Fiber interfaces
     FIBERIN  : in  std_logic;
-    FIBEROUT : out std_logic
+    FIBEROUT : out std_logic;
+    -- DEBUG outputs
+    DEBUG : out std_logic_vector(15 downto 0)
     );
 
 end fiberdebug;
@@ -54,7 +56,9 @@ architecture Behavioral of fiberdebug is
       EATX     : in  std_logic_vector(somabackplane.N - 1 downto 0);
       EDTX     : in  std_logic_vector(7 downto 0);
       -- Fiber interfaces
-      FIBEROUT : out std_logic
+      FIBEROUT : out std_logic;
+      -- DEBUG
+      DEBUG : out std_logic_vector(7 downto 0)
       );
   end component;
 
@@ -78,7 +82,11 @@ architecture Behavioral of fiberdebug is
       EADDRIN   : in std_logic_vector(somabackplane.N - 1 downto 0);
 
       -- Fiber interfaces
-      FIBERIN : in std_logic
+      FIBERIN : in std_logic;
+      -- DEBUG
+      DEBUG : out std_logic_vector(7 downto 0)
+
+      
       );
 
   end component;
@@ -95,7 +103,8 @@ begin  -- Behavioral
       ECYCLE   => ECYCLE,
       EATX     => EATX,
       EDTX     => EDTX,
-      FIBEROUT => FIBEROUT);
+      FIBEROUT => FIBEROUT,
+      DEBUG => DEBUG(7 downto 0));
 
   fiberdebugrx_inst: fiberdebugrx
     generic map (
@@ -111,7 +120,8 @@ begin  -- Behavioral
       EDSELRXA => EDSELRXA,
       EDSELRXB => EDSELRXB,
       EADDRIN => EADDRDEST, 
-      FIBERIN => FIBERIN); 
+      FIBERIN => FIBERIN,
+      DEBUG => DEBUG(15 downto 8)); 
     
 
 
