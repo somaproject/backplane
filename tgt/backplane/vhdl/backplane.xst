@@ -1,12 +1,12 @@
 set -tmpdir build
 set -xsthdpdir ./xst
 run
--ifn nettest.prj
+-ifn backplane.prj
 -ifmt mixed
--ofn nettest
+-ofn backplane
 -ofmt NGC
 -p xc4vlx25-10-ff668
--top nettest
+-top backplane
 -opt_mode Speed
 -opt_level 2
 -iuc NO

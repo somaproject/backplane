@@ -12,7 +12,7 @@ use work.somabackplane;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity nettest is
+entity backplane is
   port (
     CLKIN         : in    std_logic;
     SERIALBOOT    : out   std_logic_vector(19 downto 0);
@@ -47,15 +47,23 @@ entity nettest is
     RAMDQSH       : inout std_logic;
     RAMDQSL       : inout std_logic;
     RAMDQ         : inout std_logic_vector(15 downto 0);
+
+    -- DeviceLink Interfaces
+    TXIO_P     : out std_logic_vector(18 downto 0);
+    TXIO_N     : out std_logic_vector(18 downto 0);
+    RXIO_P     : in  std_logic_vector(18 downto 0);
+    RXIO_N     : in  std_logic_vector(18 downto 0);
+    -- debugging
+    
     FIBERDEBUGOUT : out   std_logic;
     FIBERDEBUGIN  : in    std_logic
 
 
     );
-end nettest;
+end backplane;
 
 
-architecture Behavioral of nettest is
+architecture Behavioral of backplane is
 
   component eventrouter
     port (

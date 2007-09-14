@@ -13,7 +13,7 @@
 #   make parsim: post-place-and-route simulation 
 #   make multipar : multiple attemt place and route
 ######################################################################
-PROJECT = nettest
+PROJECT = backplane
 
 bitfile: $(PROJECT).bit $(PROJECT).new.bit updaterom
 export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
@@ -54,7 +54,7 @@ build/$(PROJECT).ngc: $(SOURCES) $(PROJECT).xst $(PROJECT).prj
 trans: build/$(PROJECT).ngd
 
 build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf 
-	ngdbuild -p $(PART) -uc $(PROJECT).ucf -bm nettest.bmm -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
+	ngdbuild -p $(PART) -uc $(PROJECT).ucf -bm backplane.bmm -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
 
 
 # third stage: map: produces pcf, map.ncd

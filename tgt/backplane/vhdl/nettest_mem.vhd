@@ -5,7 +5,7 @@
 --
 -- Command: data2mem -bm nettest_bd.bmm -bd nettest.mem -bt nettest.bit -o h nettest_mem.vhd -o b nettest.new.bit
 --
--- Created on 08/30/07 10:50 pm, from:
+-- Created on 09/06/07 01:04 pm, from:
 --
 --     Map file     - nettest_bd.bmm
 --     Data file(s) - nettest.mem
@@ -94,7 +94,7 @@ end nettest_mem_pkg;
 --
 -- Command: data2mem -bm nettest_bd.bmm -bd nettest.mem -bt nettest.bit -o h nettest_mem.vhd -o b nettest.new.bit
 --
--- Created on 08/30/07 10:50 pm, from:
+-- Created on 09/06/07 01:04 pm, from:
 --
 --     Map file     - nettest_bd.bmm
 --     Data file(s) - nettest.mem
