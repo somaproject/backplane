@@ -354,7 +354,7 @@ architecture Behavioral of backplane is
     CLKBITTX    : out std_logic;
     CLKBITTX180 : out std_logic;
     CLKBITRX    : out std_logic;
-    CLKRX       : out std_logic;
+    CLKWORDTX       : out std_logic;
     STARTUPDONE : out std_logic);
   end component;
 
@@ -428,7 +428,8 @@ architecture Behavioral of backplane is
   signal bittxclk : std_logic := '0';
   signal bittxclk180 : std_logic := '0';
   signal bitrxclk : std_logic := '0';
-  signal rxclk : std_logic := '0';
+  
+  signal wordtxclk : std_logic := '0';
   
 
     component linktester
@@ -446,7 +447,7 @@ architecture Behavioral of backplane is
       );
   end component; 
 
-  constant DEVICELINKN : integer := 2;
+  constant DEVICELINKN : integer := 4;
   --constant DEVICELINKN : integer := 16+3;  DEBUGGING
   signal validint  : std_logic_vector(DEVICELINKN-1 downto 0)
                                                    := (others => '0');
@@ -628,7 +629,7 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
-  LEDEVENT <= fiberdebugdebug(0);
+  LEDEVENT <= validint(1);
   LEDPOWER <= locked2;
 
   jtagsend_inst : jtagesend
@@ -722,7 +723,7 @@ begin  -- Behavioral
       CLKBITTX    => bittxclk,
       CLKBITTX180 => bittxclk180,
       CLKBITRX    => bitrxclk,
-      CLKRX       => rxclk,
+      CLKWORDTX       => wordtxclk,
       STARTUPDONE => open);
   
     
@@ -846,12 +847,6 @@ begin  -- Behavioral
 
   NICIOCLK <= clk;
 
-  dlyctrl : IDELAYCTRL
-    port map(
-      RDY    => open,
-      REFCLK => clk,
-      RST    => reset
-      );
 
 -- dincapture_inst : dincapture
 -- port map (
@@ -880,18 +875,18 @@ begin  -- Behavioral
   end process;
 
 
- ------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------
  -- at the moment, a devicelink test, from manydevicelinktes 
- ------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------
 
 
     devicelinks : for i in 0 to DEVICELINKN-1 generate
     dl        : linktester
       port map (
-        CLK       => rxclk,
+        CLK       => clk,
         RXBITCLK  => bitrxclk,
         TXHBITCLK => bittxclk,
-        TXWORDCLK => clk,
+        TXWORDCLK => wordtxclk,
         RESET     => RESET,
         TXIO_P    => TXIO_P(i),
         TXIO_N    => TXIO_N(i),
