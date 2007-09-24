@@ -1,5 +1,4 @@
-This is an attempt to synthesize and then test the DeviceLink of all
-the external devices.
+This lets us synthesize and test the devicelink of all devices. 
 
 Our test bitstream will send 0-255 in 8b/10b-encoded streams, with a
 k28.5 header. We will attempt to RX the same stream as well; the
@@ -9,13 +8,12 @@ We will use the USER registers of the JTAG interface to output the
 status of the device. For each device we read out an 8-bit number
 (8*20 bits in total) being the number of time units the device has
 been running with lock HIGH. If lock is low, this is 0. In general,
-this will be "seconds"
+this will be "seconds". 
 
 This is designed to be used with
 backplane/deviceio/tests/deviceloopback
 
 Currently it will work with any device on the bus. 
-
 
 -- time measurement 
 
@@ -25,7 +23,9 @@ incremented.
 
 -- jtag readout
 
-These are all read out in a block. We use the USER1 instruction, and
+These are all read out in a block. We use the USER1 instruction (0xC2), and
 we read out the number of seconds each channel has been "up". Note
 this obviously wraps at 256.
 
+[jonas@shannon XC3Sprog]$ ./xc3sprog 1 0xC2 "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00" 
+d 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 

@@ -72,7 +72,12 @@ vhdl work "../../../vhdl/fiberdebug/fibertx.vhd"
 vhdl work "../../../vhdl/fiberdebug/framedis.vhd"
 vhdl work "../../../vhdl/fiberdebug/txeventbuffer.vhd"
 
+vhdl work "../../../vhdl/devicelink/coredevicelink.vhd"
+vhdl work "../../../vhdl/devicelink/deserialize.vhd"
+vhdl work "../../../vhdl/devicelink/devicelinkclk.vhd"
+vhdl work "../../../vhdl/devicelink/serialize.vhd"
 
+vhdl work "../../../tests/manydevicelink/vhdl/linktester.vhd"
 
 vhdl work "udpburst.vhd"
 vhdl work "dincapture.vhd"

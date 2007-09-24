@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version J.37
-# Date: Sun Aug  5 20:44:28 2007
+# Date: Tue Sep 18 12:20:13 2007
 #
 ##############################################################
 #
@@ -42,17 +42,17 @@ CSET b_force_code=false
 CSET b_force_code_symbol=B_D_10_2_pos
 CSET b_force_disparity=false
 CSET b_new_data=false
-CSET clock_enable=true
+CSET clock_enable=false
 CSET code_error_output=false
 CSET component_name=encode8b10b
 CSET disparity_output=false
 CSET force_code=false
 CSET force_code_symbol=D_10_2_pos
 CSET force_disparity=false
-CSET implementation=LUT_Based
+CSET implementation=Block_RAM_Based
 CSET new_data=false
 CSET secondary_encoder=false
 # END Parameters
 GENERATE
-# CRC: 8472eb2b
+# CRC: fb810fb7
 

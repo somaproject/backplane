@@ -13,7 +13,7 @@ entity coredevicelink is
   generic (
     N         :     integer := 0);      -- number of ticks in input bit cycle
   port (
-    CLK       : in  std_logic;
+    CLK       : in  std_logic;          -- should be a 50 MHz clock 
     RXBITCLK  : in  std_logic;          -- should be a 250 MHz clock
     TXHBITCLK : in  std_logic;          -- should be a 300 MHz clock
     TXWORDCLK : in  std_logic;          -- should be a 60 MHz clock

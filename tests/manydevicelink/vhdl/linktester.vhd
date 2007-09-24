@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2006/08/07
+-- Last update: 2007/09/21
 -- Platform   : 
 -------------------------------------------------------------------------------
 -- Description: a loopback data tester

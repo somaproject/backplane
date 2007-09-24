@@ -28,10 +28,9 @@ end manydevicelink;
 
 architecture Behavioral of manydevicelink is
 
-  constant DEVICELINKN : integer := 16+3;
+  constant DEVICELINKN : integer := 19;
 
   component linktester
-
     port (
       CLK       : in  std_logic;
       RXBITCLK  : in  std_logic;
@@ -44,7 +43,6 @@ architecture Behavioral of manydevicelink is
       RXIO_N    : in  std_logic;
       VALID     : out std_logic
       );
-
   end component;
 
   signal clk, clkint : std_logic := '0';
@@ -56,7 +54,7 @@ architecture Behavioral of manydevicelink is
   signal clkbittx180int, clkbittx180 : std_logic := '0';
 
   signal clkbitrxint, clkbitrx : std_logic := '0';
-  signal clkrxint, clkrx       : std_logic := '0';
+  signal clkwordtx       : std_logic := '0';
 
 
   signal dc, dcint : std_logic                     := '0';
@@ -84,121 +82,39 @@ architecture Behavioral of manydevicelink is
   signal jtagcapture, jtagdrck, jtagreset, jtagsel,
     jtagshift, jtagtdi, jtagupdate, jtagtdo : std_logic := '0';
 
+  
+  component devicelinkclk
+    port (
+      CLKIN       : in  std_logic;
+      CLKBITTX    : out std_logic;
+      CLKBITTX180 : out std_logic;
+      CLKBITRX    : out std_logic;
+      CLKWORDTX   : out std_logic;
+      STARTUPDONE : out std_logic);
+  end component;
 
 begin  -- Behavioral
 
-  txsrc : DCM_BASE
-    generic map (
-      CLKFX_DIVIDE          => 2,       -- Can be any interger from 1 to 32
-      CLKFX_MULTIPLY        => 5,       -- Can be any integer from 2 to 32
-      CLKIN_PERIOD          => 15.0,
-      CLKOUT_PHASE_SHIFT    => "NONE",
-      CLK_FEEDBACK          => "1X",
-      DCM_AUTOCALIBRATION   => true,
-      DCM_PERFORMANCE_MODE  => "MAX_SPEED",
-      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
-      DFS_FREQUENCY_MODE    => "LOW",
-      DLL_FREQUENCY_MODE    => "LOW",
-      DUTY_CYCLE_CORRECTION => true,
-      FACTORY_JF            => X"F0F0",
-      PHASE_SHIFT           => 0,
-      STARTUP_WAIT          => false)
-    port map(
-      CLKIN                 => CLKIN,
-      CLK0                  => clkint,
-      CLKFB                 => clk,
-      CLKFX                 => clksrcint,
-      RST                   => RESET,
-      LOCKED                => base_lock
-      );
-
-  clk_bufg : BUFG
+  clk <= CLKIN;
+  
+  devicelinkclk_inst : devicelinkclk
     port map (
-      O => clk,
-      I => clkint);
-
-  clksrc_bufg : BUFG
-    port map (
-      O => clksrc,
-      I => clksrcint);
-
-
-  clkbittx_bufg : BUFG
-    port map (
-      O => clkbittx,
-      I => clkbittxint);
-
-  clkbittx180_bufg : BUFG
-    port map (
-      O => clkbittx180,
-      I => clkbittx180int);
-
-
-  process(clk)
-  begin
-    if rising_edge(clk) then
-      base_rst_delay <= base_rst_delay(8 downto 0) & (not base_lock);
-    end if;
-  end process;
-
-  maindcm : DCM_BASE
-    generic map (
-      CLKDV_DIVIDE          => 3.0,
-      CLKFX_MULTIPLY        => 5,
-      CLKFX_DIVIDE          => 3,
-      CLKIN_PERIOD          => 2.5,
-      CLKOUT_PHASE_SHIFT    => "NONE",
-      CLK_FEEDBACK          => "1X",
-      DCM_AUTOCALIBRATION   => true,
-      DCM_PERFORMANCE_MODE  => "MAX_SPEED",
-      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
-      DFS_FREQUENCY_MODE    => "LOW",
-      DLL_FREQUENCY_MODE    => "LOW",
-      DUTY_CYCLE_CORRECTION => true,
-      FACTORY_JF            => X"F0F0",
-      PHASE_SHIFT           => 0,
-      STARTUP_WAIT          => false)
-    port map(
-      CLKIN                 => clksrc,
-      clk0                  => clknoneint,
-      CLKFB                 => clknone,
-
-      CLK2X    => clkbittxint,
-      CLK2X180 => clkbittx180int,
-      CLKFX    => clkbitrxint,
-      CLKDV    => clkrxint,
-      RST      => base_rst_delay(7),
-      LOCKED   => maindcmlocked
-      );
-
-  dcmreset <= not maindcmlocked;
-
-  clknonebufg : BUFG
-    port map (
-      O => clknone,
-      I => clknoneint);
-
-
-  clkbitrxbufg : BUFG
-    port map (
-      O => clkbitrx,
-      I => clkbitrxint);
-
-  clkrxbuft : BUFG
-    port map (
-      O => clkrx,
-      I => clkrxint);
-
-
+      CLKIN       => CLK,
+      CLKBITTX    => clkbittx,
+      CLKBITTX180 => clkbittx180,
+      CLKBITRX    => clkbitrx,
+      CLKWORDTX   => clkwordtx,
+      STARTUPDONE => maindcmlocked);
+  
   -- instantiate devices
 
   devicelinks : for i in 0 to DEVICELINKN-1 generate
     dl        : linktester
       port map (
-        CLK       => clkrx,
+        CLK       => CLKIN,
         RXBITCLK  => clkbitrx,
         TXHBITCLK => clkbittx,
-        TXWORDCLK => clk,
+        TXWORDCLK => clkwordtx,
         RESET     => RESET,
         TXIO_P    => TXIO_P(i),
         TXIO_N    => TXIO_N(i),
@@ -243,26 +159,18 @@ begin  -- Behavioral
     end if;
   end process uptimetickproc;
 
-
-  dlyctrl : IDELAYCTRL
-    port map(
-      RDY    => open,
-      REFCLK => clkrx,
-      RST    => dcmreset
-      );
-
-  ledblink : process(clkrx)
+  ledblink : process(clk)
   begin
-    if rising_edge(clkrx) then
+    if rising_edge(clk) then
       ledtick  <= ledtick + 1;
-      LEDPOWER <= ledtick(22);
 
     end if;
   end process ledblink;
+  LEDPOWER <= maindcmlocked; 
 
   LEDVALID <= validint(0);
 
-  WORDCLKOUT <= clkrx;
+  WORDCLKOUT <= clkwordtx;
   TXCLKOUT   <= clkbittx;
 
 

@@ -39,7 +39,7 @@ architecture Behavioral of decoder is
 
 
 -- components
-  component decode8b10b
+  component fiberdecode8b10b
     port (
       clk      : in  std_logic;
       din      : in  std_logic_vector(9 downto 0);
@@ -124,7 +124,7 @@ begin
   doutrdy <= '1' when bitcnt = "0011" else '0';
 
   -- instantiate decoder
-  decode : decode8b10b
+  decode : fiberdecode8b10b
     port map (
       clk      => clk,
       din      => doutregl,

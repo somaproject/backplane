@@ -348,6 +348,16 @@ architecture Behavioral of backplane is
 
   end component;
 
+  component devicelinkclk 
+  port (
+    CLKIN       : in  std_logic;
+    CLKBITTX    : out std_logic;
+    CLKBITTX180 : out std_logic;
+    CLKBITRX    : out std_logic;
+    CLKRX       : out std_logic;
+    STARTUPDONE : out std_logic);
+  end component;
+
 
   signal ECYCLE : std_logic := '0';
 
@@ -374,7 +384,6 @@ architecture Behavioral of backplane is
   signal memclk90, memclk90int   : std_logic := '0';
   signal memclk180, memclk180int : std_logic := '0';
   signal memclk270, memclk270int : std_logic := '0';
-
 
   signal nicclkint : std_logic := '0';
 
@@ -415,6 +424,32 @@ architecture Behavioral of backplane is
   signal lnicnewframe : std_logic                     := '0';
 
   signal fiberdebugdebug : std_logic_vector(15 downto 0) := (others => '0');
+
+  signal bittxclk : std_logic := '0';
+  signal bittxclk180 : std_logic := '0';
+  signal bitrxclk : std_logic := '0';
+  signal rxclk : std_logic := '0';
+  
+
+    component linktester
+    port (
+      CLK       : in  std_logic;
+      RXBITCLK  : in  std_logic;
+      TXHBITCLK : in  std_logic;
+      TXWORDCLK : in  std_logic;
+      RESET     : in  std_logic;
+      TXIO_P    : out std_logic;
+      TXIO_N    : out std_logic;
+      RXIO_P    : in  std_logic;
+      RXIO_N    : in  std_logic;
+      VALID     : out std_logic
+      );
+  end component; 
+
+  constant DEVICELINKN : integer := 2;
+  --constant DEVICELINKN : integer := 16+3;  DEBUGGING
+  signal validint  : std_logic_vector(DEVICELINKN-1 downto 0)
+                                                   := (others => '0');
   
 begin  -- Behavioral
 
@@ -681,6 +716,16 @@ begin  -- Behavioral
       DEBUG => fiberdebugdebug);
 
 
+  devicelinkclk_inst: devicelinkclk
+    port map (
+      CLKIN       => clk,
+      CLKBITTX    => bittxclk,
+      CLKBITTX180 => bittxclk180,
+      CLKBITRX    => bitrxclk,
+      CLKRX       => rxclk,
+      STARTUPDONE => open);
+  
+    
   fakedata1 : fakedata
     port map (
       clk    => clk,
@@ -833,4 +878,28 @@ begin  -- Behavioral
 
     end if;
   end process;
+
+
+ ------------------------------------------------------------------------------
+ -- at the moment, a devicelink test, from manydevicelinktes 
+ ------------------------------------------------------------------------------
+
+
+    devicelinks : for i in 0 to DEVICELINKN-1 generate
+    dl        : linktester
+      port map (
+        CLK       => rxclk,
+        RXBITCLK  => bitrxclk,
+        TXHBITCLK => bittxclk,
+        TXWORDCLK => clk,
+        RESET     => RESET,
+        TXIO_P    => TXIO_P(i),
+        TXIO_N    => TXIO_N(i),
+        RXIO_P    => RXIO_P(i),
+        RXIO_N    => RXIO_N(i),
+        VALID     => validint(i));
+
+  end generate devicelinks;
+
+    
 end Behavioral;
