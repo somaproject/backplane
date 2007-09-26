@@ -83,7 +83,6 @@ multipar: build/$(PROJECT)_map.ncd
 	par -w -pl $(OPTIMIZE) -rl $(OPTIMIZE) -xe n -n 0 -t 1  build/$(PROJECT)_map.ncd build/$(PROJECT).dir build/$(PROJECT).pcf
 
 
-
 # timing reports
 timing: build/$(PROJECT).twr
 	less build/$(PROJECT).twr
