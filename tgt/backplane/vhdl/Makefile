@@ -15,10 +15,11 @@
 ######################################################################
 PROJECT = backplane
 
+all: $(PROJECT).bit
 bitfile: $(PROJECT).bit $(PROJECT).new.bit updaterom
 export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
 export  XIL_MAP_SKIP_LOGICAL_DRC=TRUE
-SOURCES = *.vhd 
+SOURCES := $(shell cut -f 3 -d ' '  backplane.prj  | xargs)
 OPTIMIZE = high
 PART = xc4vlx25-10-ff668
 SPEED = 10
