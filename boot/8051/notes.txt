@@ -1,0 +1,116 @@
+
+------------------------------------------------------------------------------
+EC2 notes
+-----------------------------------------------------------------------------
+http://ec2drv.sourceforge.net/
+
+To Build ec2drv: 
+svn co https://ec2drv.svn.sourceforge.net/svnroot/ec2drv ec2drv.svn
+
+
+cd ec2drv.svn/
+cd ec2drv/
+cd trunk/
+make -f Makefile.cvs 
+./configure
+make
+cd devel-tools/
+
+Now it looks like a HID driver is being loaded for the EC3 :( 
+
+we can get the device/id from lsusb: 10c4:8044
+and then try 
+libhid-detach-device 10c4:8044
+
+But this isn't necessary IF you connect the debug adaptor and THEN
+power on.
+
+
+Example newcdb
+
+set target SL51
+set target port USB
+set target connect
+
+OMG REMEMBER TO DISABLE WATCHDOG
+
+
+SDCC notes: 
+http://wiki.laptop.org/go/SDCC
+
+----------------------------------------------------------------------------
+Disk Notes
+---------------------------------------------------------------------------
+
+partition type FAT16
+
+use mkdosfs -F 16 /dev/sdd1
+
+
+----------------------------------------------------------------------------
+MMC interface
+----------------------------------------------------------------------------
+There are a few useful docs, in general we're trying to do the minimal 
+interface necessary to get us up and running. 
+
+http://elm-chan.org/docs/mmc/mmc_e.html
+
+Note that we get to roll our own SPI interface as the on-chip one isn't 
+connected to the relevant pins -- their much-lauded crossbar isn't a real
+crossbar, and tremendously restricts the pins that SPI IO can occur on. 
+
+---------------------------------------------------------------------------
+FAT interface
+-------------------------------------------------------------------------
+http://elm-chan.org/fsw/ff/00index_e.html
+
+DRESULT disk_read (
+		   BYTE drv,		/* Physical drive number (0..) */
+		   BYTE *buff,		/* Data buffer to store read data */
+		   DWORD sector,	/* Sector number (LBA) */
+		   BYTE count		/* Sector count (1..255) */
+		   )
+
+What is a sector? What happens if we try and read too many sectors, 
+we're never going to have the space for it; arrrgh!
+
+Also, it appears that we can completely ignore the ioctl, because of
+the docs saying that CTRL_SYNC, GET_SECTOR_COUNT, and GET_BLOCKSIZE
+are only used by file-system-writing functions. 
+
+Hmm. 
+
+
+---------------------------------------------------------------------------
+Memory models
+-------------------------------------------------------------------------
+From p83 of the C8051F34x data sheet, we see: 
+
+Two separte memory spaces; program memory and data memory. There are 32 kB of flash program memory and the data memory is: 
+
+0x00 - 0x1F: general purpose registers
+0x20 - 0x2F: bit addressable
+0x30 - 0x7F: direct and indrect addressing
+0x80 - 0xFF: upper 128 (indirect addressing) and SFRs. 
+
+then 0000 - 0x0fff: "Xram "
+
+Note that according to p 127 of the datasheet, the 2k B of xram will
+"wrap" with accesses.
+
+
+---------------------------------------------------------------------------
+WATCHDOG
+-------------------------------------------------------------------------
+
+The damn thing comes out of reset with the watchdog enabled. Make sure you disable
+it with :
+
+
+char _sdcc_external_startup()
+{
+
+  PCA0MD &= ~0x40;  // disable watchdog
+
+  return 0; 
+}
