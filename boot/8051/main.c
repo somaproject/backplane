@@ -207,8 +207,6 @@ void FPGA_send_bits(char * buffer, int len)
   static __data char byte; 
   static __data char txbit = 0; 
   
-  P0_0 = 0; 
-  P0_0 = 1;
 
 
   for (i = 0; i < len; i++) {
@@ -260,7 +258,7 @@ void FPGA_send_bits(char * buffer, int len)
   
   
   }
-  P0_0 = 0; 
+
 }
 void testcode()
 {

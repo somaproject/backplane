@@ -62,26 +62,197 @@ void xmit_spi(char dat) {
 
 }
 
+#define USE_ASM
+
+#ifndef USE_ASM 
+
 char recv_spi() {
   // bit-banging
-  char buf = 0; 
-  int i = 0; 
+  char buf = 0;
+  char i = 0;
 
-  for (i = 0; i < 8; i++) {
+  buf <<=  1;
+  buf |= SPI_MISO;
+  SPI_SCLK = 1;
+  SPI_SCLK = 1;
+  SPI_SCLK = 0;
 
-    buf = buf << 1;
-    buf |= SPI_MISO; 
-    // toggle clock
-    SPI_SCLK = 0; 
-    SPI_SCLK = 1; 
-    SPI_SCLK = 1; 
-    SPI_SCLK = 1; 
-    SPI_SCLK = 0; 
+  buf <<=  1;
+  buf |= SPI_MISO;
+  SPI_SCLK = 1;
+  SPI_SCLK = 1;
+  SPI_SCLK = 0;
 
-  }
-  return buf; 
+  buf <<=  1;
+  buf |= SPI_MISO;
+  SPI_SCLK = 1;
+  SPI_SCLK = 1;
+  SPI_SCLK = 0;
+
+  buf <<=  1;
+  buf |= SPI_MISO;
+  SPI_SCLK = 1;
+  SPI_SCLK = 1;
+  SPI_SCLK = 0;
+
+  buf <<=  1;
+  buf |= SPI_MISO;
+  SPI_SCLK = 1;
+  SPI_SCLK = 1;
+  SPI_SCLK = 0;
+
+  buf <<=  1;
+  buf |= SPI_MISO;
+  SPI_SCLK = 1;
+  SPI_SCLK = 1;
+  SPI_SCLK = 0;
+
+  buf <<=  1;
+  buf |= SPI_MISO;
+  SPI_SCLK = 1;
+  SPI_SCLK = 1;
+  SPI_SCLK = 0;
+
+  buf <<=  1;
+  buf |= SPI_MISO;
+  SPI_SCLK = 1;
+  SPI_SCLK = 1;
+  SPI_SCLK = 0;
+
+  return buf;
 }
 
+#else
+
+char recv_spi()  {
+  _asm; 
+
+	mov	c,_P1_0
+	clr	a
+	rlc	a
+	mov	r2,a
+
+	setb	_P1_2
+
+	setb	_P1_2
+
+	clr	_P1_2
+
+	mov	a,r2
+	add	a,r2
+	mov	r2,a
+
+	mov	c,_P1_0
+	clr	a
+	rlc	a
+	orl	ar2,a
+
+	setb	_P1_2
+
+	setb	_P1_2
+
+	clr	_P1_2
+
+	mov	a,r2
+	add	a,r2
+	mov	r2,a
+
+	mov	c,_P1_0
+	clr	a
+	rlc	a
+	orl	ar2,a
+
+	setb	_P1_2
+
+	setb	_P1_2
+
+	clr	_P1_2
+
+	mov	a,r2
+	add	a,r2
+	mov	r2,a
+
+	mov	c,_P1_0
+	clr	a
+	rlc	a
+	orl	ar2,a
+
+	setb	_P1_2
+
+	setb	_P1_2
+
+	clr	_P1_2
+
+	mov	a,r2
+	add	a,r2
+	mov	r2,a
+
+	mov	c,_P1_0
+	clr	a
+	rlc	a
+	orl	ar2,a
+
+	setb	_P1_2
+
+	setb	_P1_2
+
+	clr	_P1_2
+
+	mov	a,r2
+	add	a,r2
+	mov	r2,a
+
+	mov	c,_P1_0
+	clr	a
+	rlc	a
+	orl	ar2,a
+
+	setb	_P1_2
+
+	setb	_P1_2
+
+	clr	_P1_2
+
+	mov	a,r2
+	add	a,r2
+	mov	r2,a
+
+	mov	c,_P1_0
+	clr	a
+	rlc	a
+	orl	ar2,a
+
+	setb	_P1_2
+
+	setb	_P1_2
+
+	clr	_P1_2
+
+	mov	a,r2
+	add	a,r2
+	mov	r2,a
+
+	mov	c,_P1_0
+	clr	a
+	rlc	a
+	orl	ar2,a
+
+	setb	_P1_2
+
+	setb	_P1_2
+
+	clr	_P1_2
+
+	mov	dpl,r2
+
+	  ret
+
+  _endasm; 
+
+
+}
+
+#endif 
 
 static
 char send_command (char cmd, unsigned long arg)
@@ -188,9 +359,11 @@ void read_block_response(char * pbuffer)
 
 void mmc_read_block(unsigned long addr, char * pbuffer)
 {
+  P0_0 = 0; 
+  P0_0 = 1; 
   send_command(READ_SINGLE_BLOCK, addr); 
   read_block_response(pbuffer);   
-
+  P0_0 = 0;
 }
 
 void mmc_read_stats(char * pbuffer)
