@@ -126,125 +126,24 @@ char recv_spi() {
 
 char recv_spi()  {
   _asm; 
-
-	mov	c,_P1_0
+        push    0
 	clr	a
+	mov     r0, #8
+	00017$:
+	clr	_P1_2
+	mov	c,_P1_0
 	rlc	a
-	mov	r2,a
+
+	; clock toggle
 
 	setb	_P1_2
 
-	setb	_P1_2
+
+	djnz    r0, 00017$
 
 	clr	_P1_2
-
-	mov	a,r2
-	add	a,r2
-	mov	r2,a
-
-	mov	c,_P1_0
-	clr	a
-	rlc	a
-	orl	ar2,a
-
-	setb	_P1_2
-
-	setb	_P1_2
-
-	clr	_P1_2
-
-	mov	a,r2
-	add	a,r2
-	mov	r2,a
-
-	mov	c,_P1_0
-	clr	a
-	rlc	a
-	orl	ar2,a
-
-	setb	_P1_2
-
-	setb	_P1_2
-
-	clr	_P1_2
-
-	mov	a,r2
-	add	a,r2
-	mov	r2,a
-
-	mov	c,_P1_0
-	clr	a
-	rlc	a
-	orl	ar2,a
-
-	setb	_P1_2
-
-	setb	_P1_2
-
-	clr	_P1_2
-
-	mov	a,r2
-	add	a,r2
-	mov	r2,a
-
-	mov	c,_P1_0
-	clr	a
-	rlc	a
-	orl	ar2,a
-
-	setb	_P1_2
-
-	setb	_P1_2
-
-	clr	_P1_2
-
-	mov	a,r2
-	add	a,r2
-	mov	r2,a
-
-	mov	c,_P1_0
-	clr	a
-	rlc	a
-	orl	ar2,a
-
-	setb	_P1_2
-
-	setb	_P1_2
-
-	clr	_P1_2
-
-	mov	a,r2
-	add	a,r2
-	mov	r2,a
-
-	mov	c,_P1_0
-	clr	a
-	rlc	a
-	orl	ar2,a
-
-	setb	_P1_2
-
-	setb	_P1_2
-
-	clr	_P1_2
-
-	mov	a,r2
-	add	a,r2
-	mov	r2,a
-
-	mov	c,_P1_0
-	clr	a
-	rlc	a
-	orl	ar2,a
-
-	setb	_P1_2
-
-	setb	_P1_2
-
-	clr	_P1_2
-
-	mov	dpl,r2
-
+	mov	dpl,A
+	pop 0
 	  ret
 
   _endasm; 
@@ -342,11 +241,15 @@ void read_block_response(char * pbuffer)
   }
 
   // now get the actual data; 
+  P0_0 = 0; 
+  P0_0 = 1; 
+
   for (i = 0; i < BLOCK_SIZE; i++ ) {
     *p = recv_spi(); 
     p++; 
   }
 
+  P0_0 = 0;
   // read off the two CRC bytes
   recv_spi(); 
   recv_spi(); 
@@ -359,11 +262,11 @@ void read_block_response(char * pbuffer)
 
 void mmc_read_block(unsigned long addr, char * pbuffer)
 {
-  P0_0 = 0; 
-  P0_0 = 1; 
+
   send_command(READ_SINGLE_BLOCK, addr); 
+
   read_block_response(pbuffer);   
-  P0_0 = 0;
+
 }
 
 void mmc_read_stats(char * pbuffer)
