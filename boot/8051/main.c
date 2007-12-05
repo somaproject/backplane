@@ -23,14 +23,16 @@ void general_setup()
   int i; 
 
   OSCICN = 0x83; 
-  OSCICL = 0x00; 
+
+  //OSCICL = 0; 
+  //OSCICL = 0x00; 
   PCA0MD &= ~0x40; 
 
   // set up the clock multiplier, per instructions on page 146 of manual
   CLKMUL = 0; 
   CLKMUL |= 0x80; // enable clock multipler
   // delay
-  for (i = 0; i < 1000; i++) {
+  for (i = 0; i < 100; i++) {
     // 
   }
   
@@ -43,8 +45,7 @@ void general_setup()
 
   // now initialzied; 
   
-  
-  //CLKSEL = 0x02; 
+  CLKSEL |= 0x03; 
 
 }
 
@@ -116,7 +117,8 @@ char _sdcc_external_startup()
 {
 
   PCA0MD &= ~0x40;  // disable watchdog
-  
+  general_setup(); 
+
   return 0; 
 }
 
@@ -296,7 +298,7 @@ int main(void)
   unsigned int bytesread = 0; 
   FRESULT fres; 
   
-  general_setup(); 
+  //general_setup(); 
   configure_port_0(); 
   configure_port_1(); 
   configure_port_2(); 
@@ -307,7 +309,7 @@ int main(void)
 
   // filesystem operations
   
-  fres = f_mount(0, &filesysobj); 
+  fres = f_mount(0, &filesysobj);  
   checkOK(fres); 
 
   FPGA_boot();

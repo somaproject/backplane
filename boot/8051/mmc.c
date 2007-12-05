@@ -130,18 +130,16 @@ char recv_spi()  {
 	clr	a
 	mov     r0, #8
 	00017$:
-	clr	_P1_2
 	mov	c,_P1_0
 	rlc	a
 
 	; clock toggle
-
 	setb	_P1_2
-
+	setb	_P1_2
+	clr	_P1_2
 
 	djnz    r0, 00017$
 
-	clr	_P1_2
 	mov	dpl,A
 	pop 0
 	  ret
