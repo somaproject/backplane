@@ -219,7 +219,8 @@ begin  -- Behavioral
         cs   <= ns;
 
         -- tx side
-        encdatal <= encdata;
+        encdatal <= encdata;            -- Debuggin
+        --encdatal <= "0000000001"; 
         if omux = 0 then
           ol     <= encdatal;
         elsif omux = 1 then

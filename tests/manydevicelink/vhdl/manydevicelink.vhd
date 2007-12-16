@@ -10,7 +10,6 @@ use UNISIM.VComponents.all;
 
 
 entity manydevicelink is
-
   port (
     CLKIN      : in  std_logic;
     RESET      : in  std_logic;
@@ -23,7 +22,6 @@ entity manydevicelink is
     WORDCLKOUT : out std_logic;
     TXCLKOUT   : out std_logic
     );
-
 end manydevicelink;
 
 architecture Behavioral of manydevicelink is

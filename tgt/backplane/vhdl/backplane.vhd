@@ -848,12 +848,6 @@ begin  -- Behavioral
   NICIOCLK <= clk;
 
 
--- dincapture_inst : dincapture
--- port map (
--- CLK => clk,
--- DIN => lnicdout,
--- DINEN => lnicnewframe);
-
   process(niciointclk)
   begin
 
