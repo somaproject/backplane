@@ -1,0 +1,86 @@
+\subsection{Boot Storage SPI Interface}
+
+To talk to the boot storage device over SPI, we use a somewhat
+convoluted serial SPI interface. Having the backplane core FPGA be the
+master would have been nice, but the target boot storage device, in this
+case an 8051, would make a poor SPI slave with our bit-banging SPI IF. 
+
+The FPGA can request an SPI read through the assertion of the
+BOOTSPIREQ line, which will then cause the master to query for a
+request.
+
+FPGA requests: At the moment, there are basically two requests, ``open
+file'' and ``read bytes''.
+
+8051 Commands: The commands the 8051 can send are: 
+0x00: no op
+0x01: query request
+
+\subsubsection{File Open Command}
+MOSI:          MISO:
+CMDREQ          - 
+  -            FOCMD
+  -            Filename[0]
+  -             ...
+  -            Filename[31]
+     [there might be a substantial pause here]
+FOPENRES         -
+FOPENLEN[3]      -
+...
+FOPENLEN[0]      - 
+b
+Done!
+
+
+CMDREQ = 0x01
+FOCMD  = 0x01
+filename: the null-terminated filename string to open
+FOPENRES = 0x01 success
+           0x02 file not found
+           0x03 other error
+and then either all 0s or the file length in bytes
+
+
+\subsection{File Read Command}
+MOSI:           MISO:
+CMDREQ            -
+  -             FRCMD
+  -              OS[3]
+  -              ...
+  -              OS[0]
+  -             LEN[3]
+  -             ... 
+  -             LEN[0]
+   [there might be a substantial pause here]
+BYTE[0]           -
+ ...              as well as substantial block-related delays
+BYTE[N]           - 
+  
+CMDREQ: 0x02
+FRCMD : 0x02
+OS: the offset into the file
+LEN : the number of bytes to read
+Byte0[0] the first byte in the file
+ByteN: the last byte requested
+
+Note our guarantee: We always return N bytes, and pad with 0s
+
+
+\subsubsection{IO Interface} 
+We require the higher-level interface to understand the per-byte
+specifics of this IO, but we do wrap
+all of the SPI stuff in the BootSPIIO module which has: 
+
+DIN[7:0]
+DOUT[7:0]
+ADDR[10:0]
+WE 
+CMDREQ: request a command be process
+CMDST : asserted when the command begins
+CMDDONE: asserted when the command is done
+CURBYTE[10:0] the currently-processed BYTE
+
+The SPI side actually runs at 150 MHz to handle the SPI IF from the
+device without having to introduce transfer-rate-killing wait states.
+We assume that the maximum SPI clock rate on the 8051 side is 25 MHz.
+

@@ -1,9 +1,8 @@
-din
-
-This prompts us to formalize our serial protocol. There's a problem
-because our serial protocol is asynchronous. We'll make the assumption
-that our clocks are close-enough that we can just send our data 5x
-slower, and successfuly recover the bits.
+This prompts us to formalize our device boot (to the CPLD) serial
+protocol.  There's a problem because our serial protocol is
+asynchronous. We'll make the assumption that our clocks are
+close-enough that we can just send our data 5x slower, and successfuly
+recover the bits.
 
 
 Our bitstream is a list of 5 bits:
