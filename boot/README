@@ -1,12 +1,5 @@
-Organization of our generic boot/MMC interface:
+The code and infrastructure for our initial bootstrapping
+interface. We use the Silicon Labs 8051 to provide a block-leve interface to the filesystem. 
 
-cpld: synthesizable code for our CPLD mmc boot interface
 docs: documentation
 sim: simulations and unit tests
-vhdl: generic MMC interface
-
-docs:
-   1. MMC overview
-   2. boot process
-   3. SPI configuration
-   4. 

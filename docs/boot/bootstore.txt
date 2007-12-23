@@ -13,6 +13,8 @@ SRC: DEVICE
 DATA0: success/failure
 DATA1: handle | 0x00
 
+success = 0; failure = anything else
+
 
 set filename: 
 CMD: 0x91:
@@ -21,16 +23,18 @@ DATA1:  CHAR[0] | CHAR[1]
 DATA4:  CHAR[6] | CHAR[7]
 
 (no response)
-GET
-Open Filename:
+OPEN FILENAME: 
 CMD: 0x92
 SRC: 
-DATA: not used? 
+DATA: Handle
 
 Response: 
 CMD: 0x92
 SRC: DEVICE
-DATA: 0x01: success, 0x02 : failure
+DATA0: 0x01: success, anything else: failure
+DATA1: len
+DATA2: len
+
 
 READ DATA: 
 CMD: 0x93
@@ -49,3 +53,11 @@ SRC: DEVICE
 DATA0: 8-byte-block #, i.e. which event # this is of the read events we're going to get (this limits a read cmd to ... some number of bytes?)
 DATA1: bytes[0] & bytes[1]
 ...
+
+What are words that we need to send? 
+
+Obviously particular CMDs, and to either a PENDING or CUR src
+words from the SPI interface output
+The Handle
+Response success/failure
+8-byte rx block ID

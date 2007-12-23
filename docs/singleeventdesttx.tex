@@ -1,0 +1,14 @@
+\section{Single Event Destination TX}
+
+Sometimes you want a simple way of sending an event to a single
+destination. No broadcast and no real queueing. 
+
+That's where this module comes in. Build up your event using the
+address/data/write-enable lines, assert \signal{ESEND}, and then just
+sit back and wait for the \signal{EPENDING} to be deasserted.
+
+Note that \signa{EDEST[6:0]} is latched on the assertion of
+\signal{ESEND}.
+
+
+

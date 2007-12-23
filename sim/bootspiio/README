@@ -1,0 +1,7 @@
+bootspiio unit tests
+
+Things to verify: 
+we can write data in, and read it out via the SPI interface
+We can read out SPI data
+That it works for SPI clocks up to 25 MHz. 
+That the word ordering is correct. We expect everything to be MSB first. 

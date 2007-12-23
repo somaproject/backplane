@@ -15,20 +15,22 @@ file'' and ``read bytes''.
 8051 Commands: The commands the 8051 can send are: 
 0x00: no op
 0x01: query request
-
+FOCMD: 
 \subsubsection{File Open Command}
 MOSI:          MISO:
 CMDREQ          - 
+ 0x00           -
   -            FOCMD
+  -            0x00
   -            Filename[0]
   -             ...
   -            Filename[31]
      [there might be a substantial pause here]
 FOPENRES         -
+0x00 ??            -
 FOPENLEN[3]      -
 ...
 FOPENLEN[0]      - 
-b
 Done!
 
 
@@ -44,7 +46,9 @@ and then either all 0s or the file length in bytes
 \subsection{File Read Command}
 MOSI:           MISO:
 CMDREQ            -
+0x00              - 
   -             FRCMD
+  -             0x00
   -              OS[3]
   -              ...
   -              OS[0]
@@ -71,8 +75,8 @@ We require the higher-level interface to understand the per-byte
 specifics of this IO, but we do wrap
 all of the SPI stuff in the BootSPIIO module which has: 
 
-DIN[7:0]
-DOUT[7:0]
+DIN[15:0]
+DOUT[15:0]
 ADDR[10:0]
 WE 
 CMDREQ: request a command be process
@@ -83,4 +87,8 @@ CURBYTE[10:0] the currently-processed BYTE
 The SPI side actually runs at 150 MHz to handle the SPI IF from the
 device without having to introduce transfer-rate-killing wait states.
 We assume that the maximum SPI clock rate on the 8051 side is 25 MHz.
+
+Note that with DOUT[15:0], DOUT[15] is placed on the wire first, and
+DOUT[0] last; similarly, DIN[15] was the first bit placed on the wire
+by the master.
 
