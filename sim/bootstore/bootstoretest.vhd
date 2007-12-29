@@ -146,15 +146,16 @@ begin  -- Behavioral
   end process ecycle_generation;
 
 
-  -----------------------------------------------------------------------------
+  ---------------------------------------------------------------------------
   -- Fake SPI interface
   --
   --  Very primitive, just read in the values and then let us later process
-  -----------------------------------------------------------------------------
+  ---------------------------------------------------------------------------
   process
     variable wordin        : std_logic_vector(15 downto 0);
     variable wordout       : std_logic_vector(15 downto 0);
     variable addrin, lenin : std_logic_vector(31 downto 0) := (others => '0');
+    variable len           : integer                       := 0;
 
   begin
     wait until rising_edge(SPIREQ);
@@ -249,6 +250,24 @@ begin  -- Behavioral
         SPICLK <= '0';
       end loop;  -- i
 
+      wait for 100 us;
+      wordout := addrin(15 downto 0);
+      len     := to_integer(unsigned(lenin));
+      report "The requested length is " & integer'image(len) severity note;
+
+      for word in 0 to len loop
+        for i in 15 downto 0 loop
+          SPIMOSI <= wordout(i);
+          wait until rising_edge(CLK);
+          SPICLK  <= '1';
+          wait until rising_edge(CLK);
+          SPICLK  <= '0';
+        end loop;  -- i
+        wordout := wordout + 1;
+      end loop;  -- word
+      report "SPI fread data tx done" severity note;
+      wait until rising_edge(CLK);
+      SPICS       <= '1';
 
     end if;
 
@@ -275,7 +294,12 @@ begin  -- Behavioral
 
   end process;
 
-  sendeventtest : process
+  sendeventtest          : process
+    variable readpktnum  : integer                       := 0;
+    variable readpktword : std_logic_vector(15 downto 0) := (others => '0');
+    variable readword    : std_logic_vector(15 downto 0) := (others => '0');
+    variable readwordnum : integer                       := 0;
+
   begin
 
     -- send an event and show that we get a noop response
@@ -384,7 +408,7 @@ begin  -- Behavioral
     assert EDRX = X"78" report "Error receiving fopen len" severity error;
 
     -------------------------------------------------------------------------
-    -- send FREAD
+    -- send FREAD 1 
     -------------------------------------------------------------------------
 
     wait until rising_edge(CLK) and ECYCLE = '1';
@@ -394,11 +418,139 @@ begin  -- Behavioral
     eventinputs(0)(2) <= X"0000";
     eventinputs(0)(3) <= X"0100";
     eventinputs(0)(4) <= X"0000";
-    eventinputs(0)(5) <= X"0300";
+    eventinputs(0)(5) <= X"0100";
     wait until rising_edge(CLK) and ECYCLE = '1';
     EATX              <= (others => '0');
     wait until rising_edge(CLK) and ECYCLE = '1';
 
+    -- now hope we get a response
+    for i in 0 to 31 loop
+      wait until rising_edge(CLK) and EARX(0) = '1';
+
+      -- check header
+      EDSELRX <= "0000";
+      wait until rising_edge(CLK);
+
+      assert EDRX = X"94" report
+        "fread error : event read command byte incorrect" severity error;
+      EDSELRX <= "0001";
+      wait until rising_edge(CLK);
+
+      assert EDRX = BOOTDEVICE report
+        "fread error : event source incorrect" severity error;
+
+      -- check byte pos
+      EDSELRX <= "0010";
+      wait until rising_edge(CLK);
+      readpktword(15 downto 8) := EDRX;
+
+      EDSELRX <= "0011";
+      wait until rising_edge(CLK);
+      readpktword(7 downto 0) := EDRX;
+      readpktnum              := to_integer(unsigned(readpktword));
+      assert readpktnum = i report
+        "fread : error reading packet num" severity error;
+
+      -- now read the actual data bytes within the packet
+      for wordnum in 0 to 3 loop
+        -- first byte of data word!
+        EDSELRX <= std_logic_vector(TO_UNSIGNED(wordnum*2 + 4, 4));
+        wait until rising_edge(CLK);
+        readword(15 downto 8) := EDRX;
+
+        -- second byte of data word! 
+        EDSELRX <= std_logic_vector(TO_UNSIGNED(wordnum*2 + 5, 4));
+        wait until rising_edge(CLK);
+        readword(7 downto 0) := EDRX;
+        readwordnum          := to_integer(unsigned(readword));
+        assert (256 + i * 4 + wordnum) = readwordnum report
+          "Error reading data word" severity error;
+-- report "Recovered word num is " & integer'image(readwordnum) &
+-- " " & integer'image(256 + i *4 + wordnum)
+-- severity Note;
+
+      end loop;  -- wordnum
+      wait until rising_edge(CLK) and ECYCLE = '1';       
+    end loop;
+
+    report "fread 1 successful " severity note;
+
+
+
+    
+    -------------------------------------------------------------------------
+    -- send FREAD 2
+    -------------------------------------------------------------------------
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '1';
+    eventinputs(0)(0) <= FREAD & X"00";
+    eventinputs(0)(1) <= curhandle & X"00";
+    eventinputs(0)(2) <= X"0000";
+    eventinputs(0)(3) <= X"0200";
+    eventinputs(0)(4) <= X"0000";
+    eventinputs(0)(5) <= X"0100";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX              <= (others => '0');
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    -- now hope we get a response
+    for i in 0 to 31 loop
+      wait until rising_edge(CLK) and EARX(0) = '1';
+
+      -- check header
+      EDSELRX <= "0000";
+      wait until rising_edge(CLK);
+
+      assert EDRX = X"94" report
+        "fread error : event read command byte incorrect" severity error;
+      EDSELRX <= "0001";
+      wait until rising_edge(CLK);
+
+      assert EDRX = BOOTDEVICE report
+        "fread error : event source incorrect" severity error;
+
+      -- check byte pos
+      EDSELRX <= "0010";
+      wait until rising_edge(CLK);
+      readpktword(15 downto 8) := EDRX;
+
+      EDSELRX <= "0011";
+      wait until rising_edge(CLK);
+      readpktword(7 downto 0) := EDRX;
+      readpktnum              := to_integer(unsigned(readpktword));
+      assert readpktnum = i report
+        "fread : error reading packet num" severity error;
+
+      -- now read the actual data bytes within the packet
+      for wordnum in 0 to 3 loop
+        -- first byte of data word!
+        EDSELRX <= std_logic_vector(TO_UNSIGNED(wordnum*2 + 4, 4));
+        wait until rising_edge(CLK);
+        readword(15 downto 8) := EDRX;
+
+        -- second byte of data word! 
+        EDSELRX <= std_logic_vector(TO_UNSIGNED(wordnum*2 + 5, 4));
+        wait until rising_edge(CLK);
+        readword(7 downto 0) := EDRX;
+        readwordnum          := to_integer(unsigned(readword));
+        assert (256*2 + i * 4 + wordnum) = readwordnum report
+          "Error reading data word" severity error;
+-- report "Recovered word num is " & integer'image(readwordnum) &
+-- " " & integer'image(256 + i *4 + wordnum)
+-- severity Note;
+
+      end loop;  -- wordnum
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    end loop;
+
+    report "fread 2 successful " severity note;
+
+
+    
+
+    report "End of Simulation" severity failure;
     wait;
   end process;
 

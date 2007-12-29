@@ -1,2 +1,7 @@
-Bootstore test
+Bootstore test:
+First we get the Handle
+Then we set the filename
+then we execute the file open
+Then we try and read two sets of data, fread1 and fread2
 
+We create a fake SPI interface that correctly responds. 

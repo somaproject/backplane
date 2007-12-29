@@ -124,7 +124,8 @@ architecture Behavioral of bootstore is
   signal txcmd : std_logic_vector(7 downto 0) := (others => '0');
 
   -- packet counting
-  signal pktcnt : std_logic_vector(15 downto 0) := (others => '0');
+  signal pktcnt     : std_logic_vector(15 downto 0) := (others => '0');
+  signal pendpktcnt : std_logic_vector(15 downto 0) := (others => '0');
 
 
   -- boot spi interface
@@ -154,7 +155,9 @@ architecture Behavioral of bootstore is
                   fnlos, fname01, fname23, fname45, fname67,
                   fopens, fopencmd,
                   fopenrsp1, forspstat, forsplen1, forsplen2, forsnd,
-                  freadcmd, fread0, fread1, fread2, fread3, fsend, 
+                  freadcmd, fread0, fread1, fread2, fread3, fsend,
+                  freadresp, frblockn, frw1, frw2, frw3, frw4,
+                  frdone, frespwait, 
                   etxsend);
 
   signal cs, ns : states := none;
@@ -167,11 +170,11 @@ architecture Behavioral of bootstore is
   constant FREAD    : std_logic_vector(7 downto 0) := X"93";
 
   -- SPI CONSTANTS
-  constant SPIFOCMD  : std_logic_vector(15 downto 0) := X"0001";
-  constant SPIFRCMD  : std_logic_vector(15 downto 0) := X"0002";
+  constant SPIFOCMD : std_logic_vector(15 downto 0) := X"0001";
+  constant SPIFRCMD : std_logic_vector(15 downto 0) := X"0002";
 
 
-  
+
 begin  -- Behavioral
 
   rxeventfifo_inst : rxeventfifo
@@ -249,23 +252,45 @@ begin  -- Behavioral
         pendsrc <= cursrc;
       end if;
 
-      if cs =  fopencmd then 
+      if cs = fopencmd then
         pending <= "01";
-      elsif cs = forsnd then
+      elsif cs = forsnd or cs = frdone then
         pending <= "00";
       elsif cs = fsend then
         pending <= "10";
-      end if;     
-      
-      if cs =fnlos then
-        offset <= eoutd(8 downto 1); 
       end if;
-      
+
+      if cs = fread3 then
+        pendpktcnt(12 downto 0) <= eoutd(15 downto 3);
+      elsif cs = fread2 then
+        pendpktcnt(15 downto 13) <= eoutd(2 downto 0);
+      end if;
+
+      if cs = fsend then
+        pktcnt   <= (others => '0');
+      else
+        if cs = frw4 then
+          pktcnt <= pktcnt + 1;
+        end if;
+      end if;
+
+      if cs = fnlos then
+        offset <= eoutd(8 downto 1);
+      end if;
+
+      if cs = fsend then
+        spicnt   <= "0000000110";
+      else
+        if incspicnt = '1' then
+          spicnt <= spicnt + 1;
+        end if;
+      end if;
+
     end if;
   end process main;
 
 
-  fsm : process(cs, evalid, eoutd, handle, curcmd, cmddone)
+  fsm : process(cs, evalid, eoutd, handle, curcmd, cmddone, setxpending)
   begin
     case cs is
       when none =>
@@ -290,9 +315,11 @@ begin  -- Behavioral
           ns      <= rdevt;
         else
           if pending = "01" and cmddone = '1' then
-            ns <= fopenrsp1;
+            ns    <= fopenrsp1;
+          elsif pending = "10" and cmddone = '1' then
+            ns <= freadresp; 
           else
-            ns      <= none;                  
+            ns    <= none;
           end if;
 
         end if;
@@ -382,12 +409,12 @@ begin  -- Behavioral
         setxain   <= "000";
         setxsend  <= '0';
         if curcmd = GETHAND then
-            ns    <= sendacq;
+          ns      <= sendacq;
         else
           if pending = "00" then
-            ns <= chkhand; 
+            ns    <= chkhand;
           else
-            ns      <= penderr;
+            ns    <= penderr;
           end if;
         end if;
 
@@ -450,7 +477,7 @@ begin  -- Behavioral
         setxain   <= "010";
         setxsend  <= '0';
         if setxpending = '1' then
-          ns      <= shandval; 
+          ns      <= shandval;
         else
           ns      <= shandne;
         end if;
@@ -476,7 +503,7 @@ begin  -- Behavioral
 
         ns <= none;
 
-        when chkhand =>
+      when chkhand =>
         enext     <= '0';
         eouta     <= "001";
         ssel      <= 0;
@@ -496,22 +523,22 @@ begin  -- Behavioral
         setxsend  <= '0';
         if eoutd(15 downto 8) = handle then
           if curcmd = SETFNAME then
-            ns <= fnlos;
+            ns    <= fnlos;
           elsif curcmd = FOPEN then
-            ns <= fopens;
+            ns    <= fopens;
           elsif curcmd = FREAD then
-            ns <= freadcmd; 
+            ns    <= freadcmd;
           else
-            report "FIXME NOT IMPLMENETED" severity ERror;
+            report "FIXME NOT IMPLMENETED" severity error;
           end if;
         else
-          ns <= handerr; 
+          ns      <= handerr;
         end if;
 
-      -------------------------------------------------------------------------
-      -- set filename
-      -------------------------------------------------------------------------
-        when fnlos =>
+        -------------------------------------------------------------------------
+        -- set filename
+        -------------------------------------------------------------------------
+      when fnlos =>
         enext     <= '0';
         eouta     <= "010";
         ssel      <= 0;
@@ -529,9 +556,9 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fname01;
-        
-        when fname01 =>
+        ns        <= fname01;
+
+      when fname01 =>
         enext     <= '0';
         eouta     <= "011";
         ssel      <= 0;
@@ -549,10 +576,10 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fname23;
-        
+        ns        <= fname23;
 
-        when fname23 =>
+
+      when fname23 =>
         enext     <= '0';
         eouta     <= "100";
         ssel      <= 0;
@@ -570,10 +597,10 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fname45;
-        
+        ns        <= fname45;
 
-        when fname45 =>
+
+      when fname45 =>
         enext     <= '0';
         eouta     <= "101";
         ssel      <= 0;
@@ -591,9 +618,9 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fname67;
-        
-        when fname67 =>
+        ns        <= fname67;
+
+      when fname67 =>
         enext     <= '0';
         eouta     <= "101";
         ssel      <= 0;
@@ -611,12 +638,12 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= nextevt;
-        
-      -------------------------------------------------------------------------
-      -- fopen 
-      -------------------------------------------------------------------------
-        when fopens =>
+        ns        <= nextevt;
+
+        -------------------------------------------------------------------------
+        -- fopen 
+        -------------------------------------------------------------------------
+      when fopens =>
         enext     <= '0';
         eouta     <= "000";
         ssel      <= 0;
@@ -624,7 +651,7 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 0;
         spiasel   <= 1;
-        dconst    <= SPIFOCMD; 
+        dconst    <= SPIFOCMD;
         aconst    <= "0000000001";
         setxsel   <= 0;
         spiwe     <= '1';
@@ -634,9 +661,9 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fopencmd; 
+        ns        <= fopencmd;
 
-        when fopencmd =>
+      when fopencmd  =>
         enext     <= '0';
         eouta     <= "000";
         ssel      <= 0;
@@ -644,7 +671,7 @@ begin  -- Behavioral
         penden    <= '1';
         spidsel   <= 0;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
+        dconst    <= X"0000";
         aconst    <= "0000000001";
         setxsel   <= 0;
         spiwe     <= '0';
@@ -654,11 +681,11 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= nextevt; 
-      -------------------------------------------------------------------------
-      -- fopen response
-      -------------------------------------------------------------------------
-        when fopenrsp1 =>
+        ns        <= nextevt;
+        -------------------------------------------------------------------------
+        -- fopen response
+        -------------------------------------------------------------------------
+      when fopenrsp1 =>
         enext     <= '0';
         eouta     <= "000";
         ssel      <= 1;
@@ -666,19 +693,19 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 0;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
+        dconst    <= X"0000";
         aconst    <= "0000010010";
         setxsel   <= 0;
         spiwe     <= '0';
-        txcmd     <= FOPEN; 
+        txcmd     <= FOPEN;
         cmdreq    <= '0';
         incspicnt <= '0';
         setxwe    <= '1';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= forspstat; 
+        ns        <= forspstat;
 
-        when forspstat =>
+      when forspstat =>
         enext     <= '0';
         eouta     <= "000";
         ssel      <= 1;
@@ -686,20 +713,20 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 0;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
+        dconst    <= X"0000";
         aconst    <= "0000010011";
         setxsel   <= 4;
         spiwe     <= '0';
-        txcmd     <= FOPEN; 
+        txcmd     <= FOPEN;
         cmdreq    <= '0';
         incspicnt <= '0';
         setxwe    <= '1';
         setxain   <= "001";
         setxsend  <= '0';
-        ns <= forsplen1; 
+        ns        <= forsplen1;
 
 
-        when forsplen1 =>
+      when forsplen1 =>
         enext     <= '0';
         eouta     <= "000";
         ssel      <= 1;
@@ -707,17 +734,17 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 0;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
+        dconst    <= X"0000";
         aconst    <= "0000010100";
         setxsel   <= 4;
         spiwe     <= '0';
-        txcmd     <= FOPEN; 
+        txcmd     <= FOPEN;
         cmdreq    <= '0';
         incspicnt <= '0';
         setxwe    <= '1';
         setxain   <= "010";
         setxsend  <= '0';
-        ns <= forsplen2; 
+        ns        <= forsplen2;
 
 
       when forsplen2 =>
@@ -728,23 +755,23 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 0;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
+        dconst    <= X"0000";
         aconst    <= "0000010101";
         setxsel   <= 4;
         spiwe     <= '0';
-        txcmd     <= FOPEN; 
+        txcmd     <= FOPEN;
         cmdreq    <= '0';
         incspicnt <= '0';
         setxwe    <= '1';
         setxain   <= "011";
         setxsend  <= '0';
         if setxpending = '0' then
-          ns <= forsnd;
+          ns      <= forsnd;
         else
-          ns <= forsplen2; 
+          ns      <= forsplen2;
         end if;
 
-      when forsnd =>
+      when forsnd   =>
         enext     <= '0';
         eouta     <= "000";
         ssel      <= 1;
@@ -752,21 +779,21 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 0;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
+        dconst    <= X"0000";
         aconst    <= "0000000000";
         setxsel   <= 4;
         spiwe     <= '0';
-        txcmd     <= FOPEN; 
+        txcmd     <= FOPEN;
         cmdreq    <= '0';
         incspicnt <= '0';
         setxwe    <= '0';
         setxain   <= "100";
         setxsend  <= '1';
-        ns <= none; 
-      -------------------------------------------------------------------------
-      -- fread
-      -------------------------------------------------------------------------
-        when freadcmd =>
+        ns        <= none;
+        -------------------------------------------------------------------------
+        -- fread
+        -------------------------------------------------------------------------
+      when freadcmd =>
         enext     <= '0';
         eouta     <= "010";
         ssel      <= 0;
@@ -774,7 +801,7 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 0;
         spiasel   <= 1;
-        dconst    <= SPIFRCMD; 
+        dconst    <= SPIFRCMD;
         aconst    <= "0000000001";
         setxsel   <= 0;
         spiwe     <= '1';
@@ -784,9 +811,9 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fread0; 
+        ns        <= fread0;
 
-        when fread0 =>
+      when fread0 =>
         enext     <= '0';
         eouta     <= "011";
         ssel      <= 0;
@@ -794,7 +821,7 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 1;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
+        dconst    <= X"0000";
         aconst    <= "0000000010";
         setxsel   <= 0;
         spiwe     <= '1';
@@ -804,18 +831,18 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fread1; 
+        ns        <= fread1;
 
-        when fread1 =>
+      when fread1 =>
         enext     <= '0';
-        eouta     <= "011";
+        eouta     <= "100";
         ssel      <= 0;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 1;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
-        aconst    <= "0000000010";
+        dconst    <= X"0000";
+        aconst    <= "0000000011";
         setxsel   <= 0;
         spiwe     <= '1';
         txcmd     <= X"00";
@@ -824,18 +851,18 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fread2; 
+        ns        <= fread2;
 
-        when fread2 =>
+      when fread2 =>
         enext     <= '0';
-        eouta     <= "011";
+        eouta     <= "101";
         ssel      <= 0;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 1;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
-        aconst    <= "0000000010";
+        dconst    <= X"0000";
+        aconst    <= "0000000100";
         setxsel   <= 0;
         spiwe     <= '1';
         txcmd     <= X"00";
@@ -844,18 +871,18 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fread3; 
+        ns        <= fread3;
 
-        when fread3 =>
+      when fread3 =>
         enext     <= '0';
-        eouta     <= "011";
+        eouta     <= "101";
         ssel      <= 0;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 1;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
-        aconst    <= "0000000010";
+        dconst    <= X"0000";
+        aconst    <= "0000000101";
         setxsel   <= 0;
         spiwe     <= '1';
         txcmd     <= X"00";
@@ -864,9 +891,9 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= fsend; 
+        ns        <= fsend;
 
-      when fsend =>
+      when fsend     =>
         enext     <= '0';
         eouta     <= "011";
         ssel      <= 0;
@@ -874,7 +901,7 @@ begin  -- Behavioral
         penden    <= '0';
         spidsel   <= 1;
         spiasel   <= 1;
-        dconst    <= X"0000"; 
+        dconst    <= X"0000";
         aconst    <= "0000000010";
         setxsel   <= 0;
         spiwe     <= '0';
@@ -884,7 +911,179 @@ begin  -- Behavioral
         setxwe    <= '0';
         setxain   <= "000";
         setxsend  <= '0';
-        ns <= nextevt; 
+        ns        <= nextevt;
+        -------------------------------------------------------------------------
+        -- freadresp
+        -------------------------------------------------------------------------
+      when freadresp =>
+        enext     <= '0';
+        eouta     <= "010";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 1;
+        dconst    <= SPIFRCMD;
+        aconst    <= "0000000001";
+        setxsel   <= 0;
+        spiwe     <= '0';
+        txcmd     <= X"94";
+        cmdreq    <= '0';
+        incspicnt <= '0';
+        setxwe    <= '1';
+        setxain   <= "000";
+        setxsend  <= '0';
+        ns        <= frblockn;
+
+      when frblockn =>
+        enext     <= '0';
+        eouta     <= "000";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 2;
+        dconst    <= SPIFRCMD;
+        aconst    <= "0000000001";
+        setxsel   <= 2;
+        spiwe     <= '0';
+        txcmd     <= X"00";
+        cmdreq    <= '0';
+        incspicnt <= '1';
+        setxwe    <= '1';
+        setxain   <= "001";
+        setxsend  <= '0';
+        ns        <= frw1;
+        
+      when frw1 =>
+        enext     <= '0';
+        eouta     <= "000";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 2;
+        dconst    <= SPIFRCMD;
+        aconst    <= "0000000001";
+        setxsel   <= 4;
+        spiwe     <= '0';
+        txcmd     <= X"00";
+        cmdreq    <= '0';
+        incspicnt <= '1';
+        setxwe    <= '1';
+        setxain   <= "010";
+        setxsend  <= '0';
+        ns        <= frw2;
+        
+
+      when frw2 =>
+        enext     <= '0';
+        eouta     <= "000";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 2;
+        dconst    <= SPIFRCMD;
+        aconst    <= "0000000001";
+        setxsel   <= 4;
+        spiwe     <= '0';
+        txcmd     <= X"00";
+        cmdreq    <= '0';
+        incspicnt <= '1';
+        setxwe    <= '1';
+        setxain   <= "011";
+        setxsend  <= '0';
+        ns        <= frw3;
+        
+
+      when frw3 =>
+        enext     <= '0';
+        eouta     <= "000";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 2;
+        dconst    <= SPIFRCMD;
+        aconst    <= "0000000001";
+        setxsel   <= 4;
+        spiwe     <= '0';
+        txcmd     <= X"00";
+        cmdreq    <= '0';
+        incspicnt <= '1';
+        setxwe    <= '1';
+        setxain   <= "100";
+        setxsend  <= '0';
+        ns        <= frw4;
+        
+      when frw4 =>
+        enext     <= '0';
+        eouta     <= "000";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 2;
+        dconst    <= SPIFRCMD;
+        aconst    <= "0000000001";
+        setxsel   <= 4;
+        spiwe     <= '0';
+        txcmd     <= X"00";
+        cmdreq    <= '0';
+        incspicnt <= '0';
+        setxwe    <= '1';
+        setxain   <= "101";
+        setxsend  <= '1';
+        if pendpktcnt = pktcnt then
+          ns <= frdone;
+        else
+          ns <= frespwait; 
+        end if;
+        
+      when frdone =>
+        enext     <= '0';
+        eouta     <= "000";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 2;
+        dconst    <= SPIFRCMD;
+        aconst    <= "0000000001";
+        setxsel   <= 4;
+        spiwe     <= '0';
+        txcmd     <= X"00";
+        cmdreq    <= '0';
+        incspicnt <= '1';
+        setxwe    <= '0';
+        setxain   <= "101";
+        setxsend  <= '0';
+        ns        <= frespwait;
+        
+      when frespwait =>
+        enext     <= '0';
+        eouta     <= "010";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 1;
+        dconst    <= SPIFRCMD;
+        aconst    <= "0000000001";
+        setxsel   <= 0;
+        spiwe     <= '0';
+        txcmd     <= X"94";
+        cmdreq    <= '0';
+        incspicnt <= '0';
+        setxwe    <= '0';
+        setxain   <= "000";
+        setxsend  <= '0';
+        if setxpending = '1' then
+          ns <= frespwait;
+        else
+          ns <= none; 
+        end if;
 
       when others =>
         enext     <= '0';
