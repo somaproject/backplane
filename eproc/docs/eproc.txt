@@ -1,0 +1,25 @@
+The Soma Event Processor: a quick and dirty progammable FSM that offers
+guaranteed event processing in finite time.
+
+Each incoming event gets 12 ops
+Each ecycle gets 50 ops
+
+We have a "startup mode" that just runs instructions and sends events
+and never receives events.
+
+We use a core processor called an ECORE which looks like a PicoBlaze
+(sorta) but has an optional external reg file (for event IO) and the
+ability to "force" it to particular addresses -- a sort of external
+interrupt control. 
+
+This lets us provide hardware-support for dispatch on each hardware
+event. 
+
+All outport addrs above 0x80 are reserved for eproc interfacing: 
+
+0x80: write 1 here to enable the event proc dispatch on the next
+      ecycle, 0 to disable event proc dispatch
+0x81: location of the ECYCLE process
+0x82-0x84: control / set the event dispatch predicate table 
+0x90: Event interface. A write here is the command to send, and commits
+      a particular command.

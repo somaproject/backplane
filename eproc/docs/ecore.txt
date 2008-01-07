@@ -1,0 +1,26 @@
+EPROCCORE: the core processor, which has the following signals: 
+
+CLK: 100 MHz clock
+CPHASE: which CPU cycle the processor is in (FIXME: input or output?)
+-- instruction interface: 
+IADDR[9:0] : synchronous instruction memory address
+IDATA[17:0] : synchronous instruction memory data
+-- io ports
+IPORTADDR[7:0] : input port address
+IPORTDATA[15:0] : input port data
+IPORTSTROBE
+
+OPORTADDR[7:0]
+OPORTDATA[15:0]
+OPORTSTROBE
+
+-- interrupt / interface ports
+FORCEJUMP: force the ops to a particular address
+FORCEADDR[9:0] : forced address
+
+-- event interface
+EADDR[2:0]
+EDATA[15:0]
+  (non-synchronous!!)
+For our double-buffered interface to the current set of events.
+

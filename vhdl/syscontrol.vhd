@@ -12,7 +12,6 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 entity syscontrol is
-
   port (
     CLK     : in  std_logic;
     RESET   : in  std_logic;

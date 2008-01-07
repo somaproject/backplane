@@ -1,0 +1,22 @@
+The EventProc is a general-purpose event processor designed to run at
+50 MIPS/100 MHz and be synthesizable in a spartan-3. It was designed
+to simplify some of the more complex state-control logic present when
+trying to operate on the event bus, and is loosly modeled off of the
+Xilinx PicoBlaze series of constant programmable state machines.
+
+A DSL has been created in python to aid in the programming of the
+device. Up to 16 hardware-accelerated event-processing handlers can be
+installed, each with a range of acceptable cmds and srcs to respond
+to.
+
+The "EProc" design consists of an ecore, the core processor element
+which can be tested and used independently.
+
+TODO:
+ecore: test the other jumps
+ecore: implement INPORT instructions
+ecore: is this the final state of the ALU? 
+ecore: document instruction menumonics
+assemble: other ALU ops? 
+assemble: specialized event-based ALU ops? 
+eproc: verify that the event tx stuff 

@@ -1,0 +1,23 @@
+ALU Ops:
+0000: pass A
+0001: pass B
+0010: swap high byte and low byte of b B
+0011: Y = B[7:0] & A[7:0]
+
+-- boolean logic
+
+0101: a xor b
+0110: a and b
+0111: a or b 
+-- arithmetic
+1000: a + b
+1001: a - b
+
+-- other ops? 
+
+
+output signals: 
+carry
+zero
+GZ (twos complement)
+LZ (twos complement)

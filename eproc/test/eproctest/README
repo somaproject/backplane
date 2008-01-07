@@ -1,0 +1,12 @@
+EPROCTEST: how large is an EventProc? How fast can it run in an S-3? 
+
+We connect an internal block ram as our Instruction RAM
+and we heavily register the inputs to the FORCE IO. 
+
+CLKIN: 50 MHz, which we turn into : 
+   CLK: 50 MHz
+   CLKHI : 100 MHz
+
+ We fake an event input by having a
+generic encoder/decoder pair for EARX and EATX
+

@@ -1,0 +1,31 @@
+Event transmission: 
+
+SRC always comes from a dedicated SRC register, because our SRC
+is fixed at build time
+
+Six addresses
+0: write CMD and send
+1: Data word 1
+...
+5: Data word 5
+
+writing the command commits the event to the buffer
+
+-----------------------------------------------------
+Handling the destination of the events
+-----------------------------------------------------
+
+If you write to address 6, it's a broadcast event
+if you write to address 7, it's a non-broadcast event
+directly to the dest in addr 7 
+
+FIXME: Handle the ability to send to two, three, or more events
+
+Need constant-time reply
+
+Create an Event Decoder:
+
+ESET:
+ALL
+ADDR[6:0]
+OUT[N-1:0]x
