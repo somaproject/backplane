@@ -12,50 +12,25 @@ use work.somabackplane;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity nettest is
+entity eproctest is
   port (
-    CLKIN         : in    std_logic;
-    SERIALBOOT    : out   std_logic_vector(19 downto 0);
-    SDOUT         : out   std_logic;
-    SDIN          : in    std_logic;
-    SCLK          : out   std_logic;
-    SCS           : out   std_logic;
-    LEDPOWER      : out   std_logic;
-    LEDEVENT      : out   std_logic;
-    NICFCLK       : out   std_logic;
-    NICFDIN       : out   std_logic;
-    NICFPROG      : out   std_logic;
-    NICSCLK       : out   std_logic;
-    NICSIN        : in    std_logic;
-    NICSOUT       : out   std_logic;
-    NICSCS        : out   std_logic;
-    NICDOUT       : out   std_logic_vector(15 downto 0);
-    NICNEWFRAME   : out   std_logic;
-    NICDIN        : in    std_logic_vector(15 downto 0);
-    NICNEXTFRAME  : out   std_logic;
-    NICDINEN      : in    std_logic;
-    NICIOCLK      : out   std_logic;
-    RAMCLKOUT_P   : out   std_logic;
-    RAMCLKOUT_N   : out   std_logic;
-    RAMCKE        : out   std_logic := '0';
-    RAMCAS        : out   std_logic;
-    RAMRAS        : out   std_logic;
-    RAMCS         : out   std_logic;
-    RAMWE         : out   std_logic;
-    RAMADDR       : out   std_logic_vector(12 downto 0);
-    RAMBA         : out   std_logic_vector(1 downto 0);
-    RAMDQSH       : inout std_logic;
-    RAMDQSL       : inout std_logic;
-    RAMDQ         : inout std_logic_vector(15 downto 0);
-    FIBERDEBUGOUT : out   std_logic;
-    FIBERDEBUGIN  : in    std_logic
-
-
+    CLKIN       : in  std_logic;
+    SERIALBOOT  : out std_logic_vector(19 downto 0);
+    SDOUT       : out std_logic;
+    SDIN        : in  std_logic;
+    SCLK        : out std_logic;
+    SCS         : out std_logic;
+    LEDPOWER    : out std_logic;
+    LEDEVENT    : out std_logic;
+    NICFPROG    : out std_logic;
+    RAMCLKOUT_P : out std_logic;
+    RAMCLKOUT_N : out std_logic;
+    RAMCKE      : out std_logic := '0'
     );
-end nettest;
+end eproctest;
 
 
-architecture Behavioral of nettest is
+architecture Behavioral of eproctest is
 
   component eventrouter
     port (
@@ -79,41 +54,6 @@ architecture Behavioral of nettest is
       EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
       EDTX    : in  std_logic_vector(7 downto 0)
       );
-  end component;
-
-  component syscontrol
-    port (
-      CLK     : in  std_logic;
-      RESET   : in  std_logic;
-      EDTX    : in  std_logic_vector(7 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE  : in  std_logic;
-      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0)
-      );
-  end component;
-
-  component boot
-    generic (
-      M       :     integer                      := 20;
-      DEVICE  :     std_logic_vector(7 downto 0) := X"01"
-      );
-    port (
-      CLK     : in  std_logic;
-      RESET   : in  std_logic;
-      EDTX    : in  std_logic_vector(7 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE  : in  std_logic;
-      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      SDOUT   : out std_logic;
-      SDIN    : in  std_logic;
-      SCLK    : out std_logic;
-      SCS     : out std_logic;
-      SEROUT  : out std_logic_vector(M-1 downto 0);
-      DEBUG   : out std_logic_vector(1 downto 0));
   end component;
 
 
@@ -154,194 +94,31 @@ architecture Behavioral of nettest is
       );
   end component;
 
-  component ether
-    generic (
-      DEVICE  :     std_logic_vector(7 downto 0) := X"01"
-      );
+  component eproc
     port (
-      CLK     : in  std_logic;
-      RESET   : in  std_logic;
-      EDTX    : in  std_logic_vector(7 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE  : in  std_logic;
-      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0)
-                                                 := (others => '0');
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      SOUT    : out std_logic;
-      SIN     : in  std_logic;
-      SCLK    : out std_logic;
-      SCS     : out std_logic);
-  end component;
-
-  component udpburst
-    port (
-      CLK      : in  std_logic;
-      NEWFRAME : out std_logic;
-      DOUT     : out std_logic_vector(15 downto 0));
-  end component;
-
-  component network
-    port (
-      CLK       : in std_logic;
-      MEMCLK    : in std_logic;
-      MEMCLK90  : in std_logic;
-      MEMCLK180 : in std_logic;
-      MEMCLK270 : in std_logic;
-
-      RESET        : in    std_logic;
-      -- config
-      MYIP         : in    std_logic_vector(31 downto 0);
-      MYMAC        : in    std_logic_vector(47 downto 0);
-      MYBCAST      : in    std_logic_vector(31 downto 0);
-      -- input
-      NICNEXTFRAME : out   std_logic;
-      NICDINEN     : in    std_logic;
-      NICDIN       : in    std_logic_vector(15 downto 0);
-      -- output
-      NICDOUT      : out   std_logic_vector(15 downto 0);
-      NICNEWFRAME  : out   std_logic;
-      NICIOCLK     : out   std_logic;
-      -- event bus
-      ECYCLE       : in    std_logic;
-      EARX         : out   std_logic_vector(somabackplane.N -1 downto 0);
-      EDRX         : out   std_logic_vector(7 downto 0);
-      EDSELRX      : in    std_logic_vector(3 downto 0);
-      EATX         : in    std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX         : in    std_logic_vector(7 downto 0);
-      -- data bus
-      DIENA        : in    std_logic;
-      DINA         : in    std_logic_vector(7 downto 0);
-      DIENB        : in    std_logic;
-      DINB         : in    std_logic_vector(7 downto 0);
-      -- memory interface
-      RAMCKE       : out   std_logic := '0';
-      RAMCAS       : out   std_logic;
-      RAMRAS       : out   std_logic;
-      RAMCS        : out   std_logic;
-      RAMWE        : out   std_logic;
-      RAMADDR      : out   std_logic_vector(12 downto 0);
-      RAMBA        : out   std_logic_vector(1 downto 0);
-      RAMDQSH      : inout std_logic;
-      RAMDQSL      : inout std_logic;
-      RAMDQ        : inout std_logic_vector(15 downto 0);
-      -- error signals and counters
-      RXIOCRCERR   : out   std_logic;
-      UNKNOWNETHER : out   std_logic;
-      UNKNOWNIP    : out   std_logic;
-      UNKNOWNUDP   : out   std_logic;
-      UNKNOWNARP   : out   std_logic;
-      TXPKTLENEN   : out   std_logic;
-      TXPKTLEN     : out   std_logic_vector(15 downto 0);
-      TXCHAN       : out   std_logic_vector(2 downto 0);
-      EVTRXSUC     : out   std_logic;
-      EVTFIFOFULL  : out   std_logic
-
-
-
-      );
-  end component;
-
-
-  component netcontrol
-    generic (
-      DEVICE       :     std_logic_vector(7 downto 0) := X"01";
-      CMDCNTQUERY  :     std_logic_vector(7 downto 0) := X"40";
-      CMDCNTRST    :     std_logic_vector(7 downto 0) := X"41";
-      CMDNETWRITE  :     std_logic_vector(7 downto 0) := X"42";
-      CMDNETQUERY  :     std_logic_vector(7 downto 0) := X"43";
-      CMDNETRESP   :     std_logic_vector(7 downto 0) := X"50";
-      CMDCNTRESP   :     std_logic_vector(7 downto 0) := X"51"
-      );
-    port (
-      CLK          : in  std_logic;
-      RESET        : in  std_logic;
-      -- standard event-bus interface
-      ECYCLE       : in  std_logic;
-      EDTX         : in  std_logic_vector(7 downto 0);
-      EATX         : in  std_logic_vector(somabackplane.N - 1 downto 0);
-      EARX         : out std_logic_vector(somabackplane.N - 1 downto 0);
-      EDRX         : out std_logic_vector(7 downto 0);
-      EDSELRX      : in  std_logic_vector(3 downto 0);
-      -- tx counter input
-      TXPKTLENEN   : in  std_logic;
-      TXPKTLEN     : in  std_logic_vector(15 downto 0);
-      TXCHAN       : in  std_logic_vector(2 downto 0);
-      -- other counters
-      RXIOCRCERR   : in  std_logic;
-      UNKNOWNETHER : in  std_logic;
-      UNKNOWNIP    : in  std_logic;
-      UNKNOWNARP   : in  std_logic;
-      UNKNOWNUDP   : in  std_logic;
-      EVTRXSUC     : in  std_logic;
-      EVTFIFOFULL  : in  std_logic;
-
-
-      -- output network control settings
-      MYMAC   : out std_logic_vector(47 downto 0);
-      MYBCAST : out std_logic_vector(31 downto 0);
-      MYIP    : out std_logic_vector(31 downto 0)
-
+      CLK         : in  std_logic;
+      RESET       : in  std_logic;
+      -- Event Interface, CLK rate
+      EDTX        : in  std_logic_vector(7 downto 0);
+      EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
+      ECYCLE      : in  std_logic;
+      EARX        : out std_logic_vector(somabackplane.N - 1 downto 0)
+ := (others => '0');
+      EDRX        : out std_logic_vector(7 downto 0);
+      EDSELRX     : in  std_logic_vector(3 downto 0);
+      -- High-speed interface
+      CLKHI       : in  std_logic;
+      -- instruction interface
+      IADDR       : out std_logic_vector(9 downto 0);
+      IDATA       : in  std_logic_vector(17 downto 0);
+      --outport signals
+      OPORTADDR   : out std_logic_vector(7 downto 0);
+      OPORTDATA   : out std_logic_vector(15 downto 0);
+      OPORTSTROBE : out std_logic;
+      DEVICE      : in  std_logic_vector(7 downto 0)
       );
 
   end component;
-
-  component pingdump
-    port (
-      CLK      : in  std_logic;
-      DOUT     : out std_logic_vector(15 downto 0);
-      NEWFRAME : out std_logic);        -- (others => '0')
-  end component;
-
-  component dincapture
-    port (
-      CLK   : in std_logic;
-      DINEN : in std_logic;
-      DIN   : in std_logic_vector(15 downto 0)
-      );
-  end component;
-
-  component fakedata
-    port (
-      CLK    : in  std_logic;
-      DOUT   : out std_logic_vector(7 downto 0);
-      DOUTEN : out std_logic;
-      ECYCLE : in  std_logic
-      );
-  end component;
-
-  component fiberdebug
-    generic (
-      DEVICE    :     std_logic_vector(7 downto 0) := X"01"
-      );
-    port (
-      CLK       : in  std_logic;
-      TXCLK     : in  std_logic;
-      RESET     : in  std_logic;
-      -- Event bus interface
-      ECYCLE    : in  std_logic;
-      EARXA     : out std_logic_vector(somabackplane.N - 1 downto 0)
-                                                   := (others => '0');
-      EDRXA     : out std_logic_vector(7 downto 0);
-      EARXB     : out std_logic_vector(somabackplane.N - 1 downto 0)
-                                                   := (others => '0');
-      EDRXB     : out std_logic_vector(7 downto 0);
-      EDSELRXA  : in  std_logic_vector(3 downto 0);
-      EDSELRXB  : in  std_logic_vector(3 downto 0);
-      EATX      : in  std_logic_vector(somabackplane.N - 1 downto 0);
-      EDTX      : in  std_logic_vector(7 downto 0);
-      EADDRDEST :     std_logic_vector(somabackplane.N -1 downto 0);
-
-      -- Fiber interfaces
-      FIBERIN  : in  std_logic;
-      FIBEROUT : out std_logic;
-      DEBUG : out std_Logic_vector(15 downto 0)
-      );
-
-  end component;
-
-
-  signal ECYCLE : std_logic := '0';
 
   signal EARX    : somabackplane.addrarray      := (others => (others => '0'));
   signal EDRX    : somabackplane.dataarray      := (others => (others => '0'));
@@ -349,8 +126,7 @@ architecture Behavioral of nettest is
   signal EATX    : somabackplane.addrarray      := (others => (others => '0'));
   signal EDTX    : std_logic_vector(7 downto 0) := (others => '0');
   signal RESET   : std_logic                    := '0';
-
-  signal lserialboot : std_logic_vector(19 downto 0) := (others => '1');
+  signal ECYCLE  : std_logic                    := '0';
 
   signal douta   : std_logic_vector(7 downto 0) := (others => '0');
   signal doutena : std_logic                    := '0';
@@ -360,6 +136,7 @@ architecture Behavioral of nettest is
 
 
   signal clk, clkint             : std_logic := '0';
+  signal clk2x, clk2xint         : std_logic := '0';
   signal clk180, clk180int       : std_logic := '0';
   signal memclkb, memclkbint     : std_logic := '0';
   signal memclk, memclkint       : std_logic := '0';
@@ -370,46 +147,23 @@ architecture Behavioral of nettest is
 
   signal nicclkint : std_logic := '0';
 
-
--- nic config signals
-  signal myip, mybcast : std_logic_vector(31 downto 0) := (others => '0');
-  signal mymac         : std_logic_vector(47 downto 0) := (others => '0');
-
-  -- error signals and counters
-  signal rxiocrcerr   : std_logic                     := '0';
-  signal UNKNOWNETHER : std_logic                     := '0';
-  signal UNKNOWNIP    : std_logic                     := '0';
-  signal UNKNOWNUDP   : std_logic                     := '0';
-  signal UNKNOWNARP   : std_logic                     := '0';
-  signal txpktlenen   : std_logic                     := '0';
-  signal txpktlen     : std_logic_vector(15 downto 0) := (others => '0');
-  signal txchan       : std_logic_vector(2 downto 0)  := (others => '0');
-  signal evtrxsuc     : std_logic                     := '0';
-  signal evtfifofull  : std_logic                     := '0';
-
-
   signal nicnextframeint : std_logic := '0';
 
   signal locked, locked2 : std_logic                    := '0';
   signal resetint        : std_logic_vector(7 downto 0) := (others => '1');
 
-  signal niciointclk : std_logic                     := '0';
-  signal nicdinl     : std_logic_vector(15 downto 0) := (others => '0');
-  signal nicdinenl   : std_logic                     := '0';
+  signal iaddr : std_logic_vector(9 downto 0)  := (others => '0');
+  signal idata : std_logic_vector(17 downto 0) := (others => '0');
 
+  signal OPORTADDR   : std_logic_vector(7 downto 0);
+  signal OPORTDATA   : std_logic_vector(15 downto 0);
+  signal OPORTSTROBE : std_logic := '0';
 
-  signal fiberdebugdest : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
-
-  signal fibertxclk, fibertxclkint           : std_logic := '0';
-  signal fibertxclkdummy, fibertxclkintdummy : std_logic := '0';
-
-  signal lnicdout     : std_logic_vector(15 downto 0) := (others => '0');
-  signal lnicnewframe : std_logic                     := '0';
-
-  signal fiberdebugdebug : std_logic_vector(15 downto 0) := (others => '0');
-  
 begin  -- Behavioral
 
+
+  RAMCKE   <= '0';
+  NICFPROG <= '1';
 
   ---------------------------------------------------------------------------
   -- CLOCKING
@@ -435,11 +189,13 @@ begin  -- Behavioral
       CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
       CLKFB                 => clk,
       CLK180                => clk180int,
-      CLK90                 => niciointclk,
+      --CLK90                 => niciointclk,
+      clk2x                 => clk2xint,
       CLKIN                 => CLKIN,
       LOCKED                => locked,
       RST                   => '0'          -- DCM asynchronous reset input
       );
+
 
   clk_bufg : BUFG
     port map (
@@ -451,6 +207,10 @@ begin  -- Behavioral
       I => clk180int,
       O => clk180);
 
+  clk2x_bufg : BUFG
+    port map (
+      O => clk2x,
+      I => clk2xint);
 
   memclkb_bufg : BUFG
     port map (
@@ -543,49 +303,7 @@ begin  -- Behavioral
       EATX    => EATX(0),
       EDTX    => EDTX);
 
-  syscontrol_inst : syscontrol
-    port map (
-      CLK     => clk,
-      RESET   => RESET,
-      ECYCLe  => ECYCLE,
-      EARX    => EARX(1),
-      EDRX    => EDRX(1),
-      EDSELRX => EDSELRX,
-      EATX    => EATX(1),
-      EDTX    => EDTX);
 
-  boot_inst : boot
-    generic map (
-      M      => 20,
-      DEVICE => X"02")
-
-    port map (
-      CLk     => clk,
-      RESET   => RESET,
-      ECYCLE  => ECYCLE,
-      EARX    => EARX(2),
-      EDRX    => EDRX(2),
-      EDSELRX => EDSELRX,
-      EATX    => EATX(2),
-      EDTX    => EDTX,
-      SDOUT   => SDOUT,
-      SDIN    => SDIN,
-      SCLK    => SCLK,
-      SCS     => SCS,
-      SEROUT  => lserialboot,
-      DEBUG   => open);
-
-  bootdeserialize_inst : bootdeserialize
-    port map (
-      CLK   => clk,
-      SERIN => lserialboot(0),
-      FPROG => NICFPROG,
-      FCLK  => NICFCLK,
-      FDIN  => NICFDIN);
-
-  SERIALBOOT <= lserialboot;
-
-  LEDEVENT <= fiberdebugdebug(0);
   LEDPOWER <= locked2;
 
   jtagsend_inst : jtagesend
@@ -609,77 +327,6 @@ begin  -- Behavioral
       EATX            => eatx(7),
       DEBUG           => open);
 
-  ether_inst : ether
-    generic map (
-      DEVICE  => X"05")
-    port map (
-      CLK     => clk,
-      RESET   => reset,
-      EDTX    => edtx,
-      EATX    => eatx(5),
-      ECYCLE  => ecycle,
-      EARX    => earx(5),
-      EDRX    => edrx(5),
-      EDSELRX => edselrx,
-      SOUT    => NICSOUT,
-      SIN     => NICSIN,
-      SCLK    => NICSCLK,
-      SCS     => NICSCS);
-
-
-  DCM_fibertx_inst : DCM_BASE
-    generic map (
-      CLKFX_DIVIDE   => 5,
-      CLKFX_MULTIPLY => 8,
-      STARTUP_WAIT   => true)
-    port map (
-      CLKFX          => fibertxclkint,
-      CLKIN          => clk,
-      CLK0           => fibertxclkintdummy,
-      CLKFB          => fibertxclkdummy,
-      LOCKED         => open,
-      RST            => '0'             -- DCM asynchronous reset input
-      );
-
-  clk_fibertx_bufg : BUFG
-    port map (
-      O => fibertxclk,
-      I => fibertxclkint);
-
-  clk_fibertxdummy_bufg : BUFG
-    port map (
-      O => fibertxclkdummy,
-      I => fibertxclkintdummy);
-
-  fiberdebug_inst : fiberdebug
-    generic map (
-      DEVICE    => X"4C")
-    port map (
-      CLK       => CLK,
-      TXCLK     => fibertxclk,
-      RESET     => reset,
-      ECYCLE    => ecycle,
-      EARXA     => earx(70),
-      EDRXA     => edrx(70),
-      EDSELRXA  => edselrx,
-      EARXB     => earx(71),
-      EDRXB     => edrx(71),
-      EDSELRXB  => edselrx,
-      EATX      => eatx(70),
-      EDTX      => edtx,
-      EADDRDEST => fiberdebugdest,
-      FIBERIN   => FIBERDEBUGIN,
-      FIBEROUT  => FIBERDEBUGOUT,
-      DEBUG => fiberdebugdebug);
-
-
-  fakedata1 : fakedata
-    port map (
-      clk    => clk,
-      DOUT   => douta,
-      DOUTEN => doutena,
-      ECYCLE => ecycle);
-
   -- dummy
   process(clk)
     variable blinkcnt : std_logic_vector(21 downto 0)
@@ -691,107 +338,6 @@ begin  -- Behavioral
     end if;
   end process;
 
--- NETCLK <= clk;
-
-
-
-  myip    <= X"0A000002";               -- 10.0.0.2
-  mybcast <= X"FFFFFFFF";               -- 10.255.255.255
-
-  mymac <= X"00ADBEEF1234";
-
-  fiberdebugdest(3) <= '1';
-  network_inst : network
-    port map (
-      CLK       => CLK,
-      MEMCLK    => memclk,
-      MEMCLK90  => memclk90,
-      MEMCLK180 => memclk180,
-      MEMCLK270 => memclk270,
-      RESET     => RESET,
-      -- config
-      MYIP      => MYIP,
-      MYMAC     => mymac,
-      MYBCAST   => mybcast,
-
-      -- input
-      NICNEXTFRAME => NICNEXTFRAME,
-      NICDINEN     => nicdinenl,
-      NICDIN       => nicdinl,
-      -- output
-      NICDOUT      => lNICDOUT,
-      NICNEWFRAME  => lNICNEWFRAME,
-      NICIOCLK     => open,             --NICIOCLK,
-      -- event bus
-      ECYCLE       => ecycle,
-      EARX         => earx(3),
-      EDRX         => edrx(3),
-      EDSELRX      => edselrx,
-      EATX         => eatx(3),
-      EDTX         => edtx,
-
-      -- data bus
-      DIENA => doutena,
-      DIENB => '0',
-      DINA  => douta,
-      DINB  => X"00",
-
-      -- memory interface
-      RAMCKE  => RAMCKE,
-      RAMCAS  => RAMCAS,
-      RAMRAS  => RAMRAS,
-      RAMCS   => RAMCS,
-      RAMWE   => RAMWE,
-      RAMADDR => RAMADDR,
-      RAMBA   => RAMBA,
-      RAMDQSH => RAMDQSH,
-      RAMDQSL => RAMDQSL,
-      RAMDQ   => RAMDQ,
-
-      -- counters
-      RXIOCRCERR   => rxiocrcerr,
-      UNKNOWNETHER => unknownether,
-      UNKNOWNIP    => unknownip,
-      UNKNOWNUDP   => unknownudp,
-      UNKNOWNARP   => unknownarp,
-      TXPKTLENEN   => txpktlenen,
-      TXPKTLEN     => txpktlen,
-      TXCHAN       => txchan,
-      EVTRXSUC     => evtrxsuc,
-      EVTFIFOFULL  => evtfifofull
-
-      );
-
-  netcontrol_inst : netcontrol
-    generic map (
-      DEVICE       => X"04")
-    port map (
-      CLK          => CLK,
-      RESET        => RESET,
-      ECYCLE       => ECYCLE,
-      EDTX         => EDTX,
-      EATX         => EATX(4),
-      EARX         => EARX(4),
-      EDRX         => EDRX(4),
-      EDSELRX      => EDSELRX,
-      TXPKTLENEN   => txpktlenen,
-      TXPKTLEN     => txpktlen,
-      TXCHAN       => txchan,
-      RXIOCRCERR   => rxiocrcerr,
-      UNKNOWNETHER => unknownether,
-      UNKNOWNIP    => unknownip,
-      UNKNOWNARP   => unknownarp,
-      UNKNOWNUDP   => unknownudp,
-      EVTRXSUC     => evtrxsuc,
-      EVTFIFOFULL  => evtfifofull
--- MYMAC => mymac,
--- MYBCAST => mybcast,
--- MYIP => myip
-
-      );
-
-
-  NICIOCLK <= clk;
 
   dlyctrl : IDELAYCTRL
     port map(
@@ -800,29 +346,58 @@ begin  -- Behavioral
       RST    => reset
       );
 
--- dincapture_inst : dincapture
--- port map (
--- CLK => clk,
--- DIN => lnicdout,
--- DINEN => lnicnewframe);
+  instruction_ram : RAMB16_S18_S18
+    port map (
+      DOA   => idata(15 downto 0),
+      DOPA  => idata(17 downto 16),
+      ADDRA => iaddr,
+      CLKA  => clk2x,
+      DIA   => X"0000",
+      DIPA  => "00",
+      ENA   => '1',
+      WEA   => '0',
+      SSRA  => RESET,
+      DOB   => open,
+      DOPB  => open,
+      ADDRB => "0000000000",
+      CLKB  => clk2x,
+      DIB   => X"0000",
+      DIPB  => "00",
+      ENB   => '0',
+      WEB   => '0',
+      SSRB  => RESET);
 
-  process(niciointclk)
+  eproc_inst : eproc
+    port map (
+      CLK         => clk,
+      RESET       => RESET,
+      EDTX        => EDTX,
+      EATX        => EATX(1),
+      ECYCLE      => ECYCLE,
+      EARX        => EARX(1),
+      EDRX        => EDRX(1),
+      EDSELRX     => EDSELRX,
+      CLKHI       => clk2x,
+      IADDR       => iaddr,
+      IDATA       => idata,
+      OPORTADDR   => oportaddr,
+      OPORTDATA   => oportdata,
+      OPORTSTROBE => oportstrobe,
+      DEVICE      => X"01");
+
+  process(clk2x)
   begin
-
-    if rising_edge(niciointclk) then
-      nicdinenl <= NICDINEN;
-      nicdinl   <= NICDIN;
-
+    if rising_edge(clk2x) then
+      if oportstrobe = '1' then
+        if oportaddr = X"20" then
+          LEDEVENT <= oportdata(0);
+        end if;
+      end if;
     end if;
-
   end process;
 
-  process(CLK)
-  begin
-    if rising_edge(CLK) then
-      NICDOUT     <= lnicdout;
-      NICNEWFRAME <= lnicnewframe;
+  SDOUT <= '0';
+  SCLK <= '0';
+  SCS <= '0'; 
 
-    end if;
-  end process;
 end Behavioral;

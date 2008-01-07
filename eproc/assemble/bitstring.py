@@ -95,7 +95,15 @@ class BitString:
             else:
                 s += "0"
         return s
+
+    def getval(self):
+        num = 0
+
+        for b in self._bits[::-1]:
+            num = num << 1
+            num |= b
         
+        return num 
 class TestBitstring(unittest.TestCase):
 
     def testSimpleCreate(self):

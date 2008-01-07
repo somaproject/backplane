@@ -13,7 +13,7 @@
 #   make parsim: post-place-and-route simulation 
 #   make multipar : multiple attemt place and route
 ######################################################################
-PROJECT = nettest
+PROJECT = eproctest
 
 bitfile: $(PROJECT).bit $(PROJECT).new.bit updaterom
 export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
@@ -28,7 +28,6 @@ $(PROJECT): build/$(PROJECT).ncd
 $(PROJECT).bit: build/$(PROJECT).bit
 	rm -rf $(PROJECT).bit
 	cp build/$(PROJECT).bit . 
-	cp build/$(PROJECT).bit ~/soma/
 
 $(PROJECT).rbt: build/$(PROJECT).rbt
 	rm -rf $(PROJECT).rbt
@@ -54,7 +53,7 @@ build/$(PROJECT).ngc: $(SOURCES) $(PROJECT).xst $(PROJECT).prj
 trans: build/$(PROJECT).ngd
 
 build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf 
-	ngdbuild -p $(PART) -uc $(PROJECT).ucf -bm nettest.bmm -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
+	ngdbuild -p $(PART) -uc $(PROJECT).ucf -bm eproctest.bmm -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
 
 
 # third stage: map: produces pcf, map.ncd
@@ -62,7 +61,8 @@ build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf
 map: build/$(PROJECT)_map.ncd
 
 build/$(PROJECT)_map.ncd: build/$(PROJECT).ngd
-	map -p $(PART) -ol $(OPTIMIZE) -timing -cm speed  -xe n  -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
+	#	map -p $(PART) -ol $(OPTIMIZE) -timing -cm speed  -xe n  -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
+	map -p $(PART) -ol $(OPTIMIZE) -cm speed  -xe n  -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
 
 build/$(PROJECT).pcf: build/$(PROJECT)_map.ncd
 
@@ -105,11 +105,22 @@ transsim: build/$(PROJECT).ngd
 	netgen -intstyle ise -rpw 100 -tpw 0 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngd $(PROJECT)_transsim.vhd
 
 
+$(PROJECT).new.bit:  updaterom
 # update roms
 updaterom: $(PROJECT)_bd.bmm $(PROJECT).mem
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt $(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).new.bit
 	mv $(PROJECT).bit $(PROJECT).original.bit
 	cp $(PROJECT).new.bit $(PROJECT).bit
+
+# create/ assemble block ram files
+
+eproctest.part.mem:  eproctest.asmpy
+	python ../../../eproc/assemble/assemble.py eproctest.asmpy \
+	 eproctest.imem eproctest.part.mem > eproctest.part.log
+
+eproctest.mem: eproctest.part.mem
+	echo "@0000" > eproctest.mem
+	cat eproctest.part.mem >> eproctest.mem
 
 clean:
 	rm -Rf xst build

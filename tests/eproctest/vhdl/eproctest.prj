@@ -1,0 +1,23 @@
+vhdl work "../../../vhdl/somabackplane.vhd"
+vhdl work "../../../network/vhdl/networkstack.vhd"
+vhdl work "../../../network/vhdl/netports.vhd"
+
+vhdl work "../../../vhdl/rxeventfifo.vhd"
+vhdl work "../../../boot/vhdl/byteio.vhd"
+vhdl work "../../../boot/vhdl/mmcio.vhd"
+
+vhdl work "../../../vhdl/core/eventrouter.vhd"
+vhdl work "../../../vhdl/timer.vhd"
+vhdl work "../../../vhdl/boot.vhd"
+vhdl work "../../../jtag/vhdl/jtagesend.vhd"
+vhdl work "../../../jtag/vhdl/jtagereceive.vhd"
+
+vhdl work "../../../eproc/vhdl/alu.vhd"
+vhdl work "../../../eproc/vhdl/ecore.vhd"
+vhdl work "../../../eproc/vhdl/eproc.vhd"
+vhdl work "../../../eproc/vhdl/eventtx.vhd"
+vhdl work "../../../eproc/vhdl/evtdnd.vhd"
+vhdl work "../../../eproc/vhdl/regfile.vhd"
+vhdl work "../../../eproc/vhdl/txeventbuffer.vhd" 
+
+vhdl work "eproctest.vhd"

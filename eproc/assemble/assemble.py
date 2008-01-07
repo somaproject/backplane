@@ -71,4 +71,11 @@ if __name__ == "__main__":
     for o in a:
         outfile.write("%s\n" % o)
         
+    if len(sys.argv) > 3:
+        # also a bram file
+        outbramfile = file(sys.argv[3], 'w')
+        for o in a:
+            outbramfile.write("%5.5X\n" % o.getval())
+
+        
     

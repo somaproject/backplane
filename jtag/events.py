@@ -85,7 +85,7 @@ class Event(object):
     
 
 jtagprog = "/home/jonas/XC3Sprog/xc3sprog"
-jtagpos = 1
+jtagpos = 0
 
 def callJtag(IR, dr):
     
