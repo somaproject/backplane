@@ -61,18 +61,28 @@ t0p.add(env.total0, t0py)
 t0p.output(0x04, env.total0)
 
 # the echo process
-echop = env.createEProc((128, 128), (60, 60))
+echop = env.createEProc((128, 128), (0, 10))
 # load up the echo
 echocmd = echop.createVariable("echocmd")
-echop.move(echocmd, ereg.cmd)
 echosrc = echop.createVariable("echosrc")
-echop.move(echosrc, ereg.src)
 echoData0 = echop.createVariable("echoData0")
+echoData1 = echop.createVariable("echoData1")
+echoData2 = echop.createVariable("echoData2")
+echoData3 = echop.createVariable("echoData3")
+echoData4 = echop.createVariable("echoData4")
+echop.move(echocmd, ereg.cmd)
+echop.move(echosrc, ereg.src)
 echop.move(echoData0, ereg.edata[0])
+echop.move(echoData1, ereg.edata[1])
+echop.move(echoData2, ereg.edata[2])
+echop.move(echoData3, ereg.edata[3])
 # write it out
 echop.output(0x81, echoData0)
+echop.output(0x82, echoData1)
+echop.output(0x83, echoData2)
+echop.output(0x84, echoData3)
 echop.output(0x87, echosrc)
 echop.output(0x80, echocmd)
-echop.output(0x10, echocmd)
+
 
 

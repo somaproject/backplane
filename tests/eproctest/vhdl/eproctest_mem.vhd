@@ -1,11 +1,11 @@
 -- VHDL initialization records.
 --
--- Release 9.3i - Data2MEM J.40, build 1.5.4 Aug 14, 2007
+-- Release 9.2.03i - Data2MEM J.39, build 1.5.4 Aug 14, 2007
 -- Copyright (c) 1995-2008 Xilinx, Inc.  All rights reserved.
 --
 -- Command: data2mem -bm eproctest_bd.bmm -bd eproctest.mem -bt eproctest.bit -o h eproctest_mem.vhd -o b eproctest.new.bit
 --
--- Created on 01/07/08 02:41 pm, from:
+-- Created on 01/07/08 04:08 pm, from:
 --
 --     Map file     - eproctest_bd.bmm
 --     Data file(s) - eproctest.mem
@@ -20,14 +20,14 @@ use ieee.std_logic_1164;
 package eproctest_mem_pkg is
 
 -- BRAM 0 in address space [0x00000000:0x000007FF], bit lane [17:0]
--- INST instruction_ram LOC = RAMB16_X1Y5;
+-- INST instruction_ram LOC = RAMB16_X1Y3;
 	constant instruction_ram_INIT_00  : bit_vector(0 to 255) := x"10058445300515858425327511E5841531F511058405300515358885300514B5";
-	constant instruction_ram_INIT_01  : bit_vector(0 to 255) := x"8515101584D5101584A533C513C58495380518058485300515A5846510058455";
+	constant instruction_ram_INIT_01  : bit_vector(0 to 255) := x"8515101584D5101584A530A510058495380518058485300515A5846510058455";
 	constant instruction_ram_INIT_02  : bit_vector(0 to 255) := x"8715101586D5101586951015865510158615101585D510158595101585551015";
 	constant instruction_ram_INIT_03  : bit_vector(0 to 255) := x"1DD488143AA41BB488058876107610550000000087D510158795101587551015";
 	constant instruction_ram_INIT_04  : bit_vector(0 to 255) := x"8021801080043AB41CD404A08894101488051065108688343EE41FF488243CC4";
-	constant instruction_ram_INIT_05  : bit_vector(0 to 255) := x"8805887688170A270916080505900A2005708041804180440A24052080438032";
-	constant instruction_ram_INIT_06  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000006108105";
+	constant instruction_ram_INIT_05  : bit_vector(0 to 255) := x"0D5A0C490B380A270916080505900A2005708041804180440A24052080438032";
+	constant instruction_ram_INIT_06  : bit_vector(0 to 255) := x"000000000000000000000000000000000000066088058876884A883988288817";
 	constant instruction_ram_INIT_07  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant instruction_ram_INIT_08  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant instruction_ram_INIT_09  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
@@ -85,7 +85,7 @@ package eproctest_mem_pkg is
 	constant instruction_ram_INIT_3D  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant instruction_ram_INIT_3E  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant instruction_ram_INIT_3F  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
-	constant instruction_ram_INITP_00 : bit_vector(0 to 255) := x"00000000000000E03F20CEF87F79D7755D5F70777777777777D775DD5DD7755D";
+	constant instruction_ram_INITP_00 : bit_vector(0 to 255) := x"000000000000F8FF0020CEF87F79D7755D5F70777777777777D775DD5DD7755D";
 	constant instruction_ram_INITP_01 : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant instruction_ram_INITP_02 : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant instruction_ram_INITP_03 : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";

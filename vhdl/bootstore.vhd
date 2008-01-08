@@ -16,7 +16,6 @@ entity bootstore is
   generic (
     DEVICE : std_logic_vector(7 downto 0) := X"01"
     );
-
   port (
     CLK     : in  std_logic;
     CLKHI   : in  std_logic;

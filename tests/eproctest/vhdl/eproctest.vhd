@@ -16,10 +16,12 @@ entity eproctest is
   port (
     CLKIN       : in  std_logic;
     SERIALBOOT  : out std_logic_vector(19 downto 0);
-    SDOUT       : out std_logic;
-    SDIN        : in  std_logic;
-    SCLK        : out std_logic;
-    SCS         : out std_logic;
+    -- SPI interface
+    SPIMOSI     : in  std_logic;
+    SPIMISO     : out std_logic;
+    SPICS       : in  std_logic;
+    SPICLK      : in  std_logic;
+    SPIREQ      : out std_logic;     
     LEDPOWER    : out std_logic;
     LEDEVENT    : out std_logic;
     NICFPROG    : out std_logic;
@@ -119,6 +121,32 @@ architecture Behavioral of eproctest is
       );
 
   end component;
+
+  component bootstore
+    generic (
+      DEVICE  :     std_logic_vector(7 downto 0)                   := X"01"
+      );
+    port (
+      CLK     : in  std_logic;
+      CLKHI   : in  std_logic;
+      RESET   : in  std_logic;
+      -- event interface
+      EDTX    : in  std_logic_vector(7 downto 0);
+      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
+      ECYCLE  : in  std_logic;
+      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
+      EDRX    : out std_logic_vector(7 downto 0);
+      EDSELRX : in  std_logic_vector(3 downto 0);
+
+      -- SPI INTERFACE
+      SPIMOSI : in  std_logic;
+      SPIMISO : out std_logic;
+      SPICS   : in  std_logic;
+      SPICLK  : in  std_logic;
+      SPIREQ  : out std_logic
+      );
+  end component;
+
 
   signal EARX    : somabackplane.addrarray      := (others => (others => '0'));
   signal EDRX    : somabackplane.dataarray      := (others => (others => '0'));
@@ -385,6 +413,26 @@ begin  -- Behavioral
       OPORTSTROBE => oportstrobe,
       DEVICE      => X"01");
 
+  bootstore_inst : bootstore
+    generic map (
+      DEVICE  => X"03")
+    port map (
+      CLK     => CLK,
+      CLKHI   => clk2x,
+      RESET   => RESET,
+      EDTX    => EDTX,
+      EATX    => EATX(2),
+      ECYCLE  => ECYCLE,
+      EARX    => EARX(2),
+      EDRX    => EDRX(2),
+      EDSELRX => edselrx,
+      SPIMOSI => SPIMOSI,
+      SPIMISO => SPIMISO,
+      SPICS   => SPICS,
+      SPICLK  => SPICLK,
+      SPIREQ  => SPIREQ);
+
+
   process(clk2x)
   begin
     if rising_edge(clk2x) then
@@ -396,8 +444,5 @@ begin  -- Behavioral
     end if;
   end process;
 
-  SDOUT <= '0';
-  SCLK <= '0';
-  SCS <= '0'; 
 
 end Behavioral;

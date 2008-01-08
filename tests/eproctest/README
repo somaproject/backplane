@@ -1,1 +1,8 @@
-Test if the EPROC works in actual hardware
+Test if the EPROC works in actual hardware, as well as providing
+an interface for debugging the bootstore interface. We instantiate:
+
+0 : Timer
+1 : SysControl Eproc
+2 : bootstore
+7 : JTAG 
+
