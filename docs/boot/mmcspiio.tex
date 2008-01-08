@@ -5,9 +5,8 @@ convoluted serial SPI interface. Having the backplane core FPGA be the
 master would have been nice, but the target boot storage device, in this
 case an 8051, would make a poor SPI slave with our bit-banging SPI IF. 
 
-The FPGA can request an SPI read through the assertion of the
-BOOTSPIREQ line, which will then cause the master to query for a
-request.
+We have a limited number of pins, so The FPGA (slave) requests a read
+by asserting MISO high when CS is high (deasserted). 
 
 FPGA requests: At the moment, there are basically two requests, ``open
 file'' and ``read bytes''.

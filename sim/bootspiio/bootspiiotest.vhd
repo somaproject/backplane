@@ -29,8 +29,7 @@ architecture Behavioral of bootspiiotest is
       SPIMOSI : in  std_logic;
       SPIMISO : out std_logic;
       SPICS   : in  std_logic;
-      SPICLK  : in  std_logic;
-      SPIREQ  : out std_logic);
+      SPICLK  : in  std_logic);
   end component;
 
   signal CLK : std_logic := '0';
@@ -49,7 +48,6 @@ architecture Behavioral of bootspiiotest is
   signal SPIMISO : std_logic := '0';
   signal SPICS   : std_logic := '1';
   signal SPICLK  : std_logic := '0';
-  signal SPIREQ  : std_logic := '0';
 
   signal mainclk : integer range 0 to 5 := 0;
   signal wordinAsig : std_logic_vector(63 downto 0) := (others => '0');
@@ -70,8 +68,7 @@ begin
       SPIMOSI => SPIMOSI,
       SPIMISO => SPIMISO,
       SPICS   => SPICS,
-      SPICLK  => SPICLK,
-      SPIREQ  => SPIREQ);
+      SPICLK  => SPICLK);
 
   mainclk <= (mainclk + 1) mod 6 after 3.333333333333 ns;
   CLKHI <= '1' when mainclk = 0 or mainclk = 2 or mainclk = 4 else '0';
@@ -85,11 +82,13 @@ begin
     variable wordoutC : std_logic_vector(127 downto 0) := X"012332104567765489abba98cdeffedc";
     
     begin
-      wait until rising_edge(SPIREQ);
+      wait until rising_edge(SPIMISO);
       wait for 100 ns;
       wait until rising_edge(CLK);
       SPICS <= '0'; 
-      wait until rising_edge(CLK);
+       wait until rising_edge(CLK);
+       wait until rising_edge(CLK);
+       wait until rising_edge(CLK);
       for i in 0 to 63 loop
         wordina(63 - i) := SPIMISO;
         wordinAsig(63 - i) <= SPIMISO; 
@@ -108,10 +107,12 @@ begin
         report "error reading wordinA" severity Error;
 
 
-      wait until rising_edge(SPIREQ);
+      wait until rising_edge(SPIMISO);
       wait for 100 ns;
       wait until rising_edge(CLK);
       SPICS <= '0'; 
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
       wait until rising_edge(CLK);
       for i in 0 to 95 loop
         wordinb(95 - i) := SPIMISO;
@@ -131,10 +132,12 @@ begin
         report "error reading wordinB" severity Error;
 
       -- now the output
-      wait until rising_edge(SPIREQ);
+      wait until rising_edge(SPIMISO);
       wait for 100 ns;
       wait until rising_edge(CLK);
       SPICS <= '0'; 
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
       wait until rising_edge(CLK);
       for i in 0 to 127 loop
         SPIMOSI <= wordoutc(127 -i );
@@ -257,8 +260,10 @@ begin
         wait until rising_edge(CLK);
         wait until rising_edge(CLK);
         assert DOUT = X"FEDC" report "Error reading addr 7" severity Error;
+
+        report "End of Simulation" severity Failure;
         
         wait;
-
+        
       end process; 
 end Behavioral;

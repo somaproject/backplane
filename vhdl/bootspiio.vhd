@@ -24,11 +24,10 @@ entity bootspiio is
     CMDREQ  : in  std_logic;
     -- SPI INTERFACE
     CLKHI   : in  std_logic;
-    SPIMOSI : in  std_logic;
-    SPIMISO : out std_logic;
+    SPIMOSI : in  std_logic := '0'; 
+    SPIMISO : out std_logic := '0';
     SPICS   : in  std_logic;
-    SPICLK  : in  std_logic;
-    SPIREQ  : out std_logic);
+    SPICLK  : in  std_logic);
 
 end bootspiio;
 
@@ -46,6 +45,7 @@ architecture Behavioral of bootspiio is
 
   signal cmdreql : std_logic := '0';
   signal lspireq : std_logic := '0';
+  signal spireq : std_logic := '0';
 
   signal addra : std_logic_vector(13 downto 0) := (others => '0');
 
@@ -123,12 +123,15 @@ begin  -- Behavioral
 
       spiclkl <= SPICLK;
       spiclkll <= spiclkl; 
-      SPIREQ <= lspireq;
 
       weal <= wea;
       weall <= weal;
-      if weall = '1' then
-         SPIMISO  <= lspimiso;
+      if weall = '1'  or lspireq = '1' or spireq = '1' then
+        if lspireq = '1'  then
+          spimiso <= lspireq;
+        else
+          SPIMISO <= lspimiso; 
+        end if;
       end if;
       
       if wea = '1' then
@@ -146,6 +149,8 @@ begin  -- Behavioral
           lspireq <= '0';
         end if;
       end if;
+
+      spireq <= lspireq; 
 
       cmdreql <= CMDREQ;
 
