@@ -33,8 +33,7 @@ architecture Behavioral of bootstoretest is
       SPIMOSI : in  std_logic;
       SPIMISO : out std_logic;
       SPICS   : in  std_logic;
-      SPICLK  : in  std_logic;
-      SPIREQ  : out std_logic
+      SPICLK  : in  std_logic
       );
   end component;
 
@@ -58,7 +57,6 @@ architecture Behavioral of bootstoretest is
   signal SPIMISO : std_logic                    := '0';
   signal SPICS   : std_logic                    := '1';
   signal SPICLK  : std_logic                    := '0';
-  signal SPIREQ  : std_logic                    := '0';
 
   signal   mainclk     : integer range 0 to 5 := 0;
   constant filename    : string               := "abcdefg.bin";
@@ -124,8 +122,7 @@ begin  -- Behavioral
       SPIMOSI => SPIMOSI,
       SPIMISO => SPIMISO,
       SPICS   => SPICS,
-      SPICLK  => SPICLK,
-      SPIREQ  => SPIREQ);
+      SPICLK  => SPICLK);
 
 
   ecycle_generation : process(CLK)
@@ -158,7 +155,7 @@ begin  -- Behavioral
     variable len           : integer                       := 0;
 
   begin
-    wait until rising_edge(SPIREQ);
+    wait until rising_edge(SPIMISO);
     wait for 1 us;                      -- just a delay
     SPICS <= '0';
     wait until rising_edge(CLK);

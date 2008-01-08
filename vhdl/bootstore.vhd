@@ -32,8 +32,7 @@ entity bootstore is
     SPIMOSI : in  std_logic;
     SPIMISO : out std_logic;
     SPICS   : in  std_logic;
-    SPICLK  : in  std_logic;
-    SPIREQ  : out std_logic
+    SPICLK  : in  std_logic
     );
 end bootstore;
 
@@ -54,8 +53,7 @@ architecture Behavioral of bootstore is
       SPIMOSI : in  std_logic;
       SPIMISO : out std_logic;
       SPICS   : in  std_logic;
-      SPICLK  : in  std_logic;
-      SPIREQ  : out std_logic);
+      SPICLK  : in  std_logic);
   end component;
 
   component rxeventfifo
@@ -202,8 +200,7 @@ begin  -- Behavioral
       SPIMOSI => SPIMOSI,
       SPIMISO => SPIMISO,
       SPICLK  => SPICLK,
-      SPICS   => SPICS,
-      SPIREQ  => SPIREQ);
+      SPICS   => SPICS);
 
   singleeventdesttx_inst : singleeventdesttx
     port map (
