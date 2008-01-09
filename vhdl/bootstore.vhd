@@ -277,7 +277,7 @@ begin  -- Behavioral
       end if;
 
       if cs = fnlos then
-        offset <= eoutd(8 downto 1);
+        offset <= "0" & eoutd(7 downto 1);
       end if;
 
       if cs = fsend then

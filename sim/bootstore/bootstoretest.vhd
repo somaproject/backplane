@@ -59,7 +59,8 @@ architecture Behavioral of bootstoretest is
   signal SPICLK  : std_logic                    := '0';
 
   signal   mainclk     : integer range 0 to 5 := 0;
-  constant filename    : string               := "abcdefg.bin";
+  constant filename    : string               :=  "abcdefg.bin";
+  constant filename2    : string               := "xysilly.bin";
   signal   spifilename : string(1 to 32);
 
   ---------------------------------------------------------------------------
@@ -84,6 +85,7 @@ architecture Behavioral of bootstoretest is
   constant SETFNAME : std_logic_vector(7 downto 0) := X"91";
   constant FOPEN    : std_logic_vector(7 downto 0) := X"92";
   constant FREAD    : std_logic_vector(7 downto 0) := X"93";
+  constant FYIELD    : std_logic_vector(7 downto 0) := X"94";
 
   function cts (c   : character) return std_logic_vector is
     variable result : std_logic_vector(7 downto 0);
@@ -577,7 +579,120 @@ begin  -- Behavioral
     report "fread 2 successful " severity note;
 
 
+
     
+    -------------------------------------------------------------------------
+    -- Yield the file handle
+    -------------------------------------------------------------------------
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '1';
+    eventinputs(0)(0) <= FYIELD & X"00";
+    eventinputs(0)(1) <= curhandle & X"00";
+    eventinputs(0)(2) <= X"0000";
+    eventinputs(0)(3) <= X"0000";
+    eventinputs(0)(4) <= X"0000";
+    eventinputs(0)(5) <= X"0000";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX              <= (others => '0');
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    
+    -------------------------------------------------------------------------
+    -- Get the next file handle
+    -------------------------------------------------------------------------
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '1';
+    eventinputs(0)(0) <= GETHAND & X"00";
+    eventinputs(0)(1) <= X"0000";
+    eventinputs(0)(2) <= X"0000";
+    eventinputs(0)(3) <= X"0000";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX              <= (others => '0');
+    -- now verify we got the handle!
+    EDSELRX <= "0000";
+    wait until rising_edge(CLK);
+    assert EARX(0) = '1' report "Error setting the EARX" severity error;
+    assert EDRX = X"90" report "Error setting command" severity error;
+    EDSELRX           <= "0001";
+    wait until rising_edge(CLK);
+    assert EDRX = BOOTDEVICE report "Error setting command" severity error;
+    -- get the success result
+    EDSELRX           <= "0011";
+    wait until rising_edge(CLK);
+    assert EDRX = X"00" report "Error getting success result" severity error;
+
+    -- get the handle
+    EDSELRX   <= "0101";
+    wait until rising_edge(CLK);
+    curhandle <= EDRX;
+    report "second get-the-handle test done" severity note;
+    
+    -------------------------------------------------------------------------
+    -- Set the filename to be the filename2 signal, again
+    -------------------------------------------------------------------------
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '1';
+    eventinputs(0)(0) <= SETFNAME & X"00";
+    eventinputs(0)(1) <= curhandle & X"00";
+    eventinputs(0)(2) <= cts(filename2(1)) & cts(filename2(2));
+    eventinputs(0)(3) <= cts(filename2(3)) & cts(filename2(4));
+    eventinputs(0)(4) <= cts(filename2(5)) & cts(filename2(6));
+    eventinputs(0)(5) <= cts(filename2(7)) & cts(filename2(8));
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '1';
+    eventinputs(0)(0) <= SETFNAME & X"00";
+    eventinputs(0)(1) <= curhandle & X"08";
+    eventinputs(0)(2) <= cts(filename2(9)) & cts(filename2(10));
+    eventinputs(0)(3) <= cts(filename2(11)) & X"00";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+
+    EATX <= (others => '0');
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    -------------------------------------------------------------------------
+    -- send FOPEN
+    -------------------------------------------------------------------------
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '1';
+    eventinputs(0)(0) <= FOPEN & X"00";
+    eventinputs(0)(1) <= curhandle & X"00";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX              <= (others => '0');
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK) and EARX(0) = '1';
+    EDSELRX           <= "0000";
+    wait until rising_edge(CLK);
+    -- verify the event
+    assert EDRX = FOPEN report "error receiving command" severity error;
+    EDSELRX           <= "0001";
+    wait until rising_edge(CLK);
+    assert EDRX = BOOTDEVICE report "Error receiving device device" severity error;
+
+    EDSELRX <= "0011";
+    wait until rising_edge(CLK);
+    assert EDRX = "01" report "receiving success response" severity error;
+
+    EDSELRX <= "0100";
+    wait until rising_edge(CLK);
+    assert EDRX = X"12" report "Error receiving fopen len" severity error;
+
+    EDSELRX <= "0101";
+    wait until rising_edge(CLK);
+    assert EDRX = X"34" report "Error receiving fopen len" severity error;
+
+    EDSELRX <= "0110";
+    wait until rising_edge(CLK);
+    assert EDRX = X"56" report "Error receiving fopen len" severity error;
+
+    EDSELRX <= "0111";
+    wait until rising_edge(CLK);
+    assert EDRX = X"78" report "Error receiving fopen len" severity error;
+
 
     report "End of Simulation" severity failure;
     wait;
