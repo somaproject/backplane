@@ -94,12 +94,14 @@ void bootstore_setup()
 void bootstore() {
   static __xdata FIL fileobject; 
   FRESULT fres; 
-  unsigned long filelen; 
+  unsigned long filelen, bytesread; 
   char fopenres; 
   
   char cpos; 
   char cmd; 
   char dummy; 
+
+  long freadoffset, freadlen; 
 
   
   for(;;) {
@@ -120,22 +122,12 @@ void bootstore() {
 	// FILE READ CMD
 	// -----------------------------------------------
 
-	// get filename
-	char filename[32];
+	// get offset
+	char filename[32]; 
 	for (cpos = 0; cpos < 32; ++cpos) {
 	  filename[cpos] = storespi_rx();
 	}
 	
-/* 	filename[0] = 'b'; */
-/* 	filename[1] = 'l'; */
-/* 	filename[2] = 'i'; */
-/* 	filename[3] = 'n'; */
-/* 	filename[4] = 'k'; */
-/* 	filename[5] = '.';  */
-/* 	filename[6] = 'b'; */
-/* 	filename[7] = 'i'; */
-/* 	filename[8] = '2';// DEBUGGING  */
-/*  	filename[9] = 0;  */
 
 	fres = f_open(&fileobject, filename, FA_READ);
 	
@@ -164,10 +156,28 @@ void bootstore() {
 	storespi_tx((filelen >> 16) & 0xFF);
 	storespi_tx((filelen >> 8) & 0xFF);
 	storespi_tx((filelen >> 0) & 0xFF);
-      }
-      
-      
-      STORESPI_CS = 1;
+      } else if (cmd == STORESPI_FRCMD) {
+	// ----------------------------------------------
+	// FILE READ CMD
+	// -----------------------------------------------
+	
+	
+                          
+	freadoffset = storespi_rx();                                  
+	freadoffset = (freadoffset << 8) | storespi_rx();                      
+	freadoffset = (freadoffset << 8) | storespi_rx();                    
+	freadoffset = (freadoffset << 8) | storespi_rx(); 
+
+	freadlen = storespi_rx();                                  
+	freadlen = (freadlen << 8) | storespi_rx();                      
+	freadlen = (freadlen << 8) | storespi_rx();                    
+	freadlen = (freadlen << 8) | storespi_rx(); 
+	fres = f_lseek(&fileobject, freadoffset); 
+
+	fres = f_read(&fileobject, buffer, BLOCK_SIZE, &bytesread); 
+
+      }      
+
     }
     STORESPI_CS = 1; 
       
