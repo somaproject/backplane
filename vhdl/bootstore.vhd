@@ -116,6 +116,8 @@ architecture Behavioral of bootstore is
 
   -- handle
   signal handle : std_logic_vector(7 downto 0) := (others => '0');
+  signal handleheld : std_logic := '0';
+  
 
   -- tx settings
   signal txcmd : std_logic_vector(7 downto 0) := (others => '0');
@@ -155,7 +157,8 @@ architecture Behavioral of bootstore is
                   freadcmd, fread0, fread1, fread2, fread3, fsend,
                   freadresp, frblockn, frw1, frw2, frw3, frw4,
                   frdone, frespwait, 
-                  etxsend);
+                  etxsend,
+                  hyields);
 
   signal cs, ns : states := none;
 
@@ -165,6 +168,8 @@ architecture Behavioral of bootstore is
   constant SETFNAME : std_logic_vector(7 downto 0) := X"91";
   constant FOPEN    : std_logic_vector(7 downto 0) := X"92";
   constant FREAD    : std_logic_vector(7 downto 0) := X"93";
+  constant YIELDHAND : std_logic_vector(7 downto 0) := X"94";
+  
 
   -- SPI CONSTANTS
   constant SPIFOCMD : std_logic_vector(15 downto 0) := X"0001";
@@ -220,7 +225,7 @@ begin  -- Behavioral
   setxdin <= txcmd & DEVICE             when setxsel = 0 else
              X"00" & handle             when setxsel = 1 else
              pktcnt                     when setxsel = 2 else
-             "00000000000000" & pending when setxsel = 3 else
+             "0000000000000" & handleheld & pending when setxsel = 3 else
              spidout;
 
 
@@ -282,10 +287,13 @@ begin  -- Behavioral
         end if;
       end if;
 
-      
-      if cs = sendacq  then
-        handle <= handle + 1; 
+      if cs = shandsuc then
+        handleheld <= '1';
+      elsif cs = hyields then
+        handleheld <= '0';
+        handle <= handle + 1;         
       end if;
+      
     end if;
   end process main;
 
@@ -364,7 +372,7 @@ begin  -- Behavioral
         setxsend  <= '0';
         if curcmd = GETHAND or
           curcmd = SETFNAME or
-          curcmd = FOPEN or curcmd = FREAD then
+          curcmd = FOPEN or curcmd = FREAD or curcmd = YIELDHAND then
           ns      <= chkpnd;
         else
           ns      <= nextevt;
@@ -417,6 +425,9 @@ begin  -- Behavioral
             ns    <= penderr;
           end if;
         end if;
+        -------------------------------------------------------------------------
+        -- Acquire HAndle
+        -------------------------------------------------------------------------
 
       when sendacq =>
         enext     <= '0';
@@ -527,14 +538,42 @@ begin  -- Behavioral
           elsif curcmd = FOPEN then
             ns    <= fopens;
           elsif curcmd = FREAD then
+            
             ns    <= freadcmd;
+          elsif curcmd = YIELDHAND then
+            ns <= hyields; 
           else
-            report "FIXME NOT IMPLMENETED" severity error;
+            report "FIXME NOT IMPLEMENTED" severity error;
           end if;
         else
           ns      <= handerr;
         end if;
 
+        -------------------------------------------------------------------------
+        -- Yield Handle
+        -------------------------------------------------------------------------
+
+      when hyields =>
+        enext     <= '0';
+        eouta     <= "001";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 0;
+        dconst    <= X"0000";
+        aconst    <= "0000000000";
+        setxsel   <= 0;
+        txcmd     <= GETHAND;
+        spiwe     <= '0';
+        cmdreq    <= '0';
+        incspicnt <= '0';
+        setxwe    <= '0';
+        setxain   <= "000";
+        setxsend  <= '0';
+        ns        <= nextevt;
+
+        
         -------------------------------------------------------------------------
         -- set filename
         -------------------------------------------------------------------------

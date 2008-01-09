@@ -6,12 +6,16 @@ the boot store interface at a given time, and all commands are
 executed via the acquisition of a 16-bit handle.
 
 \subsection{Event Interface}
+
+Possible error responses: 
+
+
+
 \subsubsection{Get Handle}
 
 Get Handle: 
 CMD: 0x90
 SRC: 
-DATA: none
 
 \response
 CMD: 0x90
@@ -19,7 +23,18 @@ SRC: DEVICE
 DATA0: success/failure
 DATA1: handle | 0x00
 
-success = 0; failure = anything else
+success = 0; failure = anything else; 
+in particular DATA[2] =1 means that the handle is held 
+by someone else
+
+
+\subsubsection{YieldHandle}
+What you call when you're done with your operation. 
+CMD: 0x94
+SRC: 
+DATA[0][15:8]: Handle
+
+
 
 \subsubsection{Set Filename}
 set filename: 

@@ -9,14 +9,13 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="bootstore.fsm.svg"
-   sodipodi:docbase="/home/jonas/soma/backplane.trunk/docs/boot"
-   inkscape:version="0.45.1"
+   sodipodi:docbase="/home/jonas/soma/backplane/docs/boot"
+   inkscape:version="0.44.1"
    sodipodi:version="0.32"
    id="svg1996"
    height="990"
    width="1530"
    version="1.0"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/tmp/bootstore.fsm.png"
    inkscape:export-xdpi="150"
    inkscape:export-ydpi="150">
@@ -65,10 +64,10 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="25"
-     inkscape:window-x="0"
-     inkscape:window-height="697"
-     inkscape:window-width="1024"
+     inkscape:window-y="0"
+     inkscape:window-x="1600"
+     inkscape:window-height="1179"
+     inkscape:window-width="1600"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
      gridtolerance="10000"
@@ -80,9 +79,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="359.60702"
-     inkscape:cx="958.9134"
-     inkscape:zoom="0.35355339"
+     inkscape:cy="699.60467"
+     inkscape:cx="1102.8118"
+     inkscape:zoom="2.8284271"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -998,25 +997,6 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="1050"
-       y="290"
-       id="text19110"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         x="1050"
-         y="290"
-         id="tspan19116">CURCMD = GETHAND</tspan><tspan
-         sodipodi:role="line"
-         x="1050"
-         y="298.75"
-         id="tspan2181">or SETFNAME or</tspan><tspan
-         sodipodi:role="line"
-         x="1050"
-         y="307.5"
-         id="tspan2183">FOPEN or FREAD</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="987.5"
        y="261.875"
        id="text19118"
@@ -1029,17 +1009,21 @@
        xml:space="preserve"
        style="font-size:6.99999952px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="1134.375"
-       y="193.125"
+       y="205.625"
        id="text19134"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          x="1134.375"
-         y="193.125"
+         y="205.625"
          id="tspan19146">PENDING=0 &amp;</tspan><tspan
          sodipodi:role="line"
          x="1134.375"
-         y="201.875"
-         id="tspan19272">CURCMD = GETHAND</tspan></text>
+         y="214.375"
+         id="tspan19272">CURCMD = GETHAND</tspan><tspan
+         sodipodi:role="line"
+         x="1134.375"
+         y="223.125"
+         id="tspan6237" /></text>
     <text
        xml:space="preserve"
        style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -1460,7 +1444,11 @@
          sodipodi:role="line"
          x="1096.875"
          y="83.75"
-         id="tspan5677">Send New Handle</tspan></text>
+         id="tspan5677">Send Handle</tspan><tspan
+         sodipodi:role="line"
+         x="1096.875"
+         y="98.75"
+         id="tspan6239">Request Response</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"

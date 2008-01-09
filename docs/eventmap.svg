@@ -9,14 +9,12 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="eventmap.svg"
-   sodipodi:docbase="/home/jonas/backplane/docs"
-   inkscape:version="0.44+devel"
+   sodipodi:docbase="/home/jonas/soma/backplane/docs"
+   inkscape:version="0.44.1"
    sodipodi:version="0.32"
    id="svg1996"
    height="792.00000pt"
-   width="612.00000pt"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   sodipodi:modified="true">
+   width="612.00000pt">
   <defs
      id="defs3">
     <marker
@@ -49,7 +47,7 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="0"
+     inkscape:window-y="25"
      inkscape:window-x="0"
      inkscape:window-height="977"
      inkscape:window-width="1277"
@@ -64,9 +62,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="567.55025"
-     inkscape:cx="430.43488"
-     inkscape:zoom="0.70710678"
+     inkscape:cy="701.53804"
+     inkscape:cx="231.47183"
+     inkscape:zoom="2"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -289,7 +287,7 @@
          sodipodi:role="line"
          id="tspan2002"
          x="159.375"
-         y="143.125">Boot</tspan></text>
+         y="143.125">BootStore</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -336,14 +334,14 @@
          y="190">Ether</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="268.75"
        y="190"
        id="text1990"><tspan
          sodipodi:role="line"
          id="tspan1992"
          x="268.75"
-         y="190">Ethernet</tspan></text>
+         y="190">Ethernet Interface</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -713,7 +711,7 @@
          sodipodi:role="line"
          id="tspan3113"
          x="159.375"
-         y="346.25">Analog Output</tspan></text>
+         y="346.25">Analog IO</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -723,7 +721,7 @@
          sodipodi:role="line"
          id="tspan3117"
          x="268.75"
-         y="346.25">Front-panel Analog Output</tspan></text>
+         y="346.25">Front-panel Analog Output &amp; Input</tspan></text>
     <rect
        style="fill:#f6e7ed;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3119"
@@ -1011,5 +1009,25 @@
          id="tspan3249"
          x="578.125"
          y="411.875">Comp</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="159.375"
+       y="221.25"
+       id="text2042"><tspan
+         sodipodi:role="line"
+         id="tspan2044"
+         x="159.375"
+         y="221.25">JTAG</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="268.75"
+       y="221.25"
+       id="text2046"><tspan
+         sodipodi:role="line"
+         id="tspan2048"
+         x="268.75"
+         y="221.25">Debug JTAG event IF</tspan></text>
   </g>
 </svg>

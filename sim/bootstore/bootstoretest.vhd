@@ -338,6 +338,38 @@ begin  -- Behavioral
     EDSELRX   <= "0101";
     wait until rising_edge(CLK);
     curhandle <= EDRX;
+    report "'get the handle' test done" severity note;
+    
+
+    -------------------------------------------------------------------------
+    -- Try to get the handle again; should fail with a handle-already-acq
+    -- error
+    -------------------------------------------------------------------------
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '1';
+    eventinputs(0)(0) <= GETHAND & X"00";
+    eventinputs(0)(1) <= X"0000";
+    eventinputs(0)(2) <= X"0000";
+    eventinputs(0)(3) <= X"0000";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX              <= (others => '0');
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    -- now verify we got the handle!
+    assert EARX(0) = '1' report "Error setting the EARX" severity error;
+    EDSELRX           <= "0000";
+    wait until rising_edge(CLK); 
+    assert EDRX = X"90" report "Error setting command" severity error;
+    EDSELRX           <= "0001";
+    wait until rising_edge(CLK);
+    assert EDRX = BOOTDEVICE report "Error setting command" severity error;
+    -- get the success result
+    EDSELRX           <= "0011";
+    wait until rising_edge(CLK);
+    assert EDRX = X"04" report "Error getting secondary handle req result" severity error;
+
+    wait until rising_edge(CLK);
+    report "'get the handle when it's already acquired' test done" severity note;
 
     -------------------------------------------------------------------------
     -- Set the filename to be the filename signal
