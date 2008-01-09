@@ -300,7 +300,9 @@ begin  -- Behavioral
 
   DEBUG(0) <= cmddone;
   DEBUG(2 downto 1) <= pending;
-  
+  DEBUG(3) <= handleheld;
+  DEBUG(4) <= '1' when cs = handerr else '0';
+              
   fsm : process(cs, evalid, eoutd, handle, curcmd, cmddone, setxpending)
   begin
     case cs is
@@ -546,7 +548,7 @@ begin  -- Behavioral
           elsif curcmd = YIELDHAND then
             ns <= hyields;
           else
-            report "FIXME NOT IMPLEMENTED" severity error;
+            ns <= handerr; 
           end if;
         else
           ns   <= handerr;

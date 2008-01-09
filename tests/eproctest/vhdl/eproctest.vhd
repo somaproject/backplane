@@ -433,8 +433,8 @@ begin  -- Behavioral
       SPICS   => SPICS,
       SPICLK  => SPICLK);
 
-  LEDPOWER <= bootstoredebug(1);
-  LEDEVENT <= bootstoredebug(2);
+  LEDPOWER <= bootstoredebug(4);
+  LEDEVENT <= bootstoredebug(3);
 
 --  LEDPOWER <= locked2;  
 --   process(clk2x)

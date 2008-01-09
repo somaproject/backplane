@@ -5,7 +5,7 @@
 --
 -- Command: data2mem -bm eproctest_bd.bmm -bd eproctest.mem -bt eproctest.bit -o h eproctest_mem.vhd -o b eproctest.new.bit
 --
--- Created on 01/09/08 08:31 am, from:
+-- Created on 01/09/08 10:23 am, from:
 --
 --     Map file     - eproctest_bd.bmm
 --     Data file(s) - eproctest.mem
