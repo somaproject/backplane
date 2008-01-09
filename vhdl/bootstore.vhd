@@ -282,6 +282,10 @@ begin  -- Behavioral
         end if;
       end if;
 
+      
+      if cs = sendacq  then
+        handle <= handle + 1; 
+      end if;
     end if;
   end process main;
 

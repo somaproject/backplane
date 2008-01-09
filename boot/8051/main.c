@@ -4,6 +4,8 @@
 #include "tff.h"
 
 #include "mmc.h" 
+#include "bootstore.h"
+
 
 
 __xdata unsigned char buffer[BLOCK_SIZE];
@@ -292,6 +294,8 @@ void testcode()
 
 
 }
+
+
 int main(void)
 {
   int x = 0; 
@@ -312,10 +316,11 @@ int main(void)
   fres = f_mount(0, &filesysobj);  
   checkOK(fres); 
 
+  bootstore_setup; 
   FPGA_boot();
-  for(;;) {
-    P0_0 = 1; 
-    P0_0 = 0; 
 
-  }
+  // Bootstore SPI interface for providing the FPGA
+  // with access to the SPI data
+  bootstore(); 
+
 }

@@ -21,7 +21,6 @@ entity eproctest is
     SPIMISO     : out std_logic;
     SPICS       : in  std_logic;
     SPICLK      : in  std_logic;
-    SPIREQ      : out std_logic;     
     LEDPOWER    : out std_logic;
     LEDEVENT    : out std_logic;
     NICFPROG    : out std_logic;
@@ -142,8 +141,7 @@ architecture Behavioral of eproctest is
       SPIMOSI : in  std_logic;
       SPIMISO : out std_logic;
       SPICS   : in  std_logic;
-      SPICLK  : in  std_logic;
-      SPIREQ  : out std_logic
+      SPICLK  : in  std_logic
       );
   end component;
 
@@ -421,18 +419,16 @@ begin  -- Behavioral
       CLKHI   => clk2x,
       RESET   => RESET,
       EDTX    => EDTX,
-      EATX    => EATX(2),
+      EATX    => EATX(3),
       ECYCLE  => ECYCLE,
-      EARX    => EARX(2),
-      EDRX    => EDRX(2),
+      EARX    => EARX(3),
+      EDRX    => EDRX(3),
       EDSELRX => edselrx,
       SPIMOSI => SPIMOSI,
       SPIMISO => SPIMISO,
       SPICS   => SPICS,
-      SPICLK  => SPICLK,
-      SPIREQ  => SPIREQ);
-
-
+      SPICLK  => SPICLK);
+  
   process(clk2x)
   begin
     if rising_edge(clk2x) then
