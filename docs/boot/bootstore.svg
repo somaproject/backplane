@@ -9,13 +9,12 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="bootstore.svg"
-   sodipodi:docbase="/home/jonas/soma/backplane.trunk/docs/boot"
-   inkscape:version="0.45.1"
+   sodipodi:docbase="/home/jonas/soma/backplane/docs/boot"
+   inkscape:version="0.44.1"
    sodipodi:version="0.32"
    id="svg1996"
    height="792.00000pt"
-   width="612.00000pt"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   width="612.00000pt">
   <defs
      id="defs3">
     <marker
@@ -48,10 +47,10 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="25"
-     inkscape:window-x="0"
-     inkscape:window-height="697"
-     inkscape:window-width="1024"
+     inkscape:window-y="0"
+     inkscape:window-x="1600"
+     inkscape:window-height="1179"
+     inkscape:window-width="1600"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
      gridtolerance="10000"
@@ -63,8 +62,8 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="863.77649"
-     inkscape:cx="588.69188"
+     inkscape:cy="887.23391"
+     inkscape:cx="640.60537"
      inkscape:zoom="1.4142136"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -1993,14 +1992,14 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="568.75"
+       x="506.25"
        y="-31.875"
        id="text3650"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3652"
-         x="568.75"
-         y="-31.875">PENDING[1:0]</tspan></text>
+         x="506.25"
+         y="-31.875">HANDLEHELD &amp; PENDING[1:0]  </tspan></text>
     <flowRoot
        xml:space="preserve"
        id="flowRoot4589"><flowRegion
@@ -2010,5 +2009,88 @@
            height="74"
            x="257.5"
            y="-271.49997" /></flowRegion><flowPara
-         id="flowPara4597">Since an event is 8 bytes, and we're counting the # of event packets we'll need to send, we take the len and / 8</flowPara></flowRoot>  </g>
+         id="flowPara4597">Since an event is 8 bytes, and we're counting the # of event packets we'll need to send, we take the len and / 8</flowPara></flowRoot>    <g
+       style="display:inline"
+       transform="translate(250,53.125)"
+       id="g6203">
+      <rect
+         y="343.125"
+         x="77.8992"
+         height="50.096931"
+         width="28.350792"
+         id="rect6205"
+         style="fill:white;fill-rule:evenodd;stroke:black;stroke-width:1.17443275" />
+      <text
+         sodipodi:linespacing="100%"
+         id="text6207"
+         y="390.89999"
+         x="96.335358"
+         style="font-size:10px;line-height:100%;text-anchor:middle;stroke-width:1pt;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           id="tspan6209">R</tspan></text>
+      <text
+         transform="scale(3.384064,3.384064)"
+         sodipodi:linespacing="100%"
+         id="text6211"
+         y="106.56478"
+         x="23.410166"
+         style="font-size:4px;line-height:100%;stroke-width:0.36937839;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           id="tspan6213">S</tspan></text>
+      <text
+         transform="scale(3.384064,3.384064)"
+         sodipodi:linespacing="100%"
+         id="text6215"
+         y="106.58192"
+         x="30.771975"
+         style="font-size:4px;line-height:100%;text-anchor:end;stroke-width:0.36937839;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           id="tspan6217">Q</tspan></text>
+      <path
+         id="path6219"
+         d="M 78.125,393.125 L 84.375,386.875 L 78.125,380.625"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt" />
+    </g>
+    <path
+       style="opacity:1;color:black;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       d="M 356.25,408.75 L 371.875,408.75"
+       id="path6221" />
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="375"
+       y="411.875"
+       id="text6223"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan6225"
+         x="375"
+         y="411.875">HANDLEHELD</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="292.80664"
+       y="408.75"
+       id="text6227"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6229"
+         x="292.80664"
+         y="408.75">cs=shandsuc</tspan></text>
+    <path
+       style="opacity:1;color:black;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       d="M 300,408.75 L 328.125,408.75"
+       id="path6231" />
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="358.43164"
+       y="458.75"
+       id="text6295"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6297"
+         x="358.43164"
+         y="458.75">cs=hyields</tspan></text>
+  </g>
 </svg>

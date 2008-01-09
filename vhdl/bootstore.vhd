@@ -14,7 +14,7 @@ use UNISIM.VComponents.all;
 
 entity bootstore is
   generic (
-    DEVICE : std_logic_vector(7 downto 0) := X"01"
+    DEVICE  :     std_logic_vector(7 downto 0)                   := X"01"
     );
   port (
     CLK     : in  std_logic;
@@ -115,9 +115,9 @@ architecture Behavioral of bootstore is
   signal pendset : std_logic_vector(1 downto 0) := (others => '0');
 
   -- handle
-  signal handle : std_logic_vector(7 downto 0) := (others => '0');
-  signal handleheld : std_logic := '0';
-  
+  signal handle     : std_logic_vector(7 downto 0) := (others => '0');
+  signal handleheld : std_logic                    := '0';
+
 
   -- tx settings
   signal txcmd : std_logic_vector(7 downto 0) := (others => '0');
@@ -156,7 +156,7 @@ architecture Behavioral of bootstore is
                   fopenrsp1, forspstat, forsplen1, forsplen2, forsnd,
                   freadcmd, fread0, fread1, fread2, fread3, fsend,
                   freadresp, frblockn, frw1, frw2, frw3, frw4,
-                  frdone, frespwait, 
+                  frdone, frespwait,
                   etxsend,
                   hyields);
 
@@ -164,12 +164,12 @@ architecture Behavioral of bootstore is
 
 
   -- EVENT CONSTANTS
-  constant GETHAND  : std_logic_vector(7 downto 0) := X"90";
-  constant SETFNAME : std_logic_vector(7 downto 0) := X"91";
-  constant FOPEN    : std_logic_vector(7 downto 0) := X"92";
-  constant FREAD    : std_logic_vector(7 downto 0) := X"93";
+  constant GETHAND   : std_logic_vector(7 downto 0) := X"90";
+  constant SETFNAME  : std_logic_vector(7 downto 0) := X"91";
+  constant FOPEN     : std_logic_vector(7 downto 0) := X"92";
+  constant FREAD     : std_logic_vector(7 downto 0) := X"93";
   constant YIELDHAND : std_logic_vector(7 downto 0) := X"94";
-  
+
 
   -- SPI CONSTANTS
   constant SPIFOCMD : std_logic_vector(15 downto 0) := X"0001";
@@ -222,9 +222,9 @@ begin  -- Behavioral
       EARX    => EARX);
 
   -- primary mutexes
-  setxdin <= txcmd & DEVICE             when setxsel = 0 else
-             X"00" & handle             when setxsel = 1 else
-             pktcnt                     when setxsel = 2 else
+  setxdin <= txcmd & DEVICE                         when setxsel = 0 else
+             X"00" & handle                         when setxsel = 1 else
+             pktcnt                                 when setxsel = 2 else
              "0000000000000" & handleheld & pending when setxsel = 3 else
              spidout;
 
@@ -262,7 +262,7 @@ begin  -- Behavioral
       end if;
 
       if cs = fread3 then
-        pendpktcnt(12 downto 0) <= eoutd(15 downto 3);
+        pendpktcnt(12 downto 0)  <= eoutd(15 downto 3);
       elsif cs = fread2 then
         pendpktcnt(15 downto 13) <= eoutd(2 downto 0);
       end if;
@@ -291,9 +291,9 @@ begin  -- Behavioral
         handleheld <= '1';
       elsif cs = hyields then
         handleheld <= '0';
-        handle <= handle + 1;         
+        handle     <= handle + 1;
       end if;
-      
+
     end if;
   end process main;
 
@@ -325,7 +325,7 @@ begin  -- Behavioral
           if pending = "01" and cmddone = '1' then
             ns    <= fopenrsp1;
           elsif pending = "10" and cmddone = '1' then
-            ns <= freadresp; 
+            ns    <= freadresp;
           else
             ns    <= none;
           end if;
@@ -538,20 +538,20 @@ begin  -- Behavioral
           elsif curcmd = FOPEN then
             ns    <= fopens;
           elsif curcmd = FREAD then
-            
-            ns    <= freadcmd;
+
+            ns <= freadcmd;
           elsif curcmd = YIELDHAND then
-            ns <= hyields; 
+            ns <= hyields;
           else
             report "FIXME NOT IMPLEMENTED" severity error;
           end if;
         else
-          ns      <= handerr;
+          ns   <= handerr;
         end if;
 
-        -------------------------------------------------------------------------
-        -- Yield Handle
-        -------------------------------------------------------------------------
+     -------------------------------------------------------------------------
+     -- Yield Handle
+     -------------------------------------------------------------------------
 
       when hyields =>
         enext     <= '0';
@@ -573,10 +573,14 @@ begin  -- Behavioral
         setxsend  <= '0';
         ns        <= nextevt;
 
-        
-        -------------------------------------------------------------------------
-        -- set filename
-        -------------------------------------------------------------------------
+
+     -------------------------------------------------------------------------
+     -- Handle Error                    -- invalid handle
+     -------------------------------------------------------------------------
+
+     -------------------------------------------------------------------------
+     -- set filename
+     -------------------------------------------------------------------------
       when fnlos =>
         enext     <= '0';
         eouta     <= "010";
@@ -993,7 +997,7 @@ begin  -- Behavioral
         setxain   <= "001";
         setxsend  <= '0';
         ns        <= frw1;
-        
+
       when frw1 =>
         enext     <= '0';
         eouta     <= "000";
@@ -1013,7 +1017,7 @@ begin  -- Behavioral
         setxain   <= "010";
         setxsend  <= '0';
         ns        <= frw2;
-        
+
 
       when frw2 =>
         enext     <= '0';
@@ -1034,7 +1038,7 @@ begin  -- Behavioral
         setxain   <= "011";
         setxsend  <= '0';
         ns        <= frw3;
-        
+
 
       when frw3 =>
         enext     <= '0';
@@ -1055,7 +1059,7 @@ begin  -- Behavioral
         setxain   <= "100";
         setxsend  <= '0';
         ns        <= frw4;
-        
+
       when frw4 =>
         enext     <= '0';
         eouta     <= "000";
@@ -1075,11 +1079,11 @@ begin  -- Behavioral
         setxain   <= "101";
         setxsend  <= '1';
         if pendpktcnt = pktcnt then
-          ns <= frdone;
+          ns      <= frdone;
         else
-          ns <= frespwait; 
+          ns      <= frespwait;
         end if;
-        
+
       when frdone =>
         enext     <= '0';
         eouta     <= "000";
@@ -1099,7 +1103,7 @@ begin  -- Behavioral
         setxain   <= "101";
         setxsend  <= '0';
         ns        <= frespwait;
-        
+
       when frespwait =>
         enext     <= '0';
         eouta     <= "010";
@@ -1119,9 +1123,9 @@ begin  -- Behavioral
         setxain   <= "000";
         setxsend  <= '0';
         if setxpending = '1' then
-          ns <= frespwait;
+          ns      <= frespwait;
         else
-          ns <= none; 
+          ns      <= none;
         end if;
 
       when others =>

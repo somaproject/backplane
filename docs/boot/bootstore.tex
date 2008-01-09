@@ -34,15 +34,13 @@ CMD: 0x94
 SRC: 
 DATA[0][15:8]: Handle
 
-
-
 \subsubsection{Set Filename}
 set filename: 
 CMD: 0x91:
 DATA0: HANDLE | OFFSET
 DATA1:  CHAR[0] | CHAR[1]
+...
 DATA4:  CHAR[6] | CHAR[7]
-
 
 \subsubsection{Open File} 
 CMD: 0x92
@@ -69,7 +67,7 @@ DATA4: LEN[15:0]
 Response: ... Trickier, 8 bytes at a time
 
  
-CMD: 0x94
+CMD: 0x93
 SRC: DEVICE
 DATA0: 8-byte-block #, i.e. which event # this is of the read events we're going to get (this limits a read cmd to ... some number of bytes?)
 DATA1: bytes[0] & bytes[1]
