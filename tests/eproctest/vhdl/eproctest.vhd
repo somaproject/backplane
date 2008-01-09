@@ -129,6 +129,7 @@ architecture Behavioral of eproctest is
       CLK     : in  std_logic;
       CLKHI   : in  std_logic;
       RESET   : in  std_logic;
+      DEBUG : out std_logic_vector(7 downto 0); 
       -- event interface
       EDTX    : in  std_logic_vector(7 downto 0);
       EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
@@ -185,6 +186,8 @@ architecture Behavioral of eproctest is
   signal OPORTDATA   : std_logic_vector(15 downto 0);
   signal OPORTSTROBE : std_logic := '0';
 
+  signal bootstoredebug : std_logic_vector(7 downto 0) := (others => '0');
+  
 begin  -- Behavioral
 
 
@@ -330,7 +333,7 @@ begin  -- Behavioral
       EDTX    => EDTX);
 
 
-  LEDPOWER <= locked2;
+
 
   jtagsend_inst : jtagesend
     generic map (
@@ -416,8 +419,9 @@ begin  -- Behavioral
       DEVICE  => X"03")
     port map (
       CLK     => CLK,
-      CLKHI   => clk2x,
+      CLKHI   => memclkint,
       RESET   => RESET,
+      DEBUG => bootstoredebug,
       EDTX    => EDTX,
       EATX    => EATX(3),
       ECYCLE  => ECYCLE,
@@ -428,17 +432,21 @@ begin  -- Behavioral
       SPIMISO => SPIMISO,
       SPICS   => SPICS,
       SPICLK  => SPICLK);
-  
-  process(clk2x)
-  begin
-    if rising_edge(clk2x) then
-      if oportstrobe = '1' then
-        if oportaddr = X"20" then
-          LEDEVENT <= oportdata(0);
-        end if;
-      end if;
-    end if;
-  end process;
+
+  LEDPOWER <= bootstoredebug(1);
+  LEDEVENT <= bootstoredebug(2);
+
+--  LEDPOWER <= locked2;  
+--   process(clk2x)
+--   begin
+--     if rising_edge(clk2x) then
+--       if oportstrobe = '1' then
+--         if oportaddr = X"20" then
+--           LEDEVENT <= oportdata(0);
+--         end if;
+--       end if;
+--     end if;
+--   end process;
 
 
 end Behavioral;

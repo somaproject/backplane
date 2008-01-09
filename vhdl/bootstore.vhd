@@ -20,6 +20,7 @@ entity bootstore is
     CLK     : in  std_logic;
     CLKHI   : in  std_logic;
     RESET   : in  std_logic;
+    DEBUG : out std_logic_vector(7 downto 0);                                 
     -- event interface
     EDTX    : in  std_logic_vector(7 downto 0);
     EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
@@ -27,7 +28,6 @@ entity bootstore is
     EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
     EDRX    : out std_logic_vector(7 downto 0);
     EDSELRX : in  std_logic_vector(3 downto 0);
-
     -- SPI INTERFACE
     SPIMOSI : in  std_logic;
     SPIMISO : out std_logic;
@@ -172,7 +172,8 @@ architecture Behavioral of bootstore is
 
 
   -- SPI CONSTANTS
-  constant SPIFOCMD : std_logic_vector(15 downto 0) := X"0001";
+  --constant SPIFOCMD : std_logic_vector(15 downto 0) := X"0001";
+  constant SPIFOCMD : std_logic_vector(15 downto 0) := X"0001"; 
   constant SPIFRCMD : std_logic_vector(15 downto 0) := X"0002";
 
 
@@ -249,7 +250,7 @@ begin  -- Behavioral
         cursrc <= eoutd(7 downto 0);
       end if;
 
-      if pendsrcen = '1' then
+      if cs = fopencmd or cs = fsend then
         pendsrc <= cursrc;
       end if;
 
@@ -297,7 +298,9 @@ begin  -- Behavioral
     end if;
   end process main;
 
-
+  DEBUG(0) <= cmddone;
+  DEBUG(2 downto 1) <= pending;
+  
   fsm : process(cs, evalid, eoutd, handle, curcmd, cmddone, setxpending)
   begin
     case cs is
@@ -610,7 +613,7 @@ begin  -- Behavioral
         spidsel   <= 1;
         spiasel   <= 0;
         dconst    <= X"0000";
-        aconst    <= "0000000011";
+        aconst    <= "0000000010";
         setxsel   <= 0;
         spiwe     <= '1';
         txcmd     <= X"00";
@@ -631,7 +634,7 @@ begin  -- Behavioral
         spidsel   <= 1;
         spiasel   <= 0;
         dconst    <= X"0000";
-        aconst    <= "0000000100";
+        aconst    <= "0000000011";
         setxsel   <= 0;
         spiwe     <= '1';
         txcmd     <= X"00";
@@ -652,7 +655,7 @@ begin  -- Behavioral
         spidsel   <= 1;
         spiasel   <= 0;
         dconst    <= X"0000";
-        aconst    <= "0000000101";
+        aconst    <= "0000000100";
         setxsel   <= 0;
         spiwe     <= '1';
         txcmd     <= X"00";
@@ -672,7 +675,7 @@ begin  -- Behavioral
         spidsel   <= 1;
         spiasel   <= 0;
         dconst    <= X"0000";
-        aconst    <= "0000000110";
+        aconst    <= "0000000101";
         setxsel   <= 0;
         spiwe     <= '1';
         txcmd     <= X"00";

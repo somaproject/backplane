@@ -19,8 +19,8 @@ FOCMD:
 MOSI:          MISO:
 CMDREQ          - 
  0x00           -
+  -            0x00 
   -            FOCMD
-  -            0x00
   -            Filename[0]
   -             ...
   -            Filename[31]
@@ -46,8 +46,8 @@ and then either all 0s or the file length in bytes
 MOSI:           MISO:
 CMDREQ            -
 0x00              - 
-  -             FRCMD
   -             0x00
+  -             FRCMD
   -              OS[3]
   -              ...
   -              OS[0]

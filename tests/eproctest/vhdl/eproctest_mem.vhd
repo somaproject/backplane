@@ -5,7 +5,7 @@
 --
 -- Command: data2mem -bm eproctest_bd.bmm -bd eproctest.mem -bt eproctest.bit -o h eproctest_mem.vhd -o b eproctest.new.bit
 --
--- Created on 01/08/08 07:50 pm, from:
+-- Created on 01/09/08 08:31 am, from:
 --
 --     Map file     - eproctest_bd.bmm
 --     Data file(s) - eproctest.mem
@@ -20,7 +20,7 @@ use ieee.std_logic_1164;
 package eproctest_mem_pkg is
 
 -- BRAM 0 in address space [0x00000000:0x000007FF], bit lane [17:0]
--- INST instruction_ram LOC = RAMB16_X0Y1;
+-- INST instruction_ram LOC = RAMB16_X2Y8;
 	constant instruction_ram_INIT_00  : bit_vector(0 to 255) := x"10058445300515858425327511E5841531F511058405300515358885300514B5";
 	constant instruction_ram_INIT_01  : bit_vector(0 to 255) := x"8515101584D5101584A530A510058495380518058485300515A5846510058455";
 	constant instruction_ram_INIT_02  : bit_vector(0 to 255) := x"8715101586D5101586951015865510158615101585D510158595101585551015";

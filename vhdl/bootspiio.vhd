@@ -20,7 +20,7 @@ entity bootspiio is
     DIN     : in  std_logic_vector(15 downto 0);
     ADDR    : in  std_logic_vector(9 downto 0);
     WE      : in  std_logic;
-    CMDDONE : out std_logic;
+    CMDDONE : out std_logic := '0';
     CMDREQ  : in  std_logic;
     -- SPI INTERFACE
     CLKHI   : in  std_logic;

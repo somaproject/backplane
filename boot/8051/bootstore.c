@@ -87,7 +87,7 @@ char storespi_rx() {
 void bootstore_setup()
 {
 
-  P0MDOUT &= 0xF6;
+  P0MDOUT &= 0xF7;
   STORESPI_CS = 1; 
 }
 
@@ -110,9 +110,10 @@ void bootstore() {
       
       storespi_tx(STORESPI_CMDREQ);
       storespi_tx(0x00);
-             
+
+      dummy = storespi_rx();             
       cmd = storespi_rx();
-      dummy = storespi_rx();
+
       
       if (cmd == STORESPI_FOCMD) {
 	// ----------------------------------------------
@@ -125,6 +126,17 @@ void bootstore() {
 	  filename[cpos] = storespi_rx();
 	}
 	
+/* 	filename[0] = 'b'; */
+/* 	filename[1] = 'l'; */
+/* 	filename[2] = 'i'; */
+/* 	filename[3] = 'n'; */
+/* 	filename[4] = 'k'; */
+/* 	filename[5] = '.';  */
+/* 	filename[6] = 'b'; */
+/* 	filename[7] = 'i'; */
+/* 	filename[8] = '2';// DEBUGGING  */
+/*  	filename[9] = 0;  */
+
 	fres = f_open(&fileobject, filename, FA_READ);
 	
 	filelen = 0;
@@ -133,12 +145,17 @@ void bootstore() {
 	  {
 	    // success
 	    filelen = fileobject.fsize;
-	    fres = 1;
+	    fopenres = 1;
 	  } else if (fres == FR_NO_FILE) {
-	    fres = 2;
+	    fopenres = 2; 
+	    filelen = filename[0];
+	    filelen = (filelen << 8) | filename[1]; 
+	    filelen = (filelen << 8) | filename[2]; 
+	    filelen = (filelen << 8) | filename[3]; 
+
 	  } else {
-	    fres = 3;
-	    filelen = fres;
+	    fopenres = 3;
+	    filelen = fres; 
 	  }
 	
 	storespi_tx(fopenres);

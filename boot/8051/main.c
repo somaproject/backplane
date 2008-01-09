@@ -53,7 +53,7 @@ void general_setup()
 
 void configure_port_0()
 {
-  P0MDOUT  |= 0x0F; // port 0 is Push-Pull
+  P0MDOUT  |= 0x1F; // port 0 is Push-Pull
 
 }
 
