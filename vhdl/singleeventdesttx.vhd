@@ -68,10 +68,11 @@ begin  -- Behavioral
 
         if eain = "010" then
           eol (47 downto 32) <= EDIN;
+          
         end if;
 
         if eain = "011" then
-          eol (63 downto 48) <= EDIN;
+          eol (63 downto 48) <= EDIN;          
         end if;
 
         if eain = "100" then

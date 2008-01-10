@@ -1,6 +1,7 @@
 #ifndef BOOTSTORE_H
 #define BOOTSTORE_H
 
+#include "mmc.h"
 
 void bootstore(); 
 

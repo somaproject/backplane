@@ -149,7 +149,6 @@ architecture Behavioral of bootstore is
   -- state machine
   type states is (none, rdevt, chkcmd, nextevt,
                   chkpnd, chkhand, handerr, penderr,
-                  txwait,
                   sendacq, shandsuc, shandval, shandne,
                   fnlos, fname01, fname23, fname45, fname67,
                   fopens, fopencmd,
@@ -844,7 +843,7 @@ begin  -- Behavioral
       when freadcmd =>
         enext     <= '0';
         eouta     <= "010";
-        ssel      <= 0;
+        ssel      <= 1;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 0;
@@ -966,7 +965,7 @@ begin  -- Behavioral
       when freadresp =>
         enext     <= '0';
         eouta     <= "010";
-        ssel      <= 0;
+        ssel      <= 1;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 0;
@@ -986,7 +985,7 @@ begin  -- Behavioral
       when frblockn =>
         enext     <= '0';
         eouta     <= "000";
-        ssel      <= 0;
+        ssel      <= 1;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 0;
@@ -1006,7 +1005,7 @@ begin  -- Behavioral
       when frw1 =>
         enext     <= '0';
         eouta     <= "000";
-        ssel      <= 0;
+        ssel      <= 1;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 0;
@@ -1027,7 +1026,7 @@ begin  -- Behavioral
       when frw2 =>
         enext     <= '0';
         eouta     <= "000";
-        ssel      <= 0;
+        ssel      <= 1;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 0;
@@ -1048,7 +1047,7 @@ begin  -- Behavioral
       when frw3 =>
         enext     <= '0';
         eouta     <= "000";
-        ssel      <= 0;
+        ssel      <= 1;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 0;
@@ -1068,7 +1067,7 @@ begin  -- Behavioral
       when frw4 =>
         enext     <= '0';
         eouta     <= "000";
-        ssel      <= 0;
+        ssel      <= 1;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 0;
@@ -1092,7 +1091,7 @@ begin  -- Behavioral
       when frdone =>
         enext     <= '0';
         eouta     <= "000";
-        ssel      <= 0;
+        ssel      <= 1;
         pendsrcen <= '0';
         penden    <= '0';
         spidsel   <= 0;

@@ -250,7 +250,7 @@ begin  -- Behavioral
       end loop;  -- i
 
       wait for 100 us;
-      wordout := addrin(15 downto 0);
+      wordout := X"0F0F"; -- addrin(15 downto 0); DEBUGGING
       len     := to_integer(unsigned(lenin));
       report "The requested length is " & integer'image(len) severity note;
 
@@ -262,7 +262,7 @@ begin  -- Behavioral
           wait until rising_edge(CLK);
           SPICLK  <= '0';
         end loop;  -- i
-        wordout := wordout + 1;
+        --wordout := wordout + 1;
       end loop;  -- word
       report "SPI fread data tx done" severity note;
       wait until rising_edge(CLK);

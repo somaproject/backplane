@@ -419,7 +419,7 @@ begin  -- Behavioral
       DEVICE  => X"03")
     port map (
       CLK     => CLK,
-      CLKHI   => memclkint,
+      CLKHI   => memclk,
       RESET   => RESET,
       DEBUG => bootstoredebug,
       EDTX    => EDTX,
@@ -433,8 +433,8 @@ begin  -- Behavioral
       SPICS   => SPICS,
       SPICLK  => SPICLK);
 
-  LEDPOWER <= bootstoredebug(4);
-  LEDEVENT <= bootstoredebug(3);
+  LEDPOWER <= memclk; 
+  LEDEVENT <= bootstoredebug(2);
 
 --  LEDPOWER <= locked2;  
 --   process(clk2x)

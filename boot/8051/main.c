@@ -7,7 +7,6 @@
 #include "bootstore.h"
 
 
-
 __xdata unsigned char buffer[BLOCK_SIZE];
 
 __xdata FATFS  filesysobj; 

@@ -113,11 +113,9 @@ def readEvent():
     octets = resp.split()
     e.cmd = int(octets[0], 16)
     e.src = int(octets[1], 16)
-    e.data[0] = int(octets[2] + octets[3], 16)
-    e.data[1] = int(octets[4] + octets[5], 16)
-    e.data[2] = int(octets[6] + octets[7], 16)
-    e.data[3] = int(octets[8] + octets[9], 16)
-    e.data[4] = int(octets[10] + octets[11], 16)
+    for epos in range(5):
+        e.data[epos] = (int(octets[2 + epos * 2], 16) << 8) | int(octets[3 + epos * 2], 16)
+
 
     if e.cmd == 0:
         #print "e.cmd == 0"

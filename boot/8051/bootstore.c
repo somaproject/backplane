@@ -22,10 +22,15 @@ void storespi_tx(char x) {
     STORESPI_MOSI = buf & 0x01; 
     STORESPI_SCLK = 0; 
     STORESPI_SCLK = 1; 
+    STORESPI_SCLK = 1; 
+    STORESPI_SCLK = 1; 
+    STORESPI_SCLK = 0; 
+    STORESPI_SCLK = 0; 
     STORESPI_SCLK = 0; 
   }
+  // FIXME DEBUGGING: 
+  STORESPI_MOSI = 0x00; 
 }
-
 
 
 char storespi_rx() {
@@ -91,18 +96,19 @@ void bootstore_setup()
   STORESPI_CS = 1; 
 }
 
+extern __xdata char buffer[]; 
+
 void bootstore() {
   static __xdata FIL fileobject; 
   FRESULT fres; 
   unsigned long filelen, bytesread; 
   char fopenres; 
-  
+  int pos; 
   char cpos; 
   char cmd; 
   char dummy; 
 
   long freadoffset, freadlen; 
-
   
   for(;;) {
     if (STORESPI_MISO == 1 ) {
@@ -161,8 +167,6 @@ void bootstore() {
 	// FILE READ CMD
 	// -----------------------------------------------
 	
-	
-                          
 	freadoffset = storespi_rx();                                  
 	freadoffset = (freadoffset << 8) | storespi_rx();                      
 	freadoffset = (freadoffset << 8) | storespi_rx();                    
@@ -174,8 +178,14 @@ void bootstore() {
 	freadlen = (freadlen << 8) | storespi_rx(); 
 	fres = f_lseek(&fileobject, freadoffset); 
 
-	fres = f_read(&fileobject, buffer, BLOCK_SIZE, &bytesread); 
+	fres = f_read(&fileobject, buffer, freadlen, &bytesread); 
 
+	for (pos = 0; pos < freadlen; pos++) {
+	  storespi_tx(buffer[pos]); 
+	}
+	
+
+	  
       }      
 
     }
