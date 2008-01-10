@@ -1082,7 +1082,7 @@ begin  -- Behavioral
         setxwe    <= '1';
         setxain   <= "101";
         setxsend  <= '1';
-        if pendpktcnt = pktcnt then
+        if pendpktcnt = (pktcnt +1) then
           ns      <= frdone;
         else
           ns      <= frespwait;
