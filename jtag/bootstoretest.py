@@ -136,10 +136,11 @@ def readfile_test(handle):
     a.setAddr(BOOTSTOREADDR)
     a.data[0] = handle << 8
     a.data[1] = 0x0000
-    a.data[2] = 0x0000
+    a.data[2] = 0x0010
     a.data[3] = 0x0000
-    a.data[4] = 0x0040
+    a.data[4] = 0x0010
 
+    print "The read event is ", a
     sendEvent(a)
 
     reads = 0 
