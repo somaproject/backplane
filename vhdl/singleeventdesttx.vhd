@@ -5,9 +5,9 @@ use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.numeric_std.all;
 
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library SOMA;
+use SOMA.somabackplane.all;
+use soma.somabackplane;
 
 entity singleeventdesttx is
   port (

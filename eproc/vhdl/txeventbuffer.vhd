@@ -6,9 +6,9 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library SOMA;
+use SOMA.somabackplane.all;
+use soma.somabackplane;
 
 
 entity txeventbuffer is

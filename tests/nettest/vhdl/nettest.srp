@@ -97,116 +97,128 @@ Setting FSM Encoding Algorithm to : ONE
 =========================================================================
 *                          HDL Compilation                              *
 =========================================================================
-Compiling vhdl file "/home/jonas/soma/backplane/vhdl/somabackplane.vhd" in Library work.
+WARNING:HDLParsers:3571 - A circular dependency was detected.
+WARNING:HDLParsers:3626 - Sorting project files failed.
+WARNING:HDLParsers:3623 - An error occured while attempting to sort the source files in the project file /home/jonas/soma/backplane/tests/nettest/vhdl/nettest_vhdl.prj.  Processing will continue with the source files in the order given.  You may wish to disable sorting.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/somabackplane.vhd" in Library soma.
 Package <somabackplane> compiled.
 Package body <somabackplane> compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/ipchecksum.vhd" in Library work.
-Entity <ipchecksum> compiled.
-Entity <ipchecksum> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/udpheaderwriter.vhd" in Library work.
-Entity <udpheaderwriter> compiled.
-Entity <udpheaderwriter> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/bigmem.vhd" in Library work.
-Entity <bigmem> compiled.
-Entity <bigmem> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/crc/vhdl/crc16_combinational.vhd" in Library work.
-Entity <crc16_combinational> compiled.
-Entity <crc16_combinational> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/crc/vhdl/crc_combinational.vhd" in Library work.
-Entity <crc_combinational> compiled.
-Entity <crc_combinational> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/networkstack.vhd" in Library network.
+Package <networkstack> compiled.
+Package body <networkstack> compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/netports.vhd" in Library network.
+Package <netports> compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/rxeventfifo.vhd" in Library soma.
+Entity <rxeventfifo> compiled.
+Entity <rxeventfifo> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/boot/vhdl/byteio.vhd" in Library soma.
+Entity <byteio> compiled.
+Entity <byteio> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/boot/vhdl/mmcio.vhd" in Library soma.
+Entity <mmcio> compiled.
+Entity <mmcio> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/deviceio/vhdl/bootdeser.vhd" in Library soma.
+Entity <bootdeserialize> compiled.
+Entity <bootdeserialize> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/core/eventrouter.vhd" in Library soma.
+Entity <eventrouter> compiled.
+Entity <eventrouter> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/timer.vhd" in Library soma.
+Entity <timer> compiled.
+Entity <timer> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/jtag/vhdl/jtagesend.vhd" in Library soma.
+Entity <jtagesend> compiled.
+Entity <jtagesend> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/jtag/vhdl/jtagereceive.vhd" in Library soma.
+Entity <jtagereceive> compiled.
+Entity <jtagereceive> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/ether/nicserialio.vhd" in Library soma.
+Entity <nicserialio> compiled.
+Entity <nicserialio> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/ether/ethercontrol.vhd" in Library soma.
+Entity <ethercontrol> compiled.
+Entity <ethercontrol> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/ether/ether.vhd" in Library soma.
+Entity <ether> compiled.
+Entity <ether> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/netcontrol/txcounter.vhd" in Library soma.
+Entity <txcounter> compiled.
+Entity <txcounter> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/netcontrol/netcontrol.vhd" in Library soma.
+Entity <netcontrol> compiled.
+Entity <netcontrol> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/backplane/eproc/vhdl/alu.vhd" in Library eproclib.
 Entity <alu> compiled.
 Entity <alu> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/eproc/vhdl/regfile.vhd" in Library eproclib.
-Entity <regfile> compiled.
-Entity <regfile> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/memory/vhdl/refreshddr2.vhd" in Library work.
-Entity <refreshddr2> compiled.
-Entity <refreshddr2> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/memory/vhdl/bootddr2.vhd" in Library work.
-Entity <bootddr2> compiled.
-Entity <bootddr2> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/memory/vhdl/writeddr2.vhd" in Library work.
-Entity <writeddr2> compiled.
-Entity <writeddr2> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/memory/vhdl/readddr2.vhd" in Library work.
-Entity <readddr2> compiled.
-Entity <readddr2> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/memory/vhdl/dqalign.vhd" in Library work.
-Entity <dqalign> compiled.
-Entity <dqalign> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/memory/vhdl/memcontmux.vhd" in Library work.
-Entity <memcontmux> compiled.
-Entity <memcontmux> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/eventrxbusoutput.vhd" in Library work.
-Entity <eventrxbusoutput> compiled.
-Entity <eventrxbusoutput> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/eventrxresponsewr.vhd" in Library work.
-Entity <eventrxresponsewr> compiled.
-Entity <eventrxresponsewr> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/dataacquire.vhd" in Library work.
-Entity <dataacquire> compiled.
-Entity <dataacquire> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/datapacketgen.vhd" in Library work.
-Entity <datapacketgen> compiled.
-Entity <datapacketgen> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/datafifo.vhd" in Library work.
-Entity <datafifo> compiled.
-Entity <datafifo> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/dataretxbuf.vhd" in Library work.
-Entity <dataretxbuf> compiled.
-Entity <dataretxbuf> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/netports.vhd" in Library work.
-Package <netports> compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/eventbodywriter.vhd" in Library work.
-Entity <eventbodywriter> compiled.
-Entity <eventbodywriter> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/bitcnt.vhd" in Library work.
-Entity <bitcnt> compiled.
-Entity <bitcnt> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/eventtxpkfifo.vhd" in Library work.
-Entity <eventtxpktfifo> compiled.
-Entity <eventtxpktfifo> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/pingipwriter.vhd" in Library work.
-Entity <pingipwriter> compiled.
-Entity <pingipwriter> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/pingicmpwriter.vhd" in Library work.
-Entity <pingicmpwriter> compiled.
-Entity <pingicmpwriter> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/vhdl/networkstack.vhd" in Library work.
-Package <networkstack> compiled.
-Package body <networkstack> compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/network/crc/vhdl/crcverify.vhd" in Library work.
-Entity <crcverify> compiled.
-Entity <crcverify> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/vhdl/fiberdebug/txeventbuffer.vhd" in Library work.
-Entity <txeventbuffer> compiled.
-Entity <txeventbuffer> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/vhdl/fiberdebug/decoder.vhd" in Library work.
-Entity <decoder> compiled.
-Entity <decoder> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/vhdl/fiberdebug/framedis.vhd" in Library work.
-Entity <framedis> compiled.
-Entity <framedis> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/vhdl/fiberdebug/fibertx.vhd" in Library work.
-Entity <fibertx> compiled.
-Entity <fibertx> (Architecture <Behavioral>) compiled.
-Compiling vhdl file "/home/jonas/soma/backplane/vhdl/rxeventfifo.vhd" in Library work.
-Entity <rxeventfifo> compiled.
-Entity <rxeventfifo> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/eproc/vhdl/ecore.vhd" in Library eproclib.
+Entity <ecore> compiled.
+Entity <ecore> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/eproc/vhdl/eproc.vhd" in Library eproclib.
+Entity <eproc> compiled.
+Entity <eproc> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/eproc/vhdl/eventtx.vhd" in Library eproclib.
+Entity <eventtx> compiled.
+Entity <eventtx> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/backplane/eproc/vhdl/evtdnd.vhd" in Library eproclib.
 Entity <evtdnd> compiled.
 Entity <evtdnd> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/eproc/vhdl/regfile.vhd" in Library eproclib.
+Entity <regfile> compiled.
+Entity <regfile> (Architecture <Behavioral>) compiled.
 Compiling vhdl file "/home/jonas/soma/backplane/eproc/vhdl/txeventbuffer.vhd" in Library eproclib.
-ERROR:HDLParsers:3317 - "/home/jonas/soma/backplane/eproc/vhdl/txeventbuffer.vhd" Line 9.  Library soma cannot be found.
-ERROR:HDLParsers:3013 - "/home/jonas/soma/backplane/eproc/vhdl/txeventbuffer.vhd" Line 10. Library soma is not declared.
+Entity <txeventbuffer> compiled.
+Entity <txeventbuffer> (Architecture <Behavioral>) compiled.
+Compiling vhdl file "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" in Library soma.
+ERROR:HDLParsers:3012 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 12. Use clause must contain 2 or 3 names.
+ERROR:HDLParsers:3010 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 38. Entity syscontrol does not exist.
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 42. Undefined symbol 'std_logic'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 42. std_logic: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 45. Undefined symbol 'std_logic_vector'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 45. std_logic_vector: Undefined symbol (last report in this block)
+ERROR:HDLParsers:1217 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 46. Symbol somabackplane can't be used as a prefix in a selected name.
+ERROR:HDLParsers:1212 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 46. Invalid selected name somabackplane.N.
+ERROR:HDLParsers:1217 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 48. Symbol somabackplane can't be used as a prefix in a selected name.
+ERROR:HDLParsers:1212 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 48. Invalid selected name somabackplane.N.
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 67. Undefined symbol 'std_logic'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 67. std_logic: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 68. Undefined symbol 'std_logic_vector'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 68. std_logic_vector: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 75. Undefined symbol 'std_logic_vector'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 75. std_logic_vector: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 80. Undefined symbol 'std_logic'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 80. std_logic: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 87. Undefined symbol 'RAMB16_S18_S18'.
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 88. Undefined symbol 'idata'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 88. idata: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 90. Undefined symbol 'iaddr'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 90. iaddr: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 91. Undefined symbol 'clk2x'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 91. clk2x: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 96. Undefined symbol 'RESET'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 96. RESET: Undefined symbol (last report in this block)
+ERROR:HDLParsers:1217 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 107. Symbol eproclib can't be used as a prefix in a selected name.
+ERROR:HDLParsers:1212 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 107. Invalid selected name eproclib.eproc.
+ERROR:HDLParsers:164 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 108. parse error, unexpected PORT, expecting OPENPAR or TICK or LSQBRACK
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 128. Undefined symbol 'CLK2X'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 128. CLK2X: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 129. Undefined symbol 'OPORTDATA'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 129. OPORTDATA: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 130. Undefined symbol 'OPORTADDR'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 130. OPORTADDR: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 131. Undefined symbol 'bsperwe'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 131. bsperwe: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 132. Undefined symbol 'SEROUT'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 132. SEROUT: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 134. Undefined symbol 'oportaddr'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 134. oportaddr: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 134. Undefined symbol 'OPORTSTROBE'.
+ERROR:HDLParsers:1209 - "/home/jonas/soma/backplane/vhdl/syscontrol/syscontrol.vhd" Line 134. OPORTSTROBE: Undefined symbol (last report in this block)
 --> 
 
 
-Total memory usage is 100668 kilobytes
+Total memory usage is 98232 kilobytes
 
-Number of errors   :    2 (   0 filtered)
-Number of warnings :    0 (   0 filtered)
+Number of errors   :   44 (   0 filtered)
+Number of warnings :    3 (   0 filtered)
 Number of infos    :    0 (   0 filtered)
 

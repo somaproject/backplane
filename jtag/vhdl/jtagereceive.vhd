@@ -4,9 +4,9 @@ use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
 
 library UNISIM;
 use UNISIM.VComponents.all;
@@ -74,20 +74,20 @@ architecture Behavioral of jtagereceive is
   signal smask : std_logic := '0';
   
 
-component rxeventfifo
-  port (
-    CLK    : in  std_logic;
-    RESET  : in  std_logic;
-    ECYCLE : in  std_logic;
-    EATX   : in  std_logic_vector(somabackplane.N -1 downto 0);
-    EDTX   : in  std_logic_vector(7 downto 0); 
-    -- outputs
-    EOUTD  : out std_logic_vector(15 downto 0);
-    EOUTA  : in std_logic_vector(2 downto 0);
-    EVALID : out std_logic;
-    ENEXT  : in  std_logic
-    );
-end component;
+-- component rxeventfifo
+--   port (
+--     CLK    : in  std_logic;
+--     RESET  : in  std_logic;
+--     ECYCLE : in  std_logic;
+--     EATX   : in  std_logic_vector(somabackplane.N -1 downto 0);
+--     EDTX   : in  std_logic_vector(7 downto 0); 
+--     -- outputs
+--     EOUTD  : out std_logic_vector(15 downto 0);
+--     EOUTA  : in std_logic_vector(2 downto 0);
+--     EVALID : out std_logic;
+--     ENEXT  : in  std_logic
+--     );
+-- end component;
  
   
 begin  -- Behavioral
@@ -378,7 +378,7 @@ begin  -- Behavioral
 
 
   -- input
-  rxeventfifo_inst: rxeventfifo
+  rxeventfifo_inst: entity soma.rxeventfifo
     port map (
       CLK    => CLK,
       RESET => '0', 

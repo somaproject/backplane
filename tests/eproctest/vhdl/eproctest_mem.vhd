@@ -1,11 +1,11 @@
 -- VHDL initialization records.
 --
--- Release 9.2.03i - Data2MEM J.39, build 1.5.4 Aug 14, 2007
+-- Release 9.3i - Data2MEM J.40, build 1.5.4 Aug 14, 2007
 -- Copyright (c) 1995-2008 Xilinx, Inc.  All rights reserved.
 --
 -- Command: data2mem -bm eproctest_bd.bmm -bd eproctest.mem -bt eproctest.bit -o h eproctest_mem.vhd -o b eproctest.new.bit
 --
--- Created on 01/10/08 11:09 am, from:
+-- Created on 01/11/08 11:01 am, from:
 --
 --     Map file     - eproctest_bd.bmm
 --     Data file(s) - eproctest.mem

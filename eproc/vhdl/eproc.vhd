@@ -6,7 +6,6 @@ use IEEE.numeric_std.all;
 
 
 library soma;
-use soma.somabackplane.all;
 use soma.somabackplane;
 
 library UNISIM;

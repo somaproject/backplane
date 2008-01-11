@@ -4,10 +4,16 @@ use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
+use soma.all; 
 
+library jtag;
+use jtag.all;
+
+library eproc;
+use eproc.all;
 
 library UNISIM;
 use UNISIM.VComponents.all;
@@ -30,121 +36,120 @@ entity eproctest is
     );
 end eproctest;
 
-
 architecture Behavioral of eproctest is
 
-  component eventrouter
-    port (
-      CLK     : in  std_logic;
-      ECYCLE  : in  std_logic;
-      EARX    : in  somabackplane.addrarray;
-      EDRX    : in  somabackplane.dataarray;
-      EDSELRX : out std_logic_vector(3 downto 0);
-      EATX    : out somabackplane.addrarray;
-      EDTX    : out std_logic_vector(7 downto 0)
-      );
-  end component;
+--   component eventrouter
+--     port (
+--       CLK     : in  std_logic;
+--       ECYCLE  : in  std_logic;
+--       EARX    : in  somabackplane.addrarray;
+--       EDRX    : in  somabackplane.dataarray;
+--       EDSELRX : out std_logic_vector(3 downto 0);
+--       EATX    : out somabackplane.addrarray;
+--       EDTX    : out std_logic_vector(7 downto 0)
+--       );
+--   end component;
 
-  component timer
-    port (
-      CLK     : in  std_logic;
-      ECYCLE  : out std_logic;
-      EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX    : in  std_logic_vector(7 downto 0)
-      );
-  end component;
-
-
-  component bootdeserialize
-    port (
-      CLK   : in  std_logic;
-      SERIN : in  std_logic;
-      FPROG : out std_logic;
-      FCLK  : out std_logic;
-      FDIN  : out std_logic);
-  end component;
+--   component timer
+--     port (
+--       CLK     : in  std_logic;
+--       ECYCLE  : out std_logic;
+--       EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
+--       EDRX    : out std_logic_vector(7 downto 0);
+--       EDSELRX : in  std_logic_vector(3 downto 0);
+--       EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
+--       EDTX    : in  std_logic_vector(7 downto 0)
+--       );
+--   end component;
 
 
-  component jtagesend
-    generic (
-      JTAG_CHAIN :     integer := 1);
-    port (
-      CLK        : in  std_logic;
-      ECYCLE     : in  std_logic;
-      EARX       : out std_logic_vector(somabackplane.N - 1 downto 0)
-                               := (others => '0');
-      EDRX       : out std_logic_vector(7 downto 0);
-      EDSELRX    : in  std_logic_vector(3 downto 0)
-      );
-  end component;
+--   component bootdeserialize
+--     port (
+--       CLK   : in  std_logic;
+--       SERIN : in  std_logic;
+--       FPROG : out std_logic;
+--       FCLK  : out std_logic;
+--       FDIN  : out std_logic);
+--   end component;
 
-  component jtagereceive
-    generic (
-      JTAG_CHAIN_MASK :     integer := 1;
-      JTAG_CHAIN_OUT  :     integer := 1
-      );
-    port (
-      CLK             : in  std_logic;
-      ECYCLE          : in  std_logic;
-      EDTX            : in  std_logic_vector(7 downto 0);
-      EATX            : in  std_logic_vector(somabackplane.N - 1 downto 0);
-      DEBUG           : out std_logic_vector(3 downto 0)
-      );
-  end component;
+--  use jtag.jtagesend; 
+--   component jtagesend
+--     generic (
+--       JTAG_CHAIN :     integer := 1);
+--     port (
+--       CLK        : in  std_logic;
+--       ECYCLE     : in  std_logic;
+--       EARX       : out std_logic_vector(somabackplane.N - 1 downto 0)
+--                                := (others => '0');
+--       EDRX       : out std_logic_vector(7 downto 0);
+--       EDSELRX    : in  std_logic_vector(3 downto 0)
+--       );
+--   end component;
 
-  component eproc
-    port (
-      CLK         : in  std_logic;
-      RESET       : in  std_logic;
-      -- Event Interface, CLK rate
-      EDTX        : in  std_logic_vector(7 downto 0);
-      EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE      : in  std_logic;
-      EARX        : out std_logic_vector(somabackplane.N - 1 downto 0)
- := (others => '0');
-      EDRX        : out std_logic_vector(7 downto 0);
-      EDSELRX     : in  std_logic_vector(3 downto 0);
-      -- High-speed interface
-      CLKHI       : in  std_logic;
-      -- instruction interface
-      IADDR       : out std_logic_vector(9 downto 0);
-      IDATA       : in  std_logic_vector(17 downto 0);
-      --outport signals
-      OPORTADDR   : out std_logic_vector(7 downto 0);
-      OPORTDATA   : out std_logic_vector(15 downto 0);
-      OPORTSTROBE : out std_logic;
-      DEVICE      : in  std_logic_vector(7 downto 0)
-      );
+--   component jtagereceive
+--     generic (
+--       JTAG_CHAIN_MASK :     integer := 1;
+--       JTAG_CHAIN_OUT  :     integer := 1
+--       );
+--     port (
+--       CLK             : in  std_logic;
+--       ECYCLE          : in  std_logic;
+--       EDTX            : in  std_logic_vector(7 downto 0);
+--       EATX            : in  std_logic_vector(somabackplane.N - 1 downto 0);
+--       DEBUG           : out std_logic_vector(3 downto 0)
+--       );
+--   end component;
 
-  end component;
+--   component eproc
+--     port (
+--       CLK         : in  std_logic;
+--       RESET       : in  std_logic;
+--       -- Event Interface, CLK rate
+--       EDTX        : in  std_logic_vector(7 downto 0);
+--       EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
+--       ECYCLE      : in  std_logic;
+--       EARX        : out std_logic_vector(somabackplane.N - 1 downto 0)
+--  := (others => '0');
+--       EDRX        : out std_logic_vector(7 downto 0);
+--       EDSELRX     : in  std_logic_vector(3 downto 0);
+--       -- High-speed interface
+--       CLKHI       : in  std_logic;
+--       -- instruction interface
+--       IADDR       : out std_logic_vector(9 downto 0);
+--       IDATA       : in  std_logic_vector(17 downto 0);
+--       --outport signals
+--       OPORTADDR   : out std_logic_vector(7 downto 0);
+--       OPORTDATA   : out std_logic_vector(15 downto 0);
+--       OPORTSTROBE : out std_logic;
+--       DEVICE      : in  std_logic_vector(7 downto 0)
+--       );
 
-  component bootstore
-    generic (
-      DEVICE  :     std_logic_vector(7 downto 0)                   := X"01"
-      );
-    port (
-      CLK     : in  std_logic;
-      CLKHI   : in  std_logic;
-      RESET   : in  std_logic;
-      DEBUG : out std_logic_vector(7 downto 0); 
-      -- event interface
-      EDTX    : in  std_logic_vector(7 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE  : in  std_logic;
-      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
+--   end component;
 
-      -- SPI INTERFACE
-      SPIMOSI : in  std_logic;
-      SPIMISO : out std_logic;
-      SPICS   : in  std_logic;
-      SPICLK  : in  std_logic
-      );
-  end component;
+--   component bootstore
+--     generic (
+--       DEVICE  :     std_logic_vector(7 downto 0)                   := X"01"
+--       );
+--     port (
+--       CLK     : in  std_logic;
+--       CLKHI   : in  std_logic;
+--       RESET   : in  std_logic;
+--       DEBUG : out std_logic_vector(7 downto 0); 
+--       -- event interface
+--       EDTX    : in  std_logic_vector(7 downto 0);
+--       EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
+--       ECYCLE  : in  std_logic;
+--       EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
+--       EDRX    : out std_logic_vector(7 downto 0);
+--       EDSELRX : in  std_logic_vector(3 downto 0);
+
+--       -- SPI INTERFACE
+--       SPIMOSI : in  std_logic;
+--       SPIMISO : out std_logic;
+--       SPICS   : in  std_logic;
+--       SPICLK  : in  std_logic
+--       );
+--   end component;
 
 
   signal EARX    : somabackplane.addrarray      := (others => (others => '0'));
@@ -312,7 +317,7 @@ begin  -- Behavioral
       I          => memclk270
       );
 
-  eventrouter_inst : eventrouter
+  eventrouter_inst : entity soma.eventrouter
     port map (
       CLK     => clk,
       ECYCLE  => ECYCLE,
@@ -322,7 +327,7 @@ begin  -- Behavioral
       EATX    => EATX,
       EDTX    => EDTX);
 
-  timer_inst : timer
+  timer_inst : entity soma.timer
     port map (
       CLK     => clk,
       ECYCLe  => ECYCLE,
@@ -334,8 +339,7 @@ begin  -- Behavioral
 
 
 
-
-  jtagsend_inst : jtagesend
+  jtagsend_inst : entity jtag.jtagesend
     generic map (
       JTAG_CHAIN => 1)
     port map (
@@ -345,7 +349,7 @@ begin  -- Behavioral
       EDRX       => edrx(7),
       EDSELRX    => edselrx);
 
-  jtagreceive_inst : jtagereceive
+  jtagreceive_inst :  entity jtag.jtagereceive
     generic map (
       JTAG_CHAIN_MASK => 2,
       JTAG_CHAIN_OUT  => 3 )
@@ -396,7 +400,7 @@ begin  -- Behavioral
       WEB   => '0',
       SSRB  => RESET);
 
-  eproc_inst : eproc
+  eproc_inst : entity eproc.eproc
     port map (
       CLK         => clk,
       RESET       => RESET,
@@ -414,7 +418,7 @@ begin  -- Behavioral
       OPORTSTROBE => oportstrobe,
       DEVICE      => X"01");
 
-  bootstore_inst : bootstore
+  bootstore_inst : entity soma.bootstore
     generic map (
       DEVICE  => X"03")
     port map (

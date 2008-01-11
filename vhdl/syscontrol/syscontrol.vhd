@@ -9,7 +9,7 @@ use WORK.somabackplane.all;
 use work.somabackplane;
 
 library eproclib;
-use eproclib.all;
+use eproclib;
 
 library UNISIM;
 use UNISIM.VComponents.all;
@@ -37,7 +37,7 @@ end syscontrol;
 
 architecture Behavioral of syscontrol is
 
-  component eproclib.eproc
+  component eproc
     port (
       CLK         : in  std_logic;
       RESET       : in  std_logic;

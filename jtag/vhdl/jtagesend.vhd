@@ -4,18 +4,16 @@ use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
 
 library UNISIM;
 use UNISIM.VComponents.all;
 
 entity jtagesend is
-
   generic (
     JTAG_CHAIN : integer := 1);
-
   port (
     CLK     : in  std_logic;
     ECYCLE  : in  std_logic;
