@@ -8,13 +8,15 @@ library WORK;
 use WORK.somabackplane.all;
 use work.somabackplane;
 
+library eproclib;
+use eproclib.all;
+
 library UNISIM;
 use UNISIM.VComponents.all;
 
 entity syscontrol is
   generic (
-    DEVICE  :     std_logic_vector(7 downto 0)                   := X"01"
-    );
+    DEVICE  :     std_logic_vector(7 downto 0)                   := X"01" );
   port (
     CLK     : in  std_logic;
     CLK2X   : in  std_logic;
@@ -35,7 +37,7 @@ end syscontrol;
 
 architecture Behavioral of syscontrol is
 
-  component eproc
+  component eproclib.eproc
     port (
       CLK         : in  std_logic;
       RESET       : in  std_logic;
@@ -76,8 +78,8 @@ architecture Behavioral of syscontrol is
   signal OPORTADDR   : std_logic_vector(7 downto 0);
   signal OPORTDATA   : std_logic_vector(15 downto 0);
   signal OPORTSTROBE : std_logic := '0';
-
-
+  signal bsperwe  : std_logic := '0';
+  
 begin  -- Behavioral
 
 
@@ -102,32 +104,34 @@ begin  -- Behavioral
       WEB   => '0',
       SSRB  => RESET);
 
-  eproc_inst : eproc
+  eproc_inst : eproclib.eproc
     port map (
       CLK         => clk,
       RESET       => RESET,
       EDTX        => EDTX,
-      EATX        => EATX(1),
+      EATX        => EATX,
       ECYCLE      => ECYCLE,
-      EARX        => EARX(1),
-      EDRX        => EDRX(1),
+      EARX        => EARX,
+      EDRX        => EDRX,
       EDSELRX     => EDSELRX,
-      CLKHI       => clk2x,
+      CLKHI       => CLK2X,
       IADDR       => iaddr,
       IDATA       => idata,
       OPORTADDR   => oportaddr,
       OPORTDATA   => oportdata,
       OPORTSTROBE => oportstrobe,
-      DEVICE      => X"01");
+      DEVICE      => DEVICE);
 
 
   bootserp_inst: bootserperipheral
     port map (
       CLK    => CLK2X,
       DIN    => OPORTDATA,
-      ADDRIN => OPORTADDR,
-      WEIN   => OPORTSTROBE,
+      ADDRIN => OPORTADDR(2 downto 0),
+      WEIN   => bsperwe,
       SEROUT => SEROUT);
 
+  bsperwe <= '1' when oportaddr(7 downto 3) = "00001" and OPORTSTROBE = '1'
+             else '0';
   
 end Behavioral;

@@ -16,12 +16,15 @@ entity nettest is
   port (
     CLKIN         : in    std_logic;
     SERIALBOOT    : out   std_logic_vector(19 downto 0);
-    SDOUT         : out   std_logic;
-    SDIN          : in    std_logic;
-    SCLK          : out   std_logic;
-    SCS           : out   std_logic;
+    -- SPI interface
+    SPIMOSI     : in  std_logic;
+    SPIMISO     : out std_logic;
+    SPICS       : in  std_logic;
+    SPICLK      : in  std_logic;
+    -- LEDS
     LEDPOWER      : out   std_logic;
     LEDEVENT      : out   std_logic;
+    -- NIC interface
     NICFCLK       : out   std_logic;
     NICFDIN       : out   std_logic;
     NICFPROG      : out   std_logic;
@@ -49,8 +52,6 @@ entity nettest is
     RAMDQ         : inout std_logic_vector(15 downto 0);
     FIBERDEBUGOUT : out   std_logic;
     FIBERDEBUGIN  : in    std_logic
-
-
     );
 end nettest;
 
@@ -82,39 +83,49 @@ architecture Behavioral of nettest is
   end component;
 
   component syscontrol
+    generic (
+      DEVICE  :     std_logic_vector(7 downto 0)                   := X"01" );
     port (
       CLK     : in  std_logic;
+      CLK2X   : in  std_logic;
       RESET   : in  std_logic;
+      DEBUG   : out std_logic_vector(7 downto 0);
+      -- event interface
       EDTX    : in  std_logic_vector(7 downto 0);
       EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
       ECYCLE  : in  std_logic;
-      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
+      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
       EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0)
+      EDSELRX : in  std_logic_vector(3 downto 0);
+      -- Boot control output
+      SEROUT  : out std_logic_vector(19 downto 0)
       );
   end component;
 
-  component boot
-    generic (
-      M       :     integer                      := 20;
-      DEVICE  :     std_logic_vector(7 downto 0) := X"01"
-      );
-    port (
-      CLK     : in  std_logic;
-      RESET   : in  std_logic;
-      EDTX    : in  std_logic_vector(7 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE  : in  std_logic;
-      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0);
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      SDOUT   : out std_logic;
-      SDIN    : in  std_logic;
-      SCLK    : out std_logic;
-      SCS     : out std_logic;
-      SEROUT  : out std_logic_vector(M-1 downto 0);
-      DEBUG   : out std_logic_vector(1 downto 0));
-  end component;
+
+component bootstore
+  generic (
+    DEVICE  :     std_logic_vector(7 downto 0)                   := X"01"
+    );
+  port (
+    CLK     : in  std_logic;
+    CLKHI   : in  std_logic;
+    RESET   : in  std_logic;
+    DEBUG : out std_logic_vector(7 downto 0);                                 
+    -- event interface
+    EDTX    : in  std_logic_vector(7 downto 0);
+    EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
+    ECYCLE  : in  std_logic;
+    EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
+    EDRX    : out std_logic_vector(7 downto 0);
+    EDSELRX : in  std_logic_vector(3 downto 0);
+    -- SPI INTERFACE
+    SPIMOSI : in  std_logic;
+    SPIMISO : out std_logic;
+    SPICS   : in  std_logic;
+    SPICLK  : in  std_logic
+    );
+end component;
 
 
   component bootdeserialize
@@ -286,21 +297,6 @@ architecture Behavioral of nettest is
 
   end component;
 
-  component pingdump
-    port (
-      CLK      : in  std_logic;
-      DOUT     : out std_logic_vector(15 downto 0);
-      NEWFRAME : out std_logic);        -- (others => '0')
-  end component;
-
-  component dincapture
-    port (
-      CLK   : in std_logic;
-      DINEN : in std_logic;
-      DIN   : in std_logic_vector(15 downto 0)
-      );
-  end component;
-
   component fakedata
     port (
       CLK    : in  std_logic;
@@ -335,7 +331,7 @@ architecture Behavioral of nettest is
       -- Fiber interfaces
       FIBERIN  : in  std_logic;
       FIBEROUT : out std_logic;
-      DEBUG : out std_Logic_vector(15 downto 0)
+      DEBUG    : out std_logic_vector(15 downto 0)
       );
 
   end component;
@@ -407,7 +403,7 @@ architecture Behavioral of nettest is
   signal lnicnewframe : std_logic                     := '0';
 
   signal fiberdebugdebug : std_logic_vector(15 downto 0) := (others => '0');
-  
+
 begin  -- Behavioral
 
 
@@ -554,13 +550,12 @@ begin  -- Behavioral
       EATX    => EATX(1),
       EDTX    => EDTX);
 
-  boot_inst : boot
+  bootstore_inst : bootstore
     generic map (
-      M      => 20,
       DEVICE => X"02")
-
     port map (
-      CLk     => clk,
+      CLK     => clk,
+      CLKHI => memclk, 
       RESET   => RESET,
       ECYCLE  => ECYCLE,
       EARX    => EARX(2),
@@ -568,13 +563,11 @@ begin  -- Behavioral
       EDSELRX => EDSELRX,
       EATX    => EATX(2),
       EDTX    => EDTX,
-      SDOUT   => SDOUT,
-      SDIN    => SDIN,
-      SCLK    => SCLK,
-      SCS     => SCS,
-      SEROUT  => lserialboot,
-      DEBUG   => open);
-
+      SPIMOSI   => SPIMOSI, 
+      SPIMISO    => SPIMISO, 
+      SPICS    => SPICS, 
+      SPICLK     => SPICLK);
+  
   bootdeserialize_inst : bootdeserialize
     port map (
       CLK   => clk,
@@ -670,7 +663,7 @@ begin  -- Behavioral
       EADDRDEST => fiberdebugdest,
       FIBERIN   => FIBERDEBUGIN,
       FIBEROUT  => FIBERDEBUGOUT,
-      DEBUG => fiberdebugdebug);
+      DEBUG     => fiberdebugdebug);
 
 
   fakedata1 : fakedata
@@ -799,12 +792,6 @@ begin  -- Behavioral
       REFCLK => clk,
       RST    => reset
       );
-
--- dincapture_inst : dincapture
--- port map (
--- CLK => clk,
--- DIN => lnicdout,
--- DINEN => lnicnewframe);
 
   process(niciointclk)
   begin

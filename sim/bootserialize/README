@@ -1,8 +1,8 @@
-Test the boot serialize interface. 
+Test the boot serial peripheral and the serialize interface. 
 
 We attempt to serialize the various combinations of input bits and
 validate that we have proper read-out on the other end.
 
-We have created a "boot deserialize" module that deserializes the FPROG
+We have created a "boot deserialize" component module that deserializes the FPROG
 FCLK FDIN signals.
 
