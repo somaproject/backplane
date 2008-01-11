@@ -5,9 +5,9 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
 
 
 library UNISIM;
@@ -349,7 +349,7 @@ begin  -- Behavioral
 
       if state = 6 then
         report "Successful RX of init events" severity Note;
-        wait; 
+        report "End of Simulation" severity Failure;
       end if;
     end if;
 

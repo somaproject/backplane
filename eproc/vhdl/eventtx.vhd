@@ -4,7 +4,6 @@ use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
-
 library SOMA;
 use SOMA.somabackplane.all;
 use soma.somabackplane;

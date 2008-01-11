@@ -109,7 +109,7 @@ begin  -- Behavioral
 
   IRAM_inst : iram
     generic map (
-      filename => "loadtest.iram")
+      filename => "program.iram")
     port map (
       CLK      => CLK,
       ADDR     => IADDR,
