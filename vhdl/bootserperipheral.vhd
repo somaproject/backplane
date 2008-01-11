@@ -19,8 +19,6 @@ entity bootserperipheral is
     ADDRIN : in  std_logic_vector(2 downto 0);
     WEIN   : in  std_logic;
     SEROUT : out std_logic_vector(19 downto 0));
-
-
 end bootserperipheral;
 
 architecture Behavioral of bootserperipheral is
@@ -55,15 +53,31 @@ architecture Behavioral of bootserperipheral is
       ASEL   : in  std_logic_vector(M-1 downto 0));
   end component;
 
+
+  component regfile
+    generic (
+      BITS  :     integer := 16);
+    port (
+      CLK   : in  std_logic;
+      DIA   : in  std_logic_vector(BITS-1 downto 0);
+      DOA   : out std_logic_vector(BITS -1 downto 0);
+      ADDRA : in  std_logic_vector(3 downto 0);
+      WEA   : in  std_logic;
+      DOB   : out std_logic_vector(BITS -1 downto 0);
+      ADDRB : in  std_logic_vector(3 downto 0)
+      );
+  end component;
+
+
 begin  -- Behavioral
 
   fdin <= dob(bsel);
 
   wea <= '1' when wein = '1' and addrin = "010" else '0';
 
-  bootserialize_inst: bootserialize
+  bootserialize_inst : bootserialize
     generic map (
-      M => 20)
+      M      => 20)
     port map (
       CLK    => CLK,
       FPROG  => fprog,
@@ -74,7 +88,18 @@ begin  -- Behavioral
       SEROUT => serout,
       ASEL   => asel);
 
-  
+  regfile_inst: regfile
+    generic map (
+      bits => 16)
+    port map (
+      CLK   => CLK,
+      DIA   => DIN,
+      DOA   => open,
+      ADDRA => addra, 
+      WEA   => wea,
+      DOB   => dob,
+      addrb => addrb); 
+
   main : process(CLK)
   begin
     if rising_edge(CLK) then
@@ -107,7 +132,7 @@ begin  -- Behavioral
       end if;
 
       if cs = nextbit then
-        if bsel <= 15 then
+        if bsel = 15 then
           bsel  <= 0;
         else
           bsel  <= bsel + 1;

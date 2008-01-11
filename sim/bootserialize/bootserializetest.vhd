@@ -28,50 +28,51 @@ architecture Behavioral of bootserializetest is
       ASEL   : in  std_logic_vector(M-1 downto 0));
   end component;
 
-  constant M     : integer   := 20;
-  signal   CLK   : std_logic := '0';
-  signal   FPROG : std_logic := '0';
-  signal   FCLK  : std_logic := '0';
-  signal   FDIN  : std_logic := '0';
-  signal   FSET  : std_logic := '0';
-  signal   FDONE : std_logic := '0';
-
-  signal SEROUT : std_logic_vector(M-1 downto 0) := (others => '0');
-  signal ASEL   : std_logic_vector(M-1 downto 0) := (others => '0');
-
+  signal SEROUT : std_logic_vector(19 downto 0) := (others => '0');
+  signal ASEL   : std_logic_vector(19 downto 0) := (others => '0');
 
   component bootdeserialize
-
     port (
       CLK   : in  std_logic;
       DIN   : in  std_logic;
       FPROG : out std_logic;
       FDIN  : out std_logic;
       FCLK  : out std_logic);
-
   end component;
 
-  signal fprogout : std_logic_vector(M-1 downto 0) := (others => '1');
-  signal fdinout  : std_logic_vector(M-1 downto 0) := (others => '1');
-  signal fclkout  : std_logic_vector(M-1 downto 0) := (others => '1');
+  component bootserperipheral
+    port (
+      CLK    : in  std_logic;
+      DIN    : in  std_logic_vector(15 downto 0);
+      ADDRIN : in  std_logic_vector(2 downto 0);
+      WEIN   : in  std_logic;
+      SEROUT : out std_logic_vector(19 downto 0));
+  end component;
 
+
+  signal fprogout : std_logic_vector(19 downto 0) := (others => '1');
+  signal fdinout  : std_logic_vector(19 downto 0) := (others => '1');
+  signal fclkout  : std_logic_vector(19 downto 0) := (others => '1');
+
+  signal DIN    : std_logic_vector(15 downto 0) := (others => '0');
+  signal ADDRIN : std_logic_vector(2 downto 0)  := (others => '0');
+  signal WEIN   : std_logic                     := '0';
+
+  signal clk : std_logic := '0';
+
+  signal inbits1 : std_logic_vector(47 downto 0) := X"0123456789AB";
 
 begin  -- Behavioral
 
-  bootserialize_uut : bootserialize
-    generic map (
-      M      => M)
+  bootserperipheral_uut : bootserperipheral
     port map (
       CLK    => CLK,
-      FPROG  => FPROG,
-      FCLK   => FCLK,
-      FDIN   => FDIN,
-      FSET   => FSET,
-      FDONE  => FDONE,
-      SEROUT => SEROUT,
-      ASEL   => ASEL);
+      DIN    => DIN,
+      ADDRIN => ADDRIN,
+      WEIN   => WEIN,
+      SEROUT => SEROUT);
 
-  deser       : for i in 0 to M-1 generate
+  deser       : for i in 0 to 19 generate
     bootdeser : bootdeserialize
       port map (
         CLK   => CLK,
@@ -86,72 +87,60 @@ begin  -- Behavioral
 
   process
   begin
-    wait for 100 ns;
-
+    DIN    <= X"00FF";
+    ADDRIN <= "000";
     wait until rising_edge(CLK);
-    asel  <= X"11111";
-    fclk  <= '1';
-    fprog <= '0';
-    fdin  <= '0';
-    fset  <= '1';
+    WEIN   <= '1';
     wait until rising_edge(CLK);
-    fset  <= '0';
-    wait until rising_edge(CLK) and fdone = '1';
-    wait for 50 ns;
-
-
-    -- check
-    for i in 0 to M - 1 loop
-      if asel(i) = '1' then
-        assert fprogout(i) = fprog report "Error in setting FPROG"
-          severity error;
-        assert fclkout(i) = fclk report "Error in setting FCLK"
-          severity error;
-        assert fdinout(i) = fdin report "Error in setting FDIN"
-          severity error;
-      end if;
+    WEIN   <= '0';
+    for i in 0 to 19 loop
+      assert fprogout(i) = '1' report
+        "Error with initial fprog" severity error;
     end loop;  -- i
 
-    wait for 50 ns;
 
-
-
+    -- try setting FPROG
+    ADDRIN <= "011";
     wait until rising_edge(CLK);
-    asel  <= X"22222";
-    fclk  <= '0';
-    fprog <= '1';
-    fdin  <= '1';
-    fset  <= '1';
+    WEIN   <= '1';
     wait until rising_edge(CLK);
-    fset  <= '0';
-    wait until rising_edge(CLK) and fdone = '1';
-    wait for 50 ns;
+    WEIN   <= '0';
 
+    wait until falling_edge(fprogout(0));
+    for i in 0 to 7 loop
+      assert fprogout(i) = '0' report "Error in fprog" severity error;
+    end loop;
+    wait until rising_edge(fprogout(0));
+    for i in 0 to 7 loop
+      assert fprogout(i) = '1' report "Error in fprog" severity error;
+    end loop;
 
-    -- check
-    for i in 0 to M - 1 loop
-      if asel(i) = '1' then
-        assert fprogout(i) = fprog report "Error in setting FPROG"
-          severity error;
-        assert fclkout(i) = fclk report "Error in setting FCLK"
-          severity error;
-        assert fdinout(i) = fdin report "Error in setting FDIN"
-          severity error;
-      end if;
-    end loop;  -- i
+    -- set the bits
+    for dword in 0 to 2 loop
+      ADDRIN <= "010";
+      DIN    <= inbits1(dword * 16 + 15 downto dword * 16);
+      wait until rising_edge(CLK);
+      WEIN   <= '1';
+      wait until rising_edge(CLK);
+      WEIN   <= '0';
+    end loop;  -- dword
 
-    -- check to make sure non-selected outputs were not modified
-    for i in 1 to M - 1 loop
-      if asel(i) = '1' then
-        assert fprogout(i-1) = '0' report "Error in not setting FPROG"
-          severity error;
-        assert fclkout(i-1) = '1' report "Error in not setting FCLK"
-          severity error;
-        assert fdinout(i-1) = '0' report "Error in not  setting FDIN"
-          severity error;
-      end if;
-    end loop;  -- i
+    -- send the bits
+    ADDRIN <= "100";
+    wait until rising_edge(CLK);
+    WEIN   <= '1';
+    wait until rising_edge(CLK);
+    WEIN   <= '0';
 
+    -- verify the bits
+    for dword in 0 to 2 loop
+      for bn in 0 to 15 loop
+        wait until rising_edge(fclkout(0));
+        assert fdinout(0) = inbits1(dword * 16 + bn)
+          report "Error in din" severity Error;
+
+      end loop;  -- bn
+    end loop;  -- dword
 
 
 
@@ -159,4 +148,7 @@ begin  -- Behavioral
 
 
   end process;
+
+
+
 end Behavioral;
