@@ -9,10 +9,8 @@ use WORK.somabackplane.all;
 use work.somabackplane;
 
 entity bootserialize is
-
   generic (
     M : integer := 20);
-
   port (
     CLK    : in  std_logic;
     FPROG  : in  std_logic;
@@ -22,7 +20,6 @@ entity bootserialize is
     FDONE  : out std_logic;
     SEROUT : out std_logic_vector(M-1 downto 0);
     ASEL  : in std_logic_vector(M-1 downto 0));
-
 end bootserialize;
 
 architecture Behavioral of bootserialize is
