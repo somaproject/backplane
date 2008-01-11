@@ -518,7 +518,7 @@ begin  -- Behavioral
     eventinputs(0)(0) <= FREAD & X"00";
     eventinputs(0)(1) <= curhandle & X"00";
     eventinputs(0)(2) <= X"0000";
-    eventinputs(0)(3) <= X"0200";
+    eventinputs(0)(3) <= X"0840";
     eventinputs(0)(4) <= X"0000";
     eventinputs(0)(5) <= X"0100";
     wait until rising_edge(CLK) and ECYCLE = '1';
@@ -565,7 +565,7 @@ begin  -- Behavioral
         wait until rising_edge(CLK);
         readword(7 downto 0) := EDRX;
         readwordnum          := to_integer(unsigned(readword));
-        assert (256*2 + i * 4 + wordnum) = readwordnum report
+        assert (2112 + i * 4 + wordnum) = readwordnum report
           "Error reading data word" severity error;
 -- report "Recovered word num is " & integer'image(readwordnum) &
 -- " " & integer'image(256 + i *4 + wordnum)
