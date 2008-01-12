@@ -6,10 +6,6 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
-library WORK;
-use WORK.networkstack.all;
-use WORK.networkstack;
-
 entity txmux is
   port (
     CLK      : in  std_logic;

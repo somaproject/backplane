@@ -3,9 +3,9 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use SOMA.somabackplane.all;
+use soma.somabackplane;
 
 entity eventrx is
   port (

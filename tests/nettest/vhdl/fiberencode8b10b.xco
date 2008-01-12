@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version J.40
-# Date: Fri Jan 11 18:08:01 2008
+# Date: Fri Jan 11 18:25:04 2008
 #
 ##############################################################
 #
@@ -32,31 +32,27 @@ SET verilogsim = False
 SET vhdlsim = True
 # END Project Options
 # BEGIN Select
-SELECT Decode_8b/10b family Xilinx,_Inc. 7.1
+SELECT Encode_8b/10b family Xilinx,_Inc. 5.0
 # END Select
 # BEGIN Parameters
 CSET b_clock_enable=false
-CSET b_code_violation_out=false
-CSET b_disparity_violation_out=false
+CSET b_code_error_output=false
+CSET b_disparity_output=false
+CSET b_force_code=false
+CSET b_force_code_symbol=B_D_10_2_pos
+CSET b_force_disparity=false
 CSET b_new_data=false
-CSET b_running_disparity_in=false
-CSET b_running_disparity_out=false
-CSET b_symbol_disparity_out=false
-CSET b_synchronous_reset=false
-CSET b_synchronous_reset_value=B_D_0_0_pos
 CSET clock_enable=true
-CSET code_violation_out=true
-CSET component_name=decode8b10b
-CSET disparity_violation_out=true
-CSET implementation=LUT_Based
+CSET code_error_output=false
+CSET component_name=fiberencode8b10b
+CSET disparity_output=false
+CSET force_code=false
+CSET force_code_symbol=D_10_2_pos
+CSET force_disparity=false
+CSET implementation=Block_RAM_Based
 CSET new_data=false
-CSET running_disparity_in=false
-CSET running_disparity_out=false
-CSET secondary_decoder=false
-CSET symbol_disparity_out=false
-CSET synchronous_reset=false
-CSET synchronous_reset_value=D_0_0_pos
+CSET secondary_encoder=false
 # END Parameters
 GENERATE
-# CRC: 18cdda0c
+# CRC:  6fc9a87
 

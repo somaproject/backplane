@@ -4,9 +4,9 @@ use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
 
 
 library UNISIM;
@@ -58,285 +58,6 @@ end nettest;
 
 architecture Behavioral of nettest is
 
-  component eventrouter
-    port (
-      CLK     : in  std_logic;
-      ECYCLE  : in  std_logic;
-      EARX    : in  somabackplane.addrarray;
-      EDRX    : in  somabackplane.dataarray;
-      EDSELRX : out std_logic_vector(3 downto 0);
-      EATX    : out somabackplane.addrarray;
-      EDTX    : out std_logic_vector(7 downto 0)
-      );
-  end component;
-
-  component timer
-    port (
-      CLK     : in  std_logic;
-      ECYCLE  : out std_logic;
-      EARX    : out std_logic_vector(somabackplane.N -1 downto 0);
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX    : in  std_logic_vector(7 downto 0)
-      );
-  end component;
-
-  component syscontrol
-    generic (
-      DEVICE  :     std_logic_vector(7 downto 0)                   := X"01" );
-    port (
-      CLK     : in  std_logic;
-      CLK2X   : in  std_logic;
-      RESET   : in  std_logic;
-      DEBUG   : out std_logic_vector(7 downto 0);
-      -- event interface
-      EDTX    : in  std_logic_vector(7 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE  : in  std_logic;
-      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      -- Boot control output
-      SEROUT  : out std_logic_vector(19 downto 0)
-      );
-  end component;
-
-
-component bootstore
-  generic (
-    DEVICE  :     std_logic_vector(7 downto 0)                   := X"01"
-    );
-  port (
-    CLK     : in  std_logic;
-    CLKHI   : in  std_logic;
-    RESET   : in  std_logic;
-    DEBUG : out std_logic_vector(7 downto 0);                                 
-    -- event interface
-    EDTX    : in  std_logic_vector(7 downto 0);
-    EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-    ECYCLE  : in  std_logic;
-    EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
-    EDRX    : out std_logic_vector(7 downto 0);
-    EDSELRX : in  std_logic_vector(3 downto 0);
-    -- SPI INTERFACE
-    SPIMOSI : in  std_logic;
-    SPIMISO : out std_logic;
-    SPICS   : in  std_logic;
-    SPICLK  : in  std_logic
-    );
-end component;
-
-
-  component bootdeserialize
-    port (
-      CLK   : in  std_logic;
-      SERIN : in  std_logic;
-      FPROG : out std_logic;
-      FCLK  : out std_logic;
-      FDIN  : out std_logic);
-  end component;
-
-
-  component jtagesend
-    generic (
-      JTAG_CHAIN :     integer := 1);
-    port (
-      CLK        : in  std_logic;
-      ECYCLE     : in  std_logic;
-      EARX       : out std_logic_vector(somabackplane.N - 1 downto 0)
-                               := (others => '0');
-      EDRX       : out std_logic_vector(7 downto 0);
-      EDSELRX    : in  std_logic_vector(3 downto 0)
-      );
-  end component;
-
-  component jtagereceive
-    generic (
-      JTAG_CHAIN_MASK :     integer := 1;
-      JTAG_CHAIN_OUT  :     integer := 1
-      );
-    port (
-      CLK             : in  std_logic;
-      ECYCLE          : in  std_logic;
-      EDTX            : in  std_logic_vector(7 downto 0);
-      EATX            : in  std_logic_vector(somabackplane.N - 1 downto 0);
-      DEBUG           : out std_logic_vector(3 downto 0)
-      );
-  end component;
-
-  component ether
-    generic (
-      DEVICE  :     std_logic_vector(7 downto 0) := X"01"
-      );
-    port (
-      CLK     : in  std_logic;
-      RESET   : in  std_logic;
-      EDTX    : in  std_logic_vector(7 downto 0);
-      EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE  : in  std_logic;
-      EARX    : out std_logic_vector(somabackplane.N - 1 downto 0)
-                                                 := (others => '0');
-      EDRX    : out std_logic_vector(7 downto 0);
-      EDSELRX : in  std_logic_vector(3 downto 0);
-      SOUT    : out std_logic;
-      SIN     : in  std_logic;
-      SCLK    : out std_logic;
-      SCS     : out std_logic);
-  end component;
-
-  component udpburst
-    port (
-      CLK      : in  std_logic;
-      NEWFRAME : out std_logic;
-      DOUT     : out std_logic_vector(15 downto 0));
-  end component;
-
-  component network
-    port (
-      CLK       : in std_logic;
-      MEMCLK    : in std_logic;
-      MEMCLK90  : in std_logic;
-      MEMCLK180 : in std_logic;
-      MEMCLK270 : in std_logic;
-
-      RESET        : in    std_logic;
-      -- config
-      MYIP         : in    std_logic_vector(31 downto 0);
-      MYMAC        : in    std_logic_vector(47 downto 0);
-      MYBCAST      : in    std_logic_vector(31 downto 0);
-      -- input
-      NICNEXTFRAME : out   std_logic;
-      NICDINEN     : in    std_logic;
-      NICDIN       : in    std_logic_vector(15 downto 0);
-      -- output
-      NICDOUT      : out   std_logic_vector(15 downto 0);
-      NICNEWFRAME  : out   std_logic;
-      NICIOCLK     : out   std_logic;
-      -- event bus
-      ECYCLE       : in    std_logic;
-      EARX         : out   std_logic_vector(somabackplane.N -1 downto 0);
-      EDRX         : out   std_logic_vector(7 downto 0);
-      EDSELRX      : in    std_logic_vector(3 downto 0);
-      EATX         : in    std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX         : in    std_logic_vector(7 downto 0);
-      -- data bus
-      DIENA        : in    std_logic;
-      DINA         : in    std_logic_vector(7 downto 0);
-      DIENB        : in    std_logic;
-      DINB         : in    std_logic_vector(7 downto 0);
-      -- memory interface
-      RAMCKE       : out   std_logic := '0';
-      RAMCAS       : out   std_logic;
-      RAMRAS       : out   std_logic;
-      RAMCS        : out   std_logic;
-      RAMWE        : out   std_logic;
-      RAMADDR      : out   std_logic_vector(12 downto 0);
-      RAMBA        : out   std_logic_vector(1 downto 0);
-      RAMDQSH      : inout std_logic;
-      RAMDQSL      : inout std_logic;
-      RAMDQ        : inout std_logic_vector(15 downto 0);
-      -- error signals and counters
-      RXIOCRCERR   : out   std_logic;
-      UNKNOWNETHER : out   std_logic;
-      UNKNOWNIP    : out   std_logic;
-      UNKNOWNUDP   : out   std_logic;
-      UNKNOWNARP   : out   std_logic;
-      TXPKTLENEN   : out   std_logic;
-      TXPKTLEN     : out   std_logic_vector(15 downto 0);
-      TXCHAN       : out   std_logic_vector(2 downto 0);
-      EVTRXSUC     : out   std_logic;
-      EVTFIFOFULL  : out   std_logic
-
-
-
-      );
-  end component;
-
-
-  component netcontrol
-    generic (
-      DEVICE       :     std_logic_vector(7 downto 0) := X"01";
-      CMDCNTQUERY  :     std_logic_vector(7 downto 0) := X"40";
-      CMDCNTRST    :     std_logic_vector(7 downto 0) := X"41";
-      CMDNETWRITE  :     std_logic_vector(7 downto 0) := X"42";
-      CMDNETQUERY  :     std_logic_vector(7 downto 0) := X"43";
-      CMDNETRESP   :     std_logic_vector(7 downto 0) := X"50";
-      CMDCNTRESP   :     std_logic_vector(7 downto 0) := X"51"
-      );
-    port (
-      CLK          : in  std_logic;
-      RESET        : in  std_logic;
-      -- standard event-bus interface
-      ECYCLE       : in  std_logic;
-      EDTX         : in  std_logic_vector(7 downto 0);
-      EATX         : in  std_logic_vector(somabackplane.N - 1 downto 0);
-      EARX         : out std_logic_vector(somabackplane.N - 1 downto 0);
-      EDRX         : out std_logic_vector(7 downto 0);
-      EDSELRX      : in  std_logic_vector(3 downto 0);
-      -- tx counter input
-      TXPKTLENEN   : in  std_logic;
-      TXPKTLEN     : in  std_logic_vector(15 downto 0);
-      TXCHAN       : in  std_logic_vector(2 downto 0);
-      -- other counters
-      RXIOCRCERR   : in  std_logic;
-      UNKNOWNETHER : in  std_logic;
-      UNKNOWNIP    : in  std_logic;
-      UNKNOWNARP   : in  std_logic;
-      UNKNOWNUDP   : in  std_logic;
-      EVTRXSUC     : in  std_logic;
-      EVTFIFOFULL  : in  std_logic;
-
-
-      -- output network control settings
-      MYMAC   : out std_logic_vector(47 downto 0);
-      MYBCAST : out std_logic_vector(31 downto 0);
-      MYIP    : out std_logic_vector(31 downto 0)
-
-      );
-
-  end component;
-
-  component fakedata
-    port (
-      CLK    : in  std_logic;
-      DOUT   : out std_logic_vector(7 downto 0);
-      DOUTEN : out std_logic;
-      ECYCLE : in  std_logic
-      );
-  end component;
-
-  component fiberdebug
-    generic (
-      DEVICE    :     std_logic_vector(7 downto 0) := X"01"
-      );
-    port (
-      CLK       : in  std_logic;
-      TXCLK     : in  std_logic;
-      RESET     : in  std_logic;
-      -- Event bus interface
-      ECYCLE    : in  std_logic;
-      EARXA     : out std_logic_vector(somabackplane.N - 1 downto 0)
-                                                   := (others => '0');
-      EDRXA     : out std_logic_vector(7 downto 0);
-      EARXB     : out std_logic_vector(somabackplane.N - 1 downto 0)
-                                                   := (others => '0');
-      EDRXB     : out std_logic_vector(7 downto 0);
-      EDSELRXA  : in  std_logic_vector(3 downto 0);
-      EDSELRXB  : in  std_logic_vector(3 downto 0);
-      EATX      : in  std_logic_vector(somabackplane.N - 1 downto 0);
-      EDTX      : in  std_logic_vector(7 downto 0);
-      EADDRDEST :     std_logic_vector(somabackplane.N -1 downto 0);
-
-      -- Fiber interfaces
-      FIBERIN  : in  std_logic;
-      FIBEROUT : out std_logic;
-      DEBUG    : out std_logic_vector(15 downto 0)
-      );
-
-  end component;
-
-
   signal ECYCLE : std_logic := '0';
 
   signal EARX    : somabackplane.addrarray      := (others => (others => '0'));
@@ -356,6 +77,7 @@ end component;
 
 
   signal clk, clkint             : std_logic := '0';
+  signal clk2x, clk2xint             : std_logic := '0';
   signal clk180, clk180int       : std_logic := '0';
   signal memclkb, memclkbint     : std_logic := '0';
   signal memclk, memclkint       : std_logic := '0';
@@ -428,6 +150,7 @@ begin  -- Behavioral
       STARTUP_WAIT          => true)
     port map (
       CLK0                  => clkint,      -- 0 degree DCM CLK ouptput
+      CLK2x => clk2xint, 
       CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
       CLKFB                 => clk,
       CLK180                => clk180int,
@@ -447,7 +170,11 @@ begin  -- Behavioral
       I => clk180int,
       O => clk180);
 
-
+  clk2x_bufg: BUFG
+    port map (
+      I => clk2xint,
+      O => clk2x);
+  
   memclkb_bufg : BUFG
     port map (
       O => memclkb,
@@ -519,7 +246,7 @@ begin  -- Behavioral
       I          => memclk270
       );
 
-  eventrouter_inst : eventrouter
+  eventrouter_inst : entity soma.eventrouter
     port map (
       CLK     => clk,
       ECYCLE  => ECYCLE,
@@ -529,7 +256,7 @@ begin  -- Behavioral
       EATX    => EATX,
       EDTX    => EDTX);
 
-  timer_inst : timer
+  timer_inst : entity soma.timer
     port map (
       CLK     => clk,
       ECYCLe  => ECYCLE,
@@ -539,18 +266,20 @@ begin  -- Behavioral
       EATX    => EATX(0),
       EDTX    => EDTX);
 
-  syscontrol_inst : syscontrol
+  syscontrol_inst : entity soma.syscontrol
     port map (
       CLK     => clk,
+      CLK2X   => clk2x,
       RESET   => RESET,
       ECYCLe  => ECYCLE,
       EARX    => EARX(1),
       EDRX    => EDRX(1),
       EDSELRX => EDSELRX,
       EATX    => EATX(1),
-      EDTX    => EDTX);
+      EDTX    => EDTX,
+      SEROUT => lserialboot);
 
-  bootstore_inst : bootstore
+  bootstore_inst : entity soma.bootstore
     generic map (
       DEVICE => X"02")
     port map (
@@ -568,7 +297,7 @@ begin  -- Behavioral
       SPICS    => SPICS, 
       SPICLK     => SPICLK);
   
-  bootdeserialize_inst : bootdeserialize
+  bootdeserialize_inst : entity soma.bootdeserialize
     port map (
       CLK   => clk,
       SERIN => lserialboot(0),
@@ -581,7 +310,7 @@ begin  -- Behavioral
   LEDEVENT <= fiberdebugdebug(0);
   LEDPOWER <= locked2;
 
-  jtagsend_inst : jtagesend
+  jtagsend_inst : entity jtag.jtagesend
     generic map (
       JTAG_CHAIN => 1)
     port map (
@@ -591,7 +320,7 @@ begin  -- Behavioral
       EDRX       => edrx(7),
       EDSELRX    => edselrx);
 
-  jtagreceive_inst : jtagereceive
+  jtagreceive_inst : entity jtag.jtagereceive
     generic map (
       JTAG_CHAIN_MASK => 2,
       JTAG_CHAIN_OUT  => 3 )
@@ -602,7 +331,7 @@ begin  -- Behavioral
       EATX            => eatx(7),
       DEBUG           => open);
 
-  ether_inst : ether
+  ether_inst : entity soma.ether
     generic map (
       DEVICE  => X"05")
     port map (
@@ -644,7 +373,7 @@ begin  -- Behavioral
       O => fibertxclkdummy,
       I => fibertxclkintdummy);
 
-  fiberdebug_inst : fiberdebug
+  fiberdebug_inst : entity soma.fiberdebug
     generic map (
       DEVICE    => X"4C")
     port map (
@@ -666,7 +395,7 @@ begin  -- Behavioral
       DEBUG     => fiberdebugdebug);
 
 
-  fakedata1 : fakedata
+  fakedata1 : entity fakedata
     port map (
       clk    => clk,
       DOUT   => douta,
@@ -694,7 +423,7 @@ begin  -- Behavioral
   mymac <= X"00ADBEEF1234";
 
   fiberdebugdest(3) <= '1';
-  network_inst : network
+  network_inst : entity network.network
     port map (
       CLK       => CLK,
       MEMCLK    => memclk,
@@ -755,7 +484,7 @@ begin  -- Behavioral
 
       );
 
-  netcontrol_inst : netcontrol
+  netcontrol_inst : entity soma.netcontrol
     generic map (
       DEVICE       => X"04")
     port map (

@@ -8,8 +8,8 @@ library WORK;
 use WORK.somabackplane.all;
 use work.somabackplane;
 
-library eproclib;
-use eproclib;
+library eproc;
+use eproc.all;
 
 library UNISIM;
 use UNISIM.VComponents.all;
@@ -36,31 +36,6 @@ end syscontrol;
 
 
 architecture Behavioral of syscontrol is
-
-  component eproc
-    port (
-      CLK         : in  std_logic;
-      RESET       : in  std_logic;
-      -- Event Interface, CLK rate
-      EDTX        : in  std_logic_vector(7 downto 0);
-      EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
-      ECYCLE      : in  std_logic;
-      EARX        : out std_logic_vector(somabackplane.N - 1 downto 0)
- := (others => '0');
-      EDRX        : out std_logic_vector(7 downto 0);
-      EDSELRX     : in  std_logic_vector(3 downto 0);
-      -- High-speed interface
-      CLKHI       : in  std_logic;
-      -- instruction interface
-      IADDR       : out std_logic_vector(9 downto 0);
-      IDATA       : in  std_logic_vector(17 downto 0);
-      --outport signals
-      OPORTADDR   : out std_logic_vector(7 downto 0);
-      OPORTDATA   : out std_logic_vector(15 downto 0);
-      OPORTSTROBE : out std_logic;
-      DEVICE      : in  std_logic_vector(7 downto 0)
-      );
-  end component;
 
   component bootserperipheral
     port (
@@ -104,7 +79,7 @@ begin  -- Behavioral
       WEB   => '0',
       SSRB  => RESET);
 
-  eproc_inst : eproclib.eproc
+  eproc_inst : entity eproc.eproc
     port map (
       CLK         => clk,
       RESET       => RESET,

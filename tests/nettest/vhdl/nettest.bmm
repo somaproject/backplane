@@ -1,11 +1,6 @@
-ADDRESS_BLOCK destmask RAMB16 [0x00000000 : 0x0000007ff]
+ADDRESS_BLOCK destmask RAMB18 [0x00000000 : 0x0000007ff]
 BUS_BLOCK
-syscontrol_inst/destmask_ram [31:0];
+syscontrol_inst/instruction_ram [17:0];
 END_BUS_BLOCK;
 END_ADDRESS_BLOCK; 
 
-ADDRESS_BLOCK addrlen RAMB16 [0x00000800 : 0x000000Fff]
-BUS_BLOCK
-syscontrol_inst/addrlen_ram [31:0];
-END_BUS_BLOCK;
-END_ADDRESS_BLOCK; 

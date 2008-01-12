@@ -155,19 +155,6 @@ architecture Behavioral of eproc is
 
   end component;
 
-  component eventtx
-    port (
-      CLK      : in  std_logic;
-      EIND     : in  std_logic_vector(15 downto 0);
-      EINADDR  : in  std_logic_vector(2 downto 0);
-      EINWE    : in  std_logic;
-      SRC      : in  std_logic_vector(7 downto 0);
-      EDATA    : out std_logic_vector(95 downto 0);
-      EADDR    : out std_logic_vector(77 downto 0);
-      NEWEVENT : out std_logic );
-  end component;
-
-
   component txeventbuffer
     port (
       CLK      : in  std_logic;
@@ -264,7 +251,7 @@ begin  -- Behavioral
       FORCEADDR   => forceaddr);
 
 
-  eventtx_inst : eventtx
+  eventtx_inst : entity eventtx
     port map (
       CLK      => CLKHI,
       EIND     => ODATA,

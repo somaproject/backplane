@@ -3,40 +3,40 @@ VHDLS=vhdle
 WORKDIR=work.sym
 all: hw comp sim
 
-$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
-	$(VHDLC) -vital2000 ../../vhdl/networkstack.vhd
+soma.sym/somabackplane/prim.var: ../../../vhdl/somabackplane.vhd
+	$(VHDLC) -vital2000 -work soma  ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/netports/prim.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd
+$(WORKDIR)/netports/prim.var: ../../vhdl/netports.vhd
 	$(VHDLC) -vital2000 ../../vhdl/netports.vhd
 
-$(WORKDIR)/somabackplane/prim.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/somabackplane.vhd
+$(WORKDIR)/networkstack/prim.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd
+	$(VHDLC) -vital2000 ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/crc_combinational/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd ../../crc/vhdl/crc_combinational.vhd
+$(WORKDIR)/crc_combinational/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd
 	$(VHDLC) -vital2000 ../../crc/vhdl/crc_combinational.vhd
 
-$(WORKDIR)/crc16_combinational/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd
+$(WORKDIR)/crc16_combinational/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd
 	$(VHDLC) -vital2000 ../../crc/vhdl/crc16_combinational.vhd
 
-$(WORKDIR)/crcverify/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd
+$(WORKDIR)/crcverify/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd
 	$(VHDLC) -vital2000 ../../crc/vhdl/crcverify.vhd
 
-$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd
+$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd
 	$(VHDLC) -vital2000 ../../vhdl/ipchecksum.vhd
 
-$(WORKDIR)/udpheaderwriter/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
+$(WORKDIR)/udpheaderwriter/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
 	$(VHDLC) -vital2000 ../../vhdl/udpheaderwriter.vhd
 
-$(WORKDIR)/eventrxbusoutput/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd
+$(WORKDIR)/eventrxbusoutput/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd
 	$(VHDLC) -vital2000 ../../vhdl/eventrxbusoutput.vhd
 
-$(WORKDIR)/eventrxresponsewr/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd
+$(WORKDIR)/eventrxresponsewr/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd
 	$(VHDLC) -vital2000 ../../vhdl/eventrxresponsewr.vhd
 
-$(WORKDIR)/eventrx/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../../vhdl/somabackplane.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd ../../vhdl/eventrx.vhd
+$(WORKDIR)/eventrx/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd ../../vhdl/eventrx.vhd
 	$(VHDLC) -vital2000 ../../vhdl/eventrx.vhd
 
-hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/netports/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/crc_combinational/_behavioral.var $(WORKDIR)/crc16_combinational/_behavioral.var $(WORKDIR)/crcverify/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/eventrxbusoutput/_behavioral.var $(WORKDIR)/eventrxresponsewr/_behavioral.var $(WORKDIR)/eventrx/_behavioral.var 
+hw: soma.sym/somabackplane/prim.var $(WORKDIR)/netports/prim.var $(WORKDIR)/networkstack/prim.var $(WORKDIR)/crc_combinational/_behavioral.var $(WORKDIR)/crc16_combinational/_behavioral.var $(WORKDIR)/crcverify/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/eventrxbusoutput/_behavioral.var $(WORKDIR)/eventrxresponsewr/_behavioral.var $(WORKDIR)/eventrx/_behavioral.var 
 
 $(WORKDIR)/inputcontrol/_behavioral.var: ../../vhdl/inputcontrol.vhd
 	$(VHDLC) -vital2000 ../../vhdl/inputcontrol.vhd

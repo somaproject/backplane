@@ -9,22 +9,24 @@ vhdl soma "../../../boot/vhdl/mmcio.vhd"
 vhdl soma "../../../deviceio/vhdl/bootdeser.vhd"
 vhdl soma "../../../vhdl/core/eventrouter.vhd"
 vhdl soma "../../../vhdl/timer.vhd"
-vhdl soma "../../../jtag/vhdl/jtagesend.vhd"
-vhdl soma "../../../jtag/vhdl/jtagereceive.vhd"
+
 vhdl soma "../../../vhdl/ether/nicserialio.vhd"
 vhdl soma "../../../vhdl/ether/ethercontrol.vhd"
 vhdl soma "../../../vhdl/ether/ether.vhd"
 vhdl soma "../../../vhdl/netcontrol/txcounter.vhd"
 vhdl soma "../../../vhdl/netcontrol/netcontrol.vhd"
 
+vhdl jtag "../../../jtag/vhdl/jtagesend.vhd"
+vhdl jtag "../../../jtag/vhdl/jtagereceive.vhd"
+
 # eproc 
-vhdl eproclib "../../../eproc/vhdl/alu.vhd"
-vhdl eproclib "../../../eproc/vhdl/ecore.vhd"
-vhdl eproclib "../../../eproc/vhdl/eproc.vhd"
-vhdl eproclib "../../../eproc/vhdl/eventtx.vhd"
-vhdl eproclib "../../../eproc/vhdl/evtdnd.vhd"
-vhdl eproclib "../../../eproc/vhdl/regfile.vhd"
-vhdl eproclib "../../../eproc/vhdl/txeventbuffer.vhd" 
+vhdl eproc "../../../eproc/vhdl/alu.vhd"
+vhdl eproc "../../../eproc/vhdl/ecore.vhd"
+vhdl eproc "../../../eproc/vhdl/eventtx.vhd"
+vhdl eproc "../../../eproc/vhdl/eproc.vhd"
+vhdl eproc "../../../eproc/vhdl/evtdnd.vhd"
+vhdl eproc "../../../eproc/vhdl/regfile.vhd"
+vhdl eproc "../../../eproc/vhdl/txeventbuffer.vhd" 
 
 #syscontrol
 vhdl soma "../../../vhdl/syscontrol/syscontrol.vhd"
@@ -36,7 +38,7 @@ vhdl soma "../../../vhdl/bootspiio.vhd"
 vhdl soma "../../../vhdl/bootstore.vhd" 
 vhdl soma "../../../vhdl/singleeventdesttx.vhd" 
 
-
+# network
 vhdl network "../../../network/vhdl/ipchecksum.vhd"
 vhdl network "../../../network/vhdl/udpheaderwriter.vhd"
 vhdl network "../../../network/crc/vhdl/crc_combinational.vhd"
@@ -67,6 +69,7 @@ vhdl network "../../../network/vhdl/txmux.vhd"
 vhdl network "../../../network/vhdl/inputcontrol.vhd"
 vhdl network "../../../network/vhdl/network.vhd"
 
+# network memory interface
 vhdl memory "../../../memory/vhdl/dqalign.vhd"
 vhdl memory "../../../memory/vhdl/bootddr2.vhd"
 vhdl memory "../../../memory/vhdl/readddr2.vhd"

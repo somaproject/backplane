@@ -5,9 +5,9 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 use std.textio.all;
 use ieee.std_logic_textio.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
 
 use ieee.numeric_std.all;
 
