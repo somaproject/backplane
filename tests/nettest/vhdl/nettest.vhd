@@ -17,10 +17,10 @@ entity nettest is
     CLKIN         : in    std_logic;
     SERIALBOOT    : out   std_logic_vector(19 downto 0);
     -- SPI interface
-    SPIMOSI     : in  std_logic;
-    SPIMISO     : out std_logic;
-    SPICS       : in  std_logic;
-    SPICLK      : in  std_logic;
+    SPIMOSI       : in    std_logic;
+    SPIMISO       : out   std_logic;
+    SPICS         : in    std_logic;
+    SPICLK        : in    std_logic;
     -- LEDS
     LEDPOWER      : out   std_logic;
     LEDEVENT      : out   std_logic;
@@ -77,7 +77,7 @@ architecture Behavioral of nettest is
 
 
   signal clk, clkint             : std_logic := '0';
-  signal clk2x, clk2xint             : std_logic := '0';
+  signal clk2x, clk2xint         : std_logic := '0';
   signal clk180, clk180int       : std_logic := '0';
   signal memclkb, memclkbint     : std_logic := '0';
   signal memclk, memclkint       : std_logic := '0';
@@ -150,7 +150,7 @@ begin  -- Behavioral
       STARTUP_WAIT          => true)
     port map (
       CLK0                  => clkint,      -- 0 degree DCM CLK ouptput
-      CLK2x => clk2xint, 
+      CLK2x                 => clk2xint,
       CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
       CLKFB                 => clk,
       CLK180                => clk180int,
@@ -170,11 +170,11 @@ begin  -- Behavioral
       I => clk180int,
       O => clk180);
 
-  clk2x_bufg: BUFG
+  clk2x_bufg : BUFG
     port map (
       I => clk2xint,
       O => clk2x);
-  
+
   memclkb_bufg : BUFG
     port map (
       O => memclkb,
@@ -277,14 +277,14 @@ begin  -- Behavioral
       EDSELRX => EDSELRX,
       EATX    => EATX(1),
       EDTX    => EDTX,
-      SEROUT => lserialboot);
+      SEROUT  => lserialboot);
 
   bootstore_inst : entity soma.bootstore
     generic map (
-      DEVICE => X"02")
+      DEVICE  => X"02")
     port map (
       CLK     => clk,
-      CLKHI => memclk, 
+      CLKHI   => memclk,
       RESET   => RESET,
       ECYCLE  => ECYCLE,
       EARX    => EARX(2),
@@ -292,11 +292,11 @@ begin  -- Behavioral
       EDSELRX => EDSELRX,
       EATX    => EATX(2),
       EDTX    => EDTX,
-      SPIMOSI   => SPIMOSI, 
-      SPIMISO    => SPIMISO, 
-      SPICS    => SPICS, 
-      SPICLK     => SPICLK);
-  
+      SPIMOSI => SPIMOSI,
+      SPIMISO => SPIMISO,
+      SPICS   => SPICS,
+      SPICLK  => SPICLK);
+
   bootdeserialize_inst : entity soma.bootdeserialize
     port map (
       CLK   => clk,

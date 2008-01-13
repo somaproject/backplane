@@ -16,7 +16,7 @@
 PROJECT = nettest
 
 bitfile: $(PROJECT).bit $(PROJECT).new.bit updaterom
-export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
+#export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
 export  XIL_MAP_SKIP_LOGICAL_DRC=TRUE
 SOURCES = *.vhd 
 OPTIMIZE = high
@@ -105,11 +105,23 @@ transsim: build/$(PROJECT).ngd
 	netgen -intstyle ise -rpw 100 -tpw 0 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngd $(PROJECT)_transsim.vhd
 
 
+
+$(PROJECT).new.bit:  updaterom
+
 # update roms
 updaterom: $(PROJECT)_bd.bmm $(PROJECT).mem
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt $(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).new.bit
 	mv $(PROJECT).bit $(PROJECT).original.bit
 	cp $(PROJECT).new.bit $(PROJECT).bit
+
+nettest.part.mem:  nettest.asmpy
+	python ../../../eproc/assemble/assemble.py nettest.asmpy \
+	nettest.imem nettest.part.mem > nettest.part.log
+
+nettest.mem: nettest.part.mem
+	echo "@0000" > nettest.mem
+	cat nettest.part.mem >> nettest.mem
+
 
 clean:
 	rm -Rf xst build
