@@ -88,7 +88,6 @@ jtagprog = "/home/jonas/XC3Sprog/xc3sprog"
 jtagpos = 0
 
 def callJtag(IR, dr):
-    
     (ofid, ifid) = os.popen2([jtagprog, str(jtagpos), str(IR), str(dr)])
     x = ifid.read()
     return x
@@ -139,7 +138,8 @@ def loopback_test():
     a = Event()
     a.cmd = 0x30
     a.src = JTAGADDR
-    a.setAddr(JTAGADDR)
+    for i in range(70):
+        a.setAddr(i)
     a.data[0] = 0x0123
     a.data[1] = 0x4567
     a.data[2] = 0x89AB

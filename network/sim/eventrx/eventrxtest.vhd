@@ -372,7 +372,8 @@ begin  -- Behavioral
   process
   begin
 
-    wait for 1 us;
+    wait for 5 us;                      -- idle delay to absorb latency
+    
     eventverifyreset <= '0';
 
   end process;

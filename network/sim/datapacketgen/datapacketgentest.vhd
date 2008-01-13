@@ -7,9 +7,9 @@ use IEEE.numeric_std.all;
 use std.textio.all;
 use ieee.std_logic_textio.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library SOMA;
+use SOMA.somabackplane.all;
+use soma.somabackplane;
 
 entity datapacketgentest is
 

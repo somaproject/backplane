@@ -8,6 +8,15 @@ library soma;
 use soma.somabackplane.all;
 use soma.somabackplane;
 
+library jtag;
+use jtag.all;
+
+
+library network;
+use network.all;
+library syscon;
+use syscon.all;
+
 
 library UNISIM;
 use UNISIM.VComponents.all;
@@ -266,7 +275,7 @@ begin  -- Behavioral
       EATX    => EATX(0),
       EDTX    => EDTX);
 
-  syscontrol_inst : entity soma.syscontrol
+  syscontrol_inst : entity syscon.syscontrol
     port map (
       CLK     => clk,
       CLK2X   => clk2x,

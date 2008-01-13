@@ -4,8 +4,6 @@ vhdl network "../../../network/vhdl/networkstack.vhd"
 vhdl network "../../../network/vhdl/netports.vhd"
 
 vhdl soma "../../../vhdl/rxeventfifo.vhd"
-vhdl soma "../../../boot/vhdl/byteio.vhd"
-vhdl soma "../../../boot/vhdl/mmcio.vhd"
 vhdl soma "../../../deviceio/vhdl/bootdeser.vhd"
 vhdl soma "../../../vhdl/core/eventrouter.vhd"
 vhdl soma "../../../vhdl/timer.vhd"
@@ -29,9 +27,9 @@ vhdl eproc "../../../eproc/vhdl/regfile.vhd"
 vhdl eproc "../../../eproc/vhdl/txeventbuffer.vhd" 
 
 #syscontrol
-vhdl soma "../../../vhdl/syscontrol/syscontrol.vhd"
-vhdl soma "../../../vhdl/syscontrol/bootserialize.vhd"
-vhdl soma "../../../vhdl/syscontrol/bootserperipheral.vhd"
+vhdl syscon "../../../vhdl/syscontrol/syscontrol.vhd"
+vhdl syscon "../../../vhdl/syscontrol/bootserialize.vhd"
+vhdl syscon "../../../vhdl/syscontrol/bootserperipheral.vhd"
 
 # boot store
 vhdl soma "../../../vhdl/bootspiio.vhd"

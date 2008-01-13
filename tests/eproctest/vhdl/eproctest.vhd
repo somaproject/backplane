@@ -420,17 +420,17 @@ begin  -- Behavioral
 
   bootstore_inst : entity soma.bootstore
     generic map (
-      DEVICE  => X"03")
+      DEVICE  => X"02")
     port map (
       CLK     => CLK,
       CLKHI   => memclk,
       RESET   => RESET,
       DEBUG => bootstoredebug,
       EDTX    => EDTX,
-      EATX    => EATX(3),
+      EATX    => EATX(2),
       ECYCLE  => ECYCLE,
-      EARX    => EARX(3),
-      EDRX    => EDRX(3),
+      EARX    => EARX(2),
+      EDRX    => EDRX(2),
       EDSELRX => edselrx,
       SPIMOSI => SPIMOSI,
       SPIMISO => SPIMISO,

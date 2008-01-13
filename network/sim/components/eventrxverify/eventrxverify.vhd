@@ -115,7 +115,7 @@ begin  -- Behavioral
         -- 
         for i in 0 to 5 loop
           eventarray(eventpos).edata(16*i + 15 downto 16*i)
-                                   := datain(i*16 + 15 downto i*16 + 8) & datain(i*16 + 7 downto i* 16 ); 
+                                   := datain(i*16 + 15 downto i*16 + 8) & datain(i*16 + 7 downto i* 16 );
         end loop;  -- i 
 
         eventpos := eventpos + 1;
@@ -129,48 +129,51 @@ begin  -- Behavioral
       file_close(event_file);
 
       -- reset the pointer
-      eventpos     := 0;
+      eventpos := 0;
     elsif rising_edge(CLK) then
-      if ecyclepos = 48 then
-        while not eventarray(eventpos).valid and eventpos < BUFSIZE -1 loop
-          eventpos := eventpos + 1;
-          EVENTPOSOUT <= eventpos;
-        end loop;
-      end if;
+      if RESET = '0' then
 
-      if ecyclepos = 49 then
-        eaddrbus_expected(77 downto 0) <=
-          eventarray(eventpos).eaddr(77 downto 0);
-        edatabus_expected              <= eventarray(eventpos).edata;
-      end if;
-
-      if ecyclepos = 50 then            -- wait for some time to stabilize 
-
-        -- first, find a valid event
-
-        if eaddrbus /= X"0000000000" then  --heck if this is a null event:
-          
-          assert eaddrbus(77 downto 0) = eaddrbus_expected(77 downto 0)
-            report "Error in event address" severity error;
-          
-          assert edatabus = edatabus_expected
-            report "Error reading event bytes" severity error;
-
-          if eaddrbus(77 downto 0) /= eaddrbus_expected(77 downto 0) or
-            edatabus /= edatabus_expected then
-            EVTERROR <= '1';
-          else
-            EVTERROR <= '0';
-            report "Successful read of expected event " & integer'image(eventpos)  severity note;
-            
-          end if; 
- 
-          eventpos := eventpos + 1;
-          EVENTPOSOUT <= eventpos;
-
+        if ecyclepos = 48 then
+          while not eventarray(eventpos).valid and eventpos < BUFSIZE -1 loop
+            eventpos := eventpos + 1;
+            EVENTPOSOUT <= eventpos;
+          end loop;
         end if;
-      end if;
 
+        if ecyclepos = 49 then
+          eaddrbus_expected(77 downto 0) <=
+            eventarray(eventpos).eaddr(77 downto 0);
+          edatabus_expected              <= eventarray(eventpos).edata;
+        end if;
+
+        if ecyclepos = 50 then          -- wait for some time to stabilize 
+
+          -- first, find a valid event
+
+          if eaddrbus /= X"0000000000" then  --heck if this is a null event:
+
+            assert eaddrbus(77 downto 0) = eaddrbus_expected(77 downto 0)
+              report "Error in event address" severity error;
+
+            assert edatabus = edatabus_expected
+              report "Error reading event bytes" severity error;
+
+            if eaddrbus(77 downto 0) /= eaddrbus_expected(77 downto 0) or
+              edatabus /= edatabus_expected then
+              EVTERROR <= '1';
+            else
+              EVTERROR <= '0';
+              report "Successful read of expected event " & integer'image(eventpos) severity note;
+
+            end if;
+
+            eventpos := eventpos + 1;
+            EVENTPOSOUT <= eventpos;
+
+          end if;
+        end if;
+
+      end if;
     end if;
 
     if rising_edge(INVCLK) then

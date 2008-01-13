@@ -2,7 +2,7 @@ from events import *
 import time    
 
 JTAGADDR = 0x07
-BOOTSTOREADDR = 0x03
+BOOTSTOREADDR = 0x02
 
 
 def handle_test():
