@@ -282,7 +282,7 @@ begin  -- Behavioral
     variable pos   : integer := 0;
 
   begin
-    while true loop
+    while  not endfile(resp_file) loop
       wait until rising_edge(CLK);
       wait until rising_edge(CLK) and ARM = '1';
       readline(resp_file, L);
@@ -337,6 +337,7 @@ begin  -- Behavioral
 
       end loop;
     end loop;
+    wait; 
   end process output_verify;
 
   process(CLK)
@@ -394,9 +395,9 @@ begin  -- Behavioral
   -- wait to finish
   process
   begin
-    wait for 700 us;
+    wait for 100 us;
 
-    wait until rising_edge(CLK) and eventposout = 2047;
+    wait until rising_edge(CLK) and eventposout = 301;
     report "Received " & integer'image(evtrxsuc_cnt) & " input packets for which we had fifo space and committed to the event bus" severity note;
 
     report "Received " & integer'image(evtfifofull_cnt) & " input packets where we didn't have enough fifo space and had to abort" severity note;
