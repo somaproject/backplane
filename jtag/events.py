@@ -129,17 +129,14 @@ def loopback_test():
     JTAGADDR = 0x07
 
     m = Mask()
-
     m.setAddr(JTAGADDR)
-
     setMask(m)
 
     
     a = Event()
     a.cmd = 0x30
     a.src = JTAGADDR
-    for i in range(70):
-        a.setAddr(i)
+    a.setAddr(JTAGADDR)
     a.data[0] = 0x0123
     a.data[1] = 0x4567
     a.data[2] = 0x89AB

@@ -20,7 +20,8 @@ entity jtagesend is
     EARX    : out std_logic_vector(somabackplane.N - 1 downto 0)
  := (others => '0');
     EDRX    : out std_logic_vector(7 downto 0);
-    EDSELRX : in  std_logic_vector(3 downto 0)
+    EDSELRX : in  std_logic_vector(3 downto 0);
+    DEBUG : out std_logic_vector(7 downto 0)
     );
 
 end jtagesend;
@@ -95,7 +96,8 @@ begin  -- Behavioral
           edrxall(87 downto 80) when EDSELRX = X"A" else
           edrxall(95 downto 88);
 
-
+  DEBUG(0) <= newdatal;
+  DEBUG(1) <= ubitl; 
   main : process(CLK)
   begin
     if rising_edge(CLK) then

@@ -5,7 +5,7 @@
 --
 -- Command: data2mem -bm nettest_bd.bmm -bd nettest.mem -bt nettest.bit -o h nettest_mem.vhd -o b nettest.new.bit
 --
--- Created on 01/12/08 09:35 pm, from:
+-- Created on 01/16/08 00:57 am, from:
 --
 --     Map file     - nettest_bd.bmm
 --     Data file(s) - nettest.mem
@@ -20,7 +20,7 @@ use ieee.std_logic_1164;
 package nettest_mem_pkg is
 
 -- BRAM 0 in address space [0x00000000:0x000007FF], bit lane [17:0]
--- INST syscontrol_inst/instruction_ram LOC = RAMB16_X0Y18;
+-- INST syscontrol_inst/instruction_ram LOC = RAMB16_X0Y22;
 	constant syscontrol_inst_instruction_ram_INIT_00  : bit_vector(0 to 255) := x"10058445300515858425327511E5841531F511058405300515358885300514B5";
 	constant syscontrol_inst_instruction_ram_INIT_01  : bit_vector(0 to 255) := x"8515101584D5101584A530A510058495380518058485300515A5846510058455";
 	constant syscontrol_inst_instruction_ram_INIT_02  : bit_vector(0 to 255) := x"8715101586D5101586951015865510158615101585D510158595101585551015";

@@ -27,7 +27,8 @@ entity netsigtest is
     NICNEXTFRAME : out std_logic;
     NICDINEN     : in  std_logic;
     NICDOUTEN    : in  std_logic;
-    NICIOCLK     : out std_logic
+    NICIOCLK     : out std_logic;
+    RAMCKE  : out std_logic
     );
 end netsigtest;
 
@@ -54,6 +55,8 @@ begin  -- Behavio
   NICFPROG <= '1';
 
   NICIOCLK <= clk;
+
+  RAMCKE <= '0'; 
   
   main : process(CLK)
   begin

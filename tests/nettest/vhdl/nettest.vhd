@@ -7,7 +7,7 @@ use IEEE.numeric_std.all;
 library soma;
 use soma.somabackplane.all;
 use soma.somabackplane;
-
+use soma.all;
 library jtag;
 use jtag.all;
 
@@ -135,6 +135,8 @@ architecture Behavioral of nettest is
 
   signal fiberdebugdebug : std_logic_vector(15 downto 0) := (others => '0');
 
+  signal jtagesenddebug : std_logic_vector(7 downto 0) := (others => '0');
+  
 begin  -- Behavioral
 
 
@@ -316,9 +318,10 @@ begin  -- Behavioral
 
   SERIALBOOT <= lserialboot;
 
-  LEDEVENT <= fiberdebugdebug(0);
-  LEDPOWER <= locked2;
 
+  LEDPOWER <= jtagesenddebug(0); 
+  LEDEVENT <= jtagesenddebug(1);
+  
   jtagsend_inst : entity jtag.jtagesend
     generic map (
       JTAG_CHAIN => 1)
@@ -327,7 +330,8 @@ begin  -- Behavioral
       ECYCLE     => ecycle,
       EARX       => earx(7),
       EDRX       => edrx(7),
-      EDSELRX    => edselrx);
+      EDSELRX    => edselrx,
+      DEBUG => jtagesenddebug);
 
   jtagreceive_inst : entity jtag.jtagereceive
     generic map (

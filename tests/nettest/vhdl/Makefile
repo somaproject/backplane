@@ -18,6 +18,7 @@ PROJECT = nettest
 bitfile: $(PROJECT).bit $(PROJECT).new.bit updaterom
 #export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
 export  XIL_MAP_SKIP_LOGICAL_DRC=TRUE
+export XIL_PAR_DESIGN_CHECK_VERBOSE=1
 SOURCES = *.vhd 
 OPTIMIZE = high
 PART = xc4vlx25-10-ff668

@@ -13,16 +13,16 @@ use UNISIM.VComponents.all;
 
 entity jtagereceive is
   generic (
-    JTAG_CHAIN_MASK : integer := 1;
-    JTAG_CHAIN_OUT  : integer := 1
+    JTAG_CHAIN_MASK :    integer := 1;
+    JTAG_CHAIN_OUT  :    integer := 1
     );
   port (
-    CLK : in std_logic;
+    CLK             : in std_logic;
 
     ECYCLE : in  std_logic;
     EDTX   : in  std_logic_vector(7 downto 0);
-    EATX   : in std_logic_vector(somabackplane.N - 1 downto 0);
-    DEBUG: out std_logic_vector(3 downto 0)
+    EATX   : in  std_logic_vector(somabackplane.N - 1 downto 0);
+    DEBUG  : out std_logic_vector(3 downto 0)
     );
 end jtagereceive;
 
@@ -38,7 +38,7 @@ architecture Behavioral of jtagereceive is
   signal odrck, osel, oshift, oupdate, otdo : std_logic             := '0';
   signal bitcnt                             : integer range 0 to 95 := 0;
 
-  type ostates is (eoutw, ew0, ew1, ew2, ew3, ew4, ew5, ew6,  selwait, wwrite, outwait, outdone);
+  type ostates is (eoutw, ew0, ew1, ew2, ew3, ew4, ew5, ew6, selwait, wwrite, outwait, outdone);
   signal ocs, ons : ostates := eoutw;
 
   signal addrbinc : std_logic := '0';
@@ -50,46 +50,47 @@ architecture Behavioral of jtagereceive is
   signal addra : std_logic_vector(9 downto 0)  := (others => '0');
   signal eoutd : std_logic_vector(15 downto 0) := (others => '0');
 
-  signal enext : std_logic := '0';
-  signal eouta : std_logic_vector(2 downto 0) := (others => '0');
-  signal evalid : std_logic; 
+  signal enext  : std_logic                    := '0';
+  signal eouta  : std_logic_vector(2 downto 0) := (others => '0');
+  signal evalid : std_logic;
 
-    --input side
+  --input side
   type istates is (ewaita, edone, scheck, ew0, ew1, ew2, ew3, ew4, ew5, ewritten);
   signal ics, ins : istates := ewaita;
-  
+
   signal addrainc : std_logic := '0';
-  
+
   signal fifocnt : integer range 0 to 255 := 0;
-  
+
   -- input mask
-  signal smdrck : std_logic := '0';
-  signal smsel : std_logic := '0';
-  signal smshift : std_logic := '0';
-  signal smupdate : std_logic := '0';
-  signal smtdi : std_logic := '0';
-  signal smaskreg : std_logic_vector(79 downto 0) := (others => '0');
-  signal smaskregl : std_logic_vector(79 downto 0) := (others => '0');
+  signal smdrck                          : std_logic := '0';
+  signal smsel                           : std_logic := '0';
+  signal smshift                         : std_logic := '0';
+  signal smupdate, smupdatel, smupdatell : std_logic := '0';
+
+  signal smtdi      : std_logic                     := '0';
+  signal smaskreg   : std_logic_vector(79 downto 0) := (others => '0');
+  signal smaskregl  : std_logic_vector(79 downto 0) := (others => '0');
   signal smaskregll : std_logic_vector(79 downto 0) := (others => '0');
-  signal smask : std_logic := '0';
-  
+  signal smask      : std_logic                     := '0';
+
 
 -- component rxeventfifo
---   port (
---     CLK    : in  std_logic;
---     RESET  : in  std_logic;
---     ECYCLE : in  std_logic;
---     EATX   : in  std_logic_vector(somabackplane.N -1 downto 0);
---     EDTX   : in  std_logic_vector(7 downto 0); 
---     -- outputs
+-- port (
+-- CLK : in std_logic;
+-- RESET : in std_logic;
+-- ECYCLE : in std_logic;
+-- EATX : in std_logic_vector(somabackplane.N -1 downto 0);
+-- EDTX : in std_logic_vector(7 downto 0);
+--  -- outputs
 --     EOUTD  : out std_logic_vector(15 downto 0);
 --     EOUTA  : in std_logic_vector(2 downto 0);
 --     EVALID : out std_logic;
 --     ENEXT  : in  std_logic
 --     );
 -- end component;
- 
-  
+
+
 begin  -- Behavioral
 
   eventbuffer_inst : RAMB16_S18_S18
@@ -97,7 +98,7 @@ begin  -- Behavioral
       SRVAL_B             => X"000000000",
       WRITE_MODE_A        => "WRITE_FIRST",
       WRITE_MODE_B        => "WRITE_FIRST",
-      SIM_COLLISION_CHECK => "ALL",     
+      SIM_COLLISION_CHECK => "ALL",
       -- Address 0 to 255
       INIT_00             => X"AAA1AAA2AAA3AAA4AAA5AAA6AAA7AAA8AAA9AAA01AAAA32AAFEDCB9876543210",
       INIT_01             => X"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB0DC2",
@@ -168,7 +169,7 @@ begin  -- Behavioral
       INIT_3F             => X"0000000000000000000000000000000000000000000000000000000000000000")
     port map (
       DOA                 => open,
-      DOB                 => dob, 
+      DOB                 => dob,
       DOPA                => open,
       DOPB                => open,
       ADDRA               => addra,
@@ -205,7 +206,7 @@ begin  -- Behavioral
   DEBUG(1) <= osel;
   DEBUG(2) <= oshift;
   DEBUG(3) <= otdo;
-  
+
   -- output jtag proces
   jtagin : process(ODRCK, OUPDATE)
   begin
@@ -220,7 +221,7 @@ begin  -- Behavioral
     end if;
   end process jtagin;
 
-  otdo <= doutl(bitcnt); 
+  otdo <= doutl(bitcnt);
   --otdo <= smaskregll(bitcnt); 
 
   main : process(CLK)
@@ -231,7 +232,7 @@ begin  -- Behavioral
       ocs <= ons;
 
       if addrbinc = '1' then
-        addrb <= addrb + 1;           
+        addrb              <= addrb + 1;
       end if;
       if ocs = ew1 then
         dout(15 downto 0)  <= dob(7 downto 0) & dob(15 downto 8);
@@ -252,27 +253,32 @@ begin  -- Behavioral
         dout(95 downto 80) <= dob(7 downto 0) & dob(15 downto 8);
       end if;
 
-      
+
       if ocs = eoutw then
         doutl   <= (others => '0');
       else
         if ocs = wwrite then
-          doutl <= dout; 
+          doutl <= dout;
         end if;
       end if;
-      
+
       -- input side
       ics <= ins;
 
       if addrainc = '1' then
-        addra <= addra + 1; 
+        addra <= addra + 1;
       end if;
 
       if ics = ewritten then
-        cp <= addra; 
+        cp <= addra;
       end if;
 
       -- mask side
+      smupdatel <= smupdate;
+      smupdatell <= smupdatel;
+      if smupdatel = '1' and smupdatell = '0' and smsel = '1' then
+        smaskregl    <= smaskreg;         
+      end if;
 
       if enext = '1' then
         smaskregll <= smaskregl;
@@ -283,10 +289,10 @@ begin  -- Behavioral
       if ics = ewritten and ocs /= wwrite then
         fifocnt <= fifocnt + 1;
       elsif ics /= ewritten and ocs = wwrite then
-        fifocnt <= fifocnt - 1; 
+        fifocnt <= fifocnt - 1;
       end if;
 
-      
+
     end if;
   end process main;
 
@@ -297,100 +303,100 @@ begin  -- Behavioral
         --DEBUG <= X"0"; 
         addrbinc <= '0';
         if addrb /= cp then
-          ons     <= ew0;
+          ons    <= ew0;
         else
-          ons     <= eoutw;
+          ons    <= eoutw;
         end if;
       when ew0   =>
         --DEBUG <= X"1";
         addrbinc <= '1';
-        ons       <= ew1;
+        ons      <= ew1;
 
       when ew1 =>
         --DEBUG <= X"2";
         addrbinc <= '1';
-        ons       <= ew2;
+        ons      <= ew2;
 
       when ew2 =>
         --DEBUG <= X"3";
         addrbinc <= '1';
-        ons       <= ew3;
+        ons      <= ew3;
 
       when ew3 =>
         --DEBUG <= X"4";
         addrbinc <= '1';
-        ons       <= ew4;
+        ons      <= ew4;
 
       when ew4 =>
         --DEBUG <= X"5";
         addrbinc <= '1';
-        ons       <= ew5;
+        ons      <= ew5;
 
       when ew5 =>
         --DEBUG <= X"6";
         addrbinc <= '1';
-        ons       <= ew6;
+        ons      <= ew6;
 
       when ew6 =>
         --DEBUG <= X"6";
         addrbinc <= '0';
-        ons       <= selwait;
+        ons      <= selwait;
 
       when selwait =>
         --DEBUG <= X"7";
         addrbinc <= '0';
         if oshift = '0' then
-          ons     <= wwrite;
+          ons    <= wwrite;
         else
-          ons     <= selwait;
+          ons    <= selwait;
         end if;
 
       when wwrite =>
         --DEBUG <= X"8";
         addrbinc <= '0';
-        ons       <= outwait;
+        ons      <= outwait;
 
       when outwait =>
         --DEBUG <= X"9";
         addrbinc <= '0';
         if oshift = '1' and osel = '1' then
-          ons     <= outdone;
+          ons    <= outdone;
         else
-          ons     <= outwait;
+          ons    <= outwait;
         end if;
 
-      when outdone  =>
+      when outdone =>
         --DEBUG <= X"A";
         addrbinc <= '0';
         if oshift = '0' and osel = '1'then
-          ons <= eoutw;
+          ons    <= eoutw;
         else
-          ons <= outdone; 
+          ons    <= outdone;
         end if;
 
-      when others  =>
+      when others =>
         --DEBUG <= X"B";
         addrbinc <= '0';
-        ons       <= eoutw;
+        ons      <= eoutw;
 
     end case;
   end process outfsm;
 
 
   -- input
-  rxeventfifo_inst: entity soma.rxeventfifo
+  rxeventfifo_inst : entity soma.rxeventfifo
     port map (
       CLK    => CLK,
-      RESET => '0', 
+      RESET  => '0',
       EDTX   => EDTX,
       EATX   => EATX,
       ECYCLE => ECYCLE,
       ENEXT  => enext,
       EOUTA  => eouta,
       EVALID => evalid,
-      EOUTD  => eoutd); 
-    
-    
+      EOUTD  => eoutd);
+
+
 
   BSCAN_MASK_inst : BSCAN_VIRTEX4
     generic map (
@@ -403,116 +409,116 @@ begin  -- Behavioral
       SHIFT      => smshift,
       TDI        => smtdi,
       UPDATE     => smupdate,
-      TDO        => '0') ; 
+      TDO        => '0');
 
-  
+
   jtagout : process(SMDRCK, smupdate, smaskreg)
   begin
     if SMUPDATE = '1' then
-      smaskregl <= smaskreg; 
+      
     else
       if rising_edge(smdrck) then
         if smsel = '1' and smshift = '1' then
-          smaskreg <= smtdi & smaskreg(79 downto 1); 
+          smaskreg <= smtdi & smaskreg(79 downto 1);
         end if;
       end if;
     end if;
   end process jtagout;
 
 
-  infsm: process (ics, evalid, smask, addra, addrb, fifocnt)
-    begin
-      case ics is
-        when ewaita =>
-          eouta <= "000";
-          enext <= '0';
-          wea <= '0';
-          addrainc <= '0';
+  infsm : process (ics, evalid, smask, addra, addrb, fifocnt)
+  begin
+    case ics is
+      when ewaita =>
+        eouta    <= "000";
+        enext    <= '0';
+        wea      <= '0';
+        addrainc <= '0';
 
-          if evalid = '1' then
-            ins <= scheck;
-          else
-            ins <= ewaita;
-          end if;
-
-        when scheck =>
-          eouta <= "000";
-          enext <= '0';
-          wea <= '0';
-          addrainc <= '0';
-
-          if smask = '1' and fifocnt < 100 then
-            ins <= ew0; 
-          else
-            ins <= edone; 
-          end if;
-
-        when edone =>
-          eouta <= "000";
-          enext <= '1';
-          wea <= '0';
-          addrainc <= '0';
+        if evalid = '1' then
+          ins <= scheck;
+        else
           ins <= ewaita;
+        end if;
 
-        when ew0 =>
-          eouta <= "001";
-          enext <= '0';
-          wea <= '1';
-          addrainc <= '1';
-          ins <= ew1;
+      when scheck =>
+        eouta    <= "000";
+        enext    <= '0';
+        wea      <= '0';
+        addrainc <= '0';
 
-        when ew1 =>
-          eouta <= "010";
-          enext <= '0';
-          wea <= '1';
-          addrainc <= '1';
-          ins <= ew2;
+        if smask = '1' and fifocnt < 100 then
+          ins <= ew0;
+        else
+          ins <= edone;
+        end if;
 
-        when ew2 =>
-          eouta <= "011";
-          enext <= '0';
-          wea <= '1';
-          addrainc <= '1';
-          ins <= ew3;
+      when edone =>
+        eouta    <= "000";
+        enext    <= '1';
+        wea      <= '0';
+        addrainc <= '0';
+        ins      <= ewaita;
 
-        when ew3 =>
-          eouta <= "100";
-          enext <= '0';
-          wea <= '1';
-          addrainc <= '1';
-          ins <= ew4;
+      when ew0 =>
+        eouta    <= "001";
+        enext    <= '0';
+        wea      <= '1';
+        addrainc <= '1';
+        ins      <= ew1;
 
-        when ew4 =>
-          eouta <= "101";
-          enext <= '0';
-          wea <= '1';
-          addrainc <= '1';
-          ins <= ew5;
+      when ew1 =>
+        eouta    <= "010";
+        enext    <= '0';
+        wea      <= '1';
+        addrainc <= '1';
+        ins      <= ew2;
 
-        when ew5 =>
-          eouta <= "110";
-          enext <= '0';
-          wea <= '1';
-          addrainc <= '1';
-          ins <= ewritten; 
+      when ew2 =>
+        eouta    <= "011";
+        enext    <= '0';
+        wea      <= '1';
+        addrainc <= '1';
+        ins      <= ew3;
 
-        when ewritten =>
-          eouta <= "000";
-          enext <= '0';
-          wea <= '0';
-          addrainc <= '0';
-          ins <= edone; 
-          
-        when others =>
-          eouta <= "000";
-          enext <= '0';
-          wea <= '0';
-          addrainc <= '0';
-          ins <= ewaita; 
-      end case; 
-    end process infsm;
-    
+      when ew3 =>
+        eouta    <= "100";
+        enext    <= '0';
+        wea      <= '1';
+        addrainc <= '1';
+        ins      <= ew4;
 
-    smask <= smaskregll(conv_integer(eoutd(7 downto 0)));
-    
+      when ew4 =>
+        eouta    <= "101";
+        enext    <= '0';
+        wea      <= '1';
+        addrainc <= '1';
+        ins      <= ew5;
+
+      when ew5 =>
+        eouta    <= "110";
+        enext    <= '0';
+        wea      <= '1';
+        addrainc <= '1';
+        ins      <= ewritten;
+
+      when ewritten =>
+        eouta    <= "000";
+        enext    <= '0';
+        wea      <= '0';
+        addrainc <= '0';
+        ins      <= edone;
+
+      when others =>
+        eouta    <= "000";
+        enext    <= '0';
+        wea      <= '0';
+        addrainc <= '0';
+        ins      <= ewaita;
+    end case;
+  end process infsm;
+
+
+  smask <= smaskregll(conv_integer(eoutd(7 downto 0)));
+
 end Behavioral;
