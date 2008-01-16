@@ -41,9 +41,12 @@ architecture Behavioral of jtagesend is
   signal ubit, ubitl       : std_logic := '0';
   signal newdata, newdatal : std_logic := '0';
 
+  signal sell : std_logic := '0';
+  
   signal data    : std_logic_vector(175 downto 0)    := (others => '0');
   signal edrxall : std_logic_vector(6*16-1 downto 0) := (others => '0');
 
+  signal drckclk : std_logic := '0';
 
 
 begin  -- Behavioral
@@ -62,10 +65,15 @@ begin  -- Behavioral
       TDO        => tdo);
 
 
-  process(DRCK)
+  drck_Bufg: BUFG
+    port map (
+      I => drck,
+      O => drckclk);
+  
+  process(drckclk)
   begin
-    if rising_edge(DRCK) then
-      if SEL = '1' then
+    if rising_edge(drckclk) then
+      if SEL = '1' and shift = '1' then
         sreg <= TDI & sreg(175 downto 1);
       end if;
     end if;
@@ -76,12 +84,13 @@ begin  -- Behavioral
   begin
     if rising_edge(UPDATE) then
       if SEL = '1' then
-        ubit <= not ubit;
+        --ubit <= not ubit;
       end if;
     end if;
   end process;
 
-  newdata <= ubit xor ubitl;
+  newdata <= '1' when ubit = '1' and  ubitl = '0' and sell = '1'  else
+             '0';        
 
   EDRX <= edrxall(7 downto 0)   when EDSELRX = X"0" else
           edrxall(15 downto 8)  when EDSELRX = X"1" else
@@ -101,7 +110,9 @@ begin  -- Behavioral
   main : process(CLK)
   begin
     if rising_edge(CLK) then
+      sell <= SEL; 
       newdatal <= newdata;
+      ubit <= UPDATE; 
       ubitl    <= ubit;
 
       if newdatal = '1' then

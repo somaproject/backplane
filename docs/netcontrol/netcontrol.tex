@@ -21,10 +21,13 @@ both of these respond with CMDNETRESPONSE, with Data[0] indicating
 the word and the relevant bits as above. 
 
 ------------------------------------------------------------------------
-
 Network Counters:
+------------------------------------------------------------------------
 
 these are all 32-bit counters that contain packet counts, with: 
+CMDCNTQUERY: 0x40
+CMDCNTRST : 0x41
+
 CMDA : reset (with associated bitfield)
 CMDB : query DATA[0] = requested register
    gets a response with 

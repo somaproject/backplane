@@ -136,7 +136,7 @@ architecture Behavioral of nettest is
   signal fiberdebugdebug : std_logic_vector(15 downto 0) := (others => '0');
 
   signal jtagesenddebug : std_logic_vector(7 downto 0) := (others => '0');
-  
+
 begin  -- Behavioral
 
 
@@ -319,9 +319,9 @@ begin  -- Behavioral
   SERIALBOOT <= lserialboot;
 
 
-  LEDPOWER <= jtagesenddebug(0); 
+  LEDPOWER <= jtagesenddebug(0);
   LEDEVENT <= jtagesenddebug(1);
-  
+
   jtagsend_inst : entity jtag.jtagesend
     generic map (
       JTAG_CHAIN => 1)
@@ -331,7 +331,7 @@ begin  -- Behavioral
       EARX       => earx(7),
       EDRX       => edrx(7),
       EDSELRX    => edselrx,
-      DEBUG => jtagesenddebug);
+      DEBUG      => jtagesenddebug);
 
   jtagreceive_inst : entity jtag.jtagereceive
     generic map (
@@ -430,10 +430,10 @@ begin  -- Behavioral
 
 
 
-  myip    <= X"0A000002";               -- 10.0.0.2
-  mybcast <= X"FFFFFFFF";               -- 10.255.255.255
+-- myip <= X"0A000002";                 -- 10.0.0.2
+--   mybcast <= X"FFFFFFFF";            -- 10.255.255.255
 
-  mymac <= X"00ADBEEF1234";
+-- mymac <= X"00ADBEEF1234";
 
   fiberdebugdest(3) <= '1';
   network_inst : entity network.network
@@ -518,11 +518,10 @@ begin  -- Behavioral
       UNKNOWNARP   => unknownarp,
       UNKNOWNUDP   => unknownudp,
       EVTRXSUC     => evtrxsuc,
-      EVTFIFOFULL  => evtfifofull
--- MYMAC => mymac,
--- MYBCAST => mybcast,
--- MYIP => myip
-
+      EVTFIFOFULL  => evtfifofull,
+      MYMAC        => mymac,
+      MYBCAST      => mybcast,
+      MYIP         => myip
       );
 
 
