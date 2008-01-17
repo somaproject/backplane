@@ -34,7 +34,6 @@ entity syscontrol is
     );
 end syscontrol;
 
-
 architecture Behavioral of syscontrol is
 
   component bootserperipheral

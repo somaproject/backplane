@@ -310,7 +310,7 @@ begin  -- Behavioral
 
   bootdeserialize_inst : entity soma.bootdeserialize
     port map (
-      CLK   => clk,
+      CLK   => clk2x,
       SERIN => lserialboot(0),
       FPROG => NICFPROG,
       FCLK  => NICFCLK,
@@ -319,7 +319,7 @@ begin  -- Behavioral
   SERIALBOOT <= lserialboot;
 
 
-  LEDPOWER <= jtagesenddebug(0);
+  LEDPOWER <= lserialboot(0); 
   LEDEVENT <= jtagesenddebug(1);
 
   jtagsend_inst : entity jtag.jtagesend

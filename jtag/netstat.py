@@ -24,6 +24,27 @@ def setMacAddr(addr):
     print a
     events.sendEvent(a)
 
+def setIP(addrstr, bcast = False):
+    ipaddr = addrstr.split(".")
+
+    ip0 = int(ipaddr[0])
+    ip1 = int(ipaddr[1])
+    ip2 = int(ipaddr[2])
+    ip3 = int(ipaddr[3])
+    
+    a = events.Event()
+    a.cmd = 0x42
+    a.src = JTAGADDR
+    a.setAddr(NETCONTROLADDR)
+    if bcast:
+        a.data[0] = 0x02
+    else:
+        a.data[0] = 0x01
+    a.data[1] = ip0 << 8 | ip1
+    a.data[2] = ip2 << 8 | ip3
+    events.sendEvent(a)
+        
+
 def getMacAddr() :
     a = events.Event()
     a.cmd = 0x43
@@ -80,5 +101,8 @@ def getMacAddr() :
 
 print getMacAddr()
 print setMacAddr([7, 2, 3, 2, 5, 0x21])
+setIP("1.2.3.4")
+setIP("5.6.7.8", bcast=True)
+
 print getMacAddr()
 

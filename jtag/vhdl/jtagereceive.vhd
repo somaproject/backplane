@@ -64,7 +64,7 @@ architecture Behavioral of jtagereceive is
 
   -- input mask
   signal smdrck                          : std_logic := '0';
-  signal smsel                           : std_logic := '0';
+  signal smsel, smsell                   : std_logic := '0';
   signal smshift                         : std_logic := '0';
   signal smupdate, smupdatel, smupdatell : std_logic := '0';
 
@@ -274,12 +274,13 @@ begin  -- Behavioral
       end if;
 
       -- mask side
-      smupdatel <= smupdate;
-      smupdatell <= smupdatel;
-      if smupdatel = '1' and smupdatell = '0' and smsel = '1' then
-        smaskregl    <= smaskreg;         
+      smupdatel   <= smupdate;
+      smupdatell  <= smupdatel;
+      if smupdatel = '1' and smupdatell = '0' and smsell = '1' then
+        smaskregl <= smaskreg;
       end if;
 
+      smsell       <= smsel;
       if enext = '1' then
         smaskregll <= smaskregl;
       end if;
@@ -415,7 +416,6 @@ begin  -- Behavioral
   jtagout : process(SMDRCK, smupdate, smaskreg)
   begin
     if SMUPDATE = '1' then
-      
     else
       if rising_edge(smdrck) then
         if smsel = '1' and smshift = '1' then

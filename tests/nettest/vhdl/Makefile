@@ -15,23 +15,26 @@
 ######################################################################
 PROJECT = nettest
 
-bitfile: $(PROJECT).bit $(PROJECT).new.bit updaterom
+
 #export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
 export  XIL_MAP_SKIP_LOGICAL_DRC=TRUE
 export XIL_PAR_DESIGN_CHECK_VERBOSE=1
-SOURCES = *.vhd 
+SOURCES := $(shell sed -n 's/^vhdl\s\+\w\+\s*"\([^[:blank:]]\+\)"/\1/p' < $(PROJECT).prj | xargs)
+
+
 OPTIMIZE = high
 PART = xc4vlx25-10-ff668
 SPEED = 10
 
+bitfile: $(PROJECT).bit $(PROJECT).new.bit 
+
 $(PROJECT): build/$(PROJECT).ncd
-
-$(PROJECT).bit: build/$(PROJECT).bit
+	echo $(SOURCES)
+$(PROJECT).bit: $(PROJECT).postmem.bit
 	rm -rf $(PROJECT).bit
-	cp build/$(PROJECT).bit . 
-	cp build/$(PROJECT).bit ~/soma/
+	cp $(PROJECT).postmem.bit $(PROJECT).bit
 
-$(PROJECT).rbt: build/$(PROJECT).rbt
+$(PROJECT).rbt: build/$(PROJECT).rbt 
 	rm -rf $(PROJECT).rbt
 	cp build/$(PROJECT).rbt . 
 
@@ -107,13 +110,9 @@ transsim: build/$(PROJECT).ngd
 
 
 
-$(PROJECT).new.bit:  updaterom
-
 # update roms
-updaterom: $(PROJECT)_bd.bmm $(PROJECT).mem
-	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt $(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).new.bit
-	mv $(PROJECT).bit $(PROJECT).original.bit
-	cp $(PROJECT).new.bit $(PROJECT).bit
+$(PROJECT).postmem.bit: $(PROJECT)_bd.bmm $(PROJECT).mem build/$(PROJECT).bit
+	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
 
 nettest.part.mem:  nettest.asmpy
 	python ../../../eproc/assemble/assemble.py nettest.asmpy \
@@ -125,4 +124,4 @@ nettest.mem: nettest.part.mem
 
 
 clean:
-	rm -Rf xst build
+	rm -Rf xst build $(PROJECT).bit $(PROJECT).postmem.bit

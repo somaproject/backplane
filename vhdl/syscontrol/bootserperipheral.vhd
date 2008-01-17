@@ -22,10 +22,11 @@ architecture Behavioral of bootserperipheral is
   signal addra : std_logic_vector(3 downto 0) := (others => '0');
   signal wea   : std_logic                    := '0';
 
-  signal dob                            : std_logic_vector(15 downto 0) := (others => '0');
-  signal addrb                          : std_logic_vector(3 downto 0)  := (others => '0');
-  signal bsel                           : integer range 0 to 15         := 0;
-  signal fprog, fclk, fdin, fset, fdone : std_logic                     := '0';
+  signal dob, dobflip : std_logic_vector(15 downto 0) := (others => '0');
+  signal addrb        : std_logic_vector(3 downto 0)  := (others => '0');
+  signal bsel         : integer range 0 to 15         := 0;
+
+  signal fprog, fclk, fdin, fset, fdone : std_logic := '0';
 
   signal asel : std_logic_vector(19 downto 0);
 
@@ -67,7 +68,23 @@ architecture Behavioral of bootserperipheral is
 
 begin  -- Behavioral
 
-  fdin <= dob(bsel);
+  fdin    <= dob(bsel);
+  dob(15) <= dobflip(0);
+  dob(14) <= dobflip(1);
+  dob(13) <= dobflip(2);
+  dob(12) <= dobflip(3);
+  dob(11) <= dobflip(4);
+  dob(10) <= dobflip(5);
+  dob(9)  <= dobflip(6);
+  dob(8)  <= dobflip(7);
+  dob(7)  <= dobflip(8);
+  dob(6)  <= dobflip(9);
+  dob(5)  <= dobflip(10);
+  dob(4)  <= dobflip(11);
+  dob(3)  <= dobflip(12);
+  dob(2)  <= dobflip(13);
+  dob(1)  <= dobflip(14);
+  dob(0)  <= dobflip(15);
 
   wea <= '1' when wein = '1' and addrin = "010" else '0';
 
@@ -84,17 +101,17 @@ begin  -- Behavioral
       SEROUT => serout,
       ASEL   => asel);
 
-  regfile_inst: regfile
+  regfile_inst : regfile
     generic map (
-      bits => 16)
+      bits  => 16)
     port map (
       CLK   => CLK,
       DIA   => DIN,
       DOA   => open,
-      ADDRA => addra, 
+      ADDRA => addra,
       WEA   => wea,
-      DOB   => dob,
-      addrb => addrb); 
+      DOB   => dobflip,
+      addrb => addrb);
 
   main : process(CLK)
   begin
@@ -129,9 +146,9 @@ begin  -- Behavioral
 
       if cs = nextbit then
         if bsel = 15 then
-          bsel  <= 0;
+          bsel <= 0;
         else
-          bsel  <= bsel + 1;
+          bsel <= bsel + 1;
         end if;
       end if;
 
@@ -252,7 +269,7 @@ begin  -- Behavioral
         fprog <= '1';
         fset  <= '0';
         fclk  <= '0';
-        ns    <= done;
+        ns    <= none;
 
       when others =>
         fprog <= '1';

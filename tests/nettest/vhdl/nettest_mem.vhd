@@ -3,9 +3,9 @@
 -- Release 9.2.03i - Data2MEM J.39, build 1.5.4 Aug 14, 2007
 -- Copyright (c) 1995-2008 Xilinx, Inc.  All rights reserved.
 --
--- Command: data2mem -bm nettest_bd.bmm -bd nettest.mem -bt nettest.bit -o h nettest_mem.vhd -o b nettest.new.bit
+-- Command: data2mem -bm nettest_bd.bmm -bd nettest.mem -bt build/nettest.bit -o h nettest_mem.vhd -o b nettest.postmem.bit
 --
--- Created on 01/16/08 03:25 pm, from:
+-- Created on 01/17/08 11:05 am, from:
 --
 --     Map file     - nettest_bd.bmm
 --     Data file(s) - nettest.mem
@@ -20,14 +20,14 @@ use ieee.std_logic_1164;
 package nettest_mem_pkg is
 
 -- BRAM 0 in address space [0x00000000:0x000007FF], bit lane [17:0]
--- INST syscontrol_inst/instruction_ram LOC = RAMB16_X1Y15;
-	constant syscontrol_inst_instruction_ram_INIT_00  : bit_vector(0 to 255) := x"10058445300515858425327511E5841531F511058405300515358885300514B5";
-	constant syscontrol_inst_instruction_ram_INIT_01  : bit_vector(0 to 255) := x"8515101584D5101584A530A510058495380518058485300515A5846510058455";
-	constant syscontrol_inst_instruction_ram_INIT_02  : bit_vector(0 to 255) := x"8715101586D5101586951015865510158615101585D510158595101585551015";
-	constant syscontrol_inst_instruction_ram_INIT_03  : bit_vector(0 to 255) := x"1DD488143AA41BB488058876107610550000000087D510158795101587551015";
-	constant syscontrol_inst_instruction_ram_INIT_04  : bit_vector(0 to 255) := x"8021801080043AB41CD404A08894101488051065108688343EE41FF488243CC4";
-	constant syscontrol_inst_instruction_ram_INIT_05  : bit_vector(0 to 255) := x"0D5A0C490B380A270916080505900A2005708041804180440A24052080438032";
-	constant syscontrol_inst_instruction_ram_INIT_06  : bit_vector(0 to 255) := x"000000000000000000000000000000000000066088058876884A883988288817";
+-- INST syscontrol_inst/instruction_ram LOC = RAMB16_X1Y18;
+	constant syscontrol_inst_instruction_ram_INIT_00  : bit_vector(0 to 255) := x"16708440300014C084203FF01000841036501650840030001430888030001420";
+	constant syscontrol_inst_instruction_ram_INIT_01  : bit_vector(0 to 255) := x"3000150084A03FF010008490366016608480300014E084603FF0100084503670";
+	constant syscontrol_inst_instruction_ram_INIT_02  : bit_vector(0 to 255) := x"101085D0101085901010855010108510101084E03FF0100084D03640164084C0";
+	constant syscontrol_inst_instruction_ram_INIT_03  : bit_vector(0 to 255) := x"101087D0101087901010875010108710101086D0101086901010865010108610";
+	constant syscontrol_inst_instruction_ram_INIT_04  : bit_vector(0 to 255) := x"04F080B004D080C004B080A00D5080A00C4080A00B3080A00A20042004108890";
+	constant syscontrol_inst_instruction_ram_INIT_05  : bit_vector(0 to 255) := x"000000000000000000000000000000000000000000000540809180800B310A20";
+	constant syscontrol_inst_instruction_ram_INIT_06  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_instruction_ram_INIT_07  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_instruction_ram_INIT_08  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_instruction_ram_INIT_09  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
@@ -85,7 +85,7 @@ package nettest_mem_pkg is
 	constant syscontrol_inst_instruction_ram_INIT_3D  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_instruction_ram_INIT_3E  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_instruction_ram_INIT_3F  : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
-	constant syscontrol_inst_instruction_ram_INITP_00 : bit_vector(0 to 255) := x"000000000000F8FF0020CEF87F79D7755D5F70777777777777D775DD5DD7755D";
+	constant syscontrol_inst_instruction_ram_INITP_00 : bit_vector(0 to 255) := x"00000000000000000000800FEECECCE8DDDDDDDDDDDD5DD7755DD7755DD7755D";
 	constant syscontrol_inst_instruction_ram_INITP_01 : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_instruction_ram_INITP_02 : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_instruction_ram_INITP_03 : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
