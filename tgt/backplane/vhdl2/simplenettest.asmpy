@@ -1,0 +1,66 @@
+
+env = createEnvironment()
+# Now the ecycle Proc
+
+# and the event dispatches
+"""
+For the time being, event 100-105 will simply
+trigger the appropriate writes
+to the serial peripheral.
+
+0x08-0x0F are the relevant commands
+0x08 (000): lower 16 bits of mask
+0x09 (001): upper 4 bits of mask
+0x0A (010): write data
+0x0B (011): toggle FPROG
+0x0C (100): send the current buffer
+
+"""
+
+ecp = env.createECycleProc()
+y = ecp.createVariable("y")
+ecp.foreverLoop()
+
+### the mask writing
+maskp = env.createEProc((100, 100), (0, 255))
+rxword1 = maskp.createVariable("rxWord1")
+rxword2 = maskp.createVariable("rxWord2")
+maskp.move(rxword1, ereg.edata[0])
+maskp.move(rxword2, ereg.edata[1])
+maskp.output(0x08, rxword1)
+maskp.output(0x09, rxword2)
+
+### The data writing: 
+datap = env.createEProc((101, 101), (0, 255))
+tmp = datap.createVariable("tmp")
+for i in xrange(4):
+  datap.move(tmp, ereg.edata[i])
+  datap.output(0x08+2, tmp)
+
+### The prog assertion
+progp = env.createEProc((102, 102), (0, 255))
+progp.output(0x08 + 3, 0x00)
+
+### The data load assertion
+dataloadp = env.createEProc((103, 103), (0, 255))
+dataloadp.output(0x08 + 4, 0x00)
+
+
+# total test proc
+
+newproc = env.createProc("newproc")
+## testx = newproc.createVariable("testx")
+## newproc.label("jumppoint")
+## newproc.load(testx, 0xFFFF)
+## newproc.output(0x8, testx)
+## for i in xrange(100):
+## 	newproc.nop()
+## newproc.output(0x8+3, testx)
+## for i in xrange(100):
+## 	newproc.nop()
+## newproc.jump("jumppoint")
+#start event dispatch
+y = newproc.createVariable("y")
+newproc.load(y, 1)
+newproc.output(0x89, y)
+newproc.foreverLoop()

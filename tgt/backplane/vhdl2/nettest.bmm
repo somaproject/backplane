@@ -1,0 +1,6 @@
+ADDRESS_BLOCK destmask RAMB18 [0x00000000 : 0x0000007ff]
+BUS_BLOCK
+syscontrol_inst/instruction_ram [17:0];
+END_BUS_BLOCK;
+END_ADDRESS_BLOCK; 
+
