@@ -17,7 +17,8 @@ PROJECT = ecoresize
 
 bitfile: $(PROJECT).bit
 
-SOURCES = *.vhd
+SOURCES := $(shell sed -n 's/^vhdl\s\+\w\+\s*"\([^[:blank:]]\+\)"/\1/p' < $(PROJECT).prj | xargs)
+
 OPTIMIZE = high
 PART = xc3s200-vq100-4
 SPEED = 4

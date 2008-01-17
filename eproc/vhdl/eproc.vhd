@@ -251,7 +251,7 @@ begin  -- Behavioral
       FORCEADDR   => forceaddr);
 
 
-  eventtx_inst : entity eventtx
+  eventtx_inst : entity work.eventtx
     port map (
       CLK      => CLKHI,
       EIND     => ODATA,

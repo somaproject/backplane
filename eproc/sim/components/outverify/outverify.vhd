@@ -38,7 +38,11 @@ begin  -- Behavioral
       hread(L, pdata);
       wait until rising_edge(CLK) and STROBE = '1';
       assert paddr = ADDR report "OUTPORT ADDR ERROR" severity error;
-      assert pdata = DATA report "OUTPORT DATA ERROR" severity error;
+      assert pdata = DATA report "OUTPORT DATA ERROR (at : " &
+        integer'image(to_integer(unsigned(paddr))) & ") " &
+        integer'image(to_integer(unsigned(DATA))) & " != " &
+        integer'image(to_integer(unsigned(pdata)))        
+        severity error;
       EXPADDR <= paddr;
       EXPDATA <= pdata;
       if paddr /= ADDR or pdata /= DATA then

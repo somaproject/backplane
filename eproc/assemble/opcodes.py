@@ -13,7 +13,10 @@ ALUOPS = { "PASSA" : 0,
            "AXORB" : 5,
            "AANDB" : 6,
            "AORB" : 7,
-           "ADD" : 8 }
+           "ADD" : 8,
+           "ADDC" : 9,
+           "SUB" : 10,
+           "SUBC" : 11}
 
 JUMPTYPES  = { "ALWAYS" : 0,
                "ZERO" : 1,

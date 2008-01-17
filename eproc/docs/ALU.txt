@@ -11,10 +11,11 @@ ALU Ops:
 0111: a or b 
 -- arithmetic
 1000: a + b
-1001: a - b
+1001: a + b + c
+1010: a - b
+1011: a - b + c
 
 -- other ops? 
-
 
 output signals: 
 carry

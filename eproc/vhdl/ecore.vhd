@@ -112,7 +112,7 @@ begin  -- Behavioral
       B    => alub,
       Y    => aluy,
       AOP  => aop,
-      CIN  => '0',
+      CIN  => alucout, 
       COUT => lalucout,
       ZERO => laluzero,
       GTZ  => lalugtz,
