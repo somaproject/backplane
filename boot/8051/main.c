@@ -150,7 +150,7 @@ void FPGA_boot()
   int t = 0; 
   unsigned int bytesread = 0; 
 
-  fres = f_open(&fileobject , "blink.bit", FA_READ); 
+  fres = f_open(&fileobject , "core.bit", FA_READ); 
   checkOK(fres); 
 
   // first stage of boot; 

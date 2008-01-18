@@ -136,9 +136,9 @@ def readfile_test(handle):
     a.setAddr(BOOTSTOREADDR)
     a.data[0] = handle << 8
     a.data[1] = 0x0000
-    a.data[2] = 0x0010
+    a.data[2] = 0x0290
     a.data[3] = 0x0000
-    a.data[4] = 0x0010
+    a.data[4] = 0x0020
 
     print "The read event is ", a
     sendEvent(a)
@@ -153,11 +153,13 @@ def readfile_test(handle):
         print e, reads
         e = readEvent()
 
-    
-handle = handle_test()
-send_filename(handle, "blink.bit")
-openfile_test(handle)
-readfile_test(handle)
-handle_yield(handle)
 
+if __name__ == "__main__":
+    
+    handle = handle_test()
+    send_filename(handle, "network.bit")
+    openfile_test(handle)
+    readfile_test(handle)
+    handle_yield(handle)
+    
     

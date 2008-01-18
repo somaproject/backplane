@@ -33,9 +33,9 @@ void storespi_tx(char x) {
 }
 
 
-char storespi_rx() {
+unsigned char storespi_rx() {
   // bit-banging
-  char buf = 0;
+  unsigned char buf = 0;
   char i = 0;
 
   buf <<=  1;
@@ -108,7 +108,7 @@ void bootstore() {
   char cmd; 
   char dummy; 
 
-  long freadoffset, freadlen; 
+  unsigned long freadoffset, freadlen; 
   
   for(;;) {
     if (STORESPI_MISO == 1 ) {
@@ -183,9 +183,6 @@ void bootstore() {
 	for (pos = 0; pos < freadlen; pos++) {
 	  storespi_tx(buffer[pos]); 
 	}
-	
-
-	  
       }      
 
     }

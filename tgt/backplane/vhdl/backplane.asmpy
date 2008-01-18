@@ -64,6 +64,23 @@ dataloadp = env.createEProc((103, 103), (0, 255))
 dataloadp.output(0x08 + 4, 0x00)
 
 
+### The -respond-and-output-bytes
+def createDataToBootSerProc():
+  """
+  Receives event 0x94 from bootstore (new data) and sends it out
+  via the serial interface
+  
+  """
+  datap = env.createEProc((0x94, 0x94), (2, 2))
+  tmp = datap.createVariable("tmp")
+  for i in xrange(4):
+    datap.move(tmp, ereg.edata[i+1])
+    datap.output(0x08+2, tmp)
+  # then commit
+  datap.output(0x08 + 4, 0x00)
+
+createDataToBootSerProc()
+
 # total test proc
 
 newproc = env.createProc("newproc")
