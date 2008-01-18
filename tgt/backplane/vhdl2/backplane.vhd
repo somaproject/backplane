@@ -21,7 +21,7 @@ use syscon.all;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity nettest is
+entity backplane is
   port (
     CLKIN         : in    std_logic;
     SERIALBOOT    : out   std_logic_vector(19 downto 0);
@@ -62,10 +62,10 @@ entity nettest is
     FIBERDEBUGOUT : out   std_logic;
     FIBERDEBUGIN  : in    std_logic
     );
-end nettest;
+end backplane;
 
 
-architecture Behavioral of nettest is
+architecture Behavioral of backplane is
 
   signal ECYCLE : std_logic := '0';
 

@@ -13,8 +13,7 @@
 #   make parsim: post-place-and-route simulation 
 #   make multipar : multiple attemt place and route
 ######################################################################
-PROJECT = nettest
-
+PROJECT = backplane
 
 #export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
 export  XIL_MAP_SKIP_LOGICAL_DRC=TRUE
@@ -26,7 +25,7 @@ OPTIMIZE = high
 PART = xc4vlx25-10-ff668
 SPEED = 10
 
-bitfile: $(PROJECT).bit $(PROJECT).new.bit 
+bitfile: $(PROJECT).bit $(PROJECT).postmem.bit 
 
 $(PROJECT): build/$(PROJECT).ncd
 	echo $(SOURCES)
@@ -58,7 +57,7 @@ build/$(PROJECT).ngc: $(SOURCES) $(PROJECT).xst $(PROJECT).prj
 trans: build/$(PROJECT).ngd
 
 build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf 
-	ngdbuild -p $(PART) -uc $(PROJECT).ucf -bm nettest.bmm -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
+	ngdbuild -p $(PART) -uc $(PROJECT).ucf -bm $(PROJECT).bmm -dd build build/$(PROJECT).ngc build/$(PROJECT).ngd
 
 
 # third stage: map: produces pcf, map.ncd
@@ -111,16 +110,16 @@ transsim: build/$(PROJECT).ngd
 
 
 # update roms
-$(PROJECT).postmem.bit: $(PROJECT)_bd.bmm $(PROJECT).mem build/$(PROJECT).bit
+$(PROJECT).postmem.bit: $(PROJECT).mem build/$(PROJECT).bit
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
 
-nettest.part.mem:  nettest.asmpy
-	python ../../../eproc/assemble/assemble.py nettest.asmpy \
-	nettest.imem nettest.part.mem > nettest.part.log
+$(PROJECT).part.mem:  $(PROJECT).asmpy
+	python ../../../eproc/assemble/assemble.py $(PROJECT).asmpy \
+	$(PROJECT).imem $(PROJECT).part.mem > $(PROJECT).part.log
 
-nettest.mem: nettest.part.mem
-	echo "@0000" > nettest.mem
-	cat nettest.part.mem >> nettest.mem
+$(PROJECT).mem: $(PROJECT).part.mem
+	echo "@0000" > $(PROJECT).mem
+	cat $(PROJECT).part.mem >> $(PROJECT).mem
 
 
 clean:

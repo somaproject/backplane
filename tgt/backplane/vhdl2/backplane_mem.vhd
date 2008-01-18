@@ -3,12 +3,12 @@
 -- Release 9.3i - Data2MEM J.40, build 1.5.4 Aug 14, 2007
 -- Copyright (c) 1995-2008 Xilinx, Inc.  All rights reserved.
 --
--- Command: data2mem -bm nettest_bd.bmm -bd nettest.mem -bt build/nettest.bit -o h nettest_mem.vhd -o b nettest.postmem.bit
+-- Command: data2mem -bm backplane_bd.bmm -bd backplane.mem -bt build/backplane.bit -o h backplane_mem.vhd -o b backplane.postmem.bit
 --
--- Created on 01/17/08 06:43 pm, from:
+-- Created on 01/17/08 07:21 pm, from:
 --
---     Map file     - nettest_bd.bmm
---     Data file(s) - nettest.mem
+--     Map file     - backplane_bd.bmm
+--     Data file(s) - backplane.mem
 --
 -- Address space 'destmask' [0x00000000:0x000007FF], 2048 bytes in size.
 --
@@ -17,10 +17,10 @@
 library ieee;
 use ieee.std_logic_1164;
 
-package nettest_mem_pkg is
+package backplane_mem_pkg is
 
 -- BRAM 0 in address space [0x00000000:0x000007FF], bit lane [17:0]
--- INST syscontrol_inst/instruction_ram LOC = RAMB16_X0Y12;
+-- INST syscontrol_inst/instruction_ram LOC = RAMB16_X0Y16;
 	constant syscontrol_inst_instruction_ram_INIT_00  : bit_vector(0 to 255) := x"16708440300014C084203FF01000841036501650840030001430888030001420";
 	constant syscontrol_inst_instruction_ram_INIT_01  : bit_vector(0 to 255) := x"3000150084A03FF010008490366016608480300014E084603FF0100084503670";
 	constant syscontrol_inst_instruction_ram_INIT_02  : bit_vector(0 to 255) := x"101085D0101085901010855010108510101084E03FF0100084D03640164084C0";
@@ -94,4 +94,4 @@ package nettest_mem_pkg is
 	constant syscontrol_inst_instruction_ram_INITP_06 : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 	constant syscontrol_inst_instruction_ram_INITP_07 : bit_vector(0 to 255) := x"0000000000000000000000000000000000000000000000000000000000000000";
 
-end nettest_mem_pkg;
+end backplane_mem_pkg;

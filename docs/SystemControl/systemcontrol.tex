@@ -1,8 +1,34 @@
-BIOS-like functionality: 
 
-1. read file ``bootlist.txt'' from the 
+What do we want our syscontrol interface to do: 
 
-Ideally we'd like to be able to, in a single ``Event-time'', which is
-12 50 MHz ticks, redirect an entire received event. 
+1. boot all bootserperipheral-like devices, such as NIC, ADIO,
+   display, etc.
 
-2. Handles decoding/primary boot fpga functionality
+2. For some of these devices, we'll need to do ``some stuff'' to get
+   them into boot-ing order
+
+3. there is other out-of-band stuff we need to do to boot
+
+It's not quite clear how the configuration and setup are supposed to
+work, except that this might get pretty complex pretty quickly. For
+any given device:
+
+
+--------------------------------------------
+For the NIC only
+--------------------------------------------
+
+0. Set BootSerPer mask 
+1. toggle FPROG
+2. acquire the File Handle
+3. send the filename
+4. Open the file
+5. Until the read bytes > filelen:
+   
+   a. read the next 512 bytes (64 packets)
+   b. for each inbound data packet: 
+      write to BootSerPeripheral
+      increment word counter
+      increment packet counter
+   c. done
+6. send any post-events
