@@ -1,215 +1,358 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/bootddr2/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd
-	$(VHDLC) -vital2000 ../../../memory/vhdl/bootddr2.vhd
+soma/somabackplane/body.dat: ../../../vhdl/somabackplane.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/somabackplane.vhd
+
+network/networkstack/body.dat: ../../../network/vhdl/networkstack.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/networkstack.vhd
+
+network/netports/body.dat: ../../../network/vhdl/netports.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/netports.vhd
+
+soma/rxeventfifo/behavioral.dat: ../../../vhdl/rxeventfifo.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/rxeventfifo.vhd
+
+soma/bootdeser/behavioral.dat: ../../../deviceio/vhdl/bootdeser.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../deviceio/vhdl/bootdeser.vhd
+
+soma/eventrouter/behavioral.dat: ../../../vhdl/core/eventrouter.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/core/eventrouter.vhd
+
+soma/timer/behavioral.dat: ../../../vhdl/timer.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/timer.vhd
+
+soma/nicserialio/behavioral.dat: ../../../vhdl/ether/nicserialio.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/ether/nicserialio.vhd
+
+soma/ethercontrol/behavioral.dat: ../../../vhdl/ether/ethercontrol.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/ether/ethercontrol.vhd
+
+soma/ether/behavioral.dat: ../../../vhdl/ether/ether.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/ether/ether.vhd
+
+soma/txcounter/behavioral.dat: ../../../vhdl/netcontrol/txcounter.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/netcontrol/txcounter.vhd
+
+soma/netcontrol/behavioral.dat: ../../../vhdl/netcontrol/netcontrol.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/netcontrol/netcontrol.vhd
+
+jtag/jtagesend/behavioral.dat: ../../../jtag/vhdl/jtagesend.vhd
+	mkdir -p jtag
+	$(VHDLC) -work jtag  ../../../jtag/vhdl/jtagesend.vhd
+
+jtag/jtagereceive/behavioral.dat: ../../../jtag/vhdl/jtagereceive.vhd
+	mkdir -p jtag
+	$(VHDLC) -work jtag  ../../../jtag/vhdl/jtagereceive.vhd
+
+eproc/alu/behavioral.dat: ../../../eproc/vhdl/alu.vhd
+	mkdir -p eproc
+	$(VHDLC) -work eproc  ../../../eproc/vhdl/alu.vhd
+
+eproc/ecore/behavioral.dat: ../../../eproc/vhdl/ecore.vhd
+	mkdir -p eproc
+	$(VHDLC) -work eproc  ../../../eproc/vhdl/ecore.vhd
+
+eproc/eventtx/behavioral.dat: ../../../eproc/vhdl/eventtx.vhd
+	mkdir -p eproc
+	$(VHDLC) -work eproc  ../../../eproc/vhdl/eventtx.vhd
+
+eproc/eproc/behavioral.dat: ../../../eproc/vhdl/eproc.vhd
+	mkdir -p eproc
+	$(VHDLC) -work eproc  ../../../eproc/vhdl/eproc.vhd
+
+eproc/evtdnd/behavioral.dat: ../../../eproc/vhdl/evtdnd.vhd
+	mkdir -p eproc
+	$(VHDLC) -work eproc  ../../../eproc/vhdl/evtdnd.vhd
+
+eproc/regfile/behavioral.dat: ../../../eproc/vhdl/regfile.vhd
+	mkdir -p eproc
+	$(VHDLC) -work eproc  ../../../eproc/vhdl/regfile.vhd
+
+eproc/txeventbuffer/behavioral.dat: ../../../eproc/vhdl/txeventbuffer.vhd
+	mkdir -p eproc
+	$(VHDLC) -work eproc  ../../../eproc/vhdl/txeventbuffer.vhd
+
+syscon/syscontrol/behavioral.dat: ../../../vhdl/syscontrol/syscontrol.vhd
+	mkdir -p syscon
+	$(VHDLC) -work syscon  ../../../vhdl/syscontrol/syscontrol.vhd
+
+syscon/bootserialize/behavioral.dat: ../../../vhdl/syscontrol/bootserialize.vhd
+	mkdir -p syscon
+	$(VHDLC) -work syscon  ../../../vhdl/syscontrol/bootserialize.vhd
+
+syscon/bootserperipheral/behavioral.dat: ../../../vhdl/syscontrol/bootserperipheral.vhd
+	mkdir -p syscon
+	$(VHDLC) -work syscon  ../../../vhdl/syscontrol/bootserperipheral.vhd
+
+soma/bootspiio/behavioral.dat: ../../../vhdl/bootspiio.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/bootspiio.vhd
+
+soma/bootstore/behavioral.dat: ../../../vhdl/bootstore.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/bootstore.vhd
+
+soma/singleeventdesttx/behavioral.dat: ../../../vhdl/singleeventdesttx.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/singleeventdesttx.vhd
+
+network/ipchecksum/behavioral.dat: ../../../network/vhdl/ipchecksum.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/ipchecksum.vhd
+
+network/udpheaderwriter/behavioral.dat: ../../../network/vhdl/udpheaderwriter.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/udpheaderwriter.vhd
+
+network/crc_combinational/behavioral.dat: ../../../network/crc/vhdl/crc_combinational.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/crc/vhdl/crc_combinational.vhd
+
+network/crc16_combinational/behavioral.dat: ../../../network/crc/vhdl/crc16_combinational.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/crc/vhdl/crc16_combinational.vhd
+
+network/crcverify/behavioral.dat: ../../../network/crc/vhdl/crcverify.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/crc/vhdl/crcverify.vhd
+
+network/crcappend/behavioral.dat: ../../../network/crc/vhdl/crcappend.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/crc/vhdl/crcappend.vhd
+
+network/arpresponse/behavioral.dat: ../../../network/vhdl/arpresponse.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/arpresponse.vhd
+
+network/dataacquire/behavioral.dat: ../../../network/vhdl/dataacquire.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/dataacquire.vhd
+
+network/datafifo/behavioral.dat: ../../../network/vhdl/datafifo.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/datafifo.vhd
+
+network/datapacketgen/behavioral.dat: ../../../network/vhdl/datapacketgen.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/datapacketgen.vhd
+
+network/dataretxresponse/behavioral.dat: ../../../network/vhdl/dataretxresponse.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/dataretxresponse.vhd
+
+network/dataretxbuf/behavioral.dat: ../../../network/vhdl/dataretxbuf.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/dataretxbuf.vhd
+
+network/data/behavioral.dat: ../../../network/vhdl/data.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/data.vhd
+
+network/bigmem/behavioral.dat: ../../../network/vhdl/bigmem.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/bigmem.vhd
+
+network/retxbuffer/behavioral.dat: ../../../network/vhdl/retxbuffer.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/retxbuffer.vhd
+
+network/eventbodywriter/behavioral.dat: ../../../network/vhdl/eventbodywriter.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/eventbodywriter.vhd
+
+network/eventrxbusoutput/behavioral.dat: ../../../network/vhdl/eventrxbusoutput.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/eventrxbusoutput.vhd
+
+network/eventrxresponsewr/behavioral.dat: ../../../network/vhdl/eventrxresponsewr.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/eventrxresponsewr.vhd
+
+network/eventtxpkfifo/behavioral.dat: ../../../network/vhdl/eventtxpkfifo.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/eventtxpkfifo.vhd
+
+network/eventretxresponse/behavioral.dat: ../../../network/vhdl/eventretxresponse.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/eventretxresponse.vhd
+
+network/eventrx/behavioral.dat: ../../../network/vhdl/eventrx.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/eventrx.vhd
+
+network/eventtx/behavioral.dat: ../../../network/vhdl/eventtx.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/eventtx.vhd
+
+network/bitcnt/behavioral.dat: ../../../network/vhdl/bitcnt.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/bitcnt.vhd
+
+network/pingicmpwriter/behavioral.dat: ../../../network/vhdl/pingicmpwriter.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/pingicmpwriter.vhd
+
+network/pingipwriter/behavioral.dat: ../../../network/vhdl/pingipwriter.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/pingipwriter.vhd
+
+network/pingresponse/behavioral.dat: ../../../network/vhdl/pingresponse.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/pingresponse.vhd
 
-$(WORKDIR)/dqalign/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd
-	$(VHDLC) -vital2000 ../../../memory/vhdl/dqalign.vhd
+network/txmux/behavioral.dat: ../../../network/vhdl/txmux.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/txmux.vhd
 
-$(WORKDIR)/memcontmux/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd
-	$(VHDLC) -vital2000 ../../../memory/vhdl/memcontmux.vhd
+network/inputcontrol/behavioral.dat: ../../../network/vhdl/inputcontrol.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/inputcontrol.vhd
 
-$(WORKDIR)/readddr2/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd
-	$(VHDLC) -vital2000 ../../../memory/vhdl/readddr2.vhd
+network/network/behavioral.dat: ../../../network/vhdl/network.vhd
+	mkdir -p network
+	$(VHDLC) -work network  ../../../network/vhdl/network.vhd
 
-$(WORKDIR)/refreshddr2/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd
-	$(VHDLC) -vital2000 ../../../memory/vhdl/refreshddr2.vhd
+memory/dqalign/behavioral.dat: ../../../memory/vhdl/dqalign.vhd
+	mkdir -p memory
+	$(VHDLC) -work memory  ../../../memory/vhdl/dqalign.vhd
 
-$(WORKDIR)/writeddr2/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd
-	$(VHDLC) -vital2000 ../../../memory/vhdl/writeddr2.vhd
+memory/bootddr2/behavioral.dat: ../../../memory/vhdl/bootddr2.vhd
+	mkdir -p memory
+	$(VHDLC) -work memory  ../../../memory/vhdl/bootddr2.vhd
 
-$(WORKDIR)/memddr2/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd
-	$(VHDLC) -vital2000 ../../../memory/vhdl/memddr2.vhd
+memory/readddr2/behavioral.dat: ../../../memory/vhdl/readddr2.vhd
+	mkdir -p memory
+	$(VHDLC) -work memory  ../../../memory/vhdl/readddr2.vhd
 
-$(WORKDIR)/somabackplane/prim.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/somabackplane.vhd
+memory/memcontmux/behavioral.dat: ../../../memory/vhdl/memcontmux.vhd
+	mkdir -p memory
+	$(VHDLC) -work memory  ../../../memory/vhdl/memcontmux.vhd
 
-$(WORKDIR)/rxeventfifo/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/rxeventfifo.vhd
+memory/refreshddr2/behavioral.dat: ../../../memory/vhdl/refreshddr2.vhd
+	mkdir -p memory
+	$(VHDLC) -work memory  ../../../memory/vhdl/refreshddr2.vhd
 
-$(WORKDIR)/byteio/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd
-	$(VHDLC) -vital2000 ../../../boot/vhdl/byteio.vhd
+memory/writeddr2/behavioral.dat: ../../../memory/vhdl/writeddr2.vhd
+	mkdir -p memory
+	$(VHDLC) -work memory  ../../../memory/vhdl/writeddr2.vhd
 
-$(WORKDIR)/mmcio/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd
-	$(VHDLC) -vital2000 ../../../boot/vhdl/mmcio.vhd
+memory/memddr2/behavioral.dat: ../../../memory/vhdl/memddr2.vhd
+	mkdir -p memory
+	$(VHDLC) -work memory  ../../../memory/vhdl/memddr2.vhd
 
-$(WORKDIR)/bootdeser/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd
-	$(VHDLC) -vital2000 ../../../deviceio/vhdl/bootdeser.vhd
+soma/decoder/behavioral.dat: ../../../vhdl/fiberdebug/decoder.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/fiberdebug/decoder.vhd
 
-$(WORKDIR)/bootserialize/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/bootserialize.vhd
+soma/fiberdebugrx/behavioral.dat: ../../../vhdl/fiberdebug/fiberdebugrx.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/fiberdebug/fiberdebugrx.vhd
 
-$(WORKDIR)/mmcfpgaboot/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/mmcfpgaboot.vhd
+soma/fiberdebugtx/behavioral.dat: ../../../vhdl/fiberdebug/fiberdebugtx.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/fiberdebug/fiberdebugtx.vhd
 
-$(WORKDIR)/bootcontrol/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/bootcontrol.vhd
+soma/fiberdebug/behavioral.dat: ../../../vhdl/fiberdebug/fiberdebug.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/fiberdebug/fiberdebug.vhd
 
-$(WORKDIR)/eventrouter/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/core/eventrouter.vhd
+soma/fibertx/behavioral.dat: ../../../vhdl/fiberdebug/fibertx.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/fiberdebug/fibertx.vhd
 
-$(WORKDIR)/timer/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/timer.vhd
+soma/framedis/behavioral.dat: ../../../vhdl/fiberdebug/framedis.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/fiberdebug/framedis.vhd
 
-$(WORKDIR)/boot/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/boot.vhd
+soma/txeventbuffer/behavioral.dat: ../../../vhdl/fiberdebug/txeventbuffer.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/fiberdebug/txeventbuffer.vhd
 
-$(WORKDIR)/jtagesend/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd
-	$(VHDLC) -vital2000 ../../../jtag/vhdl/jtagesend.vhd
+work/decode8b10b/behavioral.dat: ../vhdl/decode8b10b.vhd
+	mkdir -p work
+	$(VHDLC) -work work  ../vhdl/decode8b10b.vhd
 
-$(WORKDIR)/jtagereceive/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd
-	$(VHDLC) -vital2000 ../../../jtag/vhdl/jtagereceive.vhd
+work/encode8b10b/behavioral.dat: ../vhdl/encode8b10b.vhd
+	mkdir -p work
+	$(VHDLC) -work work  ../vhdl/encode8b10b.vhd
 
-$(WORKDIR)/nicserialio/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/ether/nicserialio.vhd
+work/fiberdecode8b10b/behavioral.dat: ../vhdl/fiberdecode8b10b.vhd
+	mkdir -p work
+	$(VHDLC) -work work  ../vhdl/fiberdecode8b10b.vhd
 
-$(WORKDIR)/ethercontrol/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/ether/ethercontrol.vhd
+work/fiberencode8b10b/behavioral.dat: ../vhdl/fiberencode8b10b.vhd
+	mkdir -p work
+	$(VHDLC) -work work  ../vhdl/fiberencode8b10b.vhd
 
-$(WORKDIR)/ether/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/ether/ether.vhd
+work/backplane_mem/body.dat: ../vhdl/backplane_mem.vhd
+	mkdir -p work
+	$(VHDLC) -work work  ../vhdl/backplane_mem.vhd
 
-$(WORKDIR)/timer/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/timer.vhd
+work/fakedata/behavioral.dat: ../vhdl/fakedata.vhd
+	mkdir -p work
+	$(VHDLC) -work work  ../vhdl/fakedata.vhd
 
-$(WORKDIR)/syscontrol/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/syscontrol.vhd
+work/backplane/behavioral.dat: ../vhdl/backplane.vhd
+	mkdir -p work
+	$(VHDLC) -work work  ../vhdl/backplane.vhd
 
-$(WORKDIR)/crc16_combinational/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd
-	$(VHDLC) -vital2000 ../../../network/crc/vhdl/crc16_combinational.vhd
+hw: soma/somabackplane/body.dat network/networkstack/body.dat network/netports/body.dat soma/rxeventfifo/behavioral.dat soma/bootdeser/behavioral.dat soma/eventrouter/behavioral.dat soma/timer/behavioral.dat soma/nicserialio/behavioral.dat soma/ethercontrol/behavioral.dat soma/ether/behavioral.dat soma/txcounter/behavioral.dat soma/netcontrol/behavioral.dat jtag/jtagesend/behavioral.dat jtag/jtagereceive/behavioral.dat eproc/alu/behavioral.dat eproc/ecore/behavioral.dat eproc/eventtx/behavioral.dat eproc/eproc/behavioral.dat eproc/evtdnd/behavioral.dat eproc/regfile/behavioral.dat eproc/txeventbuffer/behavioral.dat syscon/syscontrol/behavioral.dat syscon/bootserialize/behavioral.dat syscon/bootserperipheral/behavioral.dat soma/bootspiio/behavioral.dat soma/bootstore/behavioral.dat soma/singleeventdesttx/behavioral.dat network/ipchecksum/behavioral.dat network/udpheaderwriter/behavioral.dat network/crc_combinational/behavioral.dat network/crc16_combinational/behavioral.dat network/crcverify/behavioral.dat network/crcappend/behavioral.dat network/arpresponse/behavioral.dat network/dataacquire/behavioral.dat network/datafifo/behavioral.dat network/datapacketgen/behavioral.dat network/dataretxresponse/behavioral.dat network/dataretxbuf/behavioral.dat network/data/behavioral.dat network/bigmem/behavioral.dat network/retxbuffer/behavioral.dat network/eventbodywriter/behavioral.dat network/eventrxbusoutput/behavioral.dat network/eventrxresponsewr/behavioral.dat network/eventtxpkfifo/behavioral.dat network/eventretxresponse/behavioral.dat network/eventrx/behavioral.dat network/eventtx/behavioral.dat network/bitcnt/behavioral.dat network/pingicmpwriter/behavioral.dat network/pingipwriter/behavioral.dat network/pingresponse/behavioral.dat network/txmux/behavioral.dat network/inputcontrol/behavioral.dat network/network/behavioral.dat memory/dqalign/behavioral.dat memory/bootddr2/behavioral.dat memory/readddr2/behavioral.dat memory/memcontmux/behavioral.dat memory/refreshddr2/behavioral.dat memory/writeddr2/behavioral.dat memory/memddr2/behavioral.dat soma/decoder/behavioral.dat soma/fiberdebugrx/behavioral.dat soma/fiberdebugtx/behavioral.dat soma/fiberdebug/behavioral.dat soma/fibertx/behavioral.dat soma/framedis/behavioral.dat soma/txeventbuffer/behavioral.dat work/decode8b10b/behavioral.dat work/encode8b10b/behavioral.dat work/fiberdecode8b10b/behavioral.dat work/fiberencode8b10b/behavioral.dat work/backplane_mem/body.dat work/fakedata/behavioral.dat work/backplane/behavioral.dat 
 
-$(WORKDIR)/crcappend/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd
-	$(VHDLC) -vital2000 ../../../network/crc/vhdl/crcappend.vhd
+$(WORKDIR)/bootdeserialize/behavioral.dat: ../../../sim/components/bootdeser/bootdeserialize.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../../sim/components/bootdeser/bootdeserialize.vhd
 
-$(WORKDIR)/crc_combinational/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd
-	$(VHDLC) -vital2000 ../../../network/crc/vhdl/crc_combinational.vhd
+$(WORKDIR)/mmc/behavioral.dat: ../../../sim/components/bootdeser/bootdeserialize.vhd ../../../boot/sim/components/mmc/mmc.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../../boot/sim/components/mmc/mmc.vhd
 
-$(WORKDIR)/crcverify/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd
-	$(VHDLC) -vital2000 ../../../network/crc/vhdl/crcverify.vhd
+comp: $(WORKDIR)/bootdeserialize/behavioral.dat $(WORKDIR)/mmc/behavioral.dat 
 
-$(WORKDIR)/arpresponse/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/arpresponse.vhd
+$(WORKDIR)/backplanetest/behavioral.dat: ../../../sim/components/bootdeser/bootdeserialize.vhd ../../../boot/sim/components/mmc/mmc.vhd backplanetest.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) backplanetest.vhd
 
-$(WORKDIR)/bigmem/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/bigmem.vhd
-
-$(WORKDIR)/bitcnt/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/bitcnt.vhd
-
-$(WORKDIR)/dataacquire/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/dataacquire.vhd
-
-$(WORKDIR)/datafifo/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/datafifo.vhd
-
-$(WORKDIR)/datamemarbit/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/datamemarbit.vhd
-
-$(WORKDIR)/datamempktinput/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/datamempktinput.vhd
-
-$(WORKDIR)/datamempktretx/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/datamempktretx.vhd
-
-$(WORKDIR)/datamempkttx/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/datamempkttx.vhd
-
-$(WORKDIR)/datapacketgen/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/datapacketgen.vhd
-
-$(WORKDIR)/dataretxbuf/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/dataretxbuf.vhd
-
-$(WORKDIR)/dataretxresponse/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/dataretxresponse.vhd
-
-$(WORKDIR)/data/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/data.vhd
-
-$(WORKDIR)/eventbodywriter/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/eventbodywriter.vhd
-
-$(WORKDIR)/eventretxresponse/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/eventretxresponse.vhd
-
-$(WORKDIR)/eventrxbusoutput/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/eventrxbusoutput.vhd
-
-$(WORKDIR)/eventrxresponsewr/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/eventrxresponsewr.vhd
-
-$(WORKDIR)/eventrx/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/eventrx.vhd
-
-$(WORKDIR)/eventtxpkfifo/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/eventtxpkfifo.vhd
-
-$(WORKDIR)/eventtx/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/eventtx.vhd
-
-$(WORKDIR)/inputcontrol/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/inputcontrol.vhd
-
-$(WORKDIR)/ipchecksum/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/ipchecksum.vhd
-
-$(WORKDIR)/networkstack/prim.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/networkstack.vhd
-
-$(WORKDIR)/network/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/network.vhd
-
-$(WORKDIR)/pingicmpwriter/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/pingicmpwriter.vhd
-
-$(WORKDIR)/pingipwriter/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd ../../../network/vhdl/pingipwriter.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/pingipwriter.vhd
-
-$(WORKDIR)/pingresponse/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd ../../../network/vhdl/pingipwriter.vhd ../../../network/vhdl/pingresponse.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/pingresponse.vhd
-
-$(WORKDIR)/retxbuffer/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd ../../../network/vhdl/pingipwriter.vhd ../../../network/vhdl/pingresponse.vhd ../../../network/vhdl/retxbuffer.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/retxbuffer.vhd
-
-$(WORKDIR)/txmux/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd ../../../network/vhdl/pingipwriter.vhd ../../../network/vhdl/pingresponse.vhd ../../../network/vhdl/retxbuffer.vhd ../../../network/vhdl/txmux.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/txmux.vhd
-
-$(WORKDIR)/udpheaderwriter/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd ../../../network/vhdl/pingipwriter.vhd ../../../network/vhdl/pingresponse.vhd ../../../network/vhdl/retxbuffer.vhd ../../../network/vhdl/txmux.vhd ../../../network/vhdl/udpheaderwriter.vhd
-	$(VHDLC) -vital2000 ../../../network/vhdl/udpheaderwriter.vhd
-
-$(WORKDIR)/netcontrol/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd ../../../network/vhdl/pingipwriter.vhd ../../../network/vhdl/pingresponse.vhd ../../../network/vhdl/retxbuffer.vhd ../../../network/vhdl/txmux.vhd ../../../network/vhdl/udpheaderwriter.vhd ../../../vhdl/netcontrol/netcontrol.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/netcontrol/netcontrol.vhd
-
-$(WORKDIR)/txcounter/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd ../../../network/vhdl/pingipwriter.vhd ../../../network/vhdl/pingresponse.vhd ../../../network/vhdl/retxbuffer.vhd ../../../network/vhdl/txmux.vhd ../../../network/vhdl/udpheaderwriter.vhd ../../../vhdl/netcontrol/netcontrol.vhd ../../../vhdl/netcontrol/txcounter.vhd
-	$(VHDLC) -vital2000 ../../../vhdl/netcontrol/txcounter.vhd
-
-$(WORKDIR)/nettest/_behavioral.var: ../../../memory/vhdl/bootddr2.vhd ../../../memory/vhdl/dqalign.vhd ../../../memory/vhdl/memcontmux.vhd ../../../memory/vhdl/readddr2.vhd ../../../memory/vhdl/refreshddr2.vhd ../../../memory/vhdl/writeddr2.vhd ../../../memory/vhdl/memddr2.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/rxeventfifo.vhd ../../../boot/vhdl/byteio.vhd ../../../boot/vhdl/mmcio.vhd ../../../deviceio/vhdl/bootdeser.vhd ../../../vhdl/bootserialize.vhd ../../../vhdl/mmcfpgaboot.vhd ../../../vhdl/bootcontrol.vhd ../../../vhdl/core/eventrouter.vhd ../../../vhdl/timer.vhd ../../../vhdl/boot.vhd ../../../jtag/vhdl/jtagesend.vhd ../../../jtag/vhdl/jtagereceive.vhd ../../../vhdl/ether/nicserialio.vhd ../../../vhdl/ether/ethercontrol.vhd ../../../vhdl/ether/ether.vhd ../../../vhdl/timer.vhd ../../../vhdl/syscontrol.vhd ../../../network/crc/vhdl/crc16_combinational.vhd ../../../network/crc/vhdl/crcappend.vhd ../../../network/crc/vhdl/crc_combinational.vhd ../../../network/crc/vhdl/crcverify.vhd ../../../network/vhdl/arpresponse.vhd ../../../network/vhdl/bigmem.vhd ../../../network/vhdl/bitcnt.vhd ../../../network/vhdl/dataacquire.vhd ../../../network/vhdl/datafifo.vhd ../../../network/vhdl/datamemarbit.vhd ../../../network/vhdl/datamempktinput.vhd ../../../network/vhdl/datamempktretx.vhd ../../../network/vhdl/datamempkttx.vhd ../../../network/vhdl/datapacketgen.vhd ../../../network/vhdl/dataretxbuf.vhd ../../../network/vhdl/dataretxresponse.vhd ../../../network/vhdl/data.vhd ../../../network/vhdl/eventbodywriter.vhd ../../../network/vhdl/eventretxresponse.vhd ../../../network/vhdl/eventrxbusoutput.vhd ../../../network/vhdl/eventrxresponsewr.vhd ../../../network/vhdl/eventrx.vhd ../../../network/vhdl/eventtxpkfifo.vhd ../../../network/vhdl/eventtx.vhd ../../../network/vhdl/inputcontrol.vhd ../../../network/vhdl/ipchecksum.vhd ../../../network/vhdl/networkstack.vhd ../../../network/vhdl/network.vhd ../../../network/vhdl/pingicmpwriter.vhd ../../../network/vhdl/pingipwriter.vhd ../../../network/vhdl/pingresponse.vhd ../../../network/vhdl/retxbuffer.vhd ../../../network/vhdl/txmux.vhd ../../../network/vhdl/udpheaderwriter.vhd ../../../vhdl/netcontrol/netcontrol.vhd ../../../vhdl/netcontrol/txcounter.vhd ../vhdl/nettest.vhd
-	$(VHDLC) -vital2000 ../vhdl/nettest.vhd
-
-hw: $(WORKDIR)/bootddr2/_behavioral.var $(WORKDIR)/dqalign/_behavioral.var $(WORKDIR)/memcontmux/_behavioral.var $(WORKDIR)/readddr2/_behavioral.var $(WORKDIR)/refreshddr2/_behavioral.var $(WORKDIR)/writeddr2/_behavioral.var $(WORKDIR)/memddr2/_behavioral.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/rxeventfifo/_behavioral.var $(WORKDIR)/byteio/_behavioral.var $(WORKDIR)/mmcio/_behavioral.var $(WORKDIR)/bootdeser/_behavioral.var $(WORKDIR)/bootserialize/_behavioral.var $(WORKDIR)/mmcfpgaboot/_behavioral.var $(WORKDIR)/bootcontrol/_behavioral.var $(WORKDIR)/eventrouter/_behavioral.var $(WORKDIR)/timer/_behavioral.var $(WORKDIR)/boot/_behavioral.var $(WORKDIR)/jtagesend/_behavioral.var $(WORKDIR)/jtagereceive/_behavioral.var $(WORKDIR)/nicserialio/_behavioral.var $(WORKDIR)/ethercontrol/_behavioral.var $(WORKDIR)/ether/_behavioral.var $(WORKDIR)/timer/_behavioral.var $(WORKDIR)/syscontrol/_behavioral.var $(WORKDIR)/crc16_combinational/_behavioral.var $(WORKDIR)/crcappend/_behavioral.var $(WORKDIR)/crc_combinational/_behavioral.var $(WORKDIR)/crcverify/_behavioral.var $(WORKDIR)/arpresponse/_behavioral.var $(WORKDIR)/bigmem/_behavioral.var $(WORKDIR)/bitcnt/_behavioral.var $(WORKDIR)/dataacquire/_behavioral.var $(WORKDIR)/datafifo/_behavioral.var $(WORKDIR)/datamemarbit/_behavioral.var $(WORKDIR)/datamempktinput/_behavioral.var $(WORKDIR)/datamempktretx/_behavioral.var $(WORKDIR)/datamempkttx/_behavioral.var $(WORKDIR)/datapacketgen/_behavioral.var $(WORKDIR)/dataretxbuf/_behavioral.var $(WORKDIR)/dataretxresponse/_behavioral.var $(WORKDIR)/data/_behavioral.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/eventretxresponse/_behavioral.var $(WORKDIR)/eventrxbusoutput/_behavioral.var $(WORKDIR)/eventrxresponsewr/_behavioral.var $(WORKDIR)/eventrx/_behavioral.var $(WORKDIR)/eventtxpkfifo/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/networkstack/prim.var $(WORKDIR)/network/_behavioral.var $(WORKDIR)/pingicmpwriter/_behavioral.var $(WORKDIR)/pingipwriter/_behavioral.var $(WORKDIR)/pingresponse/_behavioral.var $(WORKDIR)/retxbuffer/_behavioral.var $(WORKDIR)/txmux/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/netcontrol/_behavioral.var $(WORKDIR)/txcounter/_behavioral.var $(WORKDIR)/nettest/_behavioral.var 
-
-$(WORKDIR)/bootdeserialize/_behavioral.var: ../../../sim/components/bootdeser/bootdeserialize.vhd
-	$(VHDLC) -vital2000 ../../../sim/components/bootdeser/bootdeserialize.vhd
-
-$(WORKDIR)/mmc/_behavioral.var: ../../../sim/components/bootdeser/bootdeserialize.vhd ../../../boot/sim/components/mmc/mmc.vhd
-	$(VHDLC) -vital2000 ../../../boot/sim/components/mmc/mmc.vhd
-
-$(WORKDIR)/simplefpga/_behavioral.var: ../../../sim/components/bootdeser/bootdeserialize.vhd ../../../boot/sim/components/mmc/mmc.vhd ../../../sim/mmcfpgaboot/simplefpga.vhd
-	$(VHDLC) -vital2000 ../../../sim/mmcfpgaboot/simplefpga.vhd
-
-comp: $(WORKDIR)/bootdeserialize/_behavioral.var $(WORKDIR)/mmc/_behavioral.var $(WORKDIR)/simplefpga/_behavioral.var 
-
-$(WORKDIR)/nettesttest/_behavioral.var: ../../../sim/components/bootdeser/bootdeserialize.vhd ../../../boot/sim/components/mmc/mmc.vhd ../../../sim/mmcfpgaboot/simplefpga.vhd nettesttest.vhd
-	$(VHDLC) -vital2000 nettesttest.vhd
-
-sim: $(WORKDIR)/nettesttest/_behavioral.var 
+sim: $(WORKDIR)/backplanetest/behavioral.dat 
 runsim: all
-	$(VHDLS) nettesttest
+	$(VHDLS) backplanetest
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf eproc work network soma syscon memory jtag 
 
+eproc/:
+	mkdir -p eproc
+	touch  eproc/_info
+work/:
+	mkdir -p work
+	touch  work/_info
+network/:
+	mkdir -p network
+	touch  network/_info
+soma/:
+	mkdir -p soma
+	touch  soma/_info
+syscon/:
+	mkdir -p syscon
+	touch  syscon/_info
+memory/:
+	mkdir -p memory
+	touch  memory/_info
+jtag/:
+	mkdir -p jtag
+	touch  jtag/_info

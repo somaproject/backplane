@@ -69,10 +69,14 @@ begin
 
         if (kin = '1' and DIN = X"BC") or
           errin = '1' then
-          incnt   <= 0;
+          incnt     <= 0;
         else
           if inwe = '1' then
-            incnt <= incnt + 1;
+            if incnt = 25 then
+              incnt <= 0;
+            else
+              incnt <= incnt + 1;
+            end if;
           end if;
         end if;
 
@@ -173,7 +177,7 @@ begin
         if incnt = 21 and inwe = '1' then
           lcmdid <= DIN(4 downto 1);
         end if;
-        
+
         if incnt = 0 and inwe = '1' then
           lcmdst <= DIN(3 downto 0);
         end if;

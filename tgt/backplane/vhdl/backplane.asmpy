@@ -25,10 +25,10 @@ to the serial peripheral.
 """
 
 env = createEnvironment()
-currentFileHandle = env.CreateVariable("currentFileHandle")
-currentFileSize = env.CreateVariable("currentFileSize")
-currentState = env.CreateVariable("currentState")
-nextState = env.CreateVariable("nextState")
+currentFileHandle = env.createVariable("currentFileHandle")
+currentFileSize = env.createVariable("currentFileSize")
+currentState = env.createVariable("currentState")
+nextState = env.createVariable("nextState")
 
 
 ### CONSTANTS
@@ -44,6 +44,12 @@ EVENTOUT_DATA3 = 0x84
 EVENTOUT_DATA4 = 0x85
 EVENTPROC_ENABLE = 0x89
 
+FPROGOUT_MASKL = 0x08
+FPROGOUT_MASKH = 0x09
+FPROGOUT_DATA = 0x0A
+FPROGOUT_FPROG = 0x0B
+FPROGOUT_SEND = 0x0C
+
 
 ### STATES
 STATE_GETHANDLE = 0
@@ -53,6 +59,14 @@ STATE_GETFILESIZE = 3
 STATE_FILE_SENDDATA = 4
 
 
+def testProc():
+  proc = env.createProc("testProc")
+  proc.load(0, 0)
+  proc.load(0, 0xFFFF)
+  proc.output(FPROGOUT_MASKL, 0)
+  proc.output(FPROGOUT_FPROG, 0)
+  proc.foreverLoop()
+  
 def jumpIfEqual(self, reg, const, addr):
   """
   if reg == const, jump to addr
@@ -138,7 +152,6 @@ def createDataToBootSerProc():
   # then commit
   datap.output(0x08 + 4, 0x00)
 
-createDataToBootSerProc()
 
 def createEnableEventCycleProc():
   newproc = env.createProc("newproc")
@@ -146,3 +159,5 @@ def createEnableEventCycleProc():
   newproc.load(y, 1)
   newproc.output(EVENTPROC_ENABLE, y)
   newproc.foreverLoop()
+
+testProc()

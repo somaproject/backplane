@@ -17,10 +17,12 @@ use network.all;
 library syscon;
 use syscon.all;
 
-
 library UNISIM;
 use UNISIM.VComponents.all;
 
+-- for instruction ram for syscontrol
+
+--
 entity backplane is
   port (
     CLKIN         : in    std_logic;
@@ -276,19 +278,96 @@ begin  -- Behavioral
       EDSELRX => EDSELRX,
       EATX    => EATX(0),
       EDTX    => EDTX);
-
+  -- init syscontrol with the ram values so that we can properly sim
   syscontrol_inst : entity syscon.syscontrol
+    generic map (
+      RAM_INIT_00 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_00, 
+      RAM_INIT_01 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_01, 
+      RAM_INIT_02 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_02, 
+      RAM_INIT_03 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_03, 
+      RAM_INIT_04 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_04, 
+      RAM_INIT_05 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_05, 
+      RAM_INIT_06 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_06, 
+      RAM_INIT_07 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_07, 
+      RAM_INIT_08 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_08, 
+      RAM_INIT_09 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_09,
+      RAM_INIT_0A => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_0A,
+      RAM_INIT_0B => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_0B, 
+      RAM_INIT_0C => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_0C, 
+      RAM_INIT_0D => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_0D, 
+      RAM_INIT_0E => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_0E,
+      RAM_INIT_0F => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_0F,
+
+      RAM_INIT_10 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_10, 
+      RAM_INIT_11 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_11, 
+      RAM_INIT_12 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_12, 
+      RAM_INIT_13 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_13, 
+      RAM_INIT_14 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_14, 
+      RAM_INIT_15 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_15, 
+      RAM_INIT_16 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_16, 
+      RAM_INIT_17 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_17, 
+      RAM_INIT_18 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_18, 
+      RAM_INIT_19 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_19,
+      RAM_INIT_1A => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_1A,
+      RAM_INIT_1B => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_1B, 
+      RAM_INIT_1C => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_1C, 
+      RAM_INIT_1D => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_1D, 
+      RAM_INIT_1E => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_1E,
+      RAM_INIT_1F => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_1F,
+
+      RAM_INIT_20 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_20, 
+      RAM_INIT_21 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_21, 
+      RAM_INIT_22 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_22, 
+      RAM_INIT_23 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_23, 
+      RAM_INIT_24 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_24, 
+      RAM_INIT_25 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_25, 
+      RAM_INIT_26 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_26, 
+      RAM_INIT_27 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_27, 
+      RAM_INIT_28 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_28, 
+      RAM_INIT_29 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_29,
+      RAM_INIT_2A => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_2A,
+      RAM_INIT_2B => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_2B, 
+      RAM_INIT_2C => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_2C, 
+      RAM_INIT_2D => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_2D, 
+      RAM_INIT_2E => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_2E,
+      RAM_INIT_2F => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_2F,
+
+      RAM_INIT_30 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_30, 
+      RAM_INIT_31 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_31, 
+      RAM_INIT_32 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_32, 
+      RAM_INIT_33 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_33, 
+      RAM_INIT_34 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_34, 
+      RAM_INIT_35 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_35, 
+      RAM_INIT_36 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_36, 
+      RAM_INIT_37 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_37, 
+      RAM_INIT_38 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_38, 
+      RAM_INIT_39 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_39,
+      RAM_INIT_3A => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_3A,
+      RAM_INIT_3B => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_3B, 
+      RAM_INIT_3C => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_3C, 
+      RAM_INIT_3D => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_3D, 
+      RAM_INIT_3E => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_3E,
+      RAM_INIT_3F => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INIT_3F, 
+
+      RAM_INITP_00 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_00,
+      RAM_INITP_01 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_01,
+      RAM_INITP_02 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_02,
+      RAM_INITP_03 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_03,
+      RAM_INITP_04 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_04,
+      RAM_INITP_05 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_05,
+      RAM_INITP_06 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_06,
+      RAM_INITP_07 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_07)
     port map (
-      CLK     => clk,
-      CLK2X   => clk2x,
-      RESET   => RESET,
-      ECYCLe  => ECYCLE,
-      EARX    => EARX(1),
-      EDRX    => EDRX(1),
-      EDSELRX => EDSELRX,
-      EATX    => EATX(1),
-      EDTX    => EDTX,
-      SEROUT  => lserialboot);
+      CLK         => clk,
+      CLK2X       => clk2x,
+      RESET       => RESET,
+      ECYCLe      => ECYCLE,
+      EARX        => EARX(1),
+      EDRX        => EDRX(1),
+      EDSELRX     => EDSELRX,
+      EATX        => EATX(1),
+      EDTX        => EDTX,
+      SEROUT      => lserialboot);
 
   bootstore_inst : entity soma.bootstore
     generic map (
@@ -319,7 +398,7 @@ begin  -- Behavioral
   SERIALBOOT <= lserialboot;
 
 
-  LEDPOWER <= lserialboot(0); 
+  LEDPOWER <= lserialboot(0);
   LEDEVENT <= jtagesenddebug(1);
 
   jtagsend_inst : entity jtag.jtagesend
@@ -408,7 +487,7 @@ begin  -- Behavioral
       DEBUG     => fiberdebugdebug);
 
 
-  fakedata1 : entity fakedata
+  fakedata1 : entity work.fakedata
     port map (
       clk    => clk,
       DOUT   => douta,

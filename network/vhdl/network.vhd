@@ -7,6 +7,10 @@ library SOMA;
 use SOMA.somabackplane.all;
 use soma.somabackplane;
 
+library memory;
+use memory.all;
+
+
 library UNISIM;
 use UNISIM.vcomponents.all;
 
@@ -299,40 +303,6 @@ architecture Behavioral of network is
       DOUT      : out std_logic_vector(15 downto 0);
       DOEN      : out std_logic);
   end component;
-
-  component memddr2
-    port (
-      CLK    : in    std_logic;
-      CLK90  : in    std_logic;
-      CLK180 : in    std_logic;
-      CLK270 : in    std_logic;
-      RESET  : in    std_logic;
-      -- RAM!
-      CKE    : out   std_logic := '0';
-      CAS    : out   std_logic;
-      RAS    : out   std_logic;
-      CS     : out   std_logic;
-      WE     : out   std_logic;
-      ADDR   : out   std_logic_vector(12 downto 0);
-      BA     : out   std_logic_vector(1 downto 0);
-      DQSH   : inout std_logic;
-      DQSL   : inout std_logic;
-      DQ     : inout std_logic_vector(15 downto 0);
-      -- interface
-      START  : in    std_logic;
-      RW     : in    std_logic;
-      DONE   : out   std_logic;
-      -- write interface
-      ROWTGT : in    std_logic_vector(14 downto 0);
-      WRADDR : out   std_logic_vector(7 downto 0);
-      WRDATA : in    std_logic_vector(31 downto 0);
-      -- read interface
-      RDADDR : out   std_logic_vector(7 downto 0);
-      RDDATA : out   std_logic_vector(31 downto 0);
-      RDWE   : out   std_logic
-      );
-  end component;
-
 
 
   component retxbuffer
@@ -748,7 +718,7 @@ begin  -- Behavioral
       MEMRDADDR => memrdaddr,
       MEMRDWE   => memrdwe);
 
-  memddr2_inst : memddr2
+  memddr2_inst : entity memory.memddr2
     port map (
       CLK    => MEMCLK,
       CLK90  => memclk90,

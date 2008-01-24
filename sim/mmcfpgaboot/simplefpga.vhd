@@ -4,11 +4,6 @@ use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
-
-
 entity simplefpga is
 
   port (

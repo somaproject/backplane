@@ -7,6 +7,8 @@ use IEEE.numeric_std.all;
 library UNISIM;
 use UNISIM.VComponents.all;
 
+library eproc;
+use eproc.all;
 
 entity bootserperipheral is
   port (
@@ -28,7 +30,8 @@ architecture Behavioral of bootserperipheral is
 
   signal fprog, fclk, fdin, fset, fdone : std_logic := '0';
 
-  signal asel : std_logic_vector(19 downto 0);
+  signal asel : std_logic_vector(19 downto 0) := (others => '0');
+  
 
 
   type states is (none, fprogst1, fprogw1, fprogst2, fprogw2,
@@ -48,21 +51,6 @@ architecture Behavioral of bootserperipheral is
       FDONE  : out std_logic;
       SEROUT : out std_logic_vector(M-1 downto 0);
       ASEL   : in  std_logic_vector(M-1 downto 0));
-  end component;
-
-
-  component regfile
-    generic (
-      BITS  :     integer := 16);
-    port (
-      CLK   : in  std_logic;
-      DIA   : in  std_logic_vector(BITS-1 downto 0);
-      DOA   : out std_logic_vector(BITS -1 downto 0);
-      ADDRA : in  std_logic_vector(3 downto 0);
-      WEA   : in  std_logic;
-      DOB   : out std_logic_vector(BITS -1 downto 0);
-      ADDRB : in  std_logic_vector(3 downto 0)
-      );
   end component;
 
 
@@ -101,7 +89,7 @@ begin  -- Behavioral
       SEROUT => serout,
       ASEL   => asel);
 
-  regfile_inst : regfile
+  regfile_inst : entity eproc.regfile
     generic map (
       bits  => 16)
     port map (

@@ -26,3 +26,6 @@ package netports is
 
 end package;
 
+package body netports is
+
+end netports;
