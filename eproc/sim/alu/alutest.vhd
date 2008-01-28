@@ -136,7 +136,7 @@ begin  -- Behavioral
 
   -- how to handle the events
   EDATA <= X"EC0" & '0' & eaddr;
-  
+  -- debugging
   process
     begin
       wait until rising_edge(outverifydone);

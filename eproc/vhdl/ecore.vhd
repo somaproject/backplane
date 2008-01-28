@@ -56,7 +56,7 @@ architecture Behavioral of ecore is
   signal alua, alub, aluy : std_logic_vector(15 downto 0) := (others => '0');
 
   signal aluzero, alugtz, alultz : std_logic := '0';
-  signal alucin, alucout         : std_logic := '0';
+  signal alucout         : std_logic := '0';
   signal laluzero, lalugtz, lalultz, lalucout : std_logic := '0';
   
 
@@ -178,7 +178,7 @@ begin  -- Behavioral
   begin
     if RESET = '1' then
       cphase <= '0';
-      pc     <= (others => '0');
+      pc     <= (others => '1');
     else
       if rising_edge(CLK) then
 

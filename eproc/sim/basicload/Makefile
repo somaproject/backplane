@@ -1,35 +1,44 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/alu/_behavioral.var: ../../vhdl/alu.vhd
-	$(VHDLC) -vital2000 ../../vhdl/alu.vhd
+$(WORKDIR)/alu/behavioral.dat: $(WORKDIR)/touched ../../vhdl/alu.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/alu.vhd
 
-$(WORKDIR)/regfile/_behavioral.var: ../../vhdl/alu.vhd ../../vhdl/regfile.vhd
-	$(VHDLC) -vital2000 ../../vhdl/regfile.vhd
+$(WORKDIR)/regfile/behavioral.dat: $(WORKDIR)/touched ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/regfile.vhd
 
-$(WORKDIR)/ecore/_behavioral.var: ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd
-	$(VHDLC) -vital2000 ../../vhdl/ecore.vhd
+$(WORKDIR)/ecore/behavioral.dat: $(WORKDIR)/touched ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/ecore.vhd
 
-hw: $(WORKDIR)/alu/_behavioral.var $(WORKDIR)/regfile/_behavioral.var $(WORKDIR)/ecore/_behavioral.var 
+hw: $(WORKDIR)/alu/behavioral.dat $(WORKDIR)/regfile/behavioral.dat $(WORKDIR)/ecore/behavioral.dat 
 
-$(WORKDIR)/iram/_behavioral.var: ../components/iram/iram.vhd
-	$(VHDLC) -vital2000 ../components/iram/iram.vhd
+$(WORKDIR)/IRAM/behavioral.dat: $(WORKDIR)/touched ../components/iram/iram.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../components/iram/iram.vhd
 
-$(WORKDIR)/outverify/_behavioral.var: ../components/iram/iram.vhd ../components/outverify/outverify.vhd
-	$(VHDLC) -vital2000 ../components/outverify/outverify.vhd
+$(WORKDIR)/outverify/behavioral.dat: $(WORKDIR)/touched ../components/iram/iram.vhd ../components/outverify/outverify.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../components/outverify/outverify.vhd
 
-comp: $(WORKDIR)/iram/_behavioral.var $(WORKDIR)/outverify/_behavioral.var 
+comp: $(WORKDIR)/IRAM/behavioral.dat $(WORKDIR)/outverify/behavioral.dat 
 
-$(WORKDIR)/basicloadtest/_behavioral.var: ../components/iram/iram.vhd ../components/outverify/outverify.vhd basicloadtest.vhd
-	$(VHDLC) -vital2000 basicloadtest.vhd
+$(WORKDIR)/basicloadtest/behavioral.dat: $(WORKDIR)/touched ../components/iram/iram.vhd ../components/outverify/outverify.vhd basicloadtest.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) basicloadtest.vhd
 
-sim: $(WORKDIR)/basicloadtest/_behavioral.var 
+sim: $(WORKDIR)/basicloadtest/behavioral.dat 
 runsim: all
 	$(VHDLS) basicloadtest
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf work 
 
+work/touched:
+	vlib  work
+	touch  work/touched

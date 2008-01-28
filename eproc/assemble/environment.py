@@ -16,6 +16,7 @@ class Environment(object):
         self.eprocs = {}
         self.ecycproc = None
         self.uniqueLabelPos = 0
+        self.procorderlist = []
 
     def generateUniqueLabel(self):
         self.uniqueLabelPos += 1
@@ -35,8 +36,11 @@ class Environment(object):
         return rpos
     
         
-    def createProc(self, name):
+    def createProc(self, name = None):
+        if name == None:
+            name = self.generateUniqueLabel()
         p = Process(self, name)
+        self.procorderlist.append(name)
         self.procs[name] = p
         return p
 
@@ -80,8 +84,8 @@ class Environment(object):
             proclist.append(self.createECycleProcLoadProc())
             proclist.append(self.createEProcLoadProc())
             
-        for k, v in self.procs.iteritems():
-            proclist.append( v)
+        for name in self.procorderlist:
+            proclist.append( self.procs[name])
         # then the ecycle proc:
         if self.ecycproc != None:
             

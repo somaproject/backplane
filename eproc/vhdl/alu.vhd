@@ -47,7 +47,7 @@ begin  -- Behavioral
           "0" & (A and B)                       when AOP = "0110" else
           "0" & (A or B)                        when AOP = "0111" else
           Aext + Bext + (X"0000" & selCIN)     when AOP(3 downto 1) = "100" else
-          Aext - Bext + (X"0000" & selCIN)     when AOP(3 downto 1) = "101"; 
+          Aext - (Bext + (X"0000" & selCIN))     when AOP(3 downto 1) = "101"; 
 
   -- status signals
 

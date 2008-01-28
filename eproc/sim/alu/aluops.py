@@ -34,7 +34,7 @@ oplist.append( opcodes.aluop("PASSA", 8, 0, True, 7))
 for i in range(16):
     oplist.append( opcodes.portop(1, 0x80 + i, i))
 
-
+### ADDITION AND ADDITION WITH CARRY
 # load register 0 with 0x1234
 oplist.append(opcodes.immop("PASSB", 0x34, 0))
 oplist.append(opcodes.immop("MOVBTOHLOW", 0x12, 0))
@@ -54,6 +54,38 @@ oplist.append(opcodes.immop("MOVBTOHLOW", 0, 5))
 oplist.append(opcodes.aluop("PASSB", 6, 4))
 oplist.append(opcodes.aluop("ADD", 6, 3))
 oplist.append(opcodes.aluop("ADDC", 5, 5))
+
+
+### SUBTRACTION AND SUBTRACTION WITH CARRY
+# load register 0 with 0x1234
+oplist.append(opcodes.immop("PASSB", 0x34, 7))
+oplist.append(opcodes.immop("MOVBTOHLOW", 0x12, 7))
+# load register 1 with 0x5678
+oplist.append(opcodes.immop("PASSB", 0x78, 8))
+oplist.append(opcodes.immop("MOVBTOHLOW", 0x56, 8))
+# the actual subtraction
+oplist.append(opcodes.aluop("SUB", 8, 7))
+
+## 32-bit-wide subtraction-with-carry?
+# load register 9 with 0x0003
+oplist.append(opcodes.immop("PASSB", 0x03, 9))
+oplist.append(opcodes.immop("MOVBTOHLOW", 0x00, 9))
+# load register 10 with 0x0000
+oplist.append(opcodes.immop("PASSB", 0x0, 10))
+oplist.append(opcodes.immop("MOVBTOHLOW", 0x0, 10))
+
+# load register 11 with 0x0000
+oplist.append(opcodes.immop("PASSB", 0x00, 11))
+oplist.append(opcodes.immop("MOVBTOHLOW", 0x00, 11))
+# load register 12 with 0x0001
+oplist.append(opcodes.immop("PASSB", 0x01, 12))
+oplist.append(opcodes.immop("MOVBTOHLOW", 0x00, 12))
+
+# so the goal is to compute 0x00030000 - 0x000000001
+# First the low word
+oplist.append(opcodes.aluop("SUB", 10, 12))
+# then the high word
+oplist.append(opcodes.aluop("SUBC", 9, 11))
 
 
 # dump registers

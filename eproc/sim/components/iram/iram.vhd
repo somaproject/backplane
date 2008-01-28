@@ -1,7 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 use std.TextIO.all;
 
@@ -42,7 +40,7 @@ begin  -- Behavioral
     -- now the main loop
     while true loop
       wait until rising_edge(CLK);
-      addrnum := TO_INTEGER(unsigned(ADDR));
+      addrnum := TO_INTEGER(UNSIGNED(ADDR));
       DATA <= ram(addrnum);
     end loop;
   end process main;

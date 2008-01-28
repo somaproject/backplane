@@ -1,47 +1,63 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-soma.sym/somabackplane/prim.var: ../../../vhdl/somabackplane.vhd
-	$(VHDLC) -vital2000 -work soma  ../../../vhdl/somabackplane.vhd
+soma/somabackplane/body.dat: soma/touched ../../../vhdl/somabackplane.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/alu/_behavioral.var: ../../vhdl/alu.vhd
-	$(VHDLC) -vital2000 ../../vhdl/alu.vhd
+$(WORKDIR)/alu/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/alu.vhd
 
-$(WORKDIR)/regfile/_behavioral.var: ../../vhdl/alu.vhd ../../vhdl/regfile.vhd
-	$(VHDLC) -vital2000 ../../vhdl/regfile.vhd
+$(WORKDIR)/regfile/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/regfile.vhd
 
-$(WORKDIR)/ecore/_behavioral.var: ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd
-	$(VHDLC) -vital2000 ../../vhdl/ecore.vhd
+$(WORKDIR)/ecore/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/ecore.vhd
 
-$(WORKDIR)/eventtx/_behavioral.var: ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd
-	$(VHDLC) -vital2000 ../../vhdl/eventtx.vhd
+$(WORKDIR)/eventtx/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/eventtx.vhd
 
-$(WORKDIR)/evtdnd/_behavioral.var: ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd
-	$(VHDLC) -vital2000 ../../vhdl/evtdnd.vhd
+$(WORKDIR)/evtdnd/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/evtdnd.vhd
 
-$(WORKDIR)/txeventbuffer/_behavioral.var: ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd
-	$(VHDLC) -vital2000 ../../vhdl/txeventbuffer.vhd
+$(WORKDIR)/txeventbuffer/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/txeventbuffer.vhd
 
-$(WORKDIR)/eproc/_behavioral.var: ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/eproc.vhd
-	$(VHDLC) -vital2000 ../../vhdl/eproc.vhd
+$(WORKDIR)/eproc/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/eproc.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/eproc.vhd
 
-hw: soma.sym/somabackplane/prim.var $(WORKDIR)/alu/_behavioral.var $(WORKDIR)/regfile/_behavioral.var $(WORKDIR)/ecore/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var $(WORKDIR)/evtdnd/_behavioral.var $(WORKDIR)/txeventbuffer/_behavioral.var $(WORKDIR)/eproc/_behavioral.var 
+hw: soma/somabackplane/body.dat $(WORKDIR)/alu/behavioral.dat $(WORKDIR)/regfile/behavioral.dat $(WORKDIR)/ecore/behavioral.dat $(WORKDIR)/eventtx/behavioral.dat $(WORKDIR)/evtdnd/behavioral.dat $(WORKDIR)/txeventbuffer/behavioral.dat $(WORKDIR)/eproc/behavioral.dat 
 
-$(WORKDIR)/iram/_behavioral.var: ../components/iram/iram.vhd
-	$(VHDLC) -vital2000 ../components/iram/iram.vhd
+$(WORKDIR)/IRAM/behavioral.dat: $(WORKDIR)/touched ../components/iram/iram.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../components/iram/iram.vhd
 
-comp: $(WORKDIR)/iram/_behavioral.var 
+comp: $(WORKDIR)/IRAM/behavioral.dat 
 
-$(WORKDIR)/eproctest/_behavioral.var: ../components/iram/iram.vhd eproctest.vhd
-	$(VHDLC) -vital2000 eproctest.vhd
+$(WORKDIR)/eproctest/behavioral.dat: $(WORKDIR)/touched ../components/iram/iram.vhd eproctest.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) eproctest.vhd
 
-sim: $(WORKDIR)/eproctest/_behavioral.var 
+sim: $(WORKDIR)/eproctest/behavioral.dat 
 runsim: all
 	$(VHDLS) eproctest
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf soma work 
 
+soma/touched:
+	vlib  soma
+	touch  soma/touched
+work/touched:
+	vlib  work
+	touch  work/touched

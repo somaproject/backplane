@@ -102,10 +102,43 @@ class MnemonicConvert(object):
         destaddr = self.locmap[destname]
         return opcodes.jumpop("ALWAYS", destaddr)
     
+    def jz(self, args):
+        destname = args[0]
+        destaddr = self.locmap[destname]
+        return opcodes.jumpop("ZERO", destaddr)
+    
     def add(self, args):
 
         destreg = args[0]
         srcreg = args[1]
 
         return opcodes.aluop("ADD", destreg, srcreg)
+
+    def addc(self, args):
+
+        destreg = args[0]
+        srcreg = args[1]
+
+        return opcodes.aluop("ADDC", destreg, srcreg)
+
+    def sub(self, args):
+
+        destreg = args[0]
+        srcreg = args[1]
+
+        return opcodes.aluop("SUB", destreg, srcreg)
+
+    def subc(self, args):
+
+        destreg = args[0]
+        srcreg = args[1]
+
+        return opcodes.aluop("SUBC", destreg, srcreg)
+
+    def swapbytes(self, args):
+
+        destreg = args[0]
+        srcreg = args[1]
+
+        return opcodes.aluop("SWAPB", destreg, srcreg)
 
