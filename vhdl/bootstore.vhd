@@ -581,6 +581,27 @@ begin  -- Behavioral
      -------------------------------------------------------------------------
      -- Handle Error                    -- invalid handle
      -------------------------------------------------------------------------
+      when handerr =>
+        enext     <= '1';
+        eouta     <= "001";
+        ssel      <= 0;
+        pendsrcen <= '0';
+        penden    <= '0';
+        spidsel   <= 0;
+        spiasel   <= 0;
+        dconst    <= X"0000";
+        aconst    <= "0000000000";
+        setxsel   <= 0;
+        txcmd     <= GETHAND;
+        spiwe     <= '0';
+        cmdreq    <= '0';
+        incspicnt <= '0';
+        setxwe    <= '0';
+        setxain   <= "000";
+        setxsend  <= '0';
+        ns        <= none;
+
+
 
      -------------------------------------------------------------------------
      -- set filename

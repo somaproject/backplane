@@ -71,7 +71,7 @@ architecture Behavioral of jtagereceive is
   signal smtdi      : std_logic                     := '0';
   signal smaskreg   : std_logic_vector(79 downto 0) := (others => '0');
   signal smaskregl  : std_logic_vector(79 downto 0) := (others => '0');
-  signal smaskregll : std_logic_vector(79 downto 0) := (others => '0');
+  signal smaskregll : std_logic_vector(127 downto 0) := (others => '0');
   signal smask      : std_logic                     := '0';
 
 
@@ -282,7 +282,7 @@ begin  -- Behavioral
 
       smsell       <= smsel;
       if enext = '1' then
-        smaskregll <= smaskregl;
+        smaskregll(79 downto 0) <= smaskregl;
       end if;
 
       -- fifocounter
@@ -519,6 +519,6 @@ begin  -- Behavioral
   end process infsm;
 
 
-  smask <= smaskregll(conv_integer(eoutd(7 downto 0)));
+  smask <= smaskregll(conv_integer(eoutd(6 downto 0)));
 
 end Behavioral;

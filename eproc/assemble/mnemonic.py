@@ -107,6 +107,16 @@ class MnemonicConvert(object):
         destaddr = self.locmap[destname]
         return opcodes.jumpop("ZERO", destaddr)
     
+    def jltz(self, args):
+        destname = args[0]
+        destaddr = self.locmap[destname]
+        return opcodes.jumpop("LTZ", destaddr)
+    
+    def jgtz(self, args):
+        destname = args[0]
+        destaddr = self.locmap[destname]
+        return opcodes.jumpop("GTZ", destaddr)
+    
     def add(self, args):
 
         destreg = args[0]

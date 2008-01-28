@@ -19,7 +19,7 @@ entity ethercontrol is
     ECYCLE   : in  std_logic;
     EARX     : out std_logic_vector(somabackplane.N - 1 downto 0)
     := (others => '0');
-    EDRX     : out std_logic_vector(7 downto 0);
+    EDRX     : out std_logic_vector(7 downto 0) := (others => '0'); 
     EDSELRX  : in  std_logic_vector(3 downto 0);
     EOUTD    : in  std_logic_vector(15 downto 0);
     EOUTA    : out std_logic_vector(2 downto 0);
@@ -67,8 +67,8 @@ architecture Behavioral of ethercontrol is
 
   signal cs, ns : states := ecyclew;
 
-  signal edrxall : std_logic_vector(16*6 -1 downto 0);
-  signal edrxin : std_logic_vector(16*6 -1 downto 0);
+  signal edrxall : std_logic_vector(16*6 -1 downto 0) := (others => '0'); 
+  signal edrxin : std_logic_vector(16*6 -1 downto 0) := (others => '0'); 
 
   -- output commands
   signal errorpending : std_logic_vector(16*6 -1 downto 0) := (others => '0');

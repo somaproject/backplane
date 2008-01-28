@@ -1,8 +1,10 @@
 """
-How to boot off a file? At the moment we're going to use a fixed filename
-for the device, "network.bit"
+
+A boot set consists of a filename and serial device mask.
+
+Then for each boot set we: 
 0. get Handle
-1. send filename / open file events
+1. send open file event
 2. open file, save file length
 2. currentpos = 0
 3. while currentpos < filelength
@@ -23,12 +25,17 @@ to the serial peripheral.
 0x0C (100): send the current buffer
 
 """
+import math
 
 env = createEnvironment()
 currentFileHandle = env.createVariable("currentFileHandle")
-currentFileSize = env.createVariable("currentFileSize")
+currentFileSizeL = env.createVariable("currentFileSizeL")
+currentFileSizeH = env.createVariable("currentFileSizeH")
+currentFilePosL = env.createVariable("currentFilePosL")
+currentFilePosH = env.createVariable("currentFilePosH")
 currentState = env.createVariable("currentState")
 nextState = env.createVariable("nextState")
+serialSendTimer = env.createVariable("serialSendTimer")
 
 
 ### CONSTANTS
@@ -43,6 +50,7 @@ EVENTOUT_DATA2 = 0x83
 EVENTOUT_DATA3 = 0x84
 EVENTOUT_DATA4 = 0x85
 EVENTPROC_ENABLE = 0x89
+EVENTPROC_ADDR = 0x88
 
 FPROGOUT_MASKL = 0x08
 FPROGOUT_MASKH = 0x09
@@ -50,13 +58,22 @@ FPROGOUT_DATA = 0x0A
 FPROGOUT_FPROG = 0x0B
 FPROGOUT_SEND = 0x0C
 
+BS_GETHANDLE = 0x90
+BS_SETFILENAME = 0x91
+BS_OPENFILE = 0x92
+BS_READDATA = 0x93
 
 ### STATES
 STATE_GETHANDLE = 0
-STATE_SENDFILENAME = 1
-STATE_OPENFILE = 2
-STATE_GETFILESIZE = 3
-STATE_FILE_SENDDATA = 4
+STATE_LOADBOOTSET = 1
+STATE_SENDFILENAME = 2
+STATE_OPENFILE = 3
+STATE_READDATA = 4 # send the read command for the next N bytes or done
+STATE_SERWAITTX = 5
+STATE_DONE = 6
+STATE_WAIT = 255
+
+READSIZE = 8
 
 
 def testProc():
@@ -67,77 +84,234 @@ def testProc():
   proc.output(FPROGOUT_FPROG, 0)
   proc.foreverLoop()
   
-def jumpIfEqual(self, reg, const, addr):
+def jumpIfEqual(proc, tempreg, reg, const, addr):
   """
   if reg == const, jump to addr
 
+  note const  must be < 256
+  
   """
-  proc = env.createProc()
-  tmp = proc.createVariable("temp")
-  proc.load(tmp, const)
-  proc.sub(tmp, reg)
+  proc.load(tempreg, const)
+  proc.sub(tempreg, reg)
   proc.jz(addr)
   
 
 def createEventCycleProc():
   ecp = env.createECycleProc()
-  ecp.jumpIfEqual(env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
-  ecp.jumpIfEqual(env.nextState, STATE_, "proc_state_gethandle")
-  ecp.jumpIfEqual(env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
-  ecp.jumpIfEqual(env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
-  ecp.jumpIfEqual(env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
-  ecp.jumpIfEqual(env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
+  tmp = ecp.createVariable("tmp")
+
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_LOADBOOTSET, "proc_state_loadbootset")
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_OPENFILE, "proc_state_openfile")
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_READDATA, "proc_state_readdata")
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_SERWAITTX, "proc_state_serwaittx")
   
   ecp.foreverLoop()
 
-def createMaskWriteProc():
-  ### the mask writing
-  maskp = env.createEProc((100, 100), (0, 255))
-  rxword1 = maskp.createVariable("rxWord1")
-  rxword2 = maskp.createVariable("rxWord2")
-  maskp.move(rxword1, ereg.edata[0])
-  maskp.move(rxword2, ereg.edata[1])
-  maskp.output(0x08, rxword1)
-  maskp.output(0x09, rxword2)
 
-def createDataWritingProc():
-  ### The data writing: 
-  datap = env.createEProc((101, 101), (0, 255))
-  tmp = datap.createVariable("tmp")
-  for i in xrange(4):
-    datap.move(tmp, ereg.edata[i])
-    datap.output(0x08+2, tmp)
+def proc_state_loadbootset():
+  proc = env.createProc("proc_state_loadbootset")
+  # right now there's just a single boot set
+  setBootSerMask(proc, 0x01)
+  setBootFilename(proc, "network.bit")
 
-def createProgAssertionProc():
-  ### The prog assertion
+  proc.output(FPROGOUT_FPROG, 0) 
 
-  progp = env.createEProc((102, 102), (0, 255))
-  progp.output(0x08 + 3, 0x00)
+  proc.load(env.nextState, STATE_OPENFILE)
+              
+  proc.foreverLoop()
+  
+  
+def proc_state_gethandle():
+  """
+  Send the get-handle event.
+  
+  """
+  proc = env.createProc("proc_state_gethandle")
+  sendOpenHandleEvent(proc)
+  proc.load(env.nextState, STATE_WAIT)
+  proc.foreverLoop()
+  
+def proc_state_openfile():
+  """
+  send the open file event
+  
+  """
+  proc = env.createProc("proc_state_openfile")
+  tmp = proc.createVariable("tmp")
 
-def createDataCommitProc():
-  ### The data load assertion
-  dataloadp = env.createEProc((103, 103), (0, 255))
-  dataloadp.output(0x08 + 4, 0x00)
+  # reset the file pos
+  proc.load(env.currentFilePosL, 0)
+  proc.load(env.currentFilePosH, 0)
+
+  # write the dest
+  proc.load(tmp, BOOTSTOREADDR)
+  proc.output(EVENTOUT_SRC, tmp)
+
+  # load the handle
+  proc.move(tmp, env.currentFileHandle)
+  proc.swapbytes(tmp, tmp)
+
+  # write the command
+  proc.load(tmp, BS_OPENFILE)
+  proc.output(EVENTOUT_CMD, tmp)
+
+  proc.load(env.nextState, STATE_WAIT)
+  proc.foreverLoop()
+  
+
+def proc_state_readdata():
+  """
+  send the readdata event
+  
+  """
+  proc = env.createProc("proc_state_readdata")
+  tmp = proc.createVariable("tmp")
+  zero = proc.createVariable("zero")
+  proc.load(zero, 0)
+
+  # set the adder
+  proc.output(EVENTOUT_DATA1, env.currentFilePosH)
+  proc.output(EVENTOUT_DATA2, env.currentFilePosL)
+
+  # check if the current file pos is > the target
+  tmph = proc.createVariable("tmph")
+  tmpl = proc.createVariable("tmpl")
+
+  proc.move(tmph, env.currentFileSizeH)
+  proc.move(tmpl, env.currentFileSizeL)
+  proc.sub(tmpl, env.currentFilePosL)
+  proc.subc(tmph, env.currentFilePosH)
+  proc.jltz("proc_state_readdata_done")
+  
+  
+  # increment the current file pos
+  proc.load(tmp, READSIZE)
+  proc.add(env.currentFilePosL, tmp)
+  proc.addc(env.currentFilePosH, zero)
+  
+  
+  
+  # write the dest
+  proc.load(tmp, BOOTSTOREADDR)
+  proc.output(EVENTOUT_SRC, tmp)
+
+  # load the handle
+  proc.move(tmp, env.currentFileHandle)
+  proc.swapbytes(tmp, tmp)
+
+  # set the length
+  proc.load(tmp, 0x00)
+  proc.output(EVENTOUT_DATA3, tmp)
+  proc.load(tmp, READSIZE)
+  proc.output(EVENTOUT_DATA4, tmp)
+  
+  # write the command
+  proc.load(tmp, BS_READDATA)
+  proc.output(EVENTOUT_CMD, tmp)
+
+  proc.load(env.nextState, STATE_WAIT)
+  proc.foreverLoop()
+  proc.label("proc_state_readdata_done")
+  proc.load(env.nextState, STATE_DONE)
+  proc.foreverLoop()
+  
+  
+
+def proc_state_serwaittx():
+  """
+  spinloop to wait until the data is tx'd out the serial interface  
+  """
+  proc = env.createProc("proc_state_serwaittx")
+  tmp = proc.createVariable("tmp")
+
+  # if timer is zero, set state to read data
+  jumpIfEqual(proc, tmp, env.serialSendTimer, 0, "proc_state_serwaittx_jumpto")
+
+  # else decrement timer
+  proc.load(tmp, 1)
+  proc.sub(env.serialSendTimer, tmp)
+  proc.load(env.nextState, STATE_SERWAITTX)
+  proc.foreverLoop()
+  proc.label("proc_state_serwaittx_jumpto")
+  proc.load(env.nextState, STATE_READDATA)
+  proc.foreverLoop()
+  
+
+def bootStoreFileOpenRX():
+  proc = env.createEProc((BS_OPENFILE, BS_OPENFILE), (BOOTSTOREADDR, BOOTSTOREADDR))
+  # put the file size into the file size buffer
+  proc.move(env.currentFileSizeH, ereg.edata[1])
+  proc.move(env.currentFileSizeL, ereg.edata[2])
+  proc.load(env.nextState, STATE_READDATA)
+  
+  
+def setBootSerMask(proc, val):
+  tmp = proc.createVariable("tmp")
+  proc.load(tmp, val & 0xFFFF)
+  proc.output(FPROGOUT_MASKL, tmp)
+  
+  proc.load(tmp, (val > 16) &  0xFFFF)
+  proc.output(FPROGOUT_MASKH, tmp)
+
+def setBootFilename(proc, filename):
+  tmp = proc.createVariable("tmp1")
+  cmd = proc.createVariable("cmd")
+  src = proc.createVariable("src")
+  proc.load(cmd, BS_SETFILENAME)
+  proc.load(src, BOOTSTOREADDR)
+  
+  flen = len(filename) + 1
+
+  fcharlist = [0] * 32
+  for i in xrange(len(filename)):
+    fcharlist[i] = ord(filename[i])
+  
+  fnamepos = 0
+  for i in xrange( int(math.ceil(flen / 8.0))):
+    # load in the filename
+    
+    proc.load(tmp, (fcharlist[i * 8 + 0] << 8) | (fcharlist[i * 8 + 1]))
+    proc.output(EVENTOUT_DATA1, tmp)
+    
+    proc.load(tmp, (fcharlist[i * 8 + 2] << 8) | (fcharlist[i * 8 + 3]))
+    proc.output(EVENTOUT_DATA2, tmp)
+    
+    proc.load(tmp, (fcharlist[i * 8 + 4] << 8) | (fcharlist[i * 8 + 5]))
+    proc.output(EVENTOUT_DATA3, tmp)
+    
+    proc.load(tmp, (fcharlist[i * 8 + 6] << 8) | (fcharlist[i * 8 + 7]))
+    proc.output(EVENTOUT_DATA4, tmp)
+    
+    # set the event and send
+
+    
+    proc.move(tmp, env.currentFileHandle)
+    proc.immhighload(tmp, i * 8)
+    proc.swapbytes(tmp, tmp)
+    proc.output(EVENTOUT_SRC, src)
+    proc.output(EVENTOUT_DATA0, tmp)
+    proc.output(EVENTOUT_CMD, cmd)
+
 
 def bootStoreHandleSetRX():
   proc = env.createEProc((0x90, 0x90), (BOOTSTOREADDR, BOOTSTOREADDR))
   # put the handle int he handle buffer
   proc.move(env.currentFileHandle, ereg.edata[1])
-  
+  proc.load(env.nextState, STATE_LOADBOOTSET)
 
-def sendOpenHandleEvent():
-  proc = env.createProc("sendOpenHandleEvent")
+def sendOpenHandleEvent(proc):
   tmp = proc.createVariable("handleOpenTemp")
   # write the dest
   proc.load(tmp, BOOTSTOREADDR)
   proc.output(EVENTOUT_SRC, tmp)
   # write the command
-  proc.load(tmp, 0x90)
+  proc.load(tmp, BS_GETHANDLE)
   proc.output(EVENTOUT_CMD, tmp)
-
+  
 
 ### The -respond-and-output-bytes
-def createDataToBootSerProc():
+def bootStoreFileReadRX():
   """
   Receives event 0x94 from bootstore (new data) and sends it out
   via the serial interface
@@ -151,13 +325,32 @@ def createDataToBootSerProc():
     datap.output(0x08+2, tmp)
   # then commit
   datap.output(0x08 + 4, 0x00)
+  datap.load(env.serialSendTimer, 0x6)
+  datap.load(env.nextState, STATE_SERWAITTX)
+  
 
 
 def createEnableEventCycleProc():
-  newproc = env.createProc("newproc")
+  newproc = env.createProc("enableEventCycleProc")
   y = newproc.createVariable("y")
   newproc.load(y, 1)
   newproc.output(EVENTPROC_ENABLE, y)
   newproc.foreverLoop()
 
-testProc()
+
+createEnableEventCycleProc()
+createEventCycleProc()
+
+proc_state_loadbootset()
+proc_state_gethandle()
+proc_state_openfile()
+proc_state_readdata()
+proc_state_serwaittx()
+
+
+bootStoreHandleSetRX()
+bootStoreFileOpenRX()
+bootStoreFileReadRX()
+
+
+#testProc()

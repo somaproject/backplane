@@ -127,8 +127,10 @@ begin  -- Behavioral
 
       weal        <= wea;
       weall       <= weal;
-      if weall = '1' or lspireq = '1' or spireq = '1' then
-        if lspireq = '1' then
+      if weall = '1' or lspireq = '1' or spireq = '1' or spicsdone = '1' then
+        if spicsdone = '1' then
+          SPIMISO <= '0'; 
+        elsif lspireq = '1' then
           spimiso <= lspireq;
         else
           SPIMISO <= lspimiso;

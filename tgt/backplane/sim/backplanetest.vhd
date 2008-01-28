@@ -64,7 +64,7 @@ architecture Behavioral of backplanetest is
 
   signal SPIMOSI  : std_logic := '0';
   signal SPIMISO  : std_logic := '0';
-  signal SPICS    : std_logic := '0';
+  signal SPICS    : std_logic := '1';
   signal SPICLK   : std_logic := '0';
   signal LEDPOWER : std_logic := '0';
   signal LEDEVENT : std_logic := '0';
@@ -101,7 +101,7 @@ architecture Behavioral of backplanetest is
 
   signal nicfpgastart, nicvalidboot : std_logic := '0';
 
-  constant filename    : string               :=  "abcdefg.bin";
+  constant filename    : string               :=  "network.bit";
   constant filename2    : string               := "xysilly.bin";
   signal   spifilename : string(1 to 32);
 
@@ -118,6 +118,9 @@ architecture Behavioral of backplanetest is
     result := character'val(TO_INTEGER(unsigned(s)));
     return result;
   end;
+
+  signal latestnicfpgabits : std_logic_vector(63 downto 0) := (others => '0');
+  
 
 begin  -- Behavioral
 
@@ -186,7 +189,7 @@ begin  -- Behavioral
         SPICLK  <= '0';
       end loop;  -- i
 
-      wordout := X"1234";               -- len high
+      wordout := X"0000";               -- len high
       for i in 15 downto 0 loop
         wait until rising_edge(CLK);
         SPIMOSI <= wordout(i);
@@ -195,7 +198,7 @@ begin  -- Behavioral
         SPICLK  <= '0';
       end loop;  -- i
 
-      wordout := X"5678";               -- len low
+      wordout := X"0070";               -- len low
       for i in 15 downto 0 loop
         wait until rising_edge(CLK);
         SPIMOSI <= wordout(i);
@@ -230,8 +233,8 @@ begin  -- Behavioral
       len     := to_integer(unsigned(lenin));
       report "The requested length is " & integer'image(len) severity note;
 
-      for word in 0 to len loop
-        for i in 15 downto 0 loop
+      for word in 0 to (len -1) loop
+        for i in 7 downto 0 loop
           SPIMOSI <= wordout(i);
           wait until rising_edge(CLK);
           SPICLK  <= '1';
@@ -307,5 +310,12 @@ begin  -- Behavioral
 --     wait;
 
 --   end process;
+
+  process(NICFCLK)
+    begin
+      if rising_edge(NICFCLK) then
+        latestnicfpgabits <= latestnicfpgabits(62 downto 0) & NICFDIN;
+      end if;
+    end process; 
 
 end Behavioral;
