@@ -108,13 +108,14 @@ transsim: build/$(PROJECT).ngd
 	netgen -intstyle ise -rpw 100 -tpw 0 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngd $(PROJECT)_transsim.vhd
 
 
+ASMPY = backplane.asmpy ../../../netcontrol/netcontrol.asmpy
 
 # update roms
 $(PROJECT).postmem.bit: $(PROJECT).mem build/$(PROJECT).bit
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
 	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).imem
 
-$(PROJECT).part.mem:  $(PROJECT).asmpy
+$(PROJECT).syscontrol.mem:  $(PROJECT).asmpy
 	python ../../../eproc/assemble/assemble.py $(PROJECT).asmpy \
 	$(PROJECT).imem $(PROJECT).part.mem > $(PROJECT).part.log
 

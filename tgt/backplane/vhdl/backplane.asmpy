@@ -112,7 +112,7 @@ def createEventCycleProc():
   ecp = env.createECycleProc()
   tmp = ecp.createVariable("tmp")
 
-  jumpIfEqual(ecp, tmp, env.nextState, STATE_POSTBOOT, "proc_state_postboot")
+#  jumpIfEqual(ecp, tmp, env.nextState, STATE_POSTBOOT, "proc_state_postboot")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_LOADBOOTSET, "proc_state_loadbootset")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_OPENFILE, "proc_state_openfile")

@@ -4,24 +4,100 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 use IEEE.STD_LOGIC_ARITH.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
 
+library eproc;
+use eproc.all;
+
+
+library UNISIM;
+use UNISIM.VComponents.all;
 
 entity netcontrol is
   generic (
-    DEVICE       :     std_logic_vector(7 downto 0) := X"01";
-    CMDCNTQUERY  :     std_logic_vector(7 downto 0) := X"40";
-    CMDCNTRST    :     std_logic_vector(7 downto 0) := X"41";
-    CMDNETWRITE  :     std_logic_vector(7 downto 0) := X"42";
-    CMDNETQUERY  :     std_logic_vector(7 downto 0) := X"43";
-    CMDNETRESP   :     std_logic_vector(7 downto 0) := X"50";
-    CMDCNTRESP   :     std_logic_vector(7 downto 0) := X"51"
+    DEVICE      : std_logic_vector(7 downto 0) := X"01";
+    RAM_INIT_00 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_01 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_02 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_03 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_04 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_05 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_06 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_07 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_08 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_09 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0A : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0B : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0C : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0D : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0E : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0F : bit_vector(0 to 255)         := (others => '0');
+
+    RAM_INIT_10 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_11 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_12 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_13 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_14 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_15 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_16 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_17 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_18 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_19 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_1A : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_1B : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_1C : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_1D : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_1E : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_1F : bit_vector(0 to 255) := (others => '0');
+
+    RAM_INIT_20 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_21 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_22 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_23 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_24 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_25 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_26 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_27 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_28 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_29 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_2A : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_2B : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_2C : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_2D : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_2E : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_2F : bit_vector(0 to 255) := (others => '0');
+
+    RAM_INIT_30 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_31 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_32 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_33 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_34 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_35 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_36 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_37 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_38 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_39 : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_3A : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_3B : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_3C : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_3D : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_3E : bit_vector(0 to 255) := (others => '0');
+    RAM_INIT_3F : bit_vector(0 to 255) := (others => '0');
+
+    RAM_INITP_00 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_01 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_02 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_03 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_04 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_05 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_06 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_07 :     bit_vector(0 to 255) := (others => '0')
     );
   port (
     CLK          : in  std_logic;
-    CLK2X        : in std_logic;
+    CLK2X        : in  std_logic;
     RESET        : in  std_logic;
     -- standard event-bus interface
     ECYCLE       : in  std_logic;
@@ -42,563 +118,174 @@ entity netcontrol is
     UNKNOWNUDP   : in  std_logic;
     EVTRXSUC     : in  std_logic;
     EVTFIFOFULL  : in  std_logic;
-
     -- output network control settings
-    MYMAC   : out std_logic_vector(47 downto 0);
-    MYBCAST : out std_logic_vector(31 downto 0);
-    MYIP    : out std_logic_vector(31 downto 0)
-
-    );
-
+    MYMAC        : out std_logic_vector(47 downto 0);
+    MYBCAST      : out std_logic_vector(31 downto 0);
+    MYIP         : out std_logic_vector(31 downto 0); 
+    -- NIC interface
+    NICSOUT      : out std_logic;
+    NICSIN       : in  std_logic;
+    NICSCLK      : out std_logic;
+    NICSCS       : out std_logic );
 end netcontrol;
 
 architecture Behavioral of netcontrol is
 
-  -- input from event buffer
-  signal eoutd  : std_logic_vector(15 downto 0) := (others => '0');
-  signal eouta  : std_logic_vector(2 downto 0)  := (others => '0');
-  signal evalid : std_logic                     := '0';
-  signal enext  : std_logic                     := '0';
+  signal iaddr : std_logic_vector(9 downto 0)  := (others => '0');
+  signal idata : std_logic_vector(17 downto 0) := (others => '0');
 
-  -- input data
-  signal srcl     : std_logic_vector(7 downto 0)  := (others => '0');
-  signal addr     : std_logic_vector(15 downto 0) := (others => '0');
-  signal dataword : std_logic_vector(47 downto 0) := (others => '0');
-  signal cmd      : std_logic_vector(7 downto 0)  := (others => '0');
+  signal oportaddr   : std_logic_vector(7 downto 0);
+  signal oportdata   : std_logic_vector(15 downto 0);
+  signal oportstrobe : std_logic := '0';
 
+  signal iportaddr   : std_logic_vector(7 downto 0);
+  signal iportdata   : std_logic_vector(15 downto 0);
+  signal iportstrobe : std_logic := '0';
 
-  -- counter selection
-  signal cntval : std_logic_vector(47 downto 0) := (others => '0');
-  signal cntsel : std_logic_vector(4 downto 0)  := (others => '0');
-  signal cntpos : std_logic_vector(4 downto 0)  := (others => '0');
-
-  signal bcastdelay : std_logic_vector(15 downto 0) := (others => '1');
-
-  -- counters
-
-  signal rxiocrcerrcnt   : std_logic_vector(47 downto 0) := (others => '0');
-  signal unknownethercnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal unknownipcnt    : std_logic_vector(47 downto 0) := (others => '0');
-  signal unknownarpcnt   : std_logic_vector(47 downto 0) := (others => '0');
-  signal unknownudpcnt   : std_logic_vector(47 downto 0) := (others => '0');
-
-  signal eventrxsuccnt    : std_logic_vector(47 downto 0) := (others => '0');
-  signal eventfifofullcnt : std_logic_vector(47 downto 0) := (others => '0');
-
-  signal txch0len : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch0cnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch0rst : std_logic                     := '0';
-
-  signal txch1len : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch1cnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch1rst : std_logic                     := '0';
-
-  signal txch2len : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch2cnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch2rst : std_logic                     := '0';
-
-  signal txch3len : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch3cnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch3rst : std_logic                     := '0';
-
-  signal txch4len : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch4cnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch4rst : std_logic                     := '0';
-
-  signal txch5len : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch5cnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch5rst : std_logic                     := '0';
-
-  signal txch6len : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch6cnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch6rst : std_logic                     := '0';
-
-  signal txch7len : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch7cnt : std_logic_vector(47 downto 0) := (others => '0');
-  signal txch7rst : std_logic                     := '0';
-
-  -- network settings
-  signal netsetting : std_logic_vector(47 downto 0) := (others => '0');
-  signal mac        : std_logic_vector(47 downto 0) := (others => '0');
-  signal bcast      : std_logic_vector(31 downto 0) := (others => '0');
-  signal ip         : std_logic_vector(31 downto 0) := (others => '0');
-
-  signal netsettyp : std_logic_vector(1 downto 0) := (others => '0');
-
-  -- events
-  signal countervalevt : std_logic_vector(95 downto 0) := (others => '0');
-  signal netsettingevt : std_logic_vector(95 downto 0) := (others => '0');
-  signal eosel         : integer range 0 to 2          := 0;
-
-  -- event output
-  signal bcastsel, bcastval : std_logic := '0';
-
-  signal learx : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
-
-  signal srcdec : std_logic_vector(255 downto 0) := (others => '0');
-
-  signal edrxall  : std_logic_vector(95 downto 0) := (others => '0');
-  signal edrxin   : std_logic_vector(95 downto 0) := (others => '0');
-  signal cntrsten : std_logic                     := '0';
-
-
-  -- states
-  type states is (none, cmdchk, ldaddr, ldword1, ldword2, ldword3,
-                  cntbcast, cntbcw, evtdone, cntqury, cntreset,
-                  netwrite, netwait);
-
-  signal cs, ns : states := none;
-
-
-
-  component rxeventfifo
-    port (
-      CLK    : in  std_logic;
-      RESET  : in  std_logic;
-      ECYCLE : in  std_logic;
-      EATX   : in  std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX   : in  std_logic_vector(7 downto 0);
-      -- outputs
-      EOUTD  : out std_logic_vector(15 downto 0);
-      EOUTA  : in  std_logic_vector(2 downto 0);
-      EVALID : out std_logic;
-      ENEXT  : in  std_logic
-      );
-  end component;
-
-
-  component txcounter
-    port (
-      CLK      : in  std_logic;
-      PKTLENEN : in  std_logic;
-      PKTLEN   : in  std_logic_vector(15 downto 0);
-      TXCHAN   : in  std_logic_vector(2 downto 0);
-      -- Channel 0
-      CH0LEN   : out std_logic_vector(47 downto 0);
-      CH0CNT   : out std_logic_vector(47 downto 0);
-      CH0RST   : in  std_logic;
-      -- Channel 1
-      CH1LEN   : out std_logic_vector(47 downto 0);
-      CH1CNT   : out std_logic_vector(47 downto 0);
-      CH1RST   : in  std_logic;
-      -- Channel 2
-      CH2LEN   : out std_logic_vector(47 downto 0);
-      CH2CNT   : out std_logic_vector(47 downto 0);
-      CH2RST   : in  std_logic;
-      -- Channel 3
-      CH3LEN   : out std_logic_vector(47 downto 0);
-      CH3CNT   : out std_logic_vector(47 downto 0);
-      CH3RST   : in  std_logic;
-      -- Channel 4
-      CH4LEN   : out std_logic_vector(47 downto 0);
-      CH4CNT   : out std_logic_vector(47 downto 0);
-      CH4RST   : in  std_logic;
-      -- Channel 5
-      CH5LEN   : out std_logic_vector(47 downto 0);
-      CH5CNT   : out std_logic_vector(47 downto 0);
-      CH5RST   : in  std_logic;
-      -- Channel 6
-      CH6LEN   : out std_logic_vector(47 downto 0);
-      CH6CNT   : out std_logic_vector(47 downto 0);
-      CH6RST   : in  std_logic;
-      -- Channel 7
-      CH7LEN   : out std_logic_vector(47 downto 0);
-      CH7CNT   : out std_logic_vector(47 downto 0);
-      CH7RST   : in  std_logic
-      );
-
-  end component;
-
-
+  signal nicserwe : std_logic := '0';
+  signal nicserrd : std_logic := '0';
 
 begin  -- Behavioral
 
-  txcounter_inst : txcounter
+  nicserwe <= oportstrobe when oportaddr(7 downto 4) = X"0" else '0';
+  nicserrd <= iportstrobe when oportaddr(7 downto 4) = X"0" else '0';
+
+  instruction_ram : RAMB16_S18_S18
+    generic map (
+      INIT_00 => RAM_INIT_00,
+      INIT_01 => RAM_INIT_01,
+      INIT_02 => RAM_INIT_02,
+      INIT_03 => RAM_INIT_03,
+      INIT_04 => RAM_INIT_04,
+      INIT_05 => RAM_INIT_05,
+      INIT_06 => RAM_INIT_06,
+      INIT_07 => RAM_INIT_07,
+      INIT_08 => RAM_INIT_08,
+      INIT_09 => RAM_INIT_09,
+      INIT_0A => RAM_INIT_0A,
+      INIT_0B => RAM_INIT_0B,
+      INIT_0C => RAM_INIT_0C,
+      INIT_0D => RAM_INIT_0D,
+      INIT_0E => RAM_INIT_0E,
+      INIT_0F => RAM_INIT_0F,
+
+      INIT_10 => RAM_INIT_10,
+      INIT_11 => RAM_INIT_11,
+      INIT_12 => RAM_INIT_12,
+      INIT_13 => RAM_INIT_13,
+      INIT_14 => RAM_INIT_14,
+      INIT_15 => RAM_INIT_15,
+      INIT_16 => RAM_INIT_16,
+      INIT_17 => RAM_INIT_17,
+      INIT_18 => RAM_INIT_18,
+      INIT_19 => RAM_INIT_19,
+      INIT_1A => RAM_INIT_1A,
+      INIT_1B => RAM_INIT_1B,
+      INIT_1C => RAM_INIT_1C,
+      INIT_1D => RAM_INIT_1D,
+      INIT_1E => RAM_INIT_1E,
+      INIT_1F => RAM_INIT_1F,
+
+      INIT_20 => RAM_INIT_20,
+      INIT_21 => RAM_INIT_21,
+      INIT_22 => RAM_INIT_22,
+      INIT_23 => RAM_INIT_23,
+      INIT_24 => RAM_INIT_24,
+      INIT_25 => RAM_INIT_25,
+      INIT_26 => RAM_INIT_26,
+      INIT_27 => RAM_INIT_27,
+      INIT_28 => RAM_INIT_28,
+      INIT_29 => RAM_INIT_29,
+      INIT_2A => RAM_INIT_2A,
+      INIT_2B => RAM_INIT_2B,
+      INIT_2C => RAM_INIT_2C,
+      INIT_2D => RAM_INIT_2D,
+      INIT_2E => RAM_INIT_2E,
+      INIT_2F => RAM_INIT_2F,
+
+      INIT_30 => RAM_INIT_30,
+      INIT_31 => RAM_INIT_31,
+      INIT_32 => RAM_INIT_32,
+      INIT_33 => RAM_INIT_33,
+      INIT_34 => RAM_INIT_34,
+      INIT_35 => RAM_INIT_35,
+      INIT_36 => RAM_INIT_36,
+      INIT_37 => RAM_INIT_37,
+      INIT_38 => RAM_INIT_38,
+      INIT_39 => RAM_INIT_39,
+      INIT_3A => RAM_INIT_3A,
+      INIT_3B => RAM_INIT_3B,
+      INIT_3C => RAM_INIT_3C,
+      INIT_3D => RAM_INIT_3D,
+      INIT_3E => RAM_INIT_3E,
+      INIT_3F => RAM_INIT_3F,
+
+      INITP_00 => RAM_INITP_00,
+      INITP_01 => RAM_INITP_01,
+      INITP_02 => RAM_INITP_02,
+      INITP_03 => RAM_INITP_03,
+      INITP_04 => RAM_INITP_04,
+      INITP_05 => RAM_INITP_05,
+      INITP_06 => RAM_INITP_06,
+      INITP_07 => RAM_INITP_07)
     port map (
-      CLK      => CLK,
-      PKTLENEN => TXPKTLENEN,
-      PKTLEN   => TXPKTLEN,
-      TXCHAN   => TXCHAN,
-      CH0LEN   => txch0len,
-      CH0CNT   => txch0cnt,
-      CH0RST   => txch0rst,
-      CH1LEN   => txch1len,
-      CH1CNT   => txch1cnt,
-      CH1RST   => txch1rst,
-      CH2LEN   => txch2len,
-      CH2CNT   => txch2cnt,
-      CH2RST   => txch2rst,
-      CH3LEN   => txch3len,
-      CH3CNT   => txch3cnt,
-      CH3RST   => txch3rst,
-      CH4LEN   => txch4len,
-      CH4CNT   => txch4cnt,
-      CH4RST   => txch4rst,
-      CH5LEN   => txch5len,
-      CH5CNT   => txch5cnt,
-      CH5RST   => txch5rst,
-      CH6LEN   => txch6len,
-      CH6CNT   => txch6cnt,
-      CH6RST   => txch6rst,
-      CH7LEN   => txch7len,
-      CH7CNT   => txch7cnt,
-      CH7RST   => txch7rst);
 
-  cntval <= X"0123456789AB"  when cntsel = "00000" else
-            rxiocrcerrcnt    when cntsel = "00001" else
-            unknownethercnt  when cntsel = "00010" else
-            unknownipcnt     when cntsel = "00011" else
-            unknownarpcnt    when cntsel = "00100" else
-            unknownudpcnt    when cntsel = "00101" else
-            eventrxsuccnt    when cntsel = "00110" else
-            eventfifofullcnt when cntsel = "00111" else
+      DOA   => idata(15 downto 0),
+      DOPA  => idata(17 downto 16),
+      ADDRA => iaddr,
+      CLKA  => clk2x,
+      DIA   => X"0000",
+      DIPA  => "00",
+      ENA   => '1',
+      WEA   => '0',
+      SSRA  => RESET,
+      DOB   => open,
+      DOPB  => open,
+      ADDRB => "0000000000",
+      CLKB  => clk2x,
+      DIB   => X"0000",
+      DIPB  => "00",
+      ENB   => '0',
+      WEB   => '0',
+      SSRB  => RESET);
 
-            txch0len when cntsel = "10000" else
-            txch0cnt when cntsel = "10001" else
-            txch1len when cntsel = "10010" else
-            txch1cnt when cntsel = "10011" else
-            txch2len when cntsel = "10100" else
-            txch2cnt when cntsel = "10101" else
-            txch3len when cntsel = "10110" else
-            txch3cnt when cntsel = "10111" else
-            txch4len when cntsel = "11000" else
-            txch4cnt when cntsel = "11001" else
-            txch5len when cntsel = "11010" else
-            txch5cnt when cntsel = "11011" else
-            txch6len when cntsel = "11100" else
-            txch6cnt when cntsel = "11101" else
-            txch7len when cntsel = "11110" else
-            txch7cnt when cntsel = "11111" else
-            X"000000000000";
+  eproc_inst : entity eproc.eproc
+    port map (
+      CLK     => clk,
+      RESET   => RESET,
+      EDTX    => EDTX,
+      EATX    => EATX,
+      ECYCLE  => ECYCLE,
+      EARX    => EARX,
+      EDRX    => EDRX,
+      EDSELRX => EDSELRX,
+      CLKHI   => CLK2X,
+      IADDR   => iaddr,
+      IDATA   => idata,
 
-  EDRX <= edrxall(7 downto 0)   when EDSELRX = X"1" else
-          edrxall(15 downto 8)  when EDSELRX = X"0" else
-          edrxall(23 downto 16) when EDSELRX = X"3" else
-          edrxall(31 downto 24) when EDSELRX = X"2" else
-          edrxall(39 downto 32) when EDSELRX = X"5" else
-          edrxall(47 downto 40) when EDSELRX = X"4" else
-          edrxall(55 downto 48) when EDSELRX = X"7" else
-          edrxall(63 downto 56) when EDSELRX = X"6" else
-          edrxall(71 downto 64) when EDSELRX = X"9" else
-          edrxall(79 downto 72) when EDSELRX = X"8" else
-          edrxall(87 downto 80) when EDSELRX = X"B" else
-          edrxall(95 downto 88);
+      OPORTADDR   => oportaddr,
+      OPORTDATA   => oportdata,
+      OPORTSTROBE => oportstrobe,
 
-  cntrsten <= '1' when cs = cntreset else '0';
+      IPORTADDR   => iportaddr,
+      IPORTDATA   => iportdata,
+      IPORTSTROBE => iportstrobe,
 
-  txch0rst <= cntrsten when dataword(32) = '1' else '0';
-  txch1rst <= cntrsten when dataword(33) = '1' else '0';
-  txch2rst <= cntrsten when dataword(34) = '1' else '0';
-  txch3rst <= cntrsten when dataword(35) = '1' else '0';
-  txch4rst <= cntrsten when dataword(36) = '1' else '0';
-  txch5rst <= cntrsten when dataword(37) = '1' else '0';
-  txch6rst <= cntrsten when dataword(38) = '1' else '0';
-  txch7rst <= cntrsten when dataword(39) = '1' else '0';
+      DEVICE => DEVICE);
 
-  ENEXT <= '1' when cs = evtdone else '0';
-
-  cntsel     <= cntpos          when bcastsel = '1'   else addr(4 downto 0);
-  netsettyp  <= addr(1 downto 0);
-  netsetting <= mac             when netsettyp = "11" else
-                bcast & X"0000" when netsettyp = "10" else
-                ip & X"0000"    when netsettyp = "01" else
-                X"000000000000";
+  nicserialioaddr_inst : entity nicserialioaddr
+    port map (
+      CLK     => CLK2X,
+      ADDRI   => oportaddr(3 downto 0),
+      DIN     => oportdata,
+      ADDRO   => iportaddr(3 downto 0),
+      DOUT    => iportdata,
+      WE      => nicserwe,
+      RD      => nicserrd,
+      NICSOUT => NICSOUT,
+      NICSIN  => NICSIN,
+      NICSCLK => NICSCLK,
+      NICSCS  => NICSCS);
 
 
-
-  srcdec_set : process (srcl)
-  begin
-    srcdec                     <= (others => '0');
-    srcdec(conv_integer(srcl)) <= '1';
-  end process srcdec_set;
-
-
-
-  MYMAC   <= mac;
-  MYBCAST <= bcast;
-  MYIP    <= ip;
-
-  edrxin <= countervalevt when eosel = 0 else
-            netsettingevt when eosel = 1 else
-            (others => '0');
-
-  -- response events
-  netsettingevt(15 downto 0)  <= CMDNETRESP & DEVICE;
-  netsettingevt(31 downto 16) <= addr;
-  netsettingevt(47 downto 32) <= netsetting(47 downto 32);
-  netsettingevt(63 downto 48) <= netsetting(31 downto 16);
-  netsettingevt(79 downto 64) <= netsetting(15 downto 0);
-
-  countervalevt(15 downto 0)  <= CMDCNTRESP & DEVICE;
-  countervalevt(31 downto 16) <= addr;
-  countervalevt(47 downto 32) <= cntval(47 downto 32);
-  countervalevt(63 downto 48) <= cntval(31 downto 16);
-  countervalevt(79 downto 64) <= cntval(15 downto 0);
-
-  learx <= srcdec(somabackplane.N - 1 downto 0) when bcastsel = '0' else (others => bcastval);
-
-  main : process(CLK)
-  begin
-    if rising_edge(CLK) then
-      cs <= ns;
-
-
-      -- output events
-      if ECYCLE = '1' then
-        edrxall <= edrxin;
-        earx    <= learx;
-      end if;
-
-      -- load input values
-      if cs = cmdchk then
-        cmd  <= EOUTD(15 downto 8);
-        srcl <= EOUTD(7 downto 0);
-      end if;
-
-      if cs = ldaddr then
-        addr <= EOUTD;
-      end if;
-
-      if cs = ldword1 then
-        dataword(47 downto 32) <= EOUTD;
-      end if;
-
-      if cs = ldword2 then
-        dataword(31 downto 16) <= EOUTD;
-      end if;
-
-      if cs = ldword3 then
-        dataword(15 downto 0) <= EOUTD;
-      end if;
-
-
-      -- counter periodic broadcast
-      if cs = cntbcast then
-        cntpos       <= cntpos + 1;
-        bcastdelay   <= X"FFFF";
-      else
-        if bcastdelay /= X"0000" then
-          bcastdelay <= bcastdelay -1;
-        end if;
-      end if;
-
-       -- network id update
-
-      if cs = netwrite then
-        if addr = X"0001" then
-          ip    <= dataword(47 downto 16);
-        elsif addr = X"0002" then
-          bcast <= dataword(47 downto 16);
-        elsif addr = X"0003" then
-          mac   <= dataword;
-        end if;
-      end if;
-
-
-      -- counters
-      if dataword(1) = '1' then
-        rxiocrcerrcnt   <= (others => '0');
-      else
-        if RXIOCRCERR = '1' then
-          rxiocrcerrcnt <= rxiocrcerrcnt + 1;
-        end if;
-      end if;
-
-      if dataword(2) = '1' then
-        unknownethercnt   <= (others => '0');
-      else
-        if UNKNOWNETHER = '1' then
-          unknownethercnt <= unknownethercnt + 1;
-        end if;
-      end if;
-
-      if dataword(3) = '1' then
-        unknownipcnt   <= (others => '0');
-      else
-        if UNKNOWNIP = '1' then
-          unknownipcnt <= unknownipcnt + 1;
-        end if;
-      end if;
-
-      if dataword(4) = '1' then
-        unknownarpcnt   <= (others => '0');
-      else
-        if UNKNOWNARP = '1' then
-          unknownarpcnt <= unknownarpcnt + 1;
-        end if;
-      end if;
-
-      if dataword(5) = '1' then
-        unknownudpcnt   <= (others => '0');
-      else
-        if UNKNOWNUDP = '1' then
-          unknownudpcnt <= unknownudpcnt + 1;
-        end if;
-      end if;
-
-
-      if dataword(6) = '1' then
-        eventrxsuccnt  <= (others => '0');
-      else
-        if EVTRXSUC = '1' then
-          eventrxsuccnt <= eventrxsuccnt + 1; 
-        end if;
-      end if;
-
-      if dataword(7) = '1' then
-        eventfifofullcnt  <= (others => '0');
-      else
-        if EVTFIFOFULL = '1' then
-          eventfifofullcnt <= eventfifofullcnt + 1; 
-        end if;
-      end if;
-
-      
-    end if;
-  end process main;
-
-
-  fsm : process(cs, bcastdelay, evalid, eoutd, ecycle)
-  begin
-    case cs is
-      when none =>
-        EOUTA    <= "000";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
--- if bcastdelay = X"0000" then
--- ns <= cntbcast;
--- else
-        if EVALID = '1' then
-          ns     <= cmdchk;
-        else
-          ns     <= none;
-        end if;
--- end if;
-
-      when cmdchk =>
-        EOUTA    <= "001";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
-        if EOUTD(15 downto 8) = CMDCNTQUERY or
-          EOUTD(15 downto 8) = CMDCNTRST or
-          EOUTD(15 downto 8) = CMDNETWRITE or
-          EOUTD(15 downto 8) = CMDNETQUERY then
-          ns     <= ldaddr;
-        else
-          ns     <= evtdone;
-        end if;
-
-      when ldaddr =>
-        EOUTA    <= "010";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
-        ns       <= ldword1;
-
-      when ldword1 =>
-        EOUTA    <= "011";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
-        ns       <= ldword2;
-
-      when ldword2 =>
-        EOUTA    <= "100";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
-        ns       <= ldword3;
-
-      when ldword3 =>
-        EOUTA    <= "101";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
-        if cmd = CMDCNTQUERY then
-          ns     <= cntqury;
-        elsif cmd = CMDCNTRST then
-          ns     <= cntreset;
-        elsif cmd = cmdnetwrite then
-          ns     <= netwrite;
-        elsif cmd = cmdnetquery then
-          ns     <= netwait;
-        else
-          ns     <= evtdone;
-        end if;
-
-      when cntqury =>
-        EOUTA    <= "000";
-        bcastsel <= '0';
-        bcastval <= '0';
-        eosel    <= 0;
-        if ECYCLE = '1' then
-          ns     <= evtdone;
-        else
-          ns     <= cntqury;
-        end if;
-
-      when cntreset =>
-        EOUTA    <= "000";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
-        ns       <= evtdone;
-
-      when netwrite =>
-        EOUTA    <= "000";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
-        ns       <= netwait;
-
-      when netwait =>
-        EOUTA    <= "000";
-        bcastsel <= '0';
-        bcastval <= '0';
-        eosel    <= 1;
-        if ECYCLE = '1' then
-          ns     <= evtdone;
-        else
-          ns     <= netwait;
-        end if;
-
-      when cntbcast =>
-        EOUTA    <= "000";
-        bcastsel <= '0';
-        bcastval <= '0';
-        eosel    <= 0;
-        ns       <= cntbcw;
-
-
-      when cntbcw =>
-        EOUTA    <= "000";
-        bcastsel <= '1';
-        bcastval <= '1';
-        eosel    <= 0;
-        if ECYCLE = '1' then
-          ns     <= none;
-        else
-          ns     <= cntbcw;
-        end if;
-
-      when evtdone =>
-        EOUTA    <= "000";
-        bcastsel <= '0';
-        bcastval <= '0';
-        eosel    <= 0;
-        ns       <= none;
-
-      when others =>
-        EOUTA    <= "000";
-        bcastsel <= '1';
-        bcastval <= '0';
-        eosel    <= 0;
-        ns       <= none;
-
-    end case;
-
-
-  end process fsm;
 end Behavioral;

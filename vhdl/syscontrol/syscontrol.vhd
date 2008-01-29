@@ -249,6 +249,9 @@ begin  -- Behavioral
       OPORTADDR   => oportaddr,
       OPORTDATA   => oportdata,
       OPORTSTROBE => oportstrobe,
+      IPORTADDR   => open, 
+      IPORTDATA   => X"0000", 
+      IPORTSTROBE => open, 
       DEVICE      => DEVICE);
 
 

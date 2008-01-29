@@ -1,0 +1,24 @@
+"""
+
+"""
+
+### CONSTANTS
+
+EVENTOUT_CMD = 0x80
+EVENTOUT_SRC = 0x87
+EVENTOUT_DATA0 = 0x81
+EVENTOUT_DATA1 = 0x82
+EVENTOUT_DATA2 = 0x83
+EVENTOUT_DATA3 = 0x84
+EVENTOUT_DATA4 = 0x85
+EVENTPROC_ENABLE = 0x89
+EVENTPROC_ADDR = 0x88
+
+def createEnableEventCycleProc():
+  newproc = env.createProc("enableEventCycleProc")
+  y = newproc.createVariable("y")
+  newproc.load(y, 1)
+  newproc.output(EVENTPROC_ENABLE, y)
+  newproc.foreverLoop()
+
+
