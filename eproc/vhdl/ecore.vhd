@@ -131,7 +131,8 @@ begin  -- Behavioral
       DOA   => rega,
       DOB   => regb);
 
-  regin <= aluy when reginsel = '0' else X"0000";
+  reginsel <= '1' when opclass = "11" else '0'; 
+  regin <= aluy when reginsel = '0' else IPORTDATA;
 
   wea <= rwe and cphase;
 
@@ -148,7 +149,9 @@ begin  -- Behavioral
   opclass  <= IDATA(17 downto 16);
   jumpdest <= IDATA(13 downto 4);
 
-  rwe <= '1' when opclass = "00" or opclass = "10" else '0';
+  rwe <= '1' when opclass = "00" or opclass = "10"
+         or (opclass = "11"  and odir = '0')
+       else '0';
 
   -- jump logic
   lpc  <= pc + 1 when jexec = '0'
@@ -174,6 +177,9 @@ begin  -- Behavioral
   
   IADDR <= pc; 
   CPHASEOUT  <= cphase;
+
+  IPORTSTROBE <= '1' when opclass = "11" and odir = '0' and cphase = '0' else '0';
+  
   main : process(CLK, RESET)
   begin
     if RESET = '1' then

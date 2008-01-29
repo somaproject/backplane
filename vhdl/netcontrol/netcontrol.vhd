@@ -21,6 +21,7 @@ entity netcontrol is
     );
   port (
     CLK          : in  std_logic;
+    CLK2X        : in std_logic;
     RESET        : in  std_logic;
     -- standard event-bus interface
     ECYCLE       : in  std_logic;
@@ -211,18 +212,6 @@ architecture Behavioral of netcontrol is
 
 
 begin  -- Behavioral
-
-  rxeventfifo_inst : rxeventfifo
-    port map (
-      CLK    => CLK,
-      RESET  => RESET,
-      ECYCLE => ECYCLE,
-      EATX   => EATX,
-      EDTX   => EDTX,
-      EOUTD  => eoutd,
-      EOUTA  => eouta,
-      EVALID => evalid,
-      ENEXT  => enext);
 
   txcounter_inst : txcounter
     port map (

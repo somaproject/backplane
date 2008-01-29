@@ -8,9 +8,9 @@ use IEEE.numeric_std.all;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
 
 
 entity eproctest is
@@ -56,6 +56,11 @@ architecture Behavioral of eproctest is
       OPORTADDR   : out std_logic_vector(7 downto 0);
       OPORTDATA   : out std_logic_vector(15 downto 0);
       OPORTSTROBE : out std_logic;
+      --inport signals
+      IPORTADDR   : out std_logic_vector(7 downto 0);
+      IPORTDATA   : in std_logic_vector(15 downto 0);
+      IPORTSTROBE : out std_logic;
+
       DEVICE      : in  std_logic_vector(7 downto 0)
       );
 
@@ -72,6 +77,10 @@ architecture Behavioral of eproctest is
   signal OPORTADDR   : std_logic_vector(7 downto 0);
   signal OPORTDATA   : std_logic_vector(15 downto 0);
   signal OPORTSTROBE : std_logic;
+
+  signal IPORTADDR   : std_logic_vector(7 downto 0);
+  signal IPORTDATA   : std_logic_vector(15 downto 0);
+  signal IPORTSTROBE : std_logic;
 
 begin  -- Behavioral
 
@@ -111,8 +120,12 @@ begin  -- Behavioral
       OPORTADDR   => OPORTADDR,
       OPORTDATA    => OPORTDATA,
       OPORTSTROBE => OPORTSTROBE,
+      IPORTADDR   => IPORTADDR,
+      IPORTDATA    => IPORTDATA,
+      IPORTSTROBE => IPORTSTROBE,
       DEVICE      => X"12");
 
+  OPORTDATA<= OPORTADDR & OPORTADDR; 
     instruction_ram : RAMB16_S18_S18
     port map (
       DOA   => idata(15 downto 0),

@@ -28,6 +28,7 @@ to the serial peripheral.
 import math
 
 env = createEnvironment()
+currentBootSet = env.createVariable("currentBootSet")
 currentFileHandle = env.createVariable("currentFileHandle")
 currentFileSizeL = env.createVariable("currentFileSizeL")
 currentFileSizeH = env.createVariable("currentFileSizeH")
@@ -38,9 +39,8 @@ nextState = env.createVariable("nextState")
 serialSendTimer = env.createVariable("serialSendTimer")
 
 
+
 ### CONSTANTS
-JTAGADDR = 7
-BOOTSTOREADDR = 2
 
 EVENTOUT_CMD = 0x80
 EVENTOUT_SRC = 0x87
@@ -62,6 +62,12 @@ BS_GETHANDLE = 0x90
 BS_SETFILENAME = 0x91
 BS_OPENFILE = 0x92
 BS_READDATA = 0x93
+BS_YIELDHANDLE = 0x94
+
+### EVENT BUS ADDRESSES
+EADDR_BOOTSTORE = 2
+EADDR_ETHER = 5
+EADDR_JTAG = 7
 
 ### STATES
 STATE_GETHANDLE = 0
@@ -70,10 +76,16 @@ STATE_SENDFILENAME = 2
 STATE_OPENFILE = 3
 STATE_READDATA = 4 # send the read command for the next N bytes or done
 STATE_SERWAITTX = 5
-STATE_DONE = 6
+STATE_YIELDHANDLE = 6
+STATE_POSTBOOT = 7
+STATE_DONE = 7
 STATE_WAIT = 255
 
 READSIZE = 8
+
+### BOOT SETS
+BOOTSET_NIC = 0
+BOOTSET_DSP = 1
 
 
 def testProc():
@@ -100,12 +112,13 @@ def createEventCycleProc():
   ecp = env.createECycleProc()
   tmp = ecp.createVariable("tmp")
 
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_POSTBOOT, "proc_state_postboot")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_LOADBOOTSET, "proc_state_loadbootset")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_OPENFILE, "proc_state_openfile")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_READDATA, "proc_state_readdata")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_SERWAITTX, "proc_state_serwaittx")
-  
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_YIELDHANDLE, "proc_state_yieldhandle")
   ecp.foreverLoop()
 
 
@@ -145,7 +158,7 @@ def proc_state_openfile():
   proc.load(env.currentFilePosH, 0)
 
   # write the dest
-  proc.load(tmp, BOOTSTOREADDR)
+  proc.load(tmp, EADDR_BOOTSTORE)
   proc.output(EVENTOUT_SRC, tmp)
 
   # load the handle
@@ -190,10 +203,8 @@ def proc_state_readdata():
   proc.add(env.currentFilePosL, tmp)
   proc.addc(env.currentFilePosH, zero)
   
-  
-  
   # write the dest
-  proc.load(tmp, BOOTSTOREADDR)
+  proc.load(tmp, EADDR_BOOTSTORE)
   proc.output(EVENTOUT_SRC, tmp)
 
   # load the handle
@@ -213,9 +224,8 @@ def proc_state_readdata():
   proc.load(env.nextState, STATE_WAIT)
   proc.foreverLoop()
   proc.label("proc_state_readdata_done")
-  proc.load(env.nextState, STATE_DONE)
+  proc.load(env.nextState, STATE_YIELDHANDLE)
   proc.foreverLoop()
-  
   
 
 def proc_state_serwaittx():
@@ -237,9 +247,54 @@ def proc_state_serwaittx():
   proc.load(env.nextState, STATE_READDATA)
   proc.foreverLoop()
   
+def proc_state_yieldhandle():
+  """
+  send the "Done with file handle" event
+  
+  """
+  proc = env.createProc("proc_state_yieldhandle")
+  tmp = proc.createVariable("tmp")
+
+  # write the dest
+  proc.load(tmp, EADDR_BOOTSTORE)
+  proc.output(EVENTOUT_SRC, tmp)
+
+  # load the handle
+  proc.move(tmp, env.currentFileHandle)
+  proc.swapbytes(tmp, tmp)
+
+  # write the command
+  proc.load(tmp, BS_YIELDHANDLE)
+  proc.output(EVENTOUT_CMD, tmp)
+
+  proc.load(env.nextState, STATE_POSTBOOT)
+  proc.foreverLoop()
+  
+
+def proc_state_postboot():
+  """
+  for each bootset, there's a specific set of post-boot steps and
+  states we can go through
+  
+  """
+  proc = env.createProc("proc_state_postboot")
+  tmp = ecp.createVariable("tmp")
+
+  jumpIfEqual(proc, tmp, env.currentBootSet, BOOTSET_NIC, "postboot_nic")
+
+  proc.foreverLoop()
+
+def postboot_nic():
+  """
+  Post-boot operations for the NIC; including resetting the PHY and writing the
+  correct register
+
+  """
+
+  
 
 def bootStoreFileOpenRX():
-  proc = env.createEProc((BS_OPENFILE, BS_OPENFILE), (BOOTSTOREADDR, BOOTSTOREADDR))
+  proc = env.createEProc((BS_OPENFILE, BS_OPENFILE), (EADDR_BOOTSTORE, EADDR_BOOTSTORE))
   # put the file size into the file size buffer
   proc.move(env.currentFileSizeH, ereg.edata[1])
   proc.move(env.currentFileSizeL, ereg.edata[2])
@@ -259,7 +314,7 @@ def setBootFilename(proc, filename):
   cmd = proc.createVariable("cmd")
   src = proc.createVariable("src")
   proc.load(cmd, BS_SETFILENAME)
-  proc.load(src, BOOTSTOREADDR)
+  proc.load(src, EADDR_BOOTSTORE)
   
   flen = len(filename) + 1
 
@@ -295,7 +350,7 @@ def setBootFilename(proc, filename):
 
 
 def bootStoreHandleSetRX():
-  proc = env.createEProc((0x90, 0x90), (BOOTSTOREADDR, BOOTSTOREADDR))
+  proc = env.createEProc((0x90, 0x90), (EADDR_BOOTSTORE, EADDR_BOOTSTORE))
   # put the handle int he handle buffer
   proc.move(env.currentFileHandle, ereg.edata[1])
   proc.load(env.nextState, STATE_LOADBOOTSET)
@@ -303,7 +358,7 @@ def bootStoreHandleSetRX():
 def sendOpenHandleEvent(proc):
   tmp = proc.createVariable("handleOpenTemp")
   # write the dest
-  proc.load(tmp, BOOTSTOREADDR)
+  proc.load(tmp, EADDR_BOOTSTORE)
   proc.output(EVENTOUT_SRC, tmp)
   # write the command
   proc.load(tmp, BS_GETHANDLE)
@@ -346,7 +401,7 @@ proc_state_gethandle()
 proc_state_openfile()
 proc_state_readdata()
 proc_state_serwaittx()
-
+proc_state_yieldhandle()
 
 bootStoreHandleSetRX()
 bootStoreFileOpenRX()

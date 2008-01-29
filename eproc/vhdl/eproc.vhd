@@ -32,6 +32,10 @@ entity eproc is
     OPORTADDR   : out std_logic_vector(7 downto 0);
     OPORTDATA   : out std_logic_vector(15 downto 0);
     OPORTSTROBE : out std_logic;
+    --inport signals
+    IPORTADDR   : out std_logic_vector(7 downto 0);
+    IPORTDATA   : in std_logic_vector(15 downto 0);
+    IPORTSTROBE : out std_logic;
     DEVICE : in std_logic_vector(7 downto 0)
     );
 
@@ -244,9 +248,9 @@ begin  -- Behavioral
       OPORTADDR   => oaddr,
       OPORTDATA   => odata,
       OPORTSTROBE => ostrobe,
-      IPORTADDR   => open,
-      IPORTDATA   => X"0000",
-      IPORTSTROBE => open,
+      IPORTADDR   => IPORTADDR,
+      IPORTDATA   => IPORTDATA,
+      IPORTSTROBE => IPORTSTROBE,
       FORCEJUMP   => forcejump,
       FORCEADDR   => forceaddr);
 
