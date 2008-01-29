@@ -79,7 +79,6 @@ class Process(object):
                 highbyte = (value >> 8) & 0xFF
                 self.immload(destreg, lowbyte)
                 self.immhighload(destreg, highbyte)
-
     def move(self, destreg, srcreg):
         """
         move value from source register to destination register
