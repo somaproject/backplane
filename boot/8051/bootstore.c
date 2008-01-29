@@ -109,7 +109,10 @@ void bootstore() {
   char dummy; 
 
   unsigned long freadoffset, freadlen; 
-  
+
+  unsigned long cacheaddr = -1; 
+  unsigned long CACHESIZE=512; 
+
   for(;;) {
     if (STORESPI_MISO == 1 ) {
       STORESPI_CS = 0; // extra ticks
@@ -156,6 +159,9 @@ void bootstore() {
 	    filelen = fres; 
 	  }
 	
+	cacheaddr = 0; 
+	f_read(&fileobject, buffer, CACHESIZE, &bytesread); 
+
 	storespi_tx(fopenres);
 	storespi_tx(0x00);
 	storespi_tx((filelen >> 24) & 0xFF);
@@ -167,27 +173,65 @@ void bootstore() {
 	// FILE READ CMD
 	// -----------------------------------------------
 	
+/* 	freadoffset = storespi_rx();                                   */
+/* 	freadoffset = (freadoffset << 8) | storespi_rx();                       */
+/* 	freadoffset = (freadoffset << 8) | storespi_rx();                     */
+/* 	freadoffset = (freadoffset << 8) | storespi_rx();  */
+
+	
+/* 	freadlen = storespi_rx();                                   */
+/* 	freadlen = (freadlen << 8) | storespi_rx();                       */
+/* 	freadlen = (freadlen << 8) | storespi_rx();                     */
+/* 	freadlen = (freadlen << 8) | storespi_rx();  */
+	
+/* 	fres = f_lseek(&fileobject, freadoffset);  */
+
+/* 	fres = f_read(&fileobject, buffer, freadlen, &bytesread);  */
+
+/* 	for (pos = 0; pos < freadlen; pos++) { */
+/* 	  storespi_tx(buffer[pos]);  */
+/* 	} */
+	// ----------------------------------------------
+	// FILE READ CMD
+	// -----------------------------------------------
+	
 	freadoffset = storespi_rx();                                  
 	freadoffset = (freadoffset << 8) | storespi_rx();                      
 	freadoffset = (freadoffset << 8) | storespi_rx();                    
 	freadoffset = (freadoffset << 8) | storespi_rx(); 
 
+	
 	freadlen = storespi_rx();                                  
 	freadlen = (freadlen << 8) | storespi_rx();                      
 	freadlen = (freadlen << 8) | storespi_rx();                    
 	freadlen = (freadlen << 8) | storespi_rx(); 
-	fres = f_lseek(&fileobject, freadoffset); 
 
-	fres = f_read(&fileobject, buffer, freadlen, &bytesread); 
-
-	for (pos = 0; pos < freadlen; pos++) {
-	  storespi_tx(buffer[pos]); 
-	}
-      }      
-
+	if ((cacheaddr <= freadoffset) & ((freadoffset + freadlen) < 
+					  (cacheaddr + CACHESIZE))) {
+	  
+	  // we're looking for something we recently acquired; 
+	  
+	  for (pos = 0; pos < freadlen; pos++) {
+	    storespi_tx(buffer[pos + (freadoffset - cacheaddr)]); 
+	  }
+	  
+	} else {
+	  
+	  fres = f_lseek(&fileobject, freadoffset); 
+	  
+	  fres = f_read(&fileobject, buffer, CACHESIZE, &bytesread); 
+	  
+	  cacheaddr = freadoffset; 
+	  
+	  for (pos = 0; pos < freadlen; pos++) {
+	    storespi_tx(buffer[pos]); 
+	  }
+	  
+	}      
+      }
     }
     STORESPI_CS = 1; 
-      
+    
 
   }
 

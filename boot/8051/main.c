@@ -297,9 +297,14 @@ void testcode()
 
 int main(void)
 {
-  int x = 0; 
+  unsigned long x = 0; 
   unsigned int bytesread = 0; 
   FRESULT fres; 
+
+  for (x = 0; x < 10000000; ++x) {
+    // idle loop to allow for things to settle on startup
+
+  }
   
   //general_setup(); 
   configure_port_0(); 
