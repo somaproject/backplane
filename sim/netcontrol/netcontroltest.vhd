@@ -4,9 +4,9 @@ use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
-library WORK;
-use WORK.somabackplane.all;
-use work.somabackplane;
+library soma;
+use soma.somabackplane.all;
+use soma.somabackplane;
 
 entity netcontroltest is
 
@@ -14,46 +14,11 @@ end netcontroltest;
 
 architecture Behavioral of netcontroltest is
 
-  component netcontrol
-    generic (
-      DEVICE       :     std_logic_vector(7 downto 0) := X"01";
-      CMDCNTQUERY  :     std_logic_vector(7 downto 0) := X"40";
-      CMDCNTRST    :     std_logic_vector(7 downto 0) := X"41";
-      CMDNETWRITE  :     std_logic_vector(7 downto 0) := X"42";
-      CMDNETQUERY  :     std_logic_vector(7 downto 0) := X"43";
-      CMDNETRESP   :     std_logic_vector(7 downto 0) := X"50";
-      CMDCNTRESP   :     std_logic_vector(7 downto 0) := X"51"
-      );
-    port (
-      CLK          : in  std_logic;
-      RESET        : in  std_logic;
-      -- standard event-bus interface
-      ECYCLE       : in  std_logic;
-      EARX         : out std_logic_vector(somabackplane.N - 1 downto 0);
-      EDRX         : out std_logic_vector(7 downto 0);
-      EDSELRX      : in  std_logic_vector(3 downto 0);
-      EDTX         : in  std_logic_vector(7 downto 0);
-      EATX         : in  std_logic_vector(somabackplane.N - 1 downto 0);
-      -- tx counter inputdtx
-      TXPKTLENEN   : in  std_logic;
-      TXPKTLEN     : in  std_logic_vector(15 downto 0);
-      TXCHAN       : in  std_logic_vector(2 downto 0);
-      -- other counters
-      RXIOCRCERR   : in  std_logic;
-      UNKNOWNETHER : in  std_logic;
-      UNKNOWNIP    : in  std_logic;
-      UNKNOWNARP   : in  std_logic;
-      UNKNOWNUDP   : in  std_logic;
-      -- output network control settings
-      MYMAC        : out std_logic_vector(47 downto 0);
-      MYBCAST      : out std_logic_vector(31 downto 0);
-      MYIP         : out std_logic_vector(31 downto 0)
 
-      );
 
-  end component;
+  signal CLK   : std_logic := '0';
+  signal CLK2X : std_logic := '0';
 
-  signal CLK    : std_logic := '0';
   signal RESET  : std_logic := '1';
   signal ECYCLE : std_logic := '0';
 
@@ -98,6 +63,8 @@ architecture Behavioral of netcontroltest is
 
   signal pos : integer range 0 to 999 := 980;
 
+  signal NICSOUT, NICSIN, NICSCLK, NICSCS : std_logic := '0';
+
 
   type settings is (none, noop, noopdone,
                     writemac, writemacdone,
@@ -109,52 +76,164 @@ architecture Behavioral of netcontroltest is
   signal state : settings := none;
 
 
-  constant DEVICE      : std_logic_vector(7 downto 0) := X"01";
-  constant CMDCNTQUERY : std_logic_vector(7 downto 0) := X"40";
-  constant CMDCNTRST   : std_logic_vector(7 downto 0) := X"41";
-  constant CMDNETWRITE : std_logic_vector(7 downto 0) := X"42";
-  constant CMDNETQUERY : std_logic_vector(7 downto 0) := X"43";
-  constant CMDNETRESP  : std_logic_vector(7 downto 0) := X"50";
-  constant CMDCNTRESP  : std_logic_vector(7 downto 0) := X"51";
+  constant DEVICE : std_logic_vector(7 downto 0) := X"01";
+  constant MYDEVICE : std_logic_vector(7 downto 0) := X"17";
+
 
   signal receivedcntid : std_logic_vector(15 downto 0) := (others => '0');
   signal receivedcnt   : std_logic_vector(31 downto 0) := (others => '0');
 
+  signal clkstate : integer   := 0;
+  signal mainclk  : std_logic := '0';
+
+  signal serialregin : std_logic_vector(39 downto 0) := (others => '0');
+  signal serialbcnt : integer := 0;
+  signal outword : std_logic_vector(31 downto 0) := X"1234ABCD";
+
+
 begin  -- Behavioral
 
-  CLK   <= not clk after 10 ns;
-  RESET <= '0'     after 100 ns;
 
-  netcontrol_uut : netcontrol
+  mainclk <= not mainclk after 2.5 ns;
+  reset   <= '0'         after 100 ns;
+
+  process(mainclk)
+  begin
+    if rising_edge(mainclk) then
+      if clkstate = 3 then
+        clkstate <= 0;
+      else
+        clkstate <= clkstate + 1;
+      end if;
+
+      if clkstate = 0 or clkstate = 2 then
+        CLK2X <= '0';
+      else
+        CLK2X <= '1';
+      end if;
+
+      if clkstate = 1 then
+        CLK <= '0';
+      elsif clkstate = 3 then
+        CLK <= '1';
+      end if;
+    end if;
+  end process;
+
+
+  RESET <= '0' after 100 ns;
+
+
+  netcontrol_uut : entity soma.netcontrol
     generic map (
-      DEVICE      => DEVICE,
-      CMDCNTQUERY => CMDCNTQUERY,
-      CMDCNTRST   => CMDCNTRST,
-      CMDNETWRITE => CMDNETWRITE,
-      CMDNETQUERY => CMDNETQUERY,
-      CMDNETRESP  => CMDNETRESP,
-      CMDCNTRESP  => CMDCNTRESP )
-    port map (
-      CLK         => CLK,
-      RESET       => RESET,
-      ECYCLE      => ECYCLE,
-      EARx        => EARX,
-      EDRX        => EDRX,
-      EDSELRX     => EDSELRX,
-      EDTX        => EDTX,
-      EATX        => EATX,
-      TXPKTLENEN  => TXPKTLENEN,
-      TXPKTLEN    => TXPKTLEN,
-      TXCHAN      => TXCHAN,
-      RXIOCRCERR  => RXIOCRCERR,
-      UNKNOWNETHER => UNKNOWNETHER,
-      UNKNOWNIP => UNKNOWNIP,
-      UNKNOWNARP => UNKNOWNARP,
-      UNKNOWNUDP => UNKNOWNUDP,
-      MYMAC       => MYMAC,
-      MYBCAST     => MYBCAST,
-      MYIP        => MYIP);
+      DEVICE       => DEVICE,
+      RAM_INIT_00 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_00,
+      RAM_INIT_01 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_01,
+      RAM_INIT_02 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_02,
+      RAM_INIT_03 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_03,
+      RAM_INIT_04 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_04,
+      RAM_INIT_05 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_05,
+      RAM_INIT_06 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_06,
+      RAM_INIT_07 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_07,
+      RAM_INIT_08 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_08,
+      RAM_INIT_09 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_09,
+      RAM_INIT_0A => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_0A,
+      RAM_INIT_0B => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_0B,
+      RAM_INIT_0C => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_0C,
+      RAM_INIT_0D => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_0D,
+      RAM_INIT_0E => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_0E,
+      RAM_INIT_0F => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_0F,
 
+      RAM_INIT_10 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_10,
+      RAM_INIT_11 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_11,
+      RAM_INIT_12 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_12,
+      RAM_INIT_13 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_13,
+      RAM_INIT_14 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_14,
+      RAM_INIT_15 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_15,
+      RAM_INIT_16 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_16,
+      RAM_INIT_17 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_17,
+      RAM_INIT_18 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_18,
+      RAM_INIT_19 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_19,
+      RAM_INIT_1A => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_1A,
+      RAM_INIT_1B => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_1B,
+      RAM_INIT_1C => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_1C,
+      RAM_INIT_1D => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_1D,
+      RAM_INIT_1E => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_1E,
+      RAM_INIT_1F => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_1F,
+
+      RAM_INIT_20 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_20,
+      RAM_INIT_21 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_21,
+      RAM_INIT_22 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_22,
+      RAM_INIT_23 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_23,
+      RAM_INIT_24 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_24,
+      RAM_INIT_25 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_25,
+      RAM_INIT_26 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_26,
+      RAM_INIT_27 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_27,
+      RAM_INIT_28 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_28,
+      RAM_INIT_29 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_29,
+      RAM_INIT_2A => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_2A,
+      RAM_INIT_2B => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_2B,
+      RAM_INIT_2C => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_2C,
+      RAM_INIT_2D => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_2D,
+      RAM_INIT_2E => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_2E,
+      RAM_INIT_2F => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_2F,
+
+      RAM_INIT_30 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_30,
+      RAM_INIT_31 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_31,
+      RAM_INIT_32 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_32,
+      RAM_INIT_33 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_33,
+      RAM_INIT_34 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_34,
+      RAM_INIT_35 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_35,
+      RAM_INIT_36 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_36,
+      RAM_INIT_37 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_37,
+      RAM_INIT_38 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_38,
+      RAM_INIT_39 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_39,
+      RAM_INIT_3A => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_3A,
+      RAM_INIT_3B => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_3B,
+      RAM_INIT_3C => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_3C,
+      RAM_INIT_3D => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_3D,
+      RAM_INIT_3E => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_3E,
+      RAM_INIT_3F => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_3F,
+
+      RAM_INITP_00 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_00,
+      RAM_INITP_01 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_01,
+      RAM_INITP_02 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_02,
+      RAM_INITP_03 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_03,
+      RAM_INITP_04 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_04,
+      RAM_INITP_05 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_05,
+      RAM_INITP_06 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_06,
+      RAM_INITP_07 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_07 )
+    port map (
+      CLK          => CLK,
+      CLK2X        => CLK2X,
+      RESET        => RESET,
+      ECYCLE       => ECYCLE,
+      EDTX         => EDTX,
+      EATX         => EATX,
+      EARX         => EARX,
+      EDRX         => EDRX,
+      EDSELRX      => EDSELRX,
+      -- tx counter input
+      TXPKTLENEN   => TXPKTLENEN,
+      TXPKTLEN     => TXPKTLEN,
+      TXCHAN       => TXCHAN,
+      -- other counters
+      RXIOCRCERR   => RXIOCRCERR,
+      UNKNOWNETHER => UNKNOWNETHER,
+      UNKNOWNIP    => UNKNOWNIP,
+      UNKNOWNARP   => UNKNOWNARP,
+      UNKNOWNUDP   => UNKNOWNUDP,
+      EVTRXSUC => '0',
+      EVTFIFOFULL => '0',
+      -- settings
+      MYMAC        => MYMAC,
+      MYBCAST      => MYBCAST,
+      MYIP         => MYIP,
+      -- NIC interface
+      NICSOUT      => NICSOUT,
+      NICSIN       => NICSIN,
+      NICSCLK      => NICSCLK,
+      NICSCS       => NICSCS);
 
   ecycle_generation : process(CLK)
   begin
@@ -195,391 +274,44 @@ begin  -- Behavioral
   end process;
 
 
-
-  main : process
-    --generate the commands, read the outputs
-    --
-  begin
-    -- first, we send no-op and make sure we have no reaction
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    state <= noop;
-
-    eventinputs(0)(0) <= (others => '1');
-    EATX              <= (others => '1');
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    EATX              <= eazeros;
-
-
-    -- now, verify they don't do anything
-
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    assert EARX'stable(20 us) report "EARX registered an event" severity
-      error;
-    state <= noopdone;
-
-    -------------------------------------------------------------------------
-    -- write MAC
-    -------------------------------------------------------------------------
-    -- send the event
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    state             <= writemac;
-    eventinputs(4)(0) <= CMDNETWRITE & X"04";
-    eventinputs(4)(1) <= X"0003";
-    eventinputs(4)(2) <= X"ABCD";
-    eventinputs(4)(3) <= X"EF89";
-    eventinputs(4)(4) <= X"1234";
-    eventinputs(4)(5) <= X"0000";
-    EATX(0)           <= '0';
-    EATX(4)           <= '1';
-
-
-    -- now try and acquire the event
-    while EARX(4) /= '1' loop
-      wait until rising_edge(CLK) and ECYCLE = '1';
-      EATX <= eazeros;
-      wait until rising_edge(CLK);
-
-
-    end loop;
-
-    wait for 3 ns;
-    EDSELRX <= "0000";
-    wait until rising_edge(CLK);
-    assert EDRX = CMDNETRESP
-      report "1 : error receiving net response" severity error;
-
-    EDSELRX <= "0011";
-    wait until rising_edge(CLK);
-    assert EDRX = X"03"
-      report "1 : error receiving mac addr response" severity error;
-
-    EDSELRX <= "0100";
-    wait until rising_edge(CLK);
-    assert EDRX = X"AB"
-      report "1 : error receiving mac byte 0 response" severity error;
-
-    EDSELRX <= "0101";
-    wait until rising_edge(CLK);
-    assert EDRX = X"CD"
-      report "1 : error receiving mac byte 1 response" severity error;
-
-    EDSELRX <= "0110";
-    wait until rising_edge(CLK);
-    assert EDRX = X"EF"
-      report "1 : error receiving mac byte 2 response" severity error;
-
-
-
-    assert MYMAC = X"ABCDEF891234" report
-      "Error setting MYMAC output value" severity error;
-
-    state <= writemacdone;
-
-    -------------------------------------------------------------------------
-    -- write IP
-    -------------------------------------------------------------------------
-    -- send the event
-    --wait until rising_edge(CLK) and ECYCLE = '1';
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    state             <= writeip;
-    eventinputs(4)(0) <= CMDNETWRITE & X"04";
-    eventinputs(4)(1) <= X"0001";
-    eventinputs(4)(2) <= X"AABB";
-    eventinputs(4)(3) <= X"CCDD";
-    eventinputs(4)(4) <= X"0000";
-    eventinputs(4)(5) <= X"0000";
-    EATX(0)           <= '0';
-    EATX(4)           <= '1';
-
-    -- now try and acquire the event
-    wait until rising_edge(CLK);
-    while EARX(4) /= '1' loop
-      wait until rising_edge(CLK) and ECYCLE = '1';
-      EATX <= eazeros;
-      wait until rising_edge(CLK);
-
-
-    end loop;
-
-    wait for 3 ns;
-    EDSELRX <= "0000";
-    wait until rising_edge(CLK);
-    assert EDRX = CMDNETRESP
-      report "2 : error receiving net response" severity error;
-
-    EDSELRX <= "0011";
-    wait until rising_edge(CLK);
-    assert EDRX = X"01"
-      report "2 : error receiving ip addr response" severity error;
-
-    EDSELRX <= "0100";
-    wait until rising_edge(CLK);
-    assert EDRX = X"AA"
-      report "2 : error receiving ip byte 0 response" severity error;
-
-    EDSELRX <= "0101";
-    wait until rising_edge(CLK);
-    assert EDRX = X"BB"
-      report "2 : error receiving io byte 1 response" severity error;
-
-    EDSELRX <= "0110";
-    wait until rising_edge(CLK);
-    assert EDRX = X"CC"
-      report "1 : error receiving io byte 2 response" severity error;
-
-
-
-
-    assert MYIP = X"AABBCCDD" report "Error setting MYIP output value" severity error;
-
-    state <= writeipdone;
-
-
-    -------------------------------------------------------------------------
-    -- write BCAST IP
-    -------------------------------------------------------------------------
-    -- send the event
-    --wait until rising_edge(CLK) and ECYCLE = '1';
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    state             <= writebcast;
-    eventinputs(4)(0) <= CMDNETWRITE & X"04";
-    eventinputs(4)(1) <= X"0002";
-    eventinputs(4)(2) <= X"1122";
-    eventinputs(4)(3) <= X"3456";
-    eventinputs(4)(4) <= X"0000";
-    eventinputs(4)(5) <= X"0000";
-    EATX(0)           <= '0';
-    EATX(4)           <= '1';
-
-    -- now try and acquire the event
-    wait until rising_edge(CLK);
-    while EARX(4) /= '1' loop
-      wait until rising_edge(CLK) and ECYCLE = '1';
-      EATX <= eazeros;
-      wait until rising_edge(CLK);
-
-
-    end loop;
-
-    wait for 3 ns;
-    EDSELRX <= "0000";
-    wait until rising_edge(CLK);
-    assert EDRX = CMDNETRESP
-      report "3 : error receiving net response" severity error;
-
-    EDSELRX <= "0011";
-    wait until rising_edge(CLK);
-    assert EDRX = X"02"
-      report "3 : error receiving ip bcast addr response" severity error;
-
-    EDSELRX <= "0100";
-    wait until rising_edge(CLK);
-    assert EDRX = X"11"
-      report "3 : error receiving ip bcast byte 0 response" severity error;
-
-    EDSELRX <= "0101";
-    wait until rising_edge(CLK);
-    assert EDRX = X"22"
-      report "3 : error receiving io bcast byte 1 response" severity error;
-
-    EDSELRX <= "0110";
-    wait until rising_edge(CLK);
-    assert EDRX = X"34"
-      report "3 : error receiving io bcast byte 2 response" severity error;
-
-
-    assert MYBCAST = X"11223456"
-      report "Error setting MYBCAST output value" severity error;
-
-    state <= writebcastdone;
-
-    ---------------------------------------------------------------------------
-    -- counter writing and reading
-    ---------------------------------------------------------------------------
-    for j in 0 to 19 loop
-      for i in 0 to 7 loop
-        wait until rising_edge(CLK);
-        wait until rising_edge(CLK);
-        txchan     <= std_logic_vector(TO_UNSIGNED(i, 3));
-        wait until rising_edge(CLK);
-        txpktlen   <= std_logic_vector(to_unsigned(i, 8)) & X"17";
-        wait until rising_edge(CLK);
-        txpktlenen <= '1';
-        wait until rising_edge(CLK);
-        txpktlenen <= '0';
-        wait until rising_edge(CLK);
-      end loop;  -- i
-    end loop;  -- j
-
-    -- two rx fifo errors
-    wait until rising_edge(CLK);
-    RXIOCRCERR <= '1';
-    wait until rising_edge(CLK);
-    RXIOCRCERR <= '0';
-    wait until rising_edge(CLK);
-    RXIOCRCERR <= '1';
-    wait until rising_edge(CLK);
-    RXIOCRCERR <= '0';
-    wait until rising_edge(CLK);
-    RXIOCRCERR <= '1';
-    wait until rising_edge(CLK);
-    RXIOCRCERR <= '0';
-
-    -- now, we explicitly query two of the counters
-
-    -------------------------------------------------------------------------
-    -- query RXIOCRCERRCNT 
-    -------------------------------------------------------------------------
-    -- send the event
-    --wait until rising_edge(CLK) and ECYCLE = '1';
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    state             <= rxiocrccnt;
-    eventinputs(4)(0) <= CMDCNTQUERY& X"04";
-    eventinputs(4)(1) <= X"0001";
-    eventinputs(4)(2) <= X"0000";
-    eventinputs(4)(3) <= X"0000";
-    eventinputs(4)(4) <= X"0000";
-    eventinputs(4)(5) <= X"0000";
-    EATX(0)           <= '0';
-    EATX(4)           <= '1';
-
-    -- now try and acquire the event
-    wait until rising_edge(CLK);
-    while EARX(4) /= '1' loop
-      wait until rising_edge(CLK) and ECYCLE = '1';
-      EATX <= eazeros;
-      wait until rising_edge(CLK);
-    end loop;
-
-    wait for 1 ns;
-    EDSELRX <= "0001";
-    wait until rising_edge(CLK);
-    assert EDRX = X"01"
-      report "4 : invalid received command" severity error;
-
-    wait for 1 ns;
-    EDSELRX <= "1001";
-    wait until rising_edge(CLK);
-    assert EDRX = X"03"
-      report "4 : invalid value in rxiocrcerr count" severity error;
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    state   <= rxiocrccntdone;
-
-
-    -------------------------------------------------------------------------
-    -- query TXERRCNT 6
-    -------------------------------------------------------------------------
-    -- send the event
-    --wait until rising_edge(CLK) and ECYCLE = '1';
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    state <= txiocnt6;
-
-    eventinputs(4)(0) <= CMDCNTQUERY & X"04";
-    eventinputs(4)(1) <= X"001C";
-    eventinputs(4)(2) <= X"0000";
-    eventinputs(4)(3) <= X"0000";
-    eventinputs(4)(4) <= X"0000";
-    eventinputs(4)(5) <= X"0000";
-    EATX(0)           <= '0';
-    EATX(4)           <= '1';
-
-    -- now try and acquire the event
-    wait until rising_edge(CLK);
-    while EARX(4) /= '1' loop
-      wait until rising_edge(CLK) and ECYCLE = '1';
-      EATX <= eazeros;
-      wait until rising_edge(CLK);
-    end loop;
-
-    wait for 1 ns;
-    EDSELRX <= "0011";
-    wait until rising_edge(CLK);
-    assert EDRX = X"1C"
-      report "4 : invalid received command" severity error;
-
-    wait for 1 ns;
-    EDSELRX <= "1000";                  -- 8 
-    wait until rising_edge(CLK);
-    assert EDRX = X"79"
-      report "4 : invalid value in txiolen 06" severity error;
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-
-    wait for 1 ns;
-    EDSELRX <= "1001";                  -- 9 
-    wait until rising_edge(CLK);
-    assert EDRX = X"CC"
-      report "4 : invalid value in txiolen 06" severity error;
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    state   <= txiocnt6done;
-
-
-
-    -------------------------------------------------------------------------
-    -- broadcast values
-    -------------------------------------------------------------------------
-
-    for i in 0 to 2 loop
-
-      wait until rising_edge(CLK) and ECYCLE = '1';
-
-      wait until rising_edge(CLK);
-      while EARX(4) /= '1' loop
-        wait until rising_edge(CLK) and ECYCLE = '1';
-        EATX <= eazeros;
-        wait until rising_edge(CLK);
-      end loop;
-
-      wait for 3 ns;
-      EDSELRX <= "0000";
-      wait until rising_edge(CLK);
-      assert EDRX = CMDCNTRESP
-        report "5 : error receiving net response" severity error;
-
-      wait for 1 ns;
-      EDSELRX                    <= "0010";
-      wait until rising_edge(CLK);
-      receivedcntid(15 downto 8) <= EDRX;
-
-      wait for 1 ns;
-      EDSELRX                   <= "0011";
-      wait until rising_edge(CLK);
-      receivedcntid(7 downto 0) <= EDRX;
-
-      -- read the first 32 bits of the count
-      wait for 1 ns;
-      EDSELRX                   <= "0110";
-      wait until rising_edge(CLK);
-      receivedcnt(31 downto 24) <= EDRX;
-      EDSELRX                   <= "0111";
-      wait until rising_edge(CLK);
-      receivedcnt(23 downto 16) <= EDRX;
-      EDSELRX                   <= "1000";
-      wait until rising_edge(CLK);
-      receivedcnt(15 downto 8)  <= EDRX;
-      EDSELRX                   <= "1001";
-      wait until rising_edge(CLK);
-      receivedcnt(7 downto 0)   <= EDRX;
-
-      if receivedcntid = X"0000" then
-        assert receivedcnt = X"456789AB"
-          report "Error reading counter 0" severity error;
-      elsif receivedcntid = X"0001" then
-        assert receivedcnt = X"000079cc"
-          report "Error reading counter 1" severity error;
-      elsif receivedcntid = X"0002" then
-        assert receivedcnt = X"00000000"
-          report "Error reading counter 2" severity error;
+  serialin: process (NICSCLK, NICSCS)
+  begin  -- process serialin
+    if falling_edge(NICSCS) then
+      serialbcnt <= 0;
+    else
+      if falling_edge(NICSCLK) then
+        serialbcnt <= serialbcnt + 1; 
       end if;
-
-    end loop;  -- i
-
-
-    assert false report "End of Simulation" severity failure;
-
-
-  end process main;
-
+    end if;
+    if rising_edge(NICSCLK) then
+      if NICSCS = '0' then
+        serialregin <= serialregin(38 downto 0) & NICSOUT; 
+      end if;
+      if serialbcnt >= 7  and serialbcnt < 39 then
+        NICSIN <= outword(39 - serialbcnt - 1); 
+      end if;
+    end if;
+    
+  end process serialin;
+  
+  
+  process
+    begin
+  -- send test events
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '1';
+    eventinputs(0)(0) <= X"30" & MYDEVICE;
+    eventinputs(0)(1) <= X"0000";
+    eventinputs(0)(2) <= X"0000";
+    eventinputs(0)(3) <= X"1234";
+    eventinputs(0)(4) <= X"5678";
+    eventinputs(0)(5) <= X"0000";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(0)           <= '0';
+    wait until rising_edge(CLK) and ECYCLE = '1';
+  -- now verify we got the handle!
+    wait;
+    
+   end process; 
 end Behavioral;

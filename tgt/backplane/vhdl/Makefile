@@ -108,21 +108,26 @@ transsim: build/$(PROJECT).ngd
 	netgen -intstyle ise -rpw 100 -tpw 0 -ar Structure -tm $(PROJECT) -w -dir build -ofmt vhdl -sim build/$(PROJECT).ngd $(PROJECT)_transsim.vhd
 
 
-ASMPY = backplane.asmpy ../../../netcontrol/netcontrol.asmpy
-
 # update roms
+# It's not clear how we handle mutliple roms? 
+
 $(PROJECT).postmem.bit: $(PROJECT).mem build/$(PROJECT).bit
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
-	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).imem
+	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).syscontrol.imem $(PROJECT).netcontrol.imem
 
-$(PROJECT).syscontrol.mem:  $(PROJECT).asmpy
-	python ../../../eproc/assemble/assemble.py $(PROJECT).asmpy \
-	$(PROJECT).imem $(PROJECT).part.mem > $(PROJECT).part.log
+$(PROJECT).syscontrol.mem:  backplane.asmpy
+	python ../../../eproc/assemble/assemble.py backplane.asmpy \
+	$(PROJECT).syscontrol.imem $(PROJECT).syscontrol.mem > $(PROJECT).syscontrol.log
 
-$(PROJECT).mem: $(PROJECT).part.mem
-	echo "@0000" > $(PROJECT).mem
-	cat $(PROJECT).part.mem >> $(PROJECT).mem
+$(PROJECT).netcontrol.mem:  ../../../vhdl/netcontrol/netcontrol.asmpy
+	python ../../../eproc/assemble/assemble.py  ../../../vhdl/netcontrol/netcontrol.asmpy \
+	$(PROJECT).netcontrol.imem $(PROJECT).netcontrol.mem > $(PROJECT).netcontrol.log
 
+$(PROJECT).mem: $(PROJECT).syscontrol.mem $(PROJECT).netcontrol.mem
+	echo "@00000000" > $(PROJECT).mem
+	cat $(PROJECT).syscontrol.mem >> $(PROJECT).mem
+	echo "@10000000" >> $(PROJECT).mem
+	cat $(PROJECT).netcontrol.mem >> $(PROJECT).mem
 
 clean:
 	rm -Rf xst build $(PROJECT).bit $(PROJECT).postmem.bit

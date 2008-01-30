@@ -74,6 +74,8 @@ architecture Behavioral of ecore is
 
   signal opclass : std_logic_vector(1 downto 0) := (others => '0');
 
+  signal iportdatal : std_logic_vector(15 downto 0) := (others => '0');
+  
   component alu
     port (
       A    : in  std_logic_vector(15 downto 0);
@@ -132,7 +134,7 @@ begin  -- Behavioral
       DOB   => regb);
 
   reginsel <= '1' when opclass = "11" else '0'; 
-  regin <= aluy when reginsel = '0' else IPORTDATA;
+  regin <= aluy when reginsel = '0' else iportdatal;
 
   wea <= rwe and cphase;
 
@@ -219,10 +221,13 @@ begin  -- Behavioral
           OPORTADDR <= immval;
           OPORTDATA <= rega;
         end if;
-        OPORTSTROBE <= loportstrobe; 
+        OPORTSTROBE <= loportstrobe;
+
+        iportdatal <= IPORTDATA; 
       end if;
     end if;
 
+    IPORTADDR <= immval; 
   end process main;
 
 

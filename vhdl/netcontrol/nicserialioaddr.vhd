@@ -37,7 +37,7 @@ architecture Behavioral of nicserialioaddr is
 
 begin  -- Behavioral
 
-  nicserialio_inst : entity nicserialio
+  nicserialio_inst : entity work.nicserialio
     port map (
       CLK   => CLK,
       START => serstart,
@@ -52,7 +52,7 @@ begin  -- Behavioral
       SCS   => NICSCS);
 
   DOUT <= "000000000000000" & serdonel when addro = "0000" else
-          serdout(15 downto 0) when addro = "0011" else
+          serdout(15 downto 0) when addro = "0100" else
           serdout(31 downto 16);
 
 
@@ -70,11 +70,11 @@ begin  -- Behavioral
             seraddr <= DIN(5 downto 0); 
           end if;
 
-          if ADDRI = "0011"  then
+          if ADDRI = "0100"  then
             serdin(15 downto 0) <= DIN; 
           end if;
 
-          if ADDRI = "0100"  then
+          if ADDRI = "0011"  then
             serdin(31 downto 16) <= DIN; 
           end if;
 

@@ -11,8 +11,34 @@ EVENTOUT_DATA1 = 0x82
 EVENTOUT_DATA2 = 0x83
 EVENTOUT_DATA3 = 0x84
 EVENTOUT_DATA4 = 0x85
+
 EVENTPROC_ENABLE = 0x89
 EVENTPROC_ADDR = 0x88
+
+NICSERIAL_ADDR = 0x30
+
+NICSERADDR_START = 0x00
+NICSERADDR_RW    = 0x01
+NICSERADDR_ADDR  = 0x02
+NICSERADDR_DINL  = 0x03
+NICSERADDR_DINH  = 0x04
+
+
+env = createEnvironment()
+mostRecentDirectNICSerialReq = env.createVariable("mostRecentDirectNICSerialReq")
+
+
+def jumpIfEqual(proc, tempreg, reg, const, addr):
+  """
+  if reg == const, jump to addr
+
+  note const  must be < 256
+  
+  """
+  proc.load(tempreg, const)
+  proc.sub(tempreg, reg)
+  proc.jz(addr)
+  
 
 def createEnableEventCycleProc():
   newproc = env.createProc("enableEventCycleProc")
@@ -21,4 +47,57 @@ def createEnableEventCycleProc():
   newproc.output(EVENTPROC_ENABLE, y)
   newproc.foreverLoop()
 
+def proc_send_ether():
+  """
+  a simple proc that just sends an event response
+  """
+  proc = env.createProc("proc_send_ether")
+  dinl = proc.createVariable("dinl")
+  dinh = proc.createVariable("dinh")
+  proc.input(0x04, dinl)
+  proc.input(0x03, dinh)
+  # now send an event
+  proc.output(EVENTOUT_DATA1, dinl)
+  proc.output(EVENTOUT_DATA2, dinh)
+  proc.output(EVENTOUT_SRC, env.mostRecentDirectNICSerialReq )
+  proc.load(dinl, 0x30)
+  proc.output(EVENTOUT_CMD, dinl)
+  proc.foreverLoop()
+    
 
+def createEventCycleProc():
+  ecp = env.createECycleProc()
+  tmp = ecp.createVariable("tmp")
+  readstat = ecp.createVariable("readstat")
+  # read and check if we have received an event response
+  ecp.input(0, readstat)
+  jumpIfEqual(ecp, tmp, readstat, 0x01, "proc_send_ether")
+  
+  
+  ecp.foreverLoop()
+
+def rawNicSerialSettingRX():
+  proc = env.createEProc((NICSERIAL_ADDR, NICSERIAL_ADDR), (0, 255))
+  tmp = env.createVariable("tmp")
+  proc.move(tmp, ereg.edata[0])
+  proc.output(NICSERADDR_RW, tmp)
+
+  proc.move(tmp, ereg.edata[1])
+  proc.output(NICSERADDR_ADDR, tmp)
+
+  proc.move(tmp, ereg.edata[2])
+  proc.output(NICSERADDR_DINL, tmp)
+
+  proc.move(tmp, ereg.edata[3])
+  proc.output(NICSERADDR_DINH, tmp)
+
+  proc.move(env.mostRecentDirectNICSerialReq, ereg.src)
+
+  # and start it
+  proc.output(NICSERADDR_START, tmp)
+    
+
+createEnableEventCycleProc()
+createEventCycleProc()
+rawNicSerialSettingRX()
+proc_send_ether()

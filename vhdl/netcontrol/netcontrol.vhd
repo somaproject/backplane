@@ -273,7 +273,7 @@ begin  -- Behavioral
 
       DEVICE => DEVICE);
 
-  nicserialioaddr_inst : entity nicserialioaddr
+  nicserialioaddr_inst : entity work.nicserialioaddr
     port map (
       CLK     => CLK2X,
       ADDRI   => oportaddr(3 downto 0),

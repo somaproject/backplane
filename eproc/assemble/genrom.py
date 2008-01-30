@@ -6,7 +6,7 @@ So we generate them with this script.
 
 useage:
 
-genrom.py  foo.bmm foo.imem
+genrom.py  foo.bmm foo.imem bar.imem 
 
 We extract out the instance info from foo.mem and the data from foo.imem
 
@@ -18,19 +18,27 @@ import sys
 import os
 import numpy as n
 
+def createRAMFile(filename):
+    fid = file(filename + "_mem.vhd", 'w')
 
-def writeRAM(filename, instance, d, p):
+    fid.write("library ieee;\n")
+    fid.write("use ieee.std_logic_1164;\n")
+    fid.write("package %s_mem_pkg is\n" % filename)
+    return fid
+
+def closeRAMFile(fid, base):
+
+    fid.write("end %s_mem_pkg;\n" % base)
+    
+
+
+def writeRAM(fid, instance, d, p):
     """
     Writes data d and parity info p to a list of constants
     in the package filename_pkg (in file filename.vhd)
 
     """
 
-    fid = file(filename + "_mem.vhd", 'w')
-
-    fid.write("library ieee;\n")
-    fid.write("use ieee.std_logic_1164;\n")
-    fid.write("package %s_mem_pkg is\n" % filename)
 
     sinstance = instance.replace("/", "_")
 
@@ -56,20 +64,25 @@ def writeRAM(filename, instance, d, p):
             strsum = ("%1.1X" % val) + strsum
         fid.write(strsum)
         fid.write('";\n')
-
-    fid.write("end %s_mem_pkg;\n" % filename)
     
     
-def getRamInstance(file):
+def getRamInstances(fid):
     """
-    Extract out the instance from a bmm
+    Extract out the instances from a bmm
     """
-    addrblock = file.readline()
-    busblock = file.readline()
-    instline = file.readline()
-    inst = instline.split(" ")[0]
 
-    return inst
+    line = fid.readline()
+    instances = []
+    while line:
+        ls =  line.split(" ")[0].strip().upper()
+        if ls == "BUS_BLOCK":
+            instline = fid.readline()
+            inst = instline.split(" ")[0]
+            instances.append(inst)
+        
+        line = fid.readline()
+    
+    return instances
 
 def createBram():
     """
@@ -80,34 +93,44 @@ def createBram():
     p = n.zeros(2**10, dtype=n.uint8)
 
     return (d, p)
+
+def loadIMEMFile(filename, bmmfile):
+    """ load in an imem file """
+    imemfid = file(filename)    
+    d, p = createBram()
+
+    pos = 0
+
+    base = os.path.basename(bmmfile)[:-4]
+    for w in imemfid.readlines():
+        ws = w.strip()
+        assert len(ws) == 18
+        val = 0
+        for v in ws:
+            val = val << 1
+            if v == '1':
+                val |= 1
+
+        d[pos] = val % (2**16)
+        p[pos] = (val >> 16 ) & 0x3
+
+        pos += 1
+
+    return (d, p)
+
+    
 bmmfile = sys.argv[1]
-imemfile = sys.argv[2]
+
 
 bmmfid = file(bmmfile)
-imemfid = file(imemfile)
-
-inst = getRamInstance(bmmfid)
-
-d, p = createBram()
-
-pos = 0
+instances = getRamInstances(bmmfid)
 
 base = os.path.basename(bmmfile)[:-4]
-for w in imemfid.readlines():
-    ws = w.strip()
-    assert len(ws) == 18
-    val = 0
-    for v in ws:
-        val = val << 1
-        if v == '1':
-            val |= 1
-    print ws, "%5.5X" % val
 
-    d[pos] = val % (2**16)
-    p[pos] = (val >> 16 ) & 0x3
-    
-    pos += 1
-    
-print base
+rfid = createRAMFile(base)
 
-writeRAM(base, inst, d, p)
+for i, s in enumerate(sys.argv[2:]):
+    d, p = loadIMEMFile(s, bmmfile)
+
+    writeRAM(rfid, instances[i], d, p)
+closeRAMFile(rfid, base)

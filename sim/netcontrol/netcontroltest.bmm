@@ -1,0 +1,6 @@
+ADDRESS_BLOCK netcontrolram RAMB18 [0x10000000 : 0x100007ff]
+BUS_BLOCK
+netcontrol_inst_ram [17:0];
+END_BUS_BLOCK;
+END_ADDRESS_BLOCK; 
+
