@@ -37,12 +37,14 @@ linkDelay = env.createVariable("linkDelay")
 STATE_NONE = 0
 STATE_RAISELINK = 1
 
-LINK_PHYRESET = 0
-LINK_PHYRESETW = 1
-LINK_SERDOUT = 2
-LINK_SERDOUTW = 3
-LINK_SERADDR  = 4
-LINK_SERADDRW = 5
+LINK_NICUP = 0
+LINK_NICUPW = 1
+LINK_PHYRESET = 2
+LINK_PHYRESETW = 3
+LINK_SERDOUT = 4
+LINK_SERDOUTW = 5
+LINK_SERADDR  = 6
+LINK_SERADDRW = 7
 
 LINK_DONE = 255
 
@@ -76,8 +78,8 @@ def proc_send_ether():
   proc.input(0x04, dinl)
   proc.input(0x03, dinh)
   # now send an event
-  proc.output(EVENTOUT_DATA1, dinl)
-  proc.output(EVENTOUT_DATA2, dinh)
+  proc.output(EVENTOUT_DATA2, dinl)
+  proc.output(EVENTOUT_DATA1, dinh)
   proc.output(EVENTOUT_SRC, env.mostRecentDirectNICSerialReq )
   proc.load(dinl, 0x30)
   proc.output(EVENTOUT_CMD, dinl)
@@ -90,6 +92,12 @@ def proc_raiselink():
   readstat = proc.createVariable("readstat2")
   
   
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_NICUP,
+              "proc_raiselink_nicup")
+
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_NICUPW,
+              "proc_raiselink_nicupw")
+
   jumpIfEqual(proc, tmp, env.linkNextState, LINK_PHYRESET,
               "proc_raiselink_phyreset")
 
@@ -111,6 +119,44 @@ def proc_raiselink():
 
   jumpIfEqual(proc, tmp, env.linkNextState, LINK_DONE,
               "proc_raiselink_done")
+
+
+  # NICUPW :: Wait until we can read the correct words from the nic
+  
+  proc.label("proc_raiselink_nicup")
+  proc.load(tmp, 0x00)
+  proc.output(NICSERADDR_RW, tmp)
+  proc.output(NICSERADDR_ADDR, tmp)
+  proc.output(NICSERADDR_DINL, tmp)
+  proc.output(NICSERADDR_DINH, tmp)
+  proc.output(NICSERADDR_START, tmp)
+  proc.load(env.linkNextState, LINK_NICUPW)
+  proc.foreverLoop()
+
+  proc.label("proc_raiselink_nicupw")
+  proc.input(0, readstat)
+  jumpIfEqual(proc, tmp, readstat, 0x01, "proc_raiselink_nicupw_read_success")
+  proc.foreverLoop()
+  proc.label("proc_raiselink_nicupw_read_success")
+
+  # test output event
+##   proc.input(NICSERADDR_DINL, readstat)
+##   proc.output(EVENTOUT_DATA0, readstat)
+##   proc.input(NICSERADDR_DINH, readstat)
+##   proc.output(EVENTOUT_DATA1, readstat)
+##   proc.load(tmp, 0x7)
+##   proc.output(EVENTOUT_SRC, tmp)
+##   proc.output(EVENTOUT_CMD, tmp)
+
+  proc.load(tmp, 0x0123) 
+  proc.input(NICSERADDR_DINL, readstat)
+  proc.sub(tmp, readstat)
+  proc.jz("proc_raiselink_nicupw_success")
+  proc.load(env.linkNextState, LINK_NICUP) 
+  proc.foreverLoop()
+  proc.label("proc_raiselink_nicupw_success")
+  proc.load(env.linkNextState, LINK_PHYRESET)
+  proc.foreverLoop()
 
 
   proc.label("proc_raiselink_phyreset")
@@ -179,7 +225,6 @@ def proc_raiselink():
   jumpIfEqual(proc, tmp, readstat, 0x01, "proc_raiselink_seraddrw_success")
   proc.foreverLoop()
   proc.label("proc_raiselink_seraddrw_success")
-  # send event
   proc.load(tmp, 0x7)
   proc.output(EVENTOUT_SRC, tmp)
   proc.output(EVENTOUT_CMD, tmp)
@@ -237,7 +282,7 @@ def bringUpLinkRX():
   proc = env.createEProc((EVTADDR_LINKUP, EVTADDR_LINKUP), (0, 255))
   tmp = proc.createVariable("tmp3")
   proc.load(env.nextState, STATE_RAISELINK)
-  proc.load(env.linkNextState, LINK_PHYRESET)
+  proc.load(env.linkNextState, LINK_NICUP)
   
   
 createEnableEventCycleProc()

@@ -66,7 +66,7 @@ BS_YIELDHANDLE = 0x94
 
 ### EVENT BUS ADDRESSES
 EADDR_BOOTSTORE = 2
-EADDR_ETHER = 5
+EADDR_NETCONTROL = 4 
 EADDR_JTAG = 7
 
 ### STATES
@@ -78,7 +78,7 @@ STATE_READDATA = 4 # send the read command for the next N bytes or done
 STATE_SERWAITTX = 5
 STATE_YIELDHANDLE = 6
 STATE_POSTBOOT = 7
-STATE_DONE = 7
+STATE_DONE = 8
 STATE_WAIT = 255
 
 READSIZE = 8
@@ -112,7 +112,7 @@ def createEventCycleProc():
   ecp = env.createECycleProc()
   tmp = ecp.createVariable("tmp")
 
-#  jumpIfEqual(ecp, tmp, env.nextState, STATE_POSTBOOT, "proc_state_postboot")
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_POSTBOOT, "proc_state_postboot")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_GETHANDLE, "proc_state_gethandle")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_LOADBOOTSET, "proc_state_loadbootset")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_OPENFILE, "proc_state_openfile")
@@ -278,7 +278,7 @@ def proc_state_postboot():
   
   """
   proc = env.createProc("proc_state_postboot")
-  tmp = ecp.createVariable("tmp")
+  tmp = proc.createVariable("tmp2")
 
   jumpIfEqual(proc, tmp, env.currentBootSet, BOOTSET_NIC, "postboot_nic")
 
@@ -291,6 +291,15 @@ def postboot_nic():
 
   """
 
+  proc = env.createProc("postboot_nic")
+  tmp = proc.createVariable("tmp3")
+  proc.load(tmp, EADDR_NETCONTROL)
+  proc.output(EVENTOUT_SRC, tmp)
+  proc.load(tmp, 0x31)
+  proc.output(EVENTOUT_CMD, tmp)
+
+  proc.load(env.nextState, STATE_DONE)
+  proc.foreverLoop()
   
 
 def bootStoreFileOpenRX():
@@ -402,6 +411,8 @@ proc_state_openfile()
 proc_state_readdata()
 proc_state_serwaittx()
 proc_state_yieldhandle()
+proc_state_postboot()
+postboot_nic()
 
 bootStoreHandleSetRX()
 bootStoreFileOpenRX()

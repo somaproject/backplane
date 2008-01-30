@@ -26,6 +26,25 @@ while e == None:
 print e, nonecnt
 
 
+a = events.Event()
+a.cmd = 0x30
+a.src = 0x07
+a.setAddr(0x4)
+a.data[0] = 0x00
+a.data[1] = 0x00
+a.data[2] = 0x00
+a.data[3] = 0x00
+
+events.sendEvent(a)
+
+e = events.readEvent()
+nonecnt = 0
+while e == None:
+    e = events.readEvent()
+    nonecnt += 1
+print e, nonecnt
+
+
 ## # Dummy read of 0x89abcdef
 ## a = events.Event()
 ## a.cmd = 0x30
