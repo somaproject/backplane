@@ -4,6 +4,20 @@ NetControl handles:
    IP settings
 
 
+How much status monitoring / etc. should there be? 
+
+Every N cycles we read the link and check to see if the cable
+is still attached? 
+
+0x30: raw access to the NIC Control interface
+0x31: bring up the interface:
+    causes a nic reset
+    and then any site-specific nic settings
+    and then possibly a dump of any of the mac/phy settings to the nic? 
+
+And then the status events are : 
+0x32: Link status (up/down)
+
 ------------------------------------------------------------------------
 Network Settings
 ------------------------------------------------------------------------

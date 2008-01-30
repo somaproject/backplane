@@ -25,7 +25,18 @@ NICSERADDR_DINH  = 0x04
 
 
 env = createEnvironment()
+
+# state variables are used for persistence across ECYCLEs
+nextState = env.createVariable("nextState")
 mostRecentDirectNICSerialReq = env.createVariable("mostRecentDirectNICSerialReq")
+
+STATE_NONE = 0
+STATE_RAISELINK = 1
+
+LINK_PHYRESET = 0
+LINK_PHYRESETW = 1
+LINK_SERADDRW = 2
+LINK_SERADDRW = 3
 
 
 def jumpIfEqual(proc, tempreg, reg, const, addr):
