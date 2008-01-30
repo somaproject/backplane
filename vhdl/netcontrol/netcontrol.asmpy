@@ -15,7 +15,8 @@ EVENTOUT_DATA4 = 0x85
 EVENTPROC_ENABLE = 0x89
 EVENTPROC_ADDR = 0x88
 
-NICSERIAL_ADDR = 0x30
+EVTADDR_NICSERIAL = 0x30
+EVTADDR_LINKUP = 0x31
 
 NICSERADDR_START = 0x00
 NICSERADDR_RW    = 0x01
@@ -28,15 +29,22 @@ env = createEnvironment()
 
 # state variables are used for persistence across ECYCLEs
 nextState = env.createVariable("nextState")
+linkNextState = env.createVariable("linkNextState")
 mostRecentDirectNICSerialReq = env.createVariable("mostRecentDirectNICSerialReq")
+linkDelay = env.createVariable("linkDelay")
+
 
 STATE_NONE = 0
 STATE_RAISELINK = 1
 
 LINK_PHYRESET = 0
 LINK_PHYRESETW = 1
-LINK_SERADDRW = 2
-LINK_SERADDRW = 3
+LINK_SERDOUT = 2
+LINK_SERDOUTW = 3
+LINK_SERADDR  = 4
+LINK_SERADDRW = 5
+
+LINK_DONE = 255
 
 
 def jumpIfEqual(proc, tempreg, reg, const, addr):
@@ -76,9 +84,122 @@ def proc_send_ether():
   proc.foreverLoop()
     
 
+def proc_raiselink():
+  proc = env.createProc("proc_raiselink")
+  tmp = proc.createVariable("tmp2")
+  readstat = proc.createVariable("readstat2")
+  
+  
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_PHYRESET,
+              "proc_raiselink_phyreset")
+
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_PHYRESETW,
+              "proc_raiselink_phyresetw")
+
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_SERADDR,
+              "proc_raiselink_seraddr")
+
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_SERADDRW,
+              "proc_raiselink_seraddrw")
+
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_SERDOUT,
+              "proc_raiselink_serdout")
+
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_SERDOUTW,
+              "proc_raiselink_serdoutw")
+
+
+  jumpIfEqual(proc, tmp, env.linkNextState, LINK_DONE,
+              "proc_raiselink_done")
+
+
+  proc.label("proc_raiselink_phyreset")
+  proc.load(tmp, 0x01)
+  proc.output(NICSERADDR_RW, tmp)
+  proc.output(NICSERADDR_ADDR, tmp)
+  proc.load(tmp, 0x00)
+  proc.output(NICSERADDR_DINL, tmp)
+  proc.load(tmp, 0x01)
+  proc.output(NICSERADDR_DINH, tmp)
+  proc.output(NICSERADDR_START, tmp)
+  proc.load(env.linkNextState, LINK_PHYRESETW)
+  proc.foreverLoop()
+
+  proc.label("proc_raiselink_phyresetw")
+  # read and check if we have received an event response
+  proc.input(0, readstat)
+  jumpIfEqual(proc, tmp, readstat, 0x01, "proc_raiselink_phyresetw_success")
+  proc.foreverLoop()
+  proc.label("proc_raiselink_phyresetw_success")
+
+  proc.load(env.linkNextState, LINK_SERDOUT)
+  proc.foreverLoop()
+
+  proc.label("proc_raiselink_serdout")
+  proc.load(tmp, 0x01)
+  proc.output(NICSERADDR_RW, tmp)
+  proc.load(tmp, 0x09)
+  proc.output(NICSERADDR_ADDR, tmp)
+  proc.load(tmp, 0x1140)
+  proc.output(NICSERADDR_DINL, tmp)
+  proc.output(NICSERADDR_DINH, tmp)
+  proc.output(NICSERADDR_START, tmp)
+  proc.load(env.linkNextState, LINK_SERDOUTW)
+  proc.load(env.linkDelay, 0xF000)
+
+  proc.foreverLoop()
+
+  proc.label("proc_raiselink_serdoutw")
+  # read and check if we have received an event response
+  proc.load(tmp, 0x01)
+  proc.sub(env.linkDelay, tmp)
+  jumpIfEqual(proc, tmp, env.linkDelay, 0, "proc_raiselink_serdoutw_success")
+  proc.foreverLoop()
+  proc.label("proc_raiselink_serdoutw_success")
+  proc.load(env.linkNextState, LINK_SERADDR)
+  proc.foreverLoop()
+
+
+  proc.label("proc_raiselink_seraddr")
+  proc.load(tmp, 0x01)
+  proc.output(NICSERADDR_RW, tmp)
+  proc.load(tmp, 0x08)
+  proc.output(NICSERADDR_ADDR, tmp)
+  proc.load(tmp, 0x00)
+  proc.output(NICSERADDR_DINL, tmp)
+  proc.load(tmp, 0x20)
+  proc.output(NICSERADDR_DINH, tmp)
+  proc.output(NICSERADDR_START, tmp)
+  proc.load(env.linkNextState, LINK_SERADDRW)
+  proc.foreverLoop()
+
+  proc.label("proc_raiselink_seraddrw")
+  # read and check if we have received an event response
+  proc.input(0, readstat)
+  jumpIfEqual(proc, tmp, readstat, 0x01, "proc_raiselink_seraddrw_success")
+  proc.foreverLoop()
+  proc.label("proc_raiselink_seraddrw_success")
+  # send event
+  proc.load(tmp, 0x7)
+  proc.output(EVENTOUT_SRC, tmp)
+  proc.output(EVENTOUT_CMD, tmp)
+
+
+  proc.load(env.linkNextState, LINK_DONE)
+  proc.foreverLoop()
+
+
+  
+  proc.label("proc_raiselink_done")
+  proc.load(env.nextState, STATE_NONE)
+  proc.foreverLoop()
+  
+  
 def createEventCycleProc():
   ecp = env.createECycleProc()
   tmp = ecp.createVariable("tmp")
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_RAISELINK, "proc_raiselink")
+  
   readstat = ecp.createVariable("readstat")
   # read and check if we have received an event response
   ecp.input(0, readstat)
@@ -88,7 +209,7 @@ def createEventCycleProc():
   ecp.foreverLoop()
 
 def rawNicSerialSettingRX():
-  proc = env.createEProc((NICSERIAL_ADDR, NICSERIAL_ADDR), (0, 255))
+  proc = env.createEProc((EVTADDR_NICSERIAL, EVTADDR_NICSERIAL), (0, 255))
   tmp = env.createVariable("tmp")
   proc.move(tmp, ereg.edata[0])
   proc.output(NICSERADDR_RW, tmp)
@@ -106,9 +227,23 @@ def rawNicSerialSettingRX():
 
   # and start it
   proc.output(NICSERADDR_START, tmp)
-    
 
+    
+def bringUpLinkRX():
+  """
+  Being process of bringing up link
+
+  """
+  proc = env.createEProc((EVTADDR_LINKUP, EVTADDR_LINKUP), (0, 255))
+  tmp = proc.createVariable("tmp3")
+  proc.load(env.nextState, STATE_RAISELINK)
+  proc.load(env.linkNextState, LINK_PHYRESET)
+  
+  
 createEnableEventCycleProc()
 createEventCycleProc()
 rawNicSerialSettingRX()
+bringUpLinkRX()
+
 proc_send_ether()
+proc_raiselink()

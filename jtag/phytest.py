@@ -1,9 +1,9 @@
 import events
 import sys
 
-NETCONTROLADDR = 4
+NETCONTROLADDR = 4 
 m = events.Mask()
-m.setAddr(NETCONTROLADDR)
+m.setAddr(NETCONTROLADDR + 1)
 events.setMask(m)
 
 # Dummy read of 0x01234567
@@ -61,16 +61,16 @@ while e == None:
     e = events.readEvent()
 print e
 
-#write the address 
-print "write the address" 
-a = events.Event()
-a.cmd = 0x30
-a.src = 0x07
-a.setAddr(0x4)
-a.data[0] = 0x01
-a.data[1] = 0x08
-a.data[2] = 0x00
-a.data[3] = 0x00
+## #write the address 
+## print "write the address" 
+## a = events.Event()
+## a.cmd = 0x30
+## a.src = 0x07
+## a.setAddr(0x4)
+## a.data[0] = 0x01
+## a.data[1] = 0x08
+## a.data[2] = 0x00
+## a.data[3] = 0x00
 
 
 events.sendEvent(a)
@@ -81,23 +81,23 @@ while e == None:
 print e
 
 #read the addr reg to see if we're done
-for i in range(5):
-    print "read the addr reg to see if we're done" 
-    a = events.Event()
-    a.cmd = 0x30
-    a.src = 0x07
-    a.setAddr(0x4)
-    a.data[0] = 0x00
-    a.data[1] = 0x08
-    a.data[2] = 0x00
-    a.data[3] = 0x00
+## for i in range(5):
+##     print "read the addr reg to see if we're done" 
+##     a = events.Event()
+##     a.cmd = 0x30
+##     a.src = 0x07
+##     a.setAddr(0x4)
+##     a.data[0] = 0x00
+##     a.data[1] = 0x08
+##     a.data[2] = 0x00
+##     a.data[3] = 0x00
 
-    events.sendEvent(a)
+##     events.sendEvent(a)
 
-    e = events.readEvent()
-    while e == None:
-        e = events.readEvent()
-    print e
+##     e = events.readEvent()
+##     while e == None:
+##         e = events.readEvent()
+##     print e
 
 ## # read the actual value
 ## print "read the actual value" 
