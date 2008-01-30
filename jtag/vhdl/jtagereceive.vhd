@@ -276,11 +276,13 @@ begin  -- Behavioral
       -- mask side
       smupdatel   <= smupdate;
       smupdatell  <= smupdatel;
+      smsell       <= smsel;
+      
       if smupdatel = '1' and smupdatell = '0' and smsell = '1' then
         smaskregl <= smaskreg;
       end if;
 
-      smsell       <= smsel;
+
       if enext = '1' then
         smaskregll(79 downto 0) <= smaskregl;
       end if;

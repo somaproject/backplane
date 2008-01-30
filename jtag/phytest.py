@@ -1,26 +1,29 @@
 import events
 import sys
+
+NETCONTROLADDR = 4
 m = events.Mask()
-m.setAddr(5)
+m.setAddr(NETCONTROLADDR)
 events.setMask(m)
 
 # Dummy read of 0x01234567
-## a = events.Event()
-## a.cmd = 0x30
-## a.src = 0x07
-## a.setAddr(0x5)
-## a.data[0] = 0x00
-## a.data[1] = 0x03
-## a.data[2] = 0x00
-## a.data[3] = 0x00
+a = events.Event()
+a.cmd = 0x30
+a.src = 0x07
+a.setAddr(0x4)
+a.data[0] = 0x00
+a.data[1] = 0x00
+a.data[2] = 0x00
+a.data[3] = 0x00
 
-## events.sendEvent(a)
-## e = events.readEvent()
-## nonecnt = 0
-## while e == None:
-##     e = events.readEvent()
-##     nonecnt += 1
-## print e, nonecnt
+events.sendEvent(a)
+
+e = events.readEvent()
+nonecnt = 0
+while e == None:
+    e = events.readEvent()
+    nonecnt += 1
+print e, nonecnt
 
 
 ## # Dummy read of 0x89abcdef
@@ -42,14 +45,10 @@ events.setMask(m)
 # bring phy out of reset
 print "Bring the phy out of reset"
 
-m = events.Mask()
-m.setAddr(5)
-events.setMask(m)
-
 a = events.Event()
 a.cmd = 0x30
 a.src = 0x07
-a.setAddr(0x5)
+a.setAddr(0x4)
 a.data[0] = 0x01
 a.data[1] = 0x01
 a.data[2] = 0x00
@@ -67,7 +66,7 @@ print "write the address"
 a = events.Event()
 a.cmd = 0x30
 a.src = 0x07
-a.setAddr(0x5)
+a.setAddr(0x4)
 a.data[0] = 0x01
 a.data[1] = 0x08
 a.data[2] = 0x00
@@ -87,7 +86,7 @@ for i in range(5):
     a = events.Event()
     a.cmd = 0x30
     a.src = 0x07
-    a.setAddr(0x5)
+    a.setAddr(0x4)
     a.data[0] = 0x00
     a.data[1] = 0x08
     a.data[2] = 0x00
@@ -105,7 +104,7 @@ for i in range(5):
 ## a = events.Event()
 ## a.cmd = 0x30
 ## a.src = 0x07
-## a.setAddr(0x5)
+## a.setAddr(0x4)
 ## a.data[0] = 0x00
 ## a.data[1] = 0x0A
 ## a.data[2] = 0x00
@@ -123,7 +122,7 @@ print "now, writing dout reg"
 a = events.Event()
 a.cmd = 0x30
 a.src = 0x07
-a.setAddr(0x5)
+a.setAddr(0x4)
 a.data[0] = 0x01
 a.data[1] = 0x09
 a.data[2] = 0x1140
@@ -141,7 +140,7 @@ print e
 ## a = events.Event()
 ## a.cmd = 0x30
 ## a.src = 0x07
-## a.setAddr(0x5)
+## a.setAddr(0x4)
 ## a.data[0] = 0x00
 ## a.data[1] = 0x09
 ## a.data[2] = 0x0
@@ -158,7 +157,7 @@ print "setting address bits"
 a = events.Event()
 a.cmd = 0x30
 a.src = 0x07
-a.setAddr(0x5)
+a.setAddr(0x4)
 a.data[0] = 0x01
 a.data[1] = 0x08
 a.data[2] = 0x00
@@ -178,7 +177,7 @@ print e
 ##     a = events.Event()
 ##     a.cmd = 0x30
 ##     a.src = 0x07
-##     a.setAddr(0x5)
+##     a.setAddr(0x4)
 ##     a.data[0] = 0x00
 ##     a.data[1] = 0x08
 ##     a.data[2] = 0x00
@@ -195,7 +194,7 @@ print e
 ## a = events.Event()
 ## a.cmd = 0x30
 ## a.src = 0x07
-## a.setAddr(0x5)
+## a.setAddr(0x4)
 ## a.data[0] = 0x01
 ## a.data[1] = 0x08
 ## a.data[2] = 0x00
@@ -213,7 +212,7 @@ print e
 ##     a = events.Event()
 ##     a.cmd = 0x30
 ##     a.src = 0x07
-##     a.setAddr(0x5)
+##     a.setAddr(0x4)
 ##     a.data[0] = 0x00
 ##     a.data[1] = 0x08
 ##     a.data[2] = 0x00
@@ -229,7 +228,7 @@ print e
 ## a = events.Event()
 ## a.cmd = 0x30
 ## a.src = 0x07
-## a.setAddr(0x5)
+## a.setAddr(0x4)
 ## a.data[0] = 0x00
 ## a.data[1] = 0x0A
 ## a.data[2] = 0x00
