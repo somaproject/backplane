@@ -119,22 +119,41 @@ def createEventCycleProc():
   jumpIfEqual(ecp, tmp, env.nextState, STATE_READDATA, "proc_state_readdata")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_SERWAITTX, "proc_state_serwaittx")
   jumpIfEqual(ecp, tmp, env.nextState, STATE_YIELDHANDLE, "proc_state_yieldhandle")
+  jumpIfEqual(ecp, tmp, env.nextState, STATE_DONE, "proc_state_done")
   ecp.foreverLoop()
 
 
 def proc_state_loadbootset():
   proc = env.createProc("proc_state_loadbootset")
-  
+  tmp = proc.createVariable("tmp5")
+  src = proc.createVariable("src")
+  cmd = proc.createVariable("cmd")
   # right now there's just a single boot set
-  setBootSerMask(proc, 0x01)
-  setBootFilename(proc, "network.bit")
+  jumpIfEqual(proc, tmp, env.currentBootSet, BOOTSET_NIC, "proc_state_loadbootset_nic")
+  jumpIfEqual(proc, tmp, env.currentBootSet, BOOTSET_DSP, "proc_state_loadbootset_dsp")
+  proc.jump("proc_state_loadbootset_finalize")
+  
+  
+  proc.label("proc_state_loadbootset_nic")
+  setBootSerMask(proc, tmp, 0x01)
+  setBootFilename(proc, tmp, src, cmd, "network.bit")
+  proc.jump("proc_state_loadbootset_finalize")
+  
+  proc.label("proc_state_loadbootset_dsp")
+  setBootSerMask(proc, tmp, 0xFFFF << 4)
+  setBootFilename(proc, tmp, src, cmd, "dsp.bit")
+  proc.jump("proc_state_loadbootset_finalize")
+  
 
+  proc.label("proc_state_loadbootset_finalize")
   proc.output(FPROGOUT_FPROG, 0) 
 
   proc.load(env.nextState, STATE_OPENFILE)
               
   proc.foreverLoop()
   
+def proc_state_done():
+  proc = env.createProc("proc_state_done")
   
 def proc_state_gethandle():
   """
@@ -311,18 +330,18 @@ def bootStoreFileOpenRX():
   proc.load(env.nextState, STATE_READDATA)
   
   
-def setBootSerMask(proc, val):
-  tmp = proc.createVariable("tmp")
+def setBootSerMask(proc, tmp, val):
+
   proc.load(tmp, val & 0xFFFF)
   proc.output(FPROGOUT_MASKL, tmp)
   
   proc.load(tmp, (val > 16) &  0xFFFF)
   proc.output(FPROGOUT_MASKH, tmp)
 
-def setBootFilename(proc, filename):
-  tmp = proc.createVariable("tmp1")
-  cmd = proc.createVariable("cmd")
-  src = proc.createVariable("src")
+def setBootFilename(proc, tmpreg, cmdreg, srcreg,  filename):
+  tmp = tmpreg
+  cmd = cmdreg
+  src = srcreg
   proc.load(cmd, BS_SETFILENAME)
   proc.load(src, EADDR_BOOTSTORE)
   
@@ -413,6 +432,7 @@ proc_state_readdata()
 proc_state_serwaittx()
 proc_state_yieldhandle()
 proc_state_postboot()
+proc_state_done()
 postboot_nic()
 
 bootStoreHandleSetRX()

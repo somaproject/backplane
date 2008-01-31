@@ -26,7 +26,7 @@ use UNISIM.VComponents.all;
 entity backplane is
   port (
     CLKIN         : in    std_logic;
-    SERIALBOOT    : out   std_logic_vector(19 downto 0);
+    DSPCFG : out std_logic_vector(15 downto 0);
     -- SPI interface
     SPIMOSI       : in    std_logic;
     SPIMISO       : out   std_logic;
@@ -395,7 +395,7 @@ begin  -- Behavioral
       FCLK  => NICFCLK,
       FDIN  => NICFDIN);
 
-  SERIALBOOT <= lserialboot;
+  DSPCFG <= lserialboot(19 downto 4);
 
 
   LEDPOWER <= lserialboot(0);
