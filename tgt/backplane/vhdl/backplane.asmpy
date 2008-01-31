@@ -154,6 +154,20 @@ def proc_state_loadbootset():
   
 def proc_state_done():
   proc = env.createProc("proc_state_done")
+  tmp = proc.createVariable("tmp17")
+  jumpIfEqual(proc, tmp, env.currentBootSet, BOOTSET_NIC, "proc_state_done_DSP")
+  jumpIfEqual(proc, tmp, env.currentBootSet, BOOTSET_DSP, "proc_state_done_done")
+
+  proc.label("proc_state_done_DSP")
+  proc.load(env.currentBootSet, BOOTSET_DSP)
+  proc.load(env.nextState, STATE_GETHANDLE)
+  proc.foreverLoop()
+  
+  proc.label("proc_state_done_done")
+  proc.foreverLoop()
+  
+  
+  proc.foreverLoop()
   
 def proc_state_gethandle():
   """
@@ -335,7 +349,7 @@ def setBootSerMask(proc, tmp, val):
   proc.load(tmp, val & 0xFFFF)
   proc.output(FPROGOUT_MASKL, tmp)
   
-  proc.load(tmp, (val > 16) &  0xFFFF)
+  proc.load(tmp, (val >> 16) &  0xFFFF)
   proc.output(FPROGOUT_MASKH, tmp)
 
 def setBootFilename(proc, tmpreg, cmdreg, srcreg,  filename):

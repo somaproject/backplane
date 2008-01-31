@@ -115,6 +115,10 @@ $(PROJECT).postmem.bit: $(PROJECT).mem build/$(PROJECT).bit
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
 	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).syscontrol.imem $(PROJECT).netcontrol.imem
 
+forceromupdate: $(PROJECT).mem
+	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
+	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).syscontrol.imem $(PROJECT).netcontrol.imem
+	cp $(PROJECT).postmem.bit $(PROJECT).bit
 $(PROJECT).syscontrol.mem:  backplane.asmpy
 	python ../../../eproc/assemble/assemble.py backplane.asmpy \
 	$(PROJECT).syscontrol.imem $(PROJECT).syscontrol.mem > $(PROJECT).syscontrol.log

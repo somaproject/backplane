@@ -3,7 +3,7 @@ import sys
 
 NETCONTROLADDR = 4 
 m = events.Mask()
-m.setAddr(NETCONTROLADDR + 1)
+m.setAddr(NETCONTROLADDR)
 events.setMask(m)
 
 # Dummy read of 0x01234567
