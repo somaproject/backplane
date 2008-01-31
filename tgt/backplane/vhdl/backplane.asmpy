@@ -124,6 +124,7 @@ def createEventCycleProc():
 
 def proc_state_loadbootset():
   proc = env.createProc("proc_state_loadbootset")
+  
   # right now there's just a single boot set
   setBootSerMask(proc, 0x01)
   setBootFilename(proc, "network.bit")

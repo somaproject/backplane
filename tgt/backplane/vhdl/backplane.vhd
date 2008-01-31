@@ -389,7 +389,7 @@ begin  -- Behavioral
 
   bootdeserialize_inst : entity soma.bootdeserialize
     port map (
-      CLK   => clk2x,
+      CLK   => clk,
       SERIN => lserialboot(0),
       FPROG => NICFPROG,
       FCLK  => NICFCLK,

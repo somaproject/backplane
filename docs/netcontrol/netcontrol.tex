@@ -18,6 +18,8 @@ is still attached?
 And then the status events are : 
 0x32: Link status (up/down)
 
+
+
 ------------------------------------------------------------------------
 Network Settings
 ------------------------------------------------------------------------
@@ -73,3 +75,10 @@ Counter read addresses / positions
 16 : TX0CNT (packet count of TX port 0)
 ...
 23 : TX7CNT (packet count)
+
+
+\subsection{Implementation}
+
+Primary state: STATE_NONE and STATE_RAISELINK
+
+LINK_ are the substates in netcontrol

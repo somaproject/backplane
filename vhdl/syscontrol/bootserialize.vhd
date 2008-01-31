@@ -26,7 +26,7 @@ architecture Behavioral of bootserialize is
 
   signal bsel : integer range 0 to 4 := 0;
 
-  signal bcnt : integer range 0 to 4 := 0;
+  signal bcnt : integer range 0 to 9 := 0;
 
   type states is (none, swait, s0, s1, s2, s3, s4, sdone);
   signal cs, ns : states := none;
@@ -66,7 +66,7 @@ begin  -- Behavioral
       fclkl  <= FCLK;
       fdinl  <= FDIN;
 
-      if bcnt = 4 then
+      if bcnt = 9 then
         bcnt <= 0;
       else
         bcnt <= bcnt + 1;
@@ -90,7 +90,7 @@ begin  -- Behavioral
       when swait =>
         bsel  <= 0;
         FDONE <= '0';
-        if bcnt = 4 then
+        if bcnt = 9 then
           ns  <= s0; 
         else
           ns  <= swait; 
@@ -99,7 +99,7 @@ begin  -- Behavioral
       when s0 =>
         bsel  <= 0;
         FDONE <= '0';
-        if bcnt = 4 then
+        if bcnt = 9 then
           ns  <= s1; 
         else
           ns  <= s0; 
@@ -108,7 +108,7 @@ begin  -- Behavioral
       when s1 =>
         bsel  <= 1;
         FDONE <= '0';
-        if bcnt = 4 then
+        if bcnt = 9 then
           ns  <= s2; 
         else
           ns  <= s1; 
@@ -117,7 +117,7 @@ begin  -- Behavioral
       when s2 =>
         bsel  <= 2; 
         FDONE <= '0';
-        if bcnt = 4 then
+        if bcnt = 9 then
           ns  <= s3; 
         else
           ns  <= s2; 
@@ -125,7 +125,7 @@ begin  -- Behavioral
       when s3 =>
         bsel  <= 3;
         FDONE <= '0';
-        if bcnt = 4 then
+        if bcnt = 9 then
           ns  <= s4; 
         else
           ns  <= s3; 
@@ -134,7 +134,7 @@ begin  -- Behavioral
       when s4 =>
         bsel  <= 4;
         FDONE <= '0';
-        if bcnt = 4 then
+        if bcnt = 9 then
           ns  <= sdone; 
         else
           ns  <= s4; 

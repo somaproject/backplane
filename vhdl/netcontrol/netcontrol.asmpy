@@ -87,6 +87,11 @@ def proc_send_ether():
     
 
 def proc_raiselink():
+  """
+  Raiselink 
+
+  """
+  
   proc = env.createProc("proc_raiselink")
   tmp = proc.createVariable("tmp2")
   readstat = proc.createVariable("readstat2")
