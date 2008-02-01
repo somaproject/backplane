@@ -1,9 +1,12 @@
 
 Data port: 
 
-At the ECYCLE, the event addresses are latched, and then, one cycle later, we begin transmitting events. 
+At the ECYCLE, the event addresses are latched, and then, one cycle
+later, we begin transmitting events.
 
-Event port zero has it's 12 bytes sent first, followed by event one, etc.
+Event port zero has it's 12 bytes sent first, followed by event one,
+etc.
 
-There is no expectation that the EADDR or DGRANT will remain stable outside of the ECYCLE tick . 
+There is no expectation that the EADDR or DGRANT will remain stable
+outside of the ECYCLE tick .
 

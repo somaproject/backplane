@@ -88,6 +88,14 @@ vhdl soma "../../../vhdl/fiberdebug/fibertx.vhd"
 vhdl soma "../../../vhdl/fiberdebug/framedis.vhd"
 vhdl soma "../../../vhdl/fiberdebug/txeventbuffer.vhd"
 
+# devicelink stuff
+vhdl work "../../../vhdl/devicelink/deserialize.vhd"
+vhdl work "../../../vhdl/devicelink/serialize.vhd"
+vhdl work "../../../vhdl/devicelink/coredevicelink.vhd"
+vhdl work "../../../vhdl/devicelink/devicelinkclk.vhd"
+vhdl work "../../../tests/manydevicelink/vhdl/linktester.vhd"
+
+
 vhdl work "backplane_mem.static.vhd"
 vhdl work "fakedata.vhd"
 vhdl work "backplane.vhd"

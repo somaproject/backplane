@@ -62,7 +62,13 @@ entity backplane is
     RAMDQSL       : inout std_logic;
     RAMDQ         : inout std_logic_vector(15 downto 0);
     FIBERDEBUGOUT : out   std_logic;
-    FIBERDEBUGIN  : in    std_logic
+    FIBERDEBUGIN  : in    std_logic;
+
+    -- DeviceLink Serial interfaces
+    TXIO_P     : out std_logic_vector(18 downto 0);
+    TXIO_N     : out std_logic_vector(18 downto 0);
+    RXIO_P     : in  std_logic_vector(18 downto 0);
+    RXIO_N     : in  std_logic_vector(18 downto 0)
     );
 end backplane;
 
@@ -139,6 +145,17 @@ architecture Behavioral of backplane is
 
   signal jtagesenddebug : std_logic_vector(7 downto 0) := (others => '0');
 
+  -- devicelink clocks
+  signal clkbittxint, clkbittx       : std_logic := '0';
+  signal clkbittx180int, clkbittx180 : std_logic := '0';
+
+  signal clkbitrxint, clkbitrx : std_logic := '0';
+  signal clkwordtx       : std_logic := '0';
+
+  signal validint : std_logic_vector(18 downto 0) := (others => '0');
+
+  signal maindcmlocked : std_logic := '0';
+  
 begin  -- Behavioral
 
 
@@ -675,13 +692,6 @@ begin  -- Behavioral
 
   NICIOCLK <= clk;
 
-  dlyctrl : IDELAYCTRL
-    port map(
-      RDY    => open,
-      REFCLK => clk,
-      RST    => reset
-      );
-
   process(niciointclk)
   begin
 
@@ -701,4 +711,34 @@ begin  -- Behavioral
 
     end if;
   end process;
+
+
+    devicelinkclk_inst : entity work.devicelinkclk
+    port map (
+      CLKIN       => CLKIN,
+      CLKBITTX    => clkbittx,
+      CLKBITTX180 => clkbittx180,
+      CLKBITRX    => clkbitrx,
+      CLKWORDTX   => clkwordtx,
+      STARTUPDONE => maindcmlocked);
+  
+  -- instantiate devices
+
+   devicelinks : for i in 0 to 15 generate
+     dl        : entity work.linktester
+       port map (
+         CLK       => clk,
+         RXBITCLK  => clkbitrx,
+         TXHBITCLK => clkbittx,
+         TXWORDCLK => clkwordtx,
+         RESET     => RESET,
+         TXIO_P    => TXIO_P(i),
+         TXIO_N    => TXIO_N(i),
+         RXIO_P    => RXIO_P(i),
+         RXIO_N    => RXIO_N(i),
+         VALID     => validint(i));
+
+   end generate devicelinks;
+
+
 end Behavioral;

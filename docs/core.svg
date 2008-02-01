@@ -10,8 +10,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="core.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/docs"
-   inkscape:version="0.45.1"
+   sodipodi:docbase="/home/jonas/soma/backplane/docs"
+   inkscape:version="0.44.1"
    sodipodi:version="0.32"
    id="svg1996"
    height="11in"
@@ -19,8 +19,7 @@
    version="1.0"
    inkscape:export-filename="/home/jonas/soma/somabackplane/docs/core.png"
    inkscape:export-xdpi="123.97"
-   inkscape:export-ydpi="123.97"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:export-ydpi="123.97">
   <defs
      id="defs3">
     <linearGradient
@@ -1165,7 +1164,7 @@
          id="text4037"
          y="377.5"
          x="1484.375"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            id="tspan4041"
            y="377.5"
@@ -1241,7 +1240,7 @@
        id="path2675" />
     <text
        xml:space="preserve"
-       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="643.75"
        y="371.25"
        id="text1735"><tspan
@@ -1742,7 +1741,7 @@
        x="-615"
        y="1015.625"
        id="text3871"
-       transform="matrix(-1.484002e-18,-1,1,-1.484002e-18,0,0)"><tspan
+       transform="matrix(0,-1,1,0,0,0)"><tspan
          sodipodi:role="line"
          id="tspan3873"
          x="-615"
@@ -1760,7 +1759,7 @@
        x="-621.216"
        y="1079.3309"
        id="text3877"
-       transform="matrix(-1.484002e-18,-1,1,-1.484002e-18,0,0)"><tspan
+       transform="matrix(0,-1,1,0,0,0)"><tspan
          sodipodi:role="line"
          id="tspan3879"
          x="-621.216"
@@ -2201,7 +2200,7 @@
          sodipodi:role="line"
          id="tspan3680"
          x="1271.3872"
-         y="545.52557">System Control</tspan></text>
+         y="545.52557">SystemControl</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -2228,7 +2227,7 @@
          sodipodi:role="line"
          id="tspan3696"
          x="1271.0725"
-         y="650.0108">Boot Control</tspan></text>
+         y="650.0108">BootStore</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -2677,7 +2676,7 @@
        y="458.75" />
     <text
        xml:space="preserve"
-       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="98.5"
        y="453.5"
        id="text7448"><tspan
@@ -2685,12 +2684,39 @@
          id="tspan7450"
          x="98.5"
          y="453.5">DeviceMux (4 port)</tspan></text>
+    <rect
+       style="fill:white;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1.25000024;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       id="rect2366"
+       width="103.9269"
+       height="82.167252"
+       x="1274.6772"
+       y="767.20776" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="1274.6766"
+       y="764.0827"
+       id="text2368"><tspan
+         sodipodi:role="line"
+         id="tspan2370"
+         x="1274.6766"
+         y="764.0827">NetworkControl</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="1384.8541"
+       y="775.9469"
+       id="text2372"><tspan
+         sodipodi:role="line"
+         id="tspan2374"
+         x="1384.8541"
+         y="775.9469">Device 0</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Progress"
-     style="display:inline"
+     style="display:none"
      sodipodi:insensitive="true">
     <rect
        style="fill:red;fill-opacity:0.06349206;fill-rule:evenodd;stroke:red;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -2727,5 +2753,12 @@
        height="101.7498"
        x="1260.8038"
        y="638.25018" />
+    <rect
+       style="fill:red;fill-opacity:0.06349206;fill-rule:evenodd;stroke:red;stroke-width:1.25000024;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       id="rect2364"
+       width="398.44675"
+       height="139.74979"
+       x="845.92883"
+       y="747.00012" />
   </g>
 </svg>
