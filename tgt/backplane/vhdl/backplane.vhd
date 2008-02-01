@@ -724,7 +724,7 @@ begin  -- Behavioral
   
   -- instantiate devices
 
-   devicelinks : for i in 0 to 15 generate
+   devicelinks : for i in 0 to 7 generate
      dl        : entity work.linktester
        port map (
          CLK       => clk,
