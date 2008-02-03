@@ -213,7 +213,7 @@ begin  -- Behavioral
   main : process(CLK, RESET)
   begin
     if RESET = '1' then
-      cs     <= ns;
+      cs     <= none;
     else
       if rising_edge(CLK) then
         cs   <= ns;

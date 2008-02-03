@@ -1,4 +1,4 @@
-ibrary IEEE;
+library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
@@ -726,7 +726,7 @@ begin  -- Behavioral
 
   -- instantiate devices
 
-  devicelinks_and_mux    : for i in 0 to 3 generate
+  devicelinks_and_mux    : for i in 0 to 4 generate
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
     signal dllocked        : std_logic                    := '0';
