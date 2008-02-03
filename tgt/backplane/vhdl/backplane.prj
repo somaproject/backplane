@@ -89,6 +89,12 @@ vhdl soma "../../../vhdl/fiberdebug/framedis.vhd"
 vhdl soma "../../../vhdl/fiberdebug/txeventbuffer.vhd"
 
 # devicelink stuff
+vhdl work "../../../vhdl/coredevicemux/regfile.vhd"
+vhdl work "../../../vhdl/coredevicemux/devicemuxeventrx2.vhd"
+vhdl work "../../../vhdl/coredevicemux/devicemuxrx.vhd" 
+vhdl work "../../../vhdl/coredevicemux/devicemuxtx.vhd"
+vhdl work "../../../vhdl/coredevicemux/devicemux.vhd" 
+
 vhdl work "../../../vhdl/devicelink/deserialize.vhd"
 vhdl work "../../../vhdl/devicelink/serialize.vhd"
 vhdl work "../../../vhdl/devicelink/coredevicelink.vhd"

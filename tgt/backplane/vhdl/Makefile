@@ -49,8 +49,8 @@ build/$(PROJECT).ngc: $(SOURCES) $(PROJECT).xst $(PROJECT).prj
 	xst -ifn $(PROJECT).xst
 	mv $(PROJECT).ngc build/
 
-%.syn : %.vhd
-	sed "s/-top $(PROJECT)/-top $(subst .vhd,,$<)/" $(PROJECT).xst > .$<.xst
+%.syn : 
+	sed "s/-top $(PROJECT)/-top $(subst .vhd,,$<)/" $(PROJECT).xst > tmp.xst
 	xst -ifn .$<.xst
 
 #second stage : ngdbuild, produces .ngd

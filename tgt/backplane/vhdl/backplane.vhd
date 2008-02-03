@@ -1,4 +1,4 @@
-library IEEE;
+ibrary IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
@@ -26,7 +26,7 @@ use UNISIM.VComponents.all;
 entity backplane is
   port (
     CLKIN         : in    std_logic;
-    DSPCFG : out std_logic_vector(15 downto 0);
+    DSPCFG        : out   std_logic_vector(15 downto 0);
     -- SPI interface
     SPIMOSI       : in    std_logic;
     SPIMISO       : out   std_logic;
@@ -65,10 +65,10 @@ entity backplane is
     FIBERDEBUGIN  : in    std_logic;
 
     -- DeviceLink Serial interfaces
-    TXIO_P     : out std_logic_vector(18 downto 0);
-    TXIO_N     : out std_logic_vector(18 downto 0);
-    RXIO_P     : in  std_logic_vector(18 downto 0);
-    RXIO_N     : in  std_logic_vector(18 downto 0)
+    TXIO_P : out std_logic_vector(18 downto 0);
+    TXIO_N : out std_logic_vector(18 downto 0);
+    RXIO_P : in  std_logic_vector(18 downto 0);
+    RXIO_N : in  std_logic_vector(18 downto 0)
     );
 end backplane;
 
@@ -150,12 +150,14 @@ architecture Behavioral of backplane is
   signal clkbittx180int, clkbittx180 : std_logic := '0';
 
   signal clkbitrxint, clkbitrx : std_logic := '0';
-  signal clkwordtx       : std_logic := '0';
+  signal clkwordtx             : std_logic := '0';
 
   signal validint : std_logic_vector(18 downto 0) := (others => '0');
 
   signal maindcmlocked : std_logic := '0';
-  
+
+  constant DMOFFSET : integer := 8;
+
 begin  -- Behavioral
 
 
@@ -577,83 +579,83 @@ begin  -- Behavioral
 
   netcontrol_inst : entity soma.netcontrol
     generic map (
-      DEVICE      => X"04"
---       RAM_INIT_00 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_00,
---       RAM_INIT_01 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_01,
---       RAM_INIT_02 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_02,
---       RAM_INIT_03 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_03,
---       RAM_INIT_04 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_04,
---       RAM_INIT_05 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_05,
---       RAM_INIT_06 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_06,
---       RAM_INIT_07 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_07,
---       RAM_INIT_08 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_08,
---       RAM_INIT_09 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_09,
---       RAM_INIT_0A => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0A,
---       RAM_INIT_0B => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0B,
---       RAM_INIT_0C => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0C,
---       RAM_INIT_0D => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0D,
---       RAM_INIT_0E => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0E,
---       RAM_INIT_0F => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0F,
+      DEVICE => X"04"
+-- RAM_INIT_00 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_00,
+-- RAM_INIT_01 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_01,
+-- RAM_INIT_02 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_02,
+-- RAM_INIT_03 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_03,
+-- RAM_INIT_04 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_04,
+-- RAM_INIT_05 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_05,
+-- RAM_INIT_06 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_06,
+-- RAM_INIT_07 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_07,
+-- RAM_INIT_08 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_08,
+-- RAM_INIT_09 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_09,
+-- RAM_INIT_0A => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0A,
+-- RAM_INIT_0B => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0B,
+-- RAM_INIT_0C => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0C,
+-- RAM_INIT_0D => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0D,
+-- RAM_INIT_0E => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0E,
+-- RAM_INIT_0F => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_0F,
 
---       RAM_INIT_10 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_10,
---       RAM_INIT_11 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_11,
---       RAM_INIT_12 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_12,
---       RAM_INIT_13 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_13,
---       RAM_INIT_14 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_14,
---       RAM_INIT_15 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_15,
---       RAM_INIT_16 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_16,
---       RAM_INIT_17 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_17,
---       RAM_INIT_18 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_18,
---       RAM_INIT_19 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_19,
---       RAM_INIT_1A => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1A,
---       RAM_INIT_1B => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1B,
---       RAM_INIT_1C => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1C,
---       RAM_INIT_1D => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1D,
---       RAM_INIT_1E => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1E,
---       RAM_INIT_1F => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1F,
+-- RAM_INIT_10 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_10,
+-- RAM_INIT_11 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_11,
+-- RAM_INIT_12 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_12,
+-- RAM_INIT_13 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_13,
+-- RAM_INIT_14 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_14,
+-- RAM_INIT_15 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_15,
+-- RAM_INIT_16 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_16,
+-- RAM_INIT_17 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_17,
+-- RAM_INIT_18 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_18,
+-- RAM_INIT_19 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_19,
+-- RAM_INIT_1A => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1A,
+-- RAM_INIT_1B => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1B,
+-- RAM_INIT_1C => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1C,
+-- RAM_INIT_1D => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1D,
+-- RAM_INIT_1E => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1E,
+-- RAM_INIT_1F => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_1F,
 
---       RAM_INIT_20 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_20,
---       RAM_INIT_21 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_21,
---       RAM_INIT_22 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_22,
---       RAM_INIT_23 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_23,
---       RAM_INIT_24 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_24,
---       RAM_INIT_25 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_25,
---       RAM_INIT_26 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_26,
---       RAM_INIT_27 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_27,
---       RAM_INIT_28 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_28,
---       RAM_INIT_29 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_29,
---       RAM_INIT_2A => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2A,
---       RAM_INIT_2B => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2B,
---       RAM_INIT_2C => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2C,
---       RAM_INIT_2D => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2D,
---       RAM_INIT_2E => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2E,
---       RAM_INIT_2F => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2F,
+-- RAM_INIT_20 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_20,
+-- RAM_INIT_21 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_21,
+-- RAM_INIT_22 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_22,
+-- RAM_INIT_23 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_23,
+-- RAM_INIT_24 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_24,
+-- RAM_INIT_25 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_25,
+-- RAM_INIT_26 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_26,
+-- RAM_INIT_27 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_27,
+-- RAM_INIT_28 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_28,
+-- RAM_INIT_29 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_29,
+-- RAM_INIT_2A => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2A,
+-- RAM_INIT_2B => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2B,
+-- RAM_INIT_2C => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2C,
+-- RAM_INIT_2D => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2D,
+-- RAM_INIT_2E => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2E,
+-- RAM_INIT_2F => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_2F,
 
---       RAM_INIT_30 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_30,
---       RAM_INIT_31 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_31,
---       RAM_INIT_32 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_32,
---       RAM_INIT_33 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_33,
---       RAM_INIT_34 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_34,
---       RAM_INIT_35 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_35,
---       RAM_INIT_36 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_36,
---       RAM_INIT_37 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_37,
---       RAM_INIT_38 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_38,
---       RAM_INIT_39 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_39,
---       RAM_INIT_3A => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3A,
---       RAM_INIT_3B => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3B,
---       RAM_INIT_3C => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3C,
---       RAM_INIT_3D => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3D,
---       RAM_INIT_3E => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3E,
---       RAM_INIT_3F => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3F,
+-- RAM_INIT_30 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_30,
+-- RAM_INIT_31 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_31,
+-- RAM_INIT_32 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_32,
+-- RAM_INIT_33 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_33,
+-- RAM_INIT_34 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_34,
+-- RAM_INIT_35 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_35,
+-- RAM_INIT_36 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_36,
+-- RAM_INIT_37 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_37,
+-- RAM_INIT_38 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_38,
+-- RAM_INIT_39 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_39,
+-- RAM_INIT_3A => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3A,
+-- RAM_INIT_3B => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3B,
+-- RAM_INIT_3C => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3C,
+-- RAM_INIT_3D => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3D,
+-- RAM_INIT_3E => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3E,
+-- RAM_INIT_3F => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INIT_3F,
 
---       RAM_INITP_00 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_00,
---       RAM_INITP_01 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_01,
---       RAM_INITP_02 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_02,
---       RAM_INITP_03 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_03,
---       RAM_INITP_04 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_04,
---       RAM_INITP_05 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_05,
---       RAM_INITP_06 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_06,
---       RAM_INITP_07 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_07)
+-- RAM_INITP_00 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_00,
+-- RAM_INITP_01 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_01,
+-- RAM_INITP_02 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_02,
+-- RAM_INITP_03 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_03,
+-- RAM_INITP_04 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_04,
+-- RAM_INITP_05 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_05,
+-- RAM_INITP_06 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_06,
+-- RAM_INITP_07 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_07)
       )
     port map (
       CLK          => CLK,
@@ -713,7 +715,7 @@ begin  -- Behavioral
   end process;
 
 
-    devicelinkclk_inst : entity work.devicelinkclk
+  devicelinkclk_inst : entity work.devicelinkclk
     port map (
       CLKIN       => CLKIN,
       CLKBITTX    => clkbittx,
@@ -721,24 +723,83 @@ begin  -- Behavioral
       CLKBITRX    => clkbitrx,
       CLKWORDTX   => clkwordtx,
       STARTUPDONE => maindcmlocked);
-  
+
   -- instantiate devices
 
-   devicelinks : for i in 0 to 7 generate
-     dl        : entity work.linktester
-       port map (
-         CLK       => clk,
-         RXBITCLK  => clkbitrx,
-         TXHBITCLK => clkbittx,
-         TXWORDCLK => clkwordtx,
-         RESET     => RESET,
-         TXIO_P    => TXIO_P(i),
-         TXIO_N    => TXIO_N(i),
-         RXIO_P    => RXIO_P(i),
-         RXIO_N    => RXIO_N(i),
-         VALID     => validint(i));
+  devicelinks_and_mux    : for i in 0 to 3 generate
+    signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
+    signal txkin, rxkout : std_logic                    := '0';
+    signal dllocked        : std_logic                    := '0';
 
-   end generate devicelinks;
+  begin
+    dl : entity work.coredevicelink
+      generic map (
+        N         => 4)
+      port map (
+        CLK       => clk,
+        RXBITCLK  => clkbitrx,
+        TXHBITCLK => clkbittx,
+        TXWORDCLK => clkwordtx,
+        RESET     => RESET,
+        TXDIN     => txdin,
+        TXKIN     => txkin,
+        RXDOUT    => rxdout,
+        RXKOUT    => rxkout,
+        TXIO_P    => TXIO_P(i),
+        TXIO_N    => TXIO_N(i),
+        RXIO_P    => RXIO_P(i),
+        RXIO_N    => RXIO_N(i),
+        DROPLOCK  => '0',
+        LOCKED    => dllocked);
 
+    devicemux_inst : entity work.devicemux
+      port map (
+        CLK      => CLK,
+        ECYCLE   => ecycle,
+        -- port A
+        DOUTA    => open,
+        DOENA    => open,
+        DGRANTA  => '0',
+        EARXA    => earx(DMOFFSET + i*4 + 0 ),
+        EDRXA    => edrx(DMOFFSET + i*4 + 0 ),
+        EDSELRXA => edselrx,
+        EATXA    => eatx(DMOFFSET + i*4 + 0 ),
+        EDTXA    => edtx, 
+        -- port B
+        DOUTB    => open,
+        DOENB    => open,
+        DGRANTB  => '0',
+        EARXB    => earx(DMOFFSET + i*4 + 1 ),
+        EDRXB    => edrx(DMOFFSET + i*4 + 1),
+        EDSELRXB => edselrx,
+        EATXB    => eatx(DMOFFSET + i*4 + 1 ),
+        EDTXB    => edtx, 
+        -- port C
+        DOUTC    => open,
+        DOENC    => open,
+        DGRANTC  => '0',
+        EARXC    => earx(DMOFFSET + i*4 + 2 ),
+        EDRXC    => edrx(DMOFFSET + i*4 + 2 ),
+        EDSELRXC => edselrx,
+        EATXC    => eatx(DMOFFSET + i*4 + 2 ),
+        EDTXC    => edtx, 
+        -- port D
+        DOUTD    => open,
+        DOEND    => open,
+        DGRANTD  => '0',
+        EARXD    => earx(DMOFFSET + i*4 + 3 ),
+        EDRXD    => edrx(DMOFFSET + i*4 + 3 ),
+        EDSELRXD => edselrx,
+        EATXD    => eatx(DMOFFSET + i*4 + 3 ),
+        EDTXD    => edtx, 
+
+        -- IO
+        TXDOUT => txdin,
+        TXKOUT => txkin,
+        RXDIN  => rxdout,
+        RXKIN  => rxkout,
+        LOCKED => dllocked);
+
+  end generate devicelinks_and_mux;
 
 end Behavioral;

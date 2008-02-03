@@ -9,8 +9,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="devicemux.rx.svg"
-   sodipodi:docbase="/home/jonas/soma/somabackplane/docs/devicemux"
-   inkscape:version="0.44"
+   sodipodi:docbase="/home/jonas/soma/backplane/docs/coredevicemux"
+   inkscape:version="0.44.1"
    sodipodi:version="0.32"
    id="svg1996"
    height="792.00000pt"
@@ -47,9 +47,9 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="25"
-     inkscape:window-x="0"
-     inkscape:window-height="1129"
+     inkscape:window-y="0"
+     inkscape:window-x="1600"
+     inkscape:window-height="1200"
      inkscape:window-width="1600"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
@@ -62,9 +62,9 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="347.35165"
-     inkscape:cx="554.23719"
-     inkscape:zoom="0.70710678"
+     inkscape:cy="400.65749"
+     inkscape:cx="684.68437"
+     inkscape:zoom="1.4142136"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -241,17 +241,6 @@
            id="tspan13031"
            sodipodi:role="line">EWAIT</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="340.625"
-       y="327.5"
-       id="text13033"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13035"
-         x="340.625"
-         y="327.5">OSEL=0</tspan></text>
     <g
        id="g13078"
        transform="translate(437.5,256.25)">
@@ -287,17 +276,6 @@
            id="tspan13088"
            sodipodi:role="line">ESTART1</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="546.875"
-       y="249.375"
-       id="text13090"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13092"
-         x="546.875"
-         y="249.375">OSEL=0</tspan></text>
     <path
        id="path13094"
        d="M 709.375,208.75 L 709.375,208.75"
@@ -358,17 +336,6 @@
            id="tspan13112"
            sodipodi:role="line">EWAIT1</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="662.5"
-       y="249.375"
-       id="text13114"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13116"
-         x="662.5"
-         y="249.375">OSEL=2</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM)"
        d="M 596.875,218.125 L 643.75,218.125"
@@ -388,7 +355,7 @@
          sodipodi:role="line"
          id="tspan13124"
          x="731.25"
-         y="215">ECNT=17</tspan></text>
+         y="215">EDONE[0]=1</tspan></text>
     <g
        id="g13126"
        transform="translate(437.5,334.375)">
@@ -424,17 +391,6 @@
            id="tspan13136"
            sodipodi:role="line">ESTART2</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="546.875"
-       y="327.5"
-       id="text13138"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13140"
-         x="546.875"
-         y="327.5">OSEL=0</tspan></text>
     <path
        id="path13142"
        d="M 709.375,286.875 L 709.375,286.875"
@@ -495,17 +451,6 @@
            id="tspan13160"
            sodipodi:role="line">EWAIT2</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="665.625"
-       y="327.5"
-       id="text13162"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13164"
-         x="665.625"
-         y="327.5">OSEL=2</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 596.875,296.25 L 643.75,296.25"
@@ -520,7 +465,7 @@
          sodipodi:role="line"
          id="tspan13172"
          x="731.25"
-         y="293.125">ECNT=17</tspan></text>
+         y="293.125">EDONE[1] = 1</tspan></text>
     <g
        id="g13174"
        transform="translate(437.5,412.5)">
@@ -556,17 +501,6 @@
            id="tspan13184"
            sodipodi:role="line">ESTART3</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="546.875"
-       y="405.625"
-       id="text13186"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13188"
-         x="546.875"
-         y="405.625">OSEL=0</tspan></text>
     <path
        id="path13190"
        d="M 709.375,365 L 709.375,365"
@@ -627,17 +561,6 @@
            id="tspan13208"
            sodipodi:role="line">EWAIT3</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="665.625"
-       y="405.625"
-       id="text13210"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13212"
-         x="665.625"
-         y="405.625">OSEL=2</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 596.875,374.375 L 643.75,374.375"
@@ -652,7 +575,7 @@
          sodipodi:role="line"
          id="tspan13220"
          x="731.25"
-         y="371.25">ECNT=17</tspan></text>
+         y="371.25">EDONE[2] = 1</tspan></text>
     <g
        id="g13222"
        transform="translate(437.5,490.625)">
@@ -688,17 +611,6 @@
            id="tspan13232"
            sodipodi:role="line">ESTART4</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="546.875"
-       y="483.75"
-       id="text13234"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13236"
-         x="546.875"
-         y="483.75">OSEL=0</tspan></text>
     <path
        id="path13238"
        d="M 709.375,443.125 L 709.375,443.125"
@@ -759,17 +671,6 @@
            id="tspan13256"
            sodipodi:role="line">EWAIT4</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="665.625"
-       y="483.75"
-       id="text13258"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13260"
-         x="665.625"
-         y="483.75">OSEL=2</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 596.875,452.5 L 643.75,452.5"
@@ -784,7 +685,7 @@
          sodipodi:role="line"
          id="tspan13268"
          x="731.25"
-         y="449.375">ECNT=17</tspan></text>
+         y="449.375">EDONE[3] = 1</tspan></text>
     <path
        id="path13286"
        d="M 709.375,130.625 L 709.375,130.625"
@@ -845,17 +746,6 @@
            id="tspan13304"
            sodipodi:role="line">DWAIT</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="662.5"
-       y="171.25"
-       id="text13306"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan13308"
-         x="662.5"
-         y="171.25">OSEL=2</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM)"
        d="M 359.375,296.25 L 531.25,296.25"
