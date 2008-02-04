@@ -41,8 +41,8 @@ run
 -max_fanout 500
 -bufg 8
 -register_duplication YES
--equivalent_register_removal YES
--register_balancing No
+-equivalent_register_removal no
+-register_balancing YES
 -slice_packing YES
 -optimize_primitives YES
 -use_clock_enable Yes
