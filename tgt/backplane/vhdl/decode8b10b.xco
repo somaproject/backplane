@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version J.40
-# Date: Fri Feb  1 21:58:49 2008
+# Date: Mon Feb  4 05:09:30 2008
 #
 ##############################################################
 #
@@ -48,7 +48,7 @@ CSET clock_enable=true
 CSET code_violation_out=true
 CSET component_name=decode8b10b
 CSET disparity_violation_out=true
-CSET implementation=Block_Ram_Based
+CSET implementation=LUT_Based
 CSET new_data=false
 CSET running_disparity_in=false
 CSET running_disparity_out=false
@@ -58,5 +58,5 @@ CSET synchronous_reset=false
 CSET synchronous_reset_value=D_0_0_pos
 # END Parameters
 GENERATE
-# CRC: 751d3546
+# CRC: 18cdda0c
 

@@ -92,22 +92,6 @@ architecture Behavioral of inputcontrol is
                   );
   signal cs, ns : states := none;
 
------------------------------------------------------------------------------
--- DEBUG
------------------------------------------------------------------------------
-  component jtagsimpleout
-    generic (
-      JTAG_CHAIN :    integer := 0;
-      JTAGN      :    integer := 32);
-    port (
-      CLK        : in std_logic;
-      DIN        : in std_logic_vector(JTAGN-1 downto 0));
-  end component;
-
-  signal jtagin     : std_logic_vector(159 downto 0) := (others => '0');
-  signal statedebug : std_logic_vector(7 downto 0)   := (others => '0');
-
-------------------------------------------------------------------------------
   component crcverify
     port (
       CLK      : in  std_logic;
@@ -133,15 +117,6 @@ begin  -- Behavioral
   UNKNOWNIP    <= '1' when cs = ipunk    else '0';
   UNKNOWNARP   <= '1' when cs = arpunk   else '0';
   UNKNOWNUDP   <= '1' when cs = udpunk   else '0';
-
---    jtagsimpleout_inst : jtagsimpleout
---      generic map (
---        JTAG_CHAIN => 4,
---        JTAGN      => 160)
---      port map (
---        CLK        => CLK,
---        DIN        => jtagin);
-
 
 
   crcverify_inst : crcverify
@@ -187,12 +162,6 @@ begin  -- Behavioral
            "0000000000";
 
   -- DEBUGGING
-
-  jtagin(79+32 downto 0) <= X"89AB" & "000000" &  addra & X"12"
-                         & "000000" & wea & lnextframe
-                          & X"56" & X"78"
-                          & X"0" & LEN & X"AB" & statedebug & X"CD" & X"EF";
-
 
   
   web       <= '1' when cs = lenupd else '0';
@@ -268,7 +237,6 @@ begin  -- Behavioral
   begin
     case CS is
       when none =>
-        statedebug <= X"00";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -276,7 +244,6 @@ begin  -- Behavioral
         ns         <= dinst;
 
       when dinst =>
-        statedebug <= X"01";
         lnextframe <= '1';
         mode       <= 0;
         start      <= '0';
@@ -288,7 +255,6 @@ begin  -- Behavioral
         end if;
 
       when dinw =>
-        statedebug <= X"02";
         lnextframe <= '1';
         mode       <= 0;
         start      <= '0';
@@ -300,7 +266,6 @@ begin  -- Behavioral
         end if;
 
       when crcvfy =>
-        statedebug <= X"03";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -320,7 +285,6 @@ begin  -- Behavioral
         end if;
         
       when crcerr =>
-        statedebug <= X"04";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -328,7 +292,6 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when lenupd =>
-        statedebug <= X"05";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -336,7 +299,6 @@ begin  -- Behavioral
         ns         <= protoread;
 
       when protoread =>
-        statedebug <= X"06";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -344,7 +306,6 @@ begin  -- Behavioral
         ns         <= fstart;
 
       when fstart =>
-        statedebug <= X"07";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -358,7 +319,6 @@ begin  -- Behavioral
         end if;
 
       when nextpkt =>
-        statedebug <= X"08";
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -366,7 +326,7 @@ begin  -- Behavioral
         ns         <= none;
 
       when arppkt =>
-        statedebug <= X"09";
+
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -374,7 +334,7 @@ begin  -- Behavioral
         ns         <= arpopchk;
 
       when arpopchk =>
-        statedebug <= X"0A";
+
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -386,7 +346,7 @@ begin  -- Behavioral
         end if;
 
       when arpqstart =>
-        statedebug <= X"0B";
+
         lnextframe <= '0';
         mode       <= 3;
         start      <= '1';
@@ -394,7 +354,7 @@ begin  -- Behavioral
         ns         <= arpwait;
 
       when arpwait =>
-        statedebug <= X"0C";
+
         lnextframe <= '0';
         mode       <= 3;
         start      <= '0';
@@ -410,7 +370,7 @@ begin  -- Behavioral
         -- IP Check path
         -------------------------------------------------------------------
       when ipchka =>
-        statedebug <= X"0D";
+
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -418,7 +378,7 @@ begin  -- Behavioral
         ns         <= icmpchk;
 
       when icmpchk =>
-        statedebug <= X"0E";
+
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -432,7 +392,7 @@ begin  -- Behavioral
         end if;
 
       when echoreq =>
-        statedebug <= X"0F";
+
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -444,7 +404,7 @@ begin  -- Behavioral
         end if;
 
       when icmpstart =>
-        statedebug <= X"10";
+
         lnextframe <= '0';
         mode       <= 1;
         start      <= '1';
@@ -452,7 +412,7 @@ begin  -- Behavioral
         ns         <= pingwait;
 
       when pingwait =>
-        statedebug <= X"11";
+
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -468,7 +428,7 @@ begin  -- Behavioral
         -----------------------------------------------------------------------
 
       when udpporta =>
-        statedebug <= X"12";
+
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -476,7 +436,7 @@ begin  -- Behavioral
         ns         <= udpchk;
 
       when udpchk =>
-        statedebug <= X"13";
+
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -492,7 +452,7 @@ begin  -- Behavioral
         end if;
 
       when dretxst =>
-        statedebug <= X"14";
+
         lnextframe <= '0';
         mode       <= 2;
         start      <= '1';
@@ -500,7 +460,7 @@ begin  -- Behavioral
         ns         <= dretxwait;
 
       when dretxwait =>
-        statedebug <= X"15";
+
         lnextframe <= '0';
         mode       <= 2;
         start      <= '0';
@@ -512,7 +472,6 @@ begin  -- Behavioral
         end if;
 
       when eretxst =>
-        statedebug <= X"16";
         lnextframe <= '0';
         mode       <= 5;
         start      <= '1';
@@ -520,7 +479,6 @@ begin  -- Behavioral
         ns         <= eretxwait;
 
       when eretxwait =>
-        statedebug <= X"17";
         lnextframe <= '0';
         mode       <= 5;
         start      <= '0';
@@ -532,7 +490,6 @@ begin  -- Behavioral
         end if;
 
       when evtstart =>
-        statedebug <= X"18";
         lnextframe <= '0';
         mode       <= 4;
         start      <= '1';
@@ -540,7 +497,6 @@ begin  -- Behavioral
         ns         <= evtwait;
 
       when evtwait =>
-        statedebug <= X"19";
         lnextframe <= '0';
         mode       <= 4;
         start      <= '0';
@@ -552,7 +508,6 @@ begin  -- Behavioral
         end if;
 
       when etherunk =>
-        statedebug <= X"1A";
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -560,7 +515,6 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when ipunk =>
-        statedebug <= X"1B";
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -568,7 +522,6 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when arpunk =>
-        statedebug <= X"1C";
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -576,7 +529,6 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when udpunk =>
-        statedebug <= X"1D";
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -584,7 +536,6 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when others =>
-        statedebug <= X"1E";
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
