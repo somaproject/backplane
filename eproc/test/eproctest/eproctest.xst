@@ -5,7 +5,7 @@ run
 -ifmt mixed
 -ofn eproctest
 -ofmt NGC
--p xc3s200-4-vq100
+-p xc3s400-4-ft256
 -top eproctest
 -opt_mode Speed
 -opt_level 2
@@ -40,8 +40,8 @@ run
 -max_fanout 500
 -bufg 8
 -register_duplication YES
--equivalent_register_removal YES
--register_balancing No
+-equivalent_register_removal NO
+-register_balancing YES
 -slice_packing YES
 -optimize_primitives NO
 -use_clock_enable Yes

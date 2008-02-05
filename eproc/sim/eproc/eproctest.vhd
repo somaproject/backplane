@@ -39,6 +39,9 @@ architecture Behavioral of eproctest is
       OPORTADDR   : out std_logic_vector(7 downto 0);
       OPORTDATA   : out std_logic_vector(15 downto 0);
       OPORTSTROBE : out std_logic;
+      IPORTADDR   : out std_logic_vector(7 downto 0);
+      IPORTDATA   : in std_logic_vector(15 downto 0);
+      IPORTSTROBE : out std_logic;
       DEVICE      : in  std_logic_vector(7 downto 0)
       );
   end component;
@@ -63,6 +66,11 @@ architecture Behavioral of eproctest is
   signal OPORTADDR   : std_logic_vector(7 downto 0)  := (others => '0');
   signal OPORTDATA   : std_logic_vector(15 downto 0) := (others => '0');
   signal OPORTSTROBE : std_logic                     := '0';
+
+  --inport signals
+  signal IPORTADDR   : std_logic_vector(7 downto 0)  := (others => '0');
+  signal IPORTDATA   : std_logic_vector(15 downto 0) := (others => '0');
+  signal IPORTSTROBE : std_logic                     := '0';
 
   signal clkstate : integer   := 0;
   signal mainclk  : std_logic := '0';
@@ -113,6 +121,9 @@ begin  -- Behavioral
       OPORTADDR   => OPORTADDR,
       OPORTDATA   => OPORTDATA,
       OPORTSTROBE => OPORTSTROBE,
+      IPORTADDR   => IPORTADDR,
+      IPORTDATA   => IPORTDATA,
+      IPORTSTROBE => IPORTSTROBE,
       DEVICE      => DEVICE);
 
   mainclk <= not mainclk after 2.5 ns;

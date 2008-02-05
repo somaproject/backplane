@@ -52,11 +52,11 @@ architecture Behavioral of ecore is
   signal immval : std_logic_vector(7 downto 0) := (others => '0');
 
   -- alu signals
-  signal aop              : std_logic_vector(3 downto 0)  := (others => '0');
+  signal aop, aopl              : std_logic_vector(3 downto 0)  := (others => '0');
   signal alua, alub, aluy : std_logic_vector(15 downto 0) := (others => '0');
 
   signal aluzero, alugtz, alultz : std_logic := '0';
-  signal alucout         : std_logic := '0';
+  signal alucout, alucoutl         : std_logic := '0';
   signal laluzero, lalugtz, lalultz, lalucout : std_logic := '0';
   
 
@@ -113,8 +113,8 @@ begin  -- Behavioral
       A    => alua,
       B    => alub,
       Y    => aluy,
-      AOP  => aop,
-      CIN  => alucout, 
+      AOP  => aopl,
+      CIN  => alucoutl, 
       COUT => lalucout,
       ZERO => laluzero,
       GTZ  => lalugtz,
@@ -144,7 +144,7 @@ begin  -- Behavioral
   regaddra <= IDATA(3 downto 0);
   regaddrb <= IDATA(7 downto 4);
   EADDR    <= IDATA(10 downto 8);
-  AOP      <= IDATA(15 downto 12);
+  aop      <= IDATA(15 downto 12);
   immval   <= IDATA(11 downto 4);
   useevt   <= IDATA(11) when opclass = "00" else '0';
 
@@ -204,6 +204,8 @@ begin  -- Behavioral
           alucout <= lalucout; 
         end if;
 
+        alucoutl <= alucout;
+        
         if useevt = '1' then
           alua <= EDATA;
         else
@@ -215,7 +217,7 @@ begin  -- Behavioral
         else
           alub <= "00000000" & immval;
         end if;
-
+        aopl <= aop; 
         -- output port
         if loportstrobe = '1' then
           OPORTADDR <= immval;
