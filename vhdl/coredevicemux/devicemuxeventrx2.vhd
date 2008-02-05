@@ -24,7 +24,6 @@ end devicemuxeventrx2;
 architecture Behavioral of devicemuxeventrx2 is
 
   signal edrxbuf : std_logic_vector(95 downto 0) := (others => '0');
-  signal edrxout : std_logic_vector(7 downto 0) := (others => '0');
 
   signal earxbuf : std_logic_vector(79 downto 0) := (others => '0');
   signal earxout : std_logic_vector(79 downto 0) := (others => '0');
@@ -47,7 +46,7 @@ begin
 
   EARX <= earxout(somabackplane.N - 1 downto 0);
 
-  EDRX <= edrxout;
+
 
   addrb <= EDSELRX;
   
@@ -91,7 +90,7 @@ begin
       ADDRB => addrb,
       DOB   => dobb);
 
-  edrxout <= doba when regsel = '0' else dobb;
+  EDRX <= doba when regsel = '0' else dobb;
 
   rwea <= rwe when regsel = '1' else '0';
   rweb <= rwe when regsel = '0' else '0';

@@ -65,10 +65,26 @@ entity backplane is
     FIBERDEBUGIN  : in    std_logic;
 
     -- DeviceLink Serial interfaces
-    TXIO_P : out std_logic_vector(18 downto 0);
-    TXIO_N : out std_logic_vector(18 downto 0);
-    RXIO_P : in  std_logic_vector(18 downto 0);
-    RXIO_N : in  std_logic_vector(18 downto 0)
+    -- DSP Boards
+    DSPTXIO_P  : out std_logic_vector(15 downto 0);
+    DSPTXIO_N  : out std_logic_vector(15 downto 0);
+    DSPRXIO_P  : in  std_logic_vector(15 downto 0);
+    DSPRXIO_N  : in  std_logic_vector(15 downto 0);
+    -- ADIO
+    ADIOTXIO_P : out std_logic;
+    ADIOTXIO_N : out std_logic;
+    ADIORXIO_P : in  std_logic;
+    ADIORXIO_N : in  std_logic;
+    -- SYS / DISPLAY
+    SYSTXIO_P : out std_logic;
+    SYSTXIO_N : out std_logic;
+    SYSRXIO_P : in  std_logic;
+    SYSRXIO_N : in  std_logic;
+    -- NEP
+    NEPTXIO_P  : out std_logic;
+    NEPTXIO_N  : out std_logic;
+    NEPRXIO_P  : in  std_logic;
+    NEPRXIO_N  : in  std_logic
     );
 end backplane;
 
@@ -157,6 +173,14 @@ architecture Behavioral of backplane is
   signal maindcmlocked : std_logic := '0';
 
   constant DMOFFSET : integer := 8;
+
+  signal txdinadio, rxdoutadio : std_logic_vector(7 downto 0) := (others => '0');
+  signal txkinadio, rxkoutadio : std_logic                    := '0';
+  signal dllockedadio          : std_logic                    := '0';
+
+  signal txdinsys, rxdoutsys : std_logic_vector(7 downto 0) := (others => '0');
+  signal txkinsys, rxkoutsys : std_logic                    := '0';
+  signal dllockedsys         : std_logic                    := '0';
 
 begin  -- Behavioral
 
@@ -724,12 +748,14 @@ begin  -- Behavioral
       CLKWORDTX   => clkwordtx,
       STARTUPDONE => maindcmlocked);
 
-  -- instantiate devices
+  ----------------------------------------------------------------------------
+  -- DSP DeviceLinks
+  ----------------------------------------------------------------------------
 
   devicelinks_and_mux    : for i in 0 to 7 generate
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
-    signal dllocked        : std_logic                    := '0';
+    signal dllocked      : std_logic                    := '0';
 
   begin
     dl : entity work.coredevicelink
@@ -745,10 +771,10 @@ begin  -- Behavioral
         TXKIN     => txkin,
         RXDOUT    => rxdout,
         RXKOUT    => rxkout,
-        TXIO_P    => TXIO_P(i),
-        TXIO_N    => TXIO_N(i),
-        RXIO_P    => RXIO_P(i),
-        RXIO_N    => RXIO_N(i),
+        TXIO_P    => DSPTXIO_P(i),
+        TXIO_N    => DSPTXIO_N(i),
+        RXIO_P    => DSPRXIO_P(i),
+        RXIO_N    => DSPRXIO_N(i),
         DROPLOCK  => '0',
         LOCKED    => dllocked);
 
@@ -764,7 +790,7 @@ begin  -- Behavioral
         EDRXA    => edrx(DMOFFSET + i*4 + 0 ),
         EDSELRXA => edselrx,
         EATXA    => eatx(DMOFFSET + i*4 + 0 ),
-        EDTXA    => edtx, 
+        EDTXA    => edtx,
         -- port B
         DOUTB    => open,
         DOENB    => open,
@@ -773,7 +799,7 @@ begin  -- Behavioral
         EDRXB    => edrx(DMOFFSET + i*4 + 1),
         EDSELRXB => edselrx,
         EATXB    => eatx(DMOFFSET + i*4 + 1 ),
-        EDTXB    => edtx, 
+        EDTXB    => edtx,
         -- port C
         DOUTC    => open,
         DOENC    => open,
@@ -782,7 +808,7 @@ begin  -- Behavioral
         EDRXC    => edrx(DMOFFSET + i*4 + 2 ),
         EDSELRXC => edselrx,
         EATXC    => eatx(DMOFFSET + i*4 + 2 ),
-        EDTXC    => edtx, 
+        EDTXC    => edtx,
         -- port D
         DOUTD    => open,
         DOEND    => open,
@@ -791,7 +817,7 @@ begin  -- Behavioral
         EDRXD    => edrx(DMOFFSET + i*4 + 3 ),
         EDSELRXD => edselrx,
         EATXD    => eatx(DMOFFSET + i*4 + 3 ),
-        EDTXD    => edtx, 
+        EDTXD    => edtx,
 
         -- IO
         TXDOUT => txdin,
@@ -801,5 +827,145 @@ begin  -- Behavioral
         LOCKED => dllocked);
 
   end generate devicelinks_and_mux;
+
+  ----------------------------------------------------------------------------
+  -- ADIO DeviceLink
+  ----------------------------------------------------------------------------
+  dl_adio : entity work.coredevicelink
+    generic map (
+      N         => 4)
+    port map (
+      CLK       => clk,
+      RXBITCLK  => clkbitrx,
+      TXHBITCLK => clkbittx,
+      TXWORDCLK => clkwordtx,
+      RESET     => RESET,
+      TXDIN     => txdinadio,
+      TXKIN     => txkinadio,
+      RXDOUT    => rxdoutadio,
+      RXKOUT    => rxkoutadio,
+      TXIO_P    => ADIOTXIO_P,
+      TXIO_N    => ADIOTXIO_N,
+      RXIO_P    => ADIORXIO_P,
+      RXIO_N    => ADIORXIO_N,
+      DROPLOCK  => '0',
+      LOCKED    => dllockedadio);
+
+  devicemux_adio_inst : entity work.devicemux
+    port map (
+      CLK      => CLK,
+      ECYCLE   => ecycle,
+      -- port A
+      DOUTA    => open,
+      DOENA    => open,
+      DGRANTA  => '0',
+      EARXA    => earx(73),
+      EDRXA    => edrx(73),
+      EDSELRXA => edselrx,
+      EATXA    => eatx(73),
+      EDTXA    => edtx,
+      -- port B
+      DOUTB    => open,
+      DOENB    => open,
+      DGRANTB  => '0',
+      EARXB    => earx(74),
+      EDRXB    => edrx(74),
+      EDSELRXB => edselrx,
+      EATXB    => eatx(74),
+      EDTXB    => edtx,
+      -- port C
+      DOUTC    => open,
+      DOENC    => open,
+      DGRANTC  => '0',
+      EARXC    => earx(75),
+      EDRXC    => edrx(75),
+      EDSELRXC => edselrx,
+      EATXC    => eatx(75),
+      EDTXC    => edtx,
+      -- port D
+      DOUTD    => open,
+      DOEND    => open,
+      DGRANTD  => '0',
+      EARXD    => open,
+      EDRXD    => open,
+      EDSELRXD => edselrx,
+      EATXD    => (others => '0'),
+      EDTXD    => X"00",
+      -- IO
+      TXDOUT   => txdinadio,
+      TXKOUT   => txkinadio,
+      RXDIN    => rxdoutadio,
+      RXKIN    => rxkoutadio,
+      LOCKED   => dllockedadio);
+
+  ----------------------------------------------------------------------------
+  -- SYS (Display) DeviceLink
+  ----------------------------------------------------------------------------
+  dl_sys : entity work.coredevicelink
+    generic map (
+      N         => 4)
+    port map (
+      CLK       => clk,
+      RXBITCLK  => clkbitrx,
+      TXHBITCLK => clkbittx,
+      TXWORDCLK => clkwordtx,
+      RESET     => RESET,
+      TXDIN     => txdinsys,
+      TXKIN     => txkinsys,
+      RXDOUT    => rxdoutsys,
+      RXKOUT    => rxkoutsys,
+      TXIO_P    => SYSTXIO_P,
+      TXIO_N    => SYSTXIO_N,
+      RXIO_P    => SYSRXIO_P,
+      RXIO_N    => SYSRXIO_N,
+      DROPLOCK  => '0',
+      LOCKED    => dllockedsys);
+
+  devicemux_sys_inst : entity work.devicemux
+    port map (
+      CLK      => CLK,
+      ECYCLE   => ecycle,
+      -- port A
+      DOUTA    => open,
+      DOENA    => open,
+      DGRANTA  => '0',
+      EARXA    => earx(76),
+      EDRXA    => edrx(76),
+      EDSELRXA => edselrx,
+      EATXA    => eatx(76),
+      EDTXA    => edtx,
+      -- port B
+      DOUTB    => open,
+      DOENB    => open,
+      DGRANTB  => '0',
+      EARXB    => earx(77),
+      EDRXB    => edrx(77),
+      EDSELRXB => edselrx,
+      EATXB    => eatx(77),
+      EDTXB    => edtx,
+      -- port C
+      DOUTC    => open,
+      DOENC    => open,
+      DGRANTC  => '0',
+      EARXC    => open, 
+      EDRXC    => open, 
+      EDSELRXC => edselrx,
+      EATXC    => (others => '0'), 
+      EDTXC    => X"00",
+      -- port D
+      DOUTD    => open,
+      DOEND    => open,
+      DGRANTD  => '0',
+      EARXD    => open,
+      EDRXD    => open,
+      EDSELRXD => edselrx,
+      EATXD    => (others => '0'),
+      EDTXD    => X"00",
+      -- IO
+      TXDOUT   => txdinsys,
+      TXKOUT   => txkinsys,
+      RXDIN    => rxdoutsys,
+      RXKIN    => rxkoutsys,
+      LOCKED   => dllockedsys);
 
 end Behavioral;
