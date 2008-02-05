@@ -24,30 +24,56 @@ entity alu is
 end alu;
 
 architecture Behavioral of alu is
-  signal yint       : std_logic_vector(16 downto 0) := (others => '0');
+  signal yint   : std_logic_vector(16 downto 0) := (others => '0');
+  signal ymux   : std_logic_vector(15 downto 0) := (others => '0');
+  signal ybool  : std_logic_vector(15 downto 0) := (others => '0');
+  signal yarith : std_logic_vector(16 downto 0) := (others => '0');
+
   signal aext, bext : std_logic_vector(16 downto 0) := (others => '0');
 
   signal selcin : std_logic := '0';
-  
+  signal bsel   : std_logic_vector(15 downto 0);
+
+  signal suben : std_logic := '0';
+  signal cen   : std_logic := '0';
+
 begin  -- Behavioral
   -- ghetto implementation
   Y    <= yint(15 downto 0);
   COUT <= yint(16);
 
   aext <= "0" & A;
-  bext <= "0" & B;
+  bext <= "0" & bsel;
 
-  selcin <= CIN when AOP(0) = '1' else '0';
-  
-  yint <= "0" & A                               when AOP = "0000" else
-          "0" & B                               when AOP = "0001" else
-          "0" & B(7 downto 0 ) & B(15 downto 8) when AOP = "0010" else
-          "0" & B(7 downto 0) & A(7 downto 0)   when AOP = "0011" else
-          "0" & (A xor B)                       when AOP = "0101" else
-          "0" & (A and B)                       when AOP = "0110" else
-          "0" & (A or B)                        when AOP = "0111" else
-          Aext + Bext + (X"0000" & selCIN)     when AOP(3 downto 1) = "100" else
-          Aext - (Bext + (X"0000" & selCIN)) ; --     when AOP(3 downto 1) = "101"; 
+  bsel <= B when suben = '0' else not B;
+
+  suben <= AOP(1);
+  cen   <= AOP(0);
+
+
+  selcin <= '0'       when suben = '0' and cen = '0' else
+            CIN       when suben = '0' and cen = '1' else
+            '1'       when suben = '1' and cen = '0' else
+            (CIN) when suben = '1' and cen = '1';
+
+
+  ymux <= a                               when AOP(1 downto 0) = "00" else
+          b                               when AOP(1 downto 0) = "01" else
+          B(7 downto 0 ) & B(15 downto 8) when AOP(1 downto 0) = "10" else
+          B(7 downto 0) & A(7 downto 0)   when AOP(1 downto 0) = "11";
+
+  ybool <= A xor B when AOP(1 downto 0) = "01" else
+           A and B when AOP(1 downto 0) = "10" else
+           A or B;
+
+
+  yarith <= (Aext + Bext + (X"0000" & selcin));
+
+
+  yint <= "0" & ymux  when AOP(3 downto 2) = "00" else
+          "0" & ybool when AOP(3 downto 2) = "01" else
+          yarith;
+
 
   -- status signals
 

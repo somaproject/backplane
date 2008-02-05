@@ -61,7 +61,8 @@ build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf
 map: build/$(PROJECT)_map.ncd
 
 build/$(PROJECT)_map.ncd: build/$(PROJECT).ngd
-	map -p $(PART) -ol $(OPTIMIZE) -timing -cm speed  -xe n  -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
+	map -p $(PART) -ol $(OPTIMIZE) -timing  -logic_opt on  -cm speed  -xe n -t 1  \
+	-register_duplication  -pr b -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
 
 build/$(PROJECT).pcf: build/$(PROJECT)_map.ncd
 
