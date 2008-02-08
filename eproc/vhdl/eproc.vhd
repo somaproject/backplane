@@ -19,10 +19,11 @@ entity eproc is
     EDTX        : in  std_logic_vector(7 downto 0);
     EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
     ECYCLE      : in  std_logic;
-    EARX        : out std_logic_vector(somabackplane.N - 1 downto 0)
- := (others => '0');
-    EDRX        : out std_logic_vector(7 downto 0);
-    EDSELRX     : in  std_logic_vector(3 downto 0);
+    -- event output interface
+    EAOUT        : out std_logic_vector(somabackplane.N - 1 downto 0)
+    := (others => '0');
+    EDOUT        : out std_logic_vector(95 downto 0);
+    ENEWOUT : out std_logic; 
     -- High-speed interface
     CLKHI       : in  std_logic;
     -- instruction interface
@@ -159,19 +160,6 @@ architecture Behavioral of eproc is
 
   end component;
 
-  component txeventbuffer
-    port (
-      CLK      : in  std_logic;
-      EVENTIN  : in  std_logic_vector(95 downto 0);
-      EADDRIN  : in  std_logic_vector(somabackplane.N -1 downto 0);
-      NEWEVENT : in  std_logic;
-      ECYCLE   : in  std_logic;
-      -- outputs
-      EDRX     : out std_logic_vector(7 downto 0);
-      EDRXSEL  : in  std_logic_vector(3 downto 0);
-      EARX     : out std_logic_vector(somabackplane.N - 1 downto 0));
-  end component;
-
 
   type states is (none, ejumprun1, ejumprun2, ewait, evtstartrst,
                   ebody);
@@ -224,17 +212,10 @@ begin  -- Behavioral
   etxdataendian(95 downto 88) <= etxddata(87 downto 80);
   
   
-
-  txeventbuffer_inst: txeventbuffer
-    port map (
-      CLK      => CLK,
-      EVENTIN  => etxdataendian,
-      EADDRIN  => etxdaddr,
-      NEWEVENT => etxne,
-      ECYCLE   => ECYCLE,
-      EDRX     => EDRX,
-      EDRXSEL  => EDSELRX,
-      EARX     => EARX);
+  EDOUT <= etxdataendian;
+  EAOUT <= etxdaddr;
+  ENEWOUT <= etxne;
+  
   
   ecore_inst : ecore
     port map (

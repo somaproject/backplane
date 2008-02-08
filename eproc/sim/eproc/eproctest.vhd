@@ -26,10 +26,11 @@ architecture Behavioral of eproctest is
       EDTX        : in  std_logic_vector(7 downto 0);
       EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
       ECYCLE      : in  std_logic;
-      EARX        : out std_logic_vector(somabackplane.N - 1 downto 0)
+      -- Event output interface
+      EAOUT       : out std_logic_vector(somabackplane.N - 1 downto 0)
  := (others => '0');
-      EDRX        : out std_logic_vector(7 downto 0);
-      EDSELRX     : in  std_logic_vector(3 downto 0);
+      EDOUT       : out std_logic_vector(95 downto 0);
+      ENEWOUT     : out std_logic;
       -- High-speed interface
       CLKHI       : in  std_logic;
       -- instruction interface
@@ -40,7 +41,7 @@ architecture Behavioral of eproctest is
       OPORTDATA   : out std_logic_vector(15 downto 0);
       OPORTSTROBE : out std_logic;
       IPORTADDR   : out std_logic_vector(7 downto 0);
-      IPORTDATA   : in std_logic_vector(15 downto 0);
+      IPORTDATA   : in  std_logic_vector(15 downto 0);
       IPORTSTROBE : out std_logic;
       DEVICE      : in  std_logic_vector(7 downto 0)
       );
@@ -56,6 +57,11 @@ architecture Behavioral of eproctest is
                                                                  := (others => '0');
   signal EDRX    : std_logic_vector(7 downto 0)                  := (others => '0');
   signal EDSELRX : std_logic_vector(3 downto 0)                  := (others => '0');
+
+  signal EAOUT   : std_logic_vector(somabackplane.N - 1 downto 0)
+ := (others => '0');
+  signal EDOUT   : std_logic_vector(95 downto 0);
+  signal ENEWOUT : std_logic;
 
   -- High-speed interface
   signal CLKHI       : std_logic                     := '0';
@@ -101,6 +107,18 @@ architecture Behavioral of eproctest is
       DATA     : out std_logic_vector(17 downto 0));
   end component;
 
+  component txeventbuffer
+    port (
+      CLK      : in  std_logic;
+      EVENTIN  : in  std_logic_vector(95 downto 0);
+      EADDRIN  : in  std_logic_vector(somabackplane.N -1 downto 0);
+      NEWEVENT : in  std_logic;
+      ECYCLE   : in  std_logic;
+      -- outputs
+      EDRX     : out std_logic_vector(7 downto 0);
+      EDRXSEL  : in  std_logic_vector(3 downto 0);
+      EARX     : out std_logic_vector(somabackplane.N - 1 downto 0));
+  end component;
 
 
 begin  -- Behavioral
@@ -112,9 +130,9 @@ begin  -- Behavioral
       EDTX        => EDTX,
       EATX        => EATX,
       ECYCLE      => ECYCLE,
-      EARX        => EARX,
-      EDRX        => EDRX,
-      EDSELRX     => EDSELRX,
+      EAOUT       => EAOUT,
+      EDOUT       => EDOUT,
+      ENEWOUT     => ENEWOUT,
       CLKHI       => CLKHI,
       IADDR       => IADDR,
       IDATA       => IDATA,
@@ -126,6 +144,17 @@ begin  -- Behavioral
       IPORTSTROBE => IPORTSTROBE,
       DEVICE      => DEVICE);
 
+  txeventbuffer_inst: txeventbuffer
+    port map (
+      CLK      => CLKHI,
+      EVENTIN  => EDOUT,
+      EADDRIN  => EAOUT,
+      NEWEVENT => ENEWOUT,
+      ECYCLe   => ECYCLE,
+      EDRX     => EDRX,
+      EDRXSEL  => EDSELRX,
+      EARX     => EARX);
+  
   mainclk <= not mainclk after 2.5 ns;
   reset   <= '0'         after 100 ns;
 
@@ -335,31 +364,31 @@ begin  -- Behavioral
         if EDRX = X"AA" and state = 2 then
           state := 3;
         end if;
-        
+
         EDSELRX <= "0011";
         wait until rising_edge(CLK);
         if EDRX = X"BB" and state = 3 then
           state := 4;
         end if;
-        
+
         EDSELRX <= "0100";
         wait until rising_edge(CLK);
         if EDRX = X"CC" and state = 4 then
           state := 5;
         end if;
-        
+
         EDSELRX <= "0101";
         wait until rising_edge(CLK);
         if EDRX = X"DD" and state = 5 then
           state := 6;
         end if;
-        
+
 
       end if;
 
       if state = 6 then
-        report "Successful RX of init events" severity Note;
-        report "End of Simulation" severity Failure;
+        report "Successful RX of init events" severity note;
+        report "End of Simulation" severity failure;
       end if;
     end if;
 
@@ -367,35 +396,35 @@ begin  -- Behavioral
 
 
 
---   -----------------------------------------------------------------------------
+--  -----------------------------------------------------------------------------
 --   -- ECHO event
 --   -----------------------------------------------------------------------------
 --   echo_event_proc : process
 
---     variable iteration : integer := 0;
---   begin
---     wait until rising_edge(CLK) and ECYCLE = '1';
---     EATX(60)                        <= '1';
---     eventinputs(60)(0)(15 downto 8) <= std_logic_vector(TO_UNSIGNED(128, 8));
---     eventinputs(60)(0)(7 downto 0)  <= std_logic_vector(TO_UNSIGNED(60, 8));
---     eventinputs(60)(1)              <= X"0123";
---     eventinputs(60)(2)              <= X"4567";
---     eventinputs(60)(3)              <= X"89AB";
---     eventinputs(60)(4)              <= X"CDEF";
---     eventinputs(60)(5)              <= std_logic_vector(TO_UNSIGNED(iteration, 16));
+-- variable iteration : integer := 0;
+-- begin
+-- wait until rising_edge(CLK) and ECYCLE = '1';
+-- EATX(60) <= '1';
+-- eventinputs(60)(0)(15 downto 8) <= std_logic_vector(TO_UNSIGNED(128, 8));
+-- eventinputs(60)(0)(7 downto 0) <= std_logic_vector(TO_UNSIGNED(60, 8));
+-- eventinputs(60)(1) <= X"0123";
+-- eventinputs(60)(2) <= X"4567";
+-- eventinputs(60)(3) <= X"89AB";
+-- eventinputs(60)(4) <= X"CDEF";
+-- eventinputs(60)(5) <= std_logic_vector(TO_UNSIGNED(iteration, 16));
 
---     wait until rising_edge(CLK) and ECYCLE = '1';
---     EATX(60) <= '0';
---     wait until rising_edge(CLK) and EARX(60) = '1';
---     EDSELRX <= "0010";
---     wait until rising_edge(CLK);
---     assert EDRX = X"01" report "Error receiving echo Data1[15:8]" severity Error;
---     :
+-- wait until rising_edge(CLK) and ECYCLE = '1';
+-- EATX(60) <= '0';
+-- wait until rising_edge(CLK) and EARX(60) = '1';
+-- EDSELRX <= "0010";
+-- wait until rising_edge(CLK);
+-- assert EDRX = X"01" report "Error receiving echo Data1[15:8]" severity Error;
+-- :
 
---     report "Received Event" severity note;
---     wait until rising_edge(CLK) and ECYCLE = '1';
+-- report "Received Event" severity note;
+-- wait until rising_edge(CLK) and ECYCLE = '1';
 
---   end process echo_event_proc;
+-- end process echo_event_proc;
 
 
 end Behavioral;

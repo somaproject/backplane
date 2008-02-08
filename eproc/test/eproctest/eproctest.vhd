@@ -15,18 +15,18 @@ use soma.somabackplane;
 
 entity eproctest is
   port (
-    CLKIN       : in  std_logic;
+    CLKIN  : in std_logic;
     -- Event Interface, CLK rate
-    ECYCLE      : in  std_logic;
+    ECYCLE : in std_logic;
 
-    EDTX        : in  std_logic_vector(7 downto 0);
-    EATXBYTE    : in  std_logic_vector(7 downto 0);
-    EATXADDR    : in  std_logic_vector(3 downto 0);
-    EATXWE      : in  std_logic;
-    EARXBYTE    : out std_logic_vector(7 downto 0);
-    EARXADDR    : in  std_logic_vector(3 downto 0);
-    EDRX        : out std_logic_vector(7 downto 0);
-    EDSELRX     : in  std_logic_vector(3 downto 0)
+    EDTX     : in  std_logic_vector(7 downto 0);
+    EATXBYTE : in  std_logic_vector(7 downto 0);
+    EATXADDR : in  std_logic_vector(3 downto 0);
+    EATXWE   : in  std_logic;
+    EARXBYTE : out std_logic_vector(7 downto 0);
+    EARXADDR : in  std_logic_vector(3 downto 0);
+    EDRX     : out std_logic_vector(7 downto 0);
+    EDSELRX  : in  std_logic_vector(3 downto 0)
     );
 end eproctest;
 
@@ -43,10 +43,11 @@ architecture Behavioral of eproctest is
       EDTX        : in  std_logic_vector(7 downto 0);
       EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
       ECYCLE      : in  std_logic;
-      EARX        : out std_logic_vector(somabackplane.N - 1 downto 0)
+      -- event output interface
+      EAOUT       : out std_logic_vector(somabackplane.N - 1 downto 0)
  := (others => '0');
-      EDRX        : out std_logic_vector(7 downto 0);
-      EDSELRX     : in  std_logic_vector(3 downto 0);
+      EDOUT       : out std_logic_vector(95 downto 0);
+      ENEWOUT     : out std_logic;
       -- High-speed interface
       CLKHI       : in  std_logic;
       -- instruction interface
@@ -58,29 +59,48 @@ architecture Behavioral of eproctest is
       OPORTSTROBE : out std_logic;
       --inport signals
       IPORTADDR   : out std_logic_vector(7 downto 0);
-      IPORTDATA   : in std_logic_vector(15 downto 0);
+      IPORTDATA   : in  std_logic_vector(15 downto 0);
       IPORTSTROBE : out std_logic;
 
-      DEVICE      : in  std_logic_vector(7 downto 0)
+      DEVICE : in std_logic_vector(7 downto 0)
       );
 
   end component;
 
   signal clkhi, clk : std_logic := '0';
-  
+
   signal clkint, clkhiint : std_logic := '0';
   signal locked           : std_logic := '0';
-  signal RESET            : std_logic := '1';
+  signal reset            : std_logic := '1';
 
-  signal eatx, earx : std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
+  signal eatx, earx : std_logic_vector(somabackplane.n - 1 downto 0) := (others => '0');
 
-  signal OPORTADDR   : std_logic_vector(7 downto 0);
-  signal OPORTDATA   : std_logic_vector(15 downto 0);
-  signal OPORTSTROBE : std_logic;
+  signal oportaddr   : std_logic_vector(7 downto 0);
+  signal oportdata   : std_logic_vector(15 downto 0);
+  signal oportstrobe : std_logic;
 
-  signal IPORTADDR   : std_logic_vector(7 downto 0);
-  signal IPORTDATA   : std_logic_vector(15 downto 0);
-  signal IPORTSTROBE : std_logic;
+  signal iportaddr   : std_logic_vector(7 downto 0);
+  signal iportdata   : std_logic_vector(15 downto 0);
+  signal iportstrobe : std_logic;
+
+  signal eaout   : std_logic_vector(somabackplane.n - 1 downto 0)
+                                                 := (others => '0');
+  signal edout   : std_logic_vector(95 downto 0) := (others => '0');
+  signal enewout : std_logic                     := '0';
+
+  component txeventbuffer
+    port (
+      CLK      : in  std_logic;
+      EVENTIN  : in  std_logic_vector(95 downto 0);
+      EADDRIN  : in  std_logic_vector(somabackplane.N -1 downto 0);
+      NEWEVENT : in  std_logic;
+      ECYCLE   : in  std_logic;
+      -- outputs
+      EDRX     : out std_logic_vector(7 downto 0);
+      EDRXSEL  : in  std_logic_vector(3 downto 0);
+      EARX     : out std_logic_vector(somabackplane.N - 1 downto 0));
+  end component;
+
 
 begin  -- Behavioral
 
@@ -111,22 +131,33 @@ begin  -- Behavioral
       EDTX        => EDTX,
       EATX        => eatx,
       ECYCLE      => ECYCLE,
-      EARX        => earx,
-      EDRX        => EDRX,
-      EDSELRX     => EDSELRX,
+      EAOUT       => eaout,
+      EDOUT       => edout,
+      ENEWOUT     => enewout,
       CLKHI       => clkhi,
       IADDR       => iaddr,
       IDATA       => idata,
       OPORTADDR   => OPORTADDR,
-      OPORTDATA    => OPORTDATA,
+      OPORTDATA   => OPORTDATA,
       OPORTSTROBE => OPORTSTROBE,
       IPORTADDR   => IPORTADDR,
-      IPORTDATA    => IPORTDATA,
+      IPORTDATA   => IPORTDATA,
       IPORTSTROBE => IPORTSTROBE,
       DEVICE      => X"12");
 
-  OPORTDATA<= OPORTADDR & OPORTADDR; 
-    instruction_ram : RAMB16_S18_S18
+  txbuffer : txeventbuffer
+    port map (
+      CLK      => clkhi,
+      EVENTIN  => edout,
+      EADDRIN  => eaout,
+      NEWEVENT => enewout,
+      ECYCLE   => ECYCLE,
+      EDRX     => EDRX,
+      EDRXSEL  => EDSELRX,
+      EARX     => EARX);
+
+  OPORTDATA <= OPORTADDR & OPORTADDR;
+  instruction_ram : RAMB16_S18_S18
     port map (
       DOA   => idata(15 downto 0),
       DOPA  => idata(17 downto 16),

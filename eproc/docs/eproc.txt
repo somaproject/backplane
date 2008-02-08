@@ -23,3 +23,9 @@ All outport addrs above 0x80 are reserved for eproc interfacing:
 0x82-0x84: control / set the event dispatch predicate table 
 0x90: Event interface. A write here is the command to send, and commits
       a particular command.
+
+
+The event output of the eproc simply decodes the event; the end-user
+must either hook up a buffer or do something else with the output
+event data. 
+
