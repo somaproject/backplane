@@ -16,24 +16,24 @@ use UNISIM.VComponents.all;
 
 entity syscontrol is
   generic (
-    DEVICE  :     std_logic_vector(7 downto 0)                   := X"01";
-    RAM_INIT_00 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_01 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_02 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_03 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_04 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_05 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_06 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_07 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_08 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_09 : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_0A : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_0B : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_0C : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_0D : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_0E : bit_vector(0 to 255) := (others => '0');
-    RAM_INIT_0F : bit_vector(0 to 255) := (others => '0');
-    
+    DEVICE      : std_logic_vector(7 downto 0) := X"01";
+    RAM_INIT_00 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_01 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_02 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_03 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_04 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_05 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_06 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_07 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_08 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_09 : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0A : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0B : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0C : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0D : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0E : bit_vector(0 to 255)         := (others => '0');
+    RAM_INIT_0F : bit_vector(0 to 255)         := (others => '0');
+
     RAM_INIT_10 : bit_vector(0 to 255) := (others => '0');
     RAM_INIT_11 : bit_vector(0 to 255) := (others => '0');
     RAM_INIT_12 : bit_vector(0 to 255) := (others => '0');
@@ -50,7 +50,7 @@ entity syscontrol is
     RAM_INIT_1D : bit_vector(0 to 255) := (others => '0');
     RAM_INIT_1E : bit_vector(0 to 255) := (others => '0');
     RAM_INIT_1F : bit_vector(0 to 255) := (others => '0');
-    
+
     RAM_INIT_20 : bit_vector(0 to 255) := (others => '0');
     RAM_INIT_21 : bit_vector(0 to 255) := (others => '0');
     RAM_INIT_22 : bit_vector(0 to 255) := (others => '0');
@@ -85,30 +85,34 @@ entity syscontrol is
     RAM_INIT_3E : bit_vector(0 to 255) := (others => '0');
     RAM_INIT_3F : bit_vector(0 to 255) := (others => '0');
 
-    RAM_INITP_00: bit_vector(0 to 255) := (others => '0');
-    RAM_INITP_01: bit_vector(0 to 255) := (others => '0');
-    RAM_INITP_02: bit_vector(0 to 255) := (others => '0');
-    RAM_INITP_03: bit_vector(0 to 255) := (others => '0');
-    RAM_INITP_04: bit_vector(0 to 255) := (others => '0');
-    RAM_INITP_05: bit_vector(0 to 255) := (others => '0');
-    RAM_INITP_06: bit_vector(0 to 255) := (others => '0');
-    RAM_INITP_07: bit_vector(0 to 255) := (others => '0')
+    RAM_INITP_00 :     bit_vector(0 to 255)                           := (others => '0');
+    RAM_INITP_01 :     bit_vector(0 to 255)                           := (others => '0');
+    RAM_INITP_02 :     bit_vector(0 to 255)                           := (others => '0');
+    RAM_INITP_03 :     bit_vector(0 to 255)                           := (others => '0');
+    RAM_INITP_04 :     bit_vector(0 to 255)                           := (others => '0');
+    RAM_INITP_05 :     bit_vector(0 to 255)                           := (others => '0');
+    RAM_INITP_06 :     bit_vector(0 to 255)                           := (others => '0');
+    RAM_INITP_07 :     bit_vector(0 to 255)                           := (others => '0')
     );
   port (
-    CLK     : in  std_logic;
-    CLK2X   : in  std_logic;
-    RESET   : in  std_logic;
-    DEBUG   : out std_logic_vector(7 downto 0);
+    CLK          : in  std_logic;
+    CLK2X        : in  std_logic;
+    RESET        : in  std_logic;
+    DEBUG        : out std_logic_vector(7 downto 0);
     -- event interface
-    EDTX    : in  std_logic_vector(7 downto 0);
-    EATX    : in  std_logic_vector(somabackplane.N -1 downto 0);
-    ECYCLE  : in  std_logic;
-    EARX    : out std_logic_vector(somabackplane.N - 1 downto 0) := (others => '0');
-    EDRX    : out std_logic_vector(7 downto 0);
-    EDSELRX : in  std_logic_vector(3 downto 0);
+    EDTX         : in  std_logic_vector(7 downto 0);
+    EATX         : in  std_logic_vector(somabackplane.N -1 downto 0);
+    ECYCLE       : in  std_logic;
+    EARX         : out std_logic_vector(somabackplane.N - 1 downto 0);
+    EDRX         : out std_logic_vector(7 downto 0);
+    EDSELRX      : in  std_logic_vector(3 downto 0);
     -- Boot control output
-    SEROUT  : out std_logic_vector(19 downto 0)
+    SEROUT       : out std_logic_vector(19 downto 0);
+    -- devicelink monitoring
+    DLINKUP      : in  std_logic_vector(31 downto 0)
     );
+
+
 end syscontrol;
 
 architecture Behavioral of syscontrol is
@@ -126,14 +130,25 @@ architecture Behavioral of syscontrol is
   signal iaddr : std_logic_vector(9 downto 0)  := (others => '0');
   signal idata : std_logic_vector(17 downto 0) := (others => '0');
 
-  signal OPORTADDR   : std_logic_vector(7 downto 0);
-  signal OPORTDATA   : std_logic_vector(15 downto 0);
-  signal OPORTSTROBE : std_logic := '0';
-  signal bsperwe  : std_logic := '0';
+  signal oportaddr   : std_logic_vector(7 downto 0);
+  signal oportdata   : std_logic_vector(15 downto 0);
+  signal oportstrobe : std_logic := '0';
+
+  signal iportaddr   : std_logic_vector(7 downto 0);
+  signal iportdata   : std_logic_vector(15 downto 0);
+  signal iportstrobe : std_logic := '0';
+
+
+  signal bsperwe : std_logic := '0';
+
+  signal eaout : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+  signal edout : std_logic_vector(95 downto 0) := (others => '0');
+signal enewout : std_logic := '0';
+
   
 begin  -- Behavioral
 
-  
+
   instruction_ram : RAMB16_S18_S18
     generic map (
       INIT_00 => RAM_INIT_00,
@@ -152,7 +167,7 @@ begin  -- Behavioral
       INIT_0D => RAM_INIT_0D,
       INIT_0E => RAM_INIT_0E,
       INIT_0F => RAM_INIT_0F,
-      
+
       INIT_10 => RAM_INIT_10,
       INIT_11 => RAM_INIT_11,
       INIT_12 => RAM_INIT_12,
@@ -169,7 +184,7 @@ begin  -- Behavioral
       INIT_1D => RAM_INIT_1D,
       INIT_1E => RAM_INIT_1E,
       INIT_1F => RAM_INIT_1F,
-      
+
       INIT_20 => RAM_INIT_20,
       INIT_21 => RAM_INIT_21,
       INIT_22 => RAM_INIT_22,
@@ -186,7 +201,7 @@ begin  -- Behavioral
       INIT_2D => RAM_INIT_2D,
       INIT_2E => RAM_INIT_2E,
       INIT_2F => RAM_INIT_2F,
-      
+
       INIT_30 => RAM_INIT_30,
       INIT_31 => RAM_INIT_31,
       INIT_32 => RAM_INIT_32,
@@ -213,7 +228,7 @@ begin  -- Behavioral
       INITP_06 => RAM_INITP_06,
       INITP_07 => RAM_INITP_07)
     port map (
-      
+
       DOA   => idata(15 downto 0),
       DOPA  => idata(17 downto 16),
       ADDRA => iaddr,
@@ -240,22 +255,33 @@ begin  -- Behavioral
       EDTX        => EDTX,
       EATX        => EATX,
       ECYCLE      => ECYCLE,
-      EARX        => EARX,
-      EDRX        => EDRX,
-      EDSELRX     => EDSELRX,
+      EAOUT => eaout,
+      EDOUT => edout,
+      ENEWOUT => enewout, 
       CLKHI       => CLK2X,
       IADDR       => iaddr,
       IDATA       => idata,
       OPORTADDR   => oportaddr,
       OPORTDATA   => oportdata,
       OPORTSTROBE => oportstrobe,
-      IPORTADDR   => open, 
-      IPORTDATA   => X"0000", 
-      IPORTSTROBE => open, 
+      IPORTADDR   => iportaddr,
+      IPORTDATA   => iportdata,
+      IPORTSTROBE => iportstrobe,
       DEVICE      => DEVICE);
 
+  txeventbuffer_inst: entity eproc.txeventbuffer 
+    port map (
+      CLK      => clk2x,
+      EVENTIN  => edout, 
+      EADDRIN  => eaout, 
+      NEWEVENT => enewout, 
+      ECYCLE   => ECYCLE,
+      EDRX     => EDRX,
+      EDRXSEL  => EDSELRX,
+      EARX     => EARX);
 
-  bootserp_inst: bootserperipheral
+
+  bootserp_inst : bootserperipheral
     port map (
       CLK    => CLK2X,
       DIN    => OPORTDATA,
@@ -265,5 +291,19 @@ begin  -- Behavioral
 
   bsperwe <= '1' when oportaddr(7 downto 3) = "00001" and OPORTSTROBE = '1'
              else '0';
+
+
+  process(CLK2x)
+  begin
+    if rising_edge(CLK2x) then
+      if iportstrobe = '1' then
+        if iportaddr = X"00" then
+          iportdata <= DLINKUP(15 downto 0);
+        elsif iportaddr = X"01" then
+          iportdata <= DLINKUP(31 downto 16);
+        end if;
+      end if;
+    end if;
+  end process;
   
 end Behavioral;

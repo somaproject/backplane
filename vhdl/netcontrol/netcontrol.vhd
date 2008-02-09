@@ -145,6 +145,10 @@ architecture Behavioral of netcontrol is
   signal nicserwe : std_logic := '0';
   signal nicserrd : std_logic := '0';
 
+    signal eaout : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+  signal edout : std_logic_vector(95 downto 0) := (others => '0');
+signal enewout : std_logic := '0';
+
 begin  -- Behavioral
 
   nicserwe <= oportstrobe when oportaddr(7 downto 4) = X"0" else '0';
@@ -256,9 +260,11 @@ begin  -- Behavioral
       EDTX    => EDTX,
       EATX    => EATX,
       ECYCLE  => ECYCLE,
-      EARX    => EARX,
-      EDRX    => EDRX,
-      EDSELRX => EDSELRX,
+      EAOUT => eaout,
+      EDOUT => edout,
+      ENEWOUT => enewout, 
+
+      
       CLKHI   => CLK2X,
       IADDR   => iaddr,
       IDATA   => idata,
@@ -272,6 +278,19 @@ begin  -- Behavioral
       IPORTSTROBE => iportstrobe,
 
       DEVICE => DEVICE);
+
+  
+  txeventbuffer_inst: entity eproc.txeventbuffer 
+    port map (
+      CLK      => clk2x,
+      EVENTIN  => edout, 
+      EADDRIN  => eaout, 
+      NEWEVENT => enewout, 
+      ECYCLE   => ECYCLE,
+      EDRX     => EDRX,
+      EDRXSEL  => EDSELRX,
+      EARX     => EARX);
+
 
   nicserialioaddr_inst : entity work.nicserialioaddr
     port map (

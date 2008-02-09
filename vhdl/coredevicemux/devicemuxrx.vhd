@@ -63,7 +63,7 @@ architecture Behavioral of devicemuxrx is
   constant K28_2 : std_logic_vector(7 downto 0) := X"5C";
   constant K28_3 : std_logic_vector(7 downto 0) := X"7C";
   constant K28_6 : std_logic_vector(7 downto 0) := X"DC";
-  constant K28_7 : std_logic_vector(7 downto 0) := X"DC";
+  constant K28_7 : std_logic_vector(7 downto 0) := X"FC";
 
 
   component devicemuxeventrx2

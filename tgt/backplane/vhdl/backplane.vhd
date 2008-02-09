@@ -182,6 +182,8 @@ architecture Behavioral of backplane is
   signal txkinsys, rxkoutsys : std_logic                    := '0';
   signal dllockedsys         : std_logic                    := '0';
 
+  signal dlinkup : std_logic_vector(31 downto 0) := (others => '0');
+
 begin  -- Behavioral
 
 
@@ -410,7 +412,8 @@ begin  -- Behavioral
       EDSELRX      => EDSELRX,
       EATX         => EATX(1),
       EDTX         => EDTX,
-      SEROUT       => lserialboot);
+      SEROUT       => lserialboot,
+      DLINKUP => dlinkup);
 
   bootstore_inst : entity soma.bootstore
     generic map (
@@ -529,9 +532,6 @@ begin  -- Behavioral
 
     end if;
   end process;
-
--- NETCLK <= clk;
-
 
 
 -- myip <= X"0A000002";                 -- 10.0.0.2
@@ -777,7 +777,9 @@ begin  -- Behavioral
         RXIO_N    => DSPRXIO_N(i),
         DROPLOCK  => '0',
         LOCKED    => dllocked);
+    dlinkup(i) <= dllocked;
 
+    
     devicemux_inst : entity work.devicemux
       port map (
         CLK      => CLK,
@@ -851,6 +853,8 @@ begin  -- Behavioral
       DROPLOCK  => '0',
       LOCKED    => dllockedadio);
 
+  dlinkup(16) <= dllockedadio;
+  
   devicemux_adio_inst : entity work.devicemux
     port map (
       CLK      => CLK,
@@ -967,5 +971,7 @@ begin  -- Behavioral
       RXDIN    => rxdoutsys,
       RXKIN    => rxkoutsys,
       LOCKED   => dllockedsys);
+  
+  dlinkup(17) <= dllockedsys;
 
 end Behavioral;
