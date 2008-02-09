@@ -1,0 +1,4 @@
+The TXeventbuffer places events from an internal fifo onto the event bus
+every ECYCLE, or an empty set of 0s in the EA if the buffer is empty. 
+
+
