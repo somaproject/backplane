@@ -51,16 +51,16 @@ begin  -- Behavioral
   cen   <= AOP(0);
 
 
-  selcin <= '0'       when suben = '0' and cen = '0' else
-            CIN       when suben = '0' and cen = '1' else
+  selcin <= CIN       when suben = '0' and cen = '1' else
             '1'       when suben = '1' and cen = '0' else
-            (CIN) when suben = '1' and cen = '1';
+            (CIN) when suben = '1' and cen = '1' else
+            '0'; 
 
 
   ymux <= a                               when AOP(1 downto 0) = "00" else
           b                               when AOP(1 downto 0) = "01" else
           B(7 downto 0 ) & B(15 downto 8) when AOP(1 downto 0) = "10" else
-          B(7 downto 0) & A(7 downto 0)   when AOP(1 downto 0) = "11";
+          B(7 downto 0) & A(7 downto 0); 
 
   ybool <= A xor B when AOP(1 downto 0) = "01" else
            A and B when AOP(1 downto 0) = "10" else
