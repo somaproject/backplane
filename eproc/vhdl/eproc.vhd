@@ -51,6 +51,7 @@ architecture Behavioral of eproc is
   signal elb    : std_logic                              := '0';
 
   signal etxbit : std_logic := '0';
+  signal letxbit : std_logic := '0';
 
   -- force jumping
   signal jumpsel              : std_logic                    := '0';
@@ -247,6 +248,7 @@ begin  -- Behavioral
       EADDR    => etxdaddr,
       NEWEVENT => etxne);
 
+  --etxbit <= letxbit;
   main : process(CLKHI)
   begin
     if rising_edge(CLKHI) then
@@ -254,7 +256,8 @@ begin  -- Behavioral
 
       ecyclel <= ECYCLE;
       edtxl   <= EDTX;
-
+      etxbit <= letxbit;
+      
       if estart = '1' then
         epos     <= 0;
       else
@@ -337,7 +340,7 @@ begin  -- Behavioral
   ebufaddr(3) <= bufsel;
 
 
-  etxbit <= '1' when eatx(epos) = '1' else '0';
+  letxbit <= '1' when eatx(epos) = '1' else '0';
 
   forcejump <= '1' when evtjump = '1' or
                (cs = ebody and etxbit = '1' and eddmatch = '1'
