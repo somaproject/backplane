@@ -22,7 +22,7 @@ entity txreqeventbuffer is
     SENDREQ   : out std_logic;
     SENDGRANT : in  std_logic;
     SENDDONE  : out std_logic;
-    DOUT      : out std_logic);
+    DOUT      : out std_logic_vector(7 downto 0));
 end txreqeventbuffer;
 
 architecture Behavioral of txreqeventbuffer is
@@ -37,7 +37,7 @@ architecture Behavioral of txreqeventbuffer is
 
   signal nel : std_logic := '0';
 
-  signal outbytecnt : intger range 0 to 22 := 0;
+  signal outbytecnt : integer range 0 to 22 := 0;
 
   signal currentlysending : std_logic := '0';
   
@@ -67,14 +67,13 @@ begin  -- Behavioral
                 CLK => CLK,
                 D   => EADDRIN(i));
 
-    EARX(i) <= eal(i) and nel;
   end generate eaddrbuffer;
 
   empty   <= '1' when cnt = "1111" else '0';
   SENDREQ <= not empty;
 
   dec <= '1' when outbytecnt = 21 ;
-
+  
   DOUT <= eaddrout(7 downto 0)   when outbytecnt = 00 else
           eaddrout(15 downto 8)  when outbytecnt = 01 else
           eaddrout(23 downto 16) when outbytecnt = 02 else
@@ -84,7 +83,7 @@ begin  -- Behavioral
           eaddrout(55 downto 48) when outbytecnt = 06 else
           eaddrout(63 downto 56) when outbytecnt = 07 else
           eaddrout(71 downto 64) when outbytecnt = 08 else
-          eaddrout(79 downto 72) when outbytecnt = 09 else
+          "00" & eaddrout(77 downto 72) when outbytecnt = 09 else
           eventout(7 downto 0)   when outbytecnt = 10 else
           eventout(15 downto 8)  when outbytecnt = 11 else
           eventout(23 downto 16) when outbytecnt = 12 else
@@ -97,8 +96,6 @@ begin  -- Behavioral
           eventout(79 downto 72) when outbytecnt = 19 else
           eventout(87 downto 80) when outbytecnt = 20 else
           eventout(95 downto 88);
-  
-  SENDDONE <=  '1' when outbytecnt = 21 else '0';
   
   main : process(CLK)
   begin
