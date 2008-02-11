@@ -459,9 +459,9 @@ def createDLinkStatusQueryResponse():
 
     # event
     proc.load(tmp, DLINKQUERY_RESP)
-    proc.output(EVENTOUT_CMD, tmp)
     proc.output(EVENTOUT_DATA0, highbits)
     proc.output(EVENTOUT_DATA1, lowbits)
+    proc.output(EVENTOUT_CMD, tmp)
         
     
 
