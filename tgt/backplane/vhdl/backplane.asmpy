@@ -64,10 +64,18 @@ BS_OPENFILE = 0x92
 BS_READDATA = 0x93
 BS_YIELDHANDLE = 0x94
 
+DLINKQUERY_CMD = 0x20
+DLINKQUERY_RESP = 0x20
+
+# read addresses
+DLINKUP_LOW = 0x00
+DLINKUP_HIGH = 0x01
+
 ### EVENT BUS ADDRESSES
 EADDR_BOOTSTORE = 2
 EADDR_NETCONTROL = 4 
 EADDR_JTAG = 7
+
 
 ### STATES
 STATE_GETHANDLE = 0
@@ -435,6 +443,27 @@ def createEnableEventCycleProc():
   newproc.output(EVENTPROC_ENABLE, y)
   newproc.foreverLoop()
 
+def createDLinkStatusQueryResponse():
+    proc = env.createEProc((DLINKQUERY_CMD, DLINKQUERY_CMD),
+                           (0, 255))
+    lowbits = proc.createVariable("lowbits")
+    highbits = proc.createVariable("highbits")
+    tmp = proc.createVariable("tmp")
+    
+    proc.input(DLINKUP_LOW, lowbits)
+    proc.input(DLINKUP_HIGH, highbits)
+
+    # now create the response event
+    proc.move(tmp, ereg.src)
+    proc.output(EVENTOUT_SRC, tmp)
+
+    # event
+    proc.load(tmp, DLINKQUERY_RESP)
+    proc.output(EVENTOUT_CMD, tmp)
+    proc.output(EVENTOUT_DATA0, highbits)
+    proc.output(EVENTOUT_DATA1, lowbits)
+        
+    
 
 createEnableEventCycleProc()
 createEventCycleProc()
