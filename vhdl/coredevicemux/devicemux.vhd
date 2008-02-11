@@ -61,7 +61,7 @@ architecture Behavioral of devicemux is
 
 begin
 
-  tx_inst: entity devicemuxtx
+  tx_inst: entity work.devicemuxtx
     port map (
       CLK     => CLK,
       EDTX    => EDTXA,
@@ -77,7 +77,7 @@ begin
       TXDOUT  => TXDOUT,
       TXKOUT  => TXKOUT);
 
-  rx_inst: entity devicemuxrx
+  rx_inst: entity work.devicemuxrx
     port map (
       CLK => CLK,
       ECYCLE => ECYCLE,

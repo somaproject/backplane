@@ -85,14 +85,14 @@ entity syscontrol is
     RAM_INIT_3E : bit_vector(0 to 255) := (others => '0');
     RAM_INIT_3F : bit_vector(0 to 255) := (others => '0');
 
-    RAM_INITP_00 :     bit_vector(0 to 255)                           := (others => '0');
-    RAM_INITP_01 :     bit_vector(0 to 255)                           := (others => '0');
-    RAM_INITP_02 :     bit_vector(0 to 255)                           := (others => '0');
-    RAM_INITP_03 :     bit_vector(0 to 255)                           := (others => '0');
-    RAM_INITP_04 :     bit_vector(0 to 255)                           := (others => '0');
-    RAM_INITP_05 :     bit_vector(0 to 255)                           := (others => '0');
-    RAM_INITP_06 :     bit_vector(0 to 255)                           := (others => '0');
-    RAM_INITP_07 :     bit_vector(0 to 255)                           := (others => '0')
+    RAM_INITP_00 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_01 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_02 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_03 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_04 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_05 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_06 :     bit_vector(0 to 255) := (others => '0');
+    RAM_INITP_07 :     bit_vector(0 to 255) := (others => '0')
     );
   port (
     CLK          : in  std_logic;
@@ -141,11 +141,12 @@ architecture Behavioral of syscontrol is
 
   signal bsperwe : std_logic := '0';
 
-  signal eaout : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
-  signal edout : std_logic_vector(95 downto 0) := (others => '0');
-signal enewout : std_logic := '0';
+  signal eaout                 : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+  signal edout                 : std_logic_vector(95 downto 0)                := (others => '0');
+  signal enewout               : std_logic                                    := '0';
+  signal enewoutl, enewoutslow : std_logic                                    := '0';
 
-  
+
 begin  -- Behavioral
 
 
@@ -255,9 +256,9 @@ begin  -- Behavioral
       EDTX        => EDTX,
       EATX        => EATX,
       ECYCLE      => ECYCLE,
-      EAOUT => eaout,
-      EDOUT => edout,
-      ENEWOUT => enewout, 
+      EAOUT       => eaout,
+      EDOUT       => edout,
+      ENEWOUT     => enewout,
       CLKHI       => CLK2X,
       IADDR       => iaddr,
       IDATA       => idata,
@@ -269,12 +270,12 @@ begin  -- Behavioral
       IPORTSTROBE => iportstrobe,
       DEVICE      => DEVICE);
 
-  txeventbuffer_inst: entity eproc.txeventbuffer 
+  txeventbuffer_inst : entity eproc.txeventbuffer
     port map (
-      CLK      => clk2x,
-      EVENTIN  => edout, 
-      EADDRIN  => eaout, 
-      NEWEVENT => enewout, 
+      CLK      => clk,
+      EVENTIN  => edout,
+      EADDRIN  => eaout,
+      NEWEVENT => enewoutslow,
       ECYCLE   => ECYCLE,
       EDRX     => EDRX,
       EDRXSEL  => EDSELRX,
@@ -296,6 +297,9 @@ begin  -- Behavioral
   process(CLK2x)
   begin
     if rising_edge(CLK2x) then
+
+      enewoutl      <= enewout;
+      enewoutslow   <= enewout or enewoutl;
       if iportstrobe = '1' then
         if iportaddr = X"00" then
           iportdata <= DLINKUP(15 downto 0);
@@ -305,5 +309,5 @@ begin  -- Behavioral
       end if;
     end if;
   end process;
-  
+
 end Behavioral;

@@ -66,7 +66,7 @@ begin
            "1100";
 
 
-  databuffer_a : entity regfile
+  databuffer_a : entity work.regfile
     generic map (
       BITS  => 8)
     port map (
@@ -78,7 +78,7 @@ begin
       ADDRB => addrb,
       DOB   => doba);
 
-  databuffer_b : entity regfile
+  databuffer_b : entity work.regfile
     generic map (
       BITS  => 8)
     port map (

@@ -121,7 +121,7 @@ entity netcontrol is
     -- output network control settings
     MYMAC        : out std_logic_vector(47 downto 0);
     MYBCAST      : out std_logic_vector(31 downto 0);
-    MYIP         : out std_logic_vector(31 downto 0); 
+    MYIP         : out std_logic_vector(31 downto 0);
     -- NIC interface
     NICSOUT      : out std_logic;
     NICSIN       : in  std_logic;
@@ -145,9 +145,11 @@ architecture Behavioral of netcontrol is
   signal nicserwe : std_logic := '0';
   signal nicserrd : std_logic := '0';
 
-    signal eaout : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
-  signal edout : std_logic_vector(95 downto 0) := (others => '0');
-signal enewout : std_logic := '0';
+  signal eaout       : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+  signal edout       : std_logic_vector(95 downto 0)                := (others => '0');
+  signal enewout     : std_logic                                    := '0';
+  signal enewoutl    : std_logic                                    := '0';
+  signal enewoutslow : std_logic                                    := '0';
 
 begin  -- Behavioral
 
@@ -260,14 +262,14 @@ begin  -- Behavioral
       EDTX    => EDTX,
       EATX    => EATX,
       ECYCLE  => ECYCLE,
-      EAOUT => eaout,
-      EDOUT => edout,
-      ENEWOUT => enewout, 
+      EAOUT   => eaout,
+      EDOUT   => edout,
+      ENEWOUT => enewout,
 
-      
-      CLKHI   => CLK2X,
-      IADDR   => iaddr,
-      IDATA   => idata,
+
+      CLKHI => CLK2X,
+      IADDR => iaddr,
+      IDATA => idata,
 
       OPORTADDR   => oportaddr,
       OPORTDATA   => oportdata,
@@ -279,18 +281,19 @@ begin  -- Behavioral
 
       DEVICE => DEVICE);
 
-  
-  txeventbuffer_inst: entity eproc.txeventbuffer 
+
+  txeventbuffer_inst : entity eproc.txeventbuffer
     port map (
-      CLK      => clk2x,
-      EVENTIN  => edout, 
-      EADDRIN  => eaout, 
-      NEWEVENT => enewout, 
+      CLK      => clk,
+      EVENTIN  => edout,
+      EADDRIN  => eaout,
+      NEWEVENT => enewoutl,
       ECYCLE   => ECYCLE,
       EDRX     => EDRX,
       EDRXSEL  => EDSELRX,
       EARX     => EARX);
 
+  
 
   nicserialioaddr_inst : entity work.nicserialioaddr
     port map (
@@ -306,5 +309,12 @@ begin  -- Behavioral
       NICSCLK => NICSCLK,
       NICSCS  => NICSCS);
 
-
+  process(clk2x)
+    begin
+      if rising_edge(clk2x) then
+        enewoutl <= enewout;
+        enewoutslow <= enewout or enewoutl; 
+        
+      end if;
+    end process; 
 end Behavioral;
