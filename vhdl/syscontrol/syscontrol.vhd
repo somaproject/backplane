@@ -305,6 +305,10 @@ begin  -- Behavioral
           iportdata <= DLINKUP(15 downto 0);
         elsif iportaddr = X"01" then
           iportdata <= DLINKUP(31 downto 16);
+        elsif iportaddr = X"02" then
+          iportdata <= DLINKUP(15 downto 0);
+        elsif iportaddr = X"32" then
+          iportdata <= X"1234"; 
         end if;
       end if;
     end if;
