@@ -144,7 +144,7 @@ begin  -- Behavioral
       IPORTSTROBE => IPORTSTROBE,
       DEVICE      => DEVICE);
 
-  txeventbuffer_inst: txeventbuffer
+  txeventbuffer_inst : txeventbuffer
     port map (
       CLK      => CLKHI,
       EVENTIN  => EDOUT,
@@ -154,7 +154,7 @@ begin  -- Behavioral
       EDRX     => EDRX,
       EDRXSEL  => EDSELRX,
       EARX     => EARX);
-  
+
   mainclk <= not mainclk after 2.5 ns;
   reset   <= '0'         after 100 ns;
 
@@ -395,6 +395,20 @@ begin  -- Behavioral
   end process first_event_proc;
 
 
+  -- input port test
+  process(clkhi)
+  begin
+    if rising_edge(clkhi) then
+      if IPORTADDR = X"10" and IPORTSTROBE = '1' then
+        IPORTDATA <= X"1234";
+      elsif IPORTADDR = X"11" and IPORTSTROBE = '1' then
+        IPORTDATA <= X"5678";
+      elsif IPORTSTROBE = '1' then
+        IPORTDATA <= (others => '0');
+      end if;
+    end if;
+
+  end process;
 
 --  -----------------------------------------------------------------------------
 --   -- ECHO event

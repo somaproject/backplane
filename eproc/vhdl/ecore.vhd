@@ -134,7 +134,8 @@ begin  -- Behavioral
       DOB   => regb);
 
   reginsel <= '1' when opclass = "11" else '0'; 
-  regin <= aluy when reginsel = '0' else iportdatal;
+--  regin <= aluy when reginsel = '0' else iportdatal;
+  regin <= aluy when reginsel = '0' else iportdata;
 
   wea <= rwe and cphase;
 
