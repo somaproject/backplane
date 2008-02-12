@@ -94,14 +94,13 @@ def createBram():
 
     return (d, p)
 
-def loadIMEMFile(filename, bmmfile):
+def loadIMEMFile(filename):
     """ load in an imem file """
     imemfid = file(filename)    
     d, p = createBram()
 
     pos = 0
 
-    base = os.path.basename(bmmfile)[:-4]
     for w in imemfid.readlines():
         ws = w.strip()
         assert len(ws) == 18
@@ -118,19 +117,50 @@ def loadIMEMFile(filename, bmmfile):
 
     return (d, p)
 
+
+def getFromBMM() :
+    bmmfile = sys.argv[1]
+
+
+    bmmfid = file(bmmfile)
+    instances = getRamInstances(bmmfid)
+
+    base = os.path.basename(bmmfile)[:-4]
+
+    rfid = createRAMFile(base)
+
+    for i, s in enumerate(sys.argv[2:]):
+        d, p = loadIMEMFile(s)
+
+        writeRAM(rfid, instances[i], d, p)
+    closeRAMFile(rfid, base)
+
+def simpleGenVHDL():
+    """
+    Simply generate the VHDL constants
+
+    assume we have a single imem file and we're going to
+    turn that into an array of constants
     
-bmmfile = sys.argv[1]
+    """
+
+    filename = sys.argv[2]
+    base = sys.argv[3]
+
+    rfid = createRAMFile(base)
+    filenames = [filename]
+    instances = [base]
+    for i, s in enumerate(filenames):
+        d, p = loadIMEMFile(s)
+
+        writeRAM(rfid, instances[i], d, p)
+    closeRAMFile(rfid, base)
 
 
-bmmfid = file(bmmfile)
-instances = getRamInstances(bmmfid)
-
-base = os.path.basename(bmmfile)[:-4]
-
-rfid = createRAMFile(base)
-
-for i, s in enumerate(sys.argv[2:]):
-    d, p = loadIMEMFile(s, bmmfile)
-
-    writeRAM(rfid, instances[i], d, p)
-closeRAMFile(rfid, base)
+if __name__ == "__main__":
+    if sys.argv[1] == "-s":
+        # simple
+        simpleGenVHDL()
+    else:
+        genFromBMM()
+    
