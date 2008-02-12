@@ -72,7 +72,7 @@ begin  -- Behavioral
   empty   <= '1' when cnt = "1111" else '0';
   SENDREQ <= not empty;
 
-  dec <= '1' when outbytecnt = 21 ;
+  dec <= '1' when outbytecnt = 21 else '0';
   
   DOUT <= eaddrout(7 downto 0)   when outbytecnt = 00 else
           eaddrout(15 downto 8)  when outbytecnt = 01 else

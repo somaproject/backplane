@@ -12,7 +12,7 @@ entity evtdnd is
     CLK     : in  std_logic;
     CMD     : in  std_logic_vector(7 downto 0);
     SRC     : in  std_logic_vector(7 downto 0);
-    ADDR    : out std_logic_vector(9 downto 0);
+    ADDR    : out std_logic_vector(9 downto 0) := (others => '0'); 
     MATCH   : out std_logic;
     START   : in  std_logic;
     DONE    : out std_logic;
