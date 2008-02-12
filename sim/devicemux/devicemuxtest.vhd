@@ -73,7 +73,7 @@ architecture Behavioral of devicemuxtest is
   signal EARXA    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDRXA    : std_logic_vector(7 downto 0)                  := (others => '0');
   signal EDSELRXA : std_logic_vector(3 downto 0)                  := (others => '0');
-  signal EATXA    : std_logic_vector(79 downto 0)  := (others => '0');
+  signal EATXA    : std_logic_vector(79 downto 0)                 := (others => '0');
   signal EDTXA    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port B
@@ -84,7 +84,7 @@ architecture Behavioral of devicemuxtest is
   signal EARXB    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDRXB    : std_logic_vector(7 downto 0)                  := (others => '0');
   signal EDSELRXB : std_logic_vector(3 downto 0)                  := (others => '0');
-  signal EATXB    : std_logic_vector(79 downto 0)  := (others => '0');
+  signal EATXB    : std_logic_vector(79 downto 0)                 := (others => '0');
   signal EDTXB    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port C
@@ -95,7 +95,7 @@ architecture Behavioral of devicemuxtest is
   signal EARXC    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDRXC    : std_logic_vector(7 downto 0)                  := (others => '0');
   signal EDSELRXC : std_logic_vector(3 downto 0)                  := (others => '0');
-  signal EATXC    : std_logic_vector(79 downto 0)  := (others => '0');
+  signal EATXC    : std_logic_vector(79 downto 0)                 := (others => '0');
   signal EDTXC    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port D
@@ -106,7 +106,7 @@ architecture Behavioral of devicemuxtest is
   signal EARXD    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDRXD    : std_logic_vector(7 downto 0)                  := (others => '0');
   signal EDSELRXD : std_logic_vector(3 downto 0)                  := (others => '0');
-  signal EATXD    : std_logic_vector(79 downto 0)  := (others => '0');
+  signal EATXD    : std_logic_vector(79 downto 0)                 := (others => '0');
   signal EDTXD    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- IO 
@@ -244,97 +244,168 @@ begin  -- Behavioral
 
   end process;
 
-  txtest: process
-    begin
-      EATXA(79 downto 0) <= X"19181716151413121110";
-      EATXB(79 downto 0) <= X"29282726252423222120";
-      EATXC(79 downto 0) <= X"39383736353433323130";
-      EATXD(79 downto 0) <= X"49484746454443424140";
-      eventinputs(0)(0) <= X"0123";
-      eventinputs(0)(1) <= X"4567";
-      eventinputs(0)(2) <= X"89AB";
-      eventinputs(0)(3) <= X"CDEF";
-      eventinputs(0)(4) <= X"1122";
-      eventinputs(0)(5) <= X"3344";
-      wait;       
+  txgenerate : process
+  begin
+    EATXA(79 downto 0) <= X"19181716151413121110";
+    EATXB(79 downto 0) <= X"29282726252423222120";
+    EATXC(79 downto 0) <= X"39383736353433323130";
+    EATXD(79 downto 0) <= X"39484746454443424140";  -- note that the top two
+                                                    -- bits must be 0
+    eventinputs(0)(0)  <= X"0123";
+    eventinputs(0)(1)  <= X"4567";
+    eventinputs(0)(2)  <= X"89AB";
+    eventinputs(0)(3)  <= X"CDEF";
+    eventinputs(0)(4)  <= X"1122";
+    eventinputs(0)(5)  <= X"3344";
+    DGRANTA            <= '1';
+    DGRANTC            <= '1';
 
-    end process txtest; 
-           
+    wait;
 
-  rxtest: process
-    begin
-      wait until rising_edge(CLK) and ECYCLE = '1';
-      -- now we send four events, one on each channel
-      for dataset in 0 to 3 loop
-        -- first send header word
-        
+  end process txgenerate;
+
+
+  txverify                  : process
+    variable eaddr_current  : std_logic_vector(79 downto 0) := (others => '0');
+    variable dgrant_current : std_logic                     := '0';
+
+  begin
+    wait until rising_edge(CLK) and TXDOUT = X"BC" and TXKOUT = '1';
+    -- now the outputs
+    for i in 0 to 3 loop
+      -- load the relevant data
+      case i is
+        when 0 =>
+          eaddr_current  := EATXA;
+          dgrant_current := DGRANTA;
+
+        when 1 =>
+          eaddr_current  := EATXB;
+          dgrant_current := DGRANTB;
+
+        when 2 =>
+          eaddr_current  := EATXC;
+          dgrant_current := DGRANTC;
+
+        when 3 =>
+          eaddr_current  := EATXD;
+          dgrant_current := DGRANTD;
+
+        when others => null;
+      end case;
+
+      -- DGRANT status
+      wait until rising_edge(CLK);
+      assert TXDOUT(0) = dgrant_current report "Error on DGRANT " & integer'image(i) severity error;
+
+      for ei in 0 to 9 loop
         wait until rising_edge(CLK);
+        assert TXDOUT = eaddr_current(ei*8+7 downto ei*8)
+          report "Error on eaddr for src" & integer'image(i) &
+          " at eaddr pos " & integer'image(ei) severity error;
+      end loop;  -- ei
+    end loop;  -- i
+    -- burn off extra ticks
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+
+    for ea in 0 to 77 loop
+      for eb in 0 to 5 loop
         wait until rising_edge(CLK);
+        assert eventinputs(ea)(eb)(15 downto 8) = TXDOUT
+          report "Error in txdout for event " & integer'image(ea) &
+          " word " & integer'image(eb) & " high byte" severity error;
+
         wait until rising_edge(CLK);
+        assert eventinputs(ea)(eb)(7 downto 0) = TXDOUT
+          report "Error in txdout for event " & integer'image(ea) &
+          " word " & integer'image(eb) & " low byte" severity error;
+
+      end loop;  -- eb
+    end loop;  -- ea
+
+
+
+    wait;
+
+
+  end process;
+
+  rxtest : process
+  begin
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    -- now we send four events, one on each channel
+    for dataset in 0 to 3 loop
+      -- first send header word
+
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      if dataset = 0 then
+        RXDIN <= K28_0;
+      elsif dataset = 1 then
+        RXDIN <= K28_1;
+      elsif dataset = 2 then
+        RXDIN <= K28_2;
+      elsif dataset = 3 then
+        RXDIN <= K28_3;
+      end if;
+
+      RXKIN   <= '1';
+      wait until rising_edge(CLK);
+      RXKIN   <= '0';
+      -- addresses
+      for addr in 0 to 9 loop
+        RXDIN <= std_logic_vector(TO_UNSIGNED((dataset*4 + addr), 8));
         wait until rising_edge(CLK);
-        if dataset = 0 then
-          RXDIN <= K28_0;
-        elsif dataset = 1 then
-          RXDIN <= K28_1; 
-        elsif dataset = 2 then
-          RXDIN <= K28_2; 
-        elsif dataset = 3 then
-          RXDIN <= K28_3; 
-        end if;
+      end loop;  -- addr
 
-        RXKIN <= '1';
+      -- data
+      for data in 0 to 11 loop
+        RXDIN <= std_logic_vector(TO_UNSIGNED((128 + dataset*4 + data), 8));
         wait until rising_edge(CLK);
-        RXKIN <= '0';
-        -- addresses
-        for addr in 0 to 9 loop
-          RXDIN <= std_logic_vector(TO_UNSIGNED((dataset*4 + addr), 8));
-          wait until rising_edge(CLK);
-        end loop;  -- addr
+      end loop;
 
-        -- data
-        for data in 0 to 11 loop
-          RXDIN <= std_logic_vector(TO_UNSIGNED((128 + dataset*4 + data), 8));
-          wait until rising_edge(CLK);  
-        end loop; 
+    end loop;  -- dataset
 
-      end loop;  -- dataset
-        
-      wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK) and ECYCLE = '1';
 
-      -- now try and readout
+    -- now try and readout
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    assert EARXA = X"09080706050403020100" report "Error reading EARXA"
+      severity error;
+    wait until rising_edge(CLK);
+    for i in 0 to 11 loop
+      EDSELRX <= std_logic_vector(TO_UNSIGNED(i, 4));
       wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      assert EARXA = X"09080706050403020100"  report "Error reading EARXA"
-        severity Error;
-      wait until rising_edge(CLK);
-      for i in 0 to 11 loop
-        EDSELRX <= std_logic_vector(TO_UNSIGNED(i, 4));
-        wait until rising_edge(CLK);        
-        assert EDRXA = std_logic_vector(TO_UNSIGNED(128 + i, 8) )
-          report "reading EDRXA" severity Error; 
-        assert EDRXB = std_logic_vector(TO_UNSIGNED(128 + 4 + i, 8) )
-          report "reading EDRXB" severity Error; 
-        assert EDRXC = std_logic_vector(TO_UNSIGNED(128 + 8 + i, 8) )
-          report "reading EDRXC" severity Error; 
-        assert EDRXD = std_logic_vector(TO_UNSIGNED(128 + 12 + i, 8) )
-          report "reading EDRXD" severity Error; 
-      end loop;  -- i
+      assert EDRXA = std_logic_vector(TO_UNSIGNED(128 + i, 8) )
+        report "reading EDRXA" severity error;
+      assert EDRXB = std_logic_vector(TO_UNSIGNED(128 + 4 + i, 8) )
+        report "reading EDRXB" severity error;
+      assert EDRXC = std_logic_vector(TO_UNSIGNED(128 + 8 + i, 8) )
+        report "reading EDRXC" severity error;
+      assert EDRXD = std_logic_vector(TO_UNSIGNED(128 + 12 + i, 8) )
+        report "reading EDRXD" severity error;
+    end loop;  -- i
 
 
-      
-      wait until rising_edge(CLK) and ECYCLE = '1';
 
-      -- now try and readout
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      assert EARXA = X"00000000000000000000"  report "Error reading EARXA"
-        severity Error;
-      
-        
-      wait; 
-    end process rxtest; 
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    -- now try and readout
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    assert EARXA = X"00000000000000000000" report "Error reading EARXA"
+      severity error;
+
+
+    wait;
+  end process rxtest;
 end Behavioral;

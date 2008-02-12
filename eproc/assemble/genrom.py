@@ -162,5 +162,5 @@ if __name__ == "__main__":
         # simple
         simpleGenVHDL()
     else:
-        genFromBMM()
+        getFromBMM()
     
