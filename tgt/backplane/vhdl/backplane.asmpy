@@ -449,18 +449,26 @@ def createDLinkStatusQueryResponse():
     lowbits = proc.createVariable("lowbits")
     highbits = proc.createVariable("highbits")
     tmp = proc.createVariable("tmp")
-    
-    proc.input(DLINKUP_LOW, lowbits)
-    proc.input(DLINKUP_HIGH, highbits)
 
+    proc.input(DLINKUP_HIGH, highbits)
+    proc.output(EVENTOUT_DATA0, highbits)
+
+    proc.input(DLINKUP_LOW, lowbits)
+    proc.output(EVENTOUT_DATA1, lowbits)
+
+    proc.input(0x02, lowbits)
+    proc.output(EVENTOUT_DATA2, lowbits)
+    
+    proc.input(0x32, lowbits)
+    proc.output(EVENTOUT_DATA3, lowbits)
+    
+    
     # now create the response event
     proc.move(tmp, ereg.src)
     proc.output(EVENTOUT_SRC, tmp)
 
     # event
     proc.load(tmp, DLINKQUERY_RESP)
-    proc.output(EVENTOUT_DATA0, highbits)
-    proc.output(EVENTOUT_DATA1, lowbits)
     proc.output(EVENTOUT_CMD, tmp)
         
     
