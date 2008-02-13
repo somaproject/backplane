@@ -51,16 +51,23 @@ begin  -- Behavioral
       SIN   => NICSIN,
       SCS   => NICSCS);
 
-  DOUT <= "000000000000000" & serdonel when addro = "0000" else
-          serdout(15 downto 0) when addro = "0100" else
-          serdout(31 downto 16);
-
-
   serstart <= '1' when addri = "0000" and WE = '1' else '0';
   
   main: process(CLK)
     begin
       if rising_edge(CLK) then
+
+        if RD = '1'  then
+          case addro is
+            when "0000" =>
+              DOUT <= "000000000000000" & serdonel;
+            when "0100" =>
+              DOUT <=  serdout(15 downto 0);
+            when others =>
+              DOUT <= serdout(31 downto 16);
+          end case;
+        end if;
+
         if WE = '1' then
           if ADDRI = "0001"  then
             serrw <= DIN(0); 
