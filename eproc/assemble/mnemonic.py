@@ -98,10 +98,10 @@ class MnemonicConvert(object):
         return opcodes.portop(1, destaddr, srcreg)
     
     def input(self, args):
-        destaddr = args[0]
-        srcreg = args[1]
+        srcaddr = args[0]
+        destreg = args[1]
         
-        return opcodes.portop(0, destaddr, srcreg)
+        return opcodes.portop(0, srcaddr, destreg)
     
     def jump(self, args):
         destname = args[0]

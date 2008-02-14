@@ -534,10 +534,10 @@ begin  -- Behavioral
   end process;
 
 
--- myip <= X"0A000002";                 -- 10.0.0.2
---   mybcast <= X"FFFFFFFF";            -- 10.255.255.255
+myip <= X"0A000002";                 -- 10.0.0.2
+mybcast <= X"FFFFFFFF";            -- 10.255.255.255
 
--- mymac <= X"00ADBEEF1234";
+mymac <= X"00ADBEEF1234";
 
   fiberdebugdest(3) <= '1';
   network_inst : entity network.network
@@ -705,9 +705,9 @@ begin  -- Behavioral
       EVTRXSUC     => evtrxsuc,
       EVTFIFOFULL  => evtfifofull,
       -- output network control settings
-      MYMAC        => mymac,
-      MYBCAST      => mybcast,
-      MYIP         => myip,
+      --MYMAC        => mymac,
+      --MYBCAST      => mybcast,
+      --MYIP         => myip,
       -- NIC interface
       NICSOUT      => NICSOUT,
       NICSIN       => NICSIN,

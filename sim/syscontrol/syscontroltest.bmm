@@ -1,0 +1,6 @@
+ADDRESS_BLOCK syscontrolram RAMB18 [0x10000000 : 0x100007ff]
+BUS_BLOCK
+syscontrol_inst_ram [17:0];
+END_BUS_BLOCK;
+END_ADDRESS_BLOCK; 
+
