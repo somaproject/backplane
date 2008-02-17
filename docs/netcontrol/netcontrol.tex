@@ -19,6 +19,21 @@ And then the status events are :
 0x32: Link status (up/down)
 
 
+------------------------------------------------------------------------
+Network Counters : 
+------------------------------------------------------------------------
+
+these are all 48-bit counters that contain packet counts, with: 
+CMDCNTQUERY: 0x40
+DATA[0] = addr of the thing we're querying
+response: CMD 0x40
+DATA[0] = addr of counter
+DATA[1] = cntr[47:32]
+data[2] = cntr[31:16]
+data[3] = cntr[15:0]
+
+
+
 
 ------------------------------------------------------------------------
 Network Settings
@@ -37,31 +52,6 @@ returned as above.
 
 both of these respond with CMDNETRESPONSE, with Data[0] indicating
 the word and the relevant bits as above. 
-
-------------------------------------------------------------------------
-Network Counters:
-------------------------------------------------------------------------
-
-these are all 32-bit counters that contain packet counts, with: 
-CMDCNTQUERY: 0x40
-CMDCNTRST : 0x41
-
-CMDA : reset (with associated bitfield)
-CMDB : query DATA[0] = requested register
-   gets a response with 
-   CMDB: DATA[0] = register
-
-   also, we periodically broadcast to everyone the register values,
-   say every 100 us.
-
-
---------------------------------------------
-1. read event
-2. act on event
-3. check periodic counter
-4. send if necessary
-5. 
----------------------------------------
 
 Counter read addresses / positions
 

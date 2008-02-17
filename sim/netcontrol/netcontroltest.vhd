@@ -79,6 +79,9 @@ architecture Behavioral of netcontroltest is
   constant DEVICE : std_logic_vector(7 downto 0) := X"01";
   constant MYDEVICE : std_logic_vector(7 downto 0) := X"17";
 
+  constant CNTDEVICE : std_logic_vector(7 downto 0) := X"10";
+  constant CNTDEVICEint : integer := 16;
+
 
   signal receivedcntid : std_logic_vector(15 downto 0) := (others => '0');
   signal receivedcnt   : std_logic_vector(31 downto 0) := (others => '0');
@@ -300,17 +303,14 @@ begin  -- Behavioral
   -- send test events
     wait until rising_edge(CLK) and ECYCLE = '1';
     wait until rising_edge(CLK) and ECYCLE = '1';
-    EATX(0)           <= '1';
-    eventinputs(0)(0) <= X"30" & MYDEVICE;
-    eventinputs(0)(1) <= X"0000";
-    eventinputs(0)(2) <= X"0000";
-    eventinputs(0)(3) <= X"1234";
-    eventinputs(0)(4) <= X"5678";
-    eventinputs(0)(5) <= X"0000";
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"0000";
     wait until rising_edge(CLK) and ECYCLE = '1';
-    EATX(0)           <= '0';
+    EATX(CNTDEVICEint)           <= '0';
     wait until rising_edge(CLK) and ECYCLE = '1';
   -- now verify we got the handle!
+    
     wait;
     
    end process; 

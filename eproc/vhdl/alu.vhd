@@ -64,7 +64,8 @@ begin  -- Behavioral
 
   ybool <= A xor B when AOP(1 downto 0) = "01" else
            A and B when AOP(1 downto 0) = "10" else
-           A or B;
+           A or B when AOP(1 downto 0) = "00" else
+           A(14 downto 0) & '0';
 
 
   yarith <= (Aext + Bext + (X"0000" & selcin));

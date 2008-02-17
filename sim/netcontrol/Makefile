@@ -55,15 +55,15 @@ hw: soma/somabackplane/body.dat eproc/alu/behavioral.dat eproc/regfile/behaviora
 
 comp: 
 
-$(WORKDIR)/netcontroltest_mem/body.dat: $(WORKDIR)/touched netcontroltest_mem.vhd
-	mkdir -p $(WORKDIR)
-	$(VHDLC) netcontroltest_mem.vhd
+work/netcontroltest_mem/body.dat: work/touched netcontroltest_mem.vhd
+	mkdir -p work
+	$(VHDLC) -work work  netcontroltest_mem.vhd
 
-$(WORKDIR)/netcontroltest/behavioral.dat: $(WORKDIR)/touched netcontroltest_mem.vhd netcontroltest.vhd
-	mkdir -p $(WORKDIR)
-	$(VHDLC) netcontroltest.vhd
+work/netcontroltest/behavioral.dat: work/touched netcontroltest.vhd
+	mkdir -p work
+	$(VHDLC) -work work  netcontroltest.vhd
 
-sim: $(WORKDIR)/netcontroltest_mem/body.dat $(WORKDIR)/netcontroltest/behavioral.dat 
+sim: work/netcontroltest_mem/body.dat work/netcontroltest/behavioral.dat 
 runsim: all
 	$(VHDLS) netcontroltest
 

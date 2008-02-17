@@ -1,35 +1,30 @@
-
 Test the NetControl interface
 
-First we test the ethernet interface with the nicserialio
+We run two independent testing configurations: 
+1. To test nicserial, linkup, etc. 
+2. To test the netcounter stuff
+
+--------------------------------------------------
+TEST THE NICSERIAL INTERFACE
+--------------------------------------------------
+
+[FIXME]
+
+--------------------------------------------------
+TEST THE COUNTER INTERFACE
+--------------------------------------------------
+
+We query and reset the counter using a device at address CNTDEVICE
+(CNTDEVICEint). 
+
+1. read and verify that we get a zero response
+2. 
 
 
 
-OLD NETCONTROL:
 
 
-This is our attemt to verify that our network control settings are
-working as we expect them to.
 
-The sending device here has ID 0x04, and the receiving (uut) has 0x01. 
-
-
-1. send a no-op event and verify we don't respond
-
-2. Network settings: 
-We test this by writing to, and check for the update-event from, 
-the following net settings: 
-
-MAC
-IP broadcast address
-IP address
-
-3. we write some values to all of the counters ,and then read back 
-RXIOCRCERROR
-TXCNT6 
-TXLEN6
-
-4. We then wait a while and try and read the broadcast values. 
 
 
 

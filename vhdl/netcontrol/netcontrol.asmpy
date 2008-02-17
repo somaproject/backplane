@@ -15,8 +15,15 @@ EVENTOUT_DATA4 = 0x85
 EVENTPROC_ENABLE = 0x89
 EVENTPROC_ADDR = 0x88
 
-EVTADDR_NICSERIAL = 0x30
-EVTADDR_LINKUP = 0x31
+
+EVTCMD_NICSERIAL = 0x30
+EVTCMD_LINKUP = 0x31
+
+EVTCMD_CNTQUERY = 0x40
+EVTCMDRSP_CNTQUERY = 0x40
+
+EVTCMD_CNTRST = 0x41
+
 
 NICSERADDR_START = 0x00
 NICSERADDR_RW    = 0x01
@@ -259,7 +266,7 @@ def createEventCycleProc():
   ecp.foreverLoop()
 
 def rawNicSerialSettingRX():
-  proc = env.createEProc((EVTADDR_NICSERIAL, EVTADDR_NICSERIAL), (0, 255))
+  proc = env.createEProc((EVTCMD_NICSERIAL, EVTCMD_NICSERIAL), (0, 255))
   tmp = env.createVariable("tmp")
   proc.move(tmp, ereg.edata[0])
   proc.output(NICSERADDR_RW, tmp)
@@ -284,10 +291,17 @@ def bringUpLinkRX():
   Being process of bringing up link
 
   """
-  proc = env.createEProc((EVTADDR_LINKUP, EVTADDR_LINKUP), (0, 255))
+  proc = env.createEProc((EVTCMD_LINKUP, EVTCMD_LINKUP), (0, 255))
   tmp = proc.createVariable("tmp3")
   proc.load(env.nextState, STATE_RAISELINK)
   proc.load(env.linkNextState, LINK_NICUP)
+  
+def cntQuery():
+  """
+	Query a particular counter
+  """
+  proc = env.createEProc((EVTCMD_CNTQUERY, EVTCMD_CNTQUERY), (0, 255))
+  tmp = proc.createVariable("tmp3")
   
   
 createEnableEventCycleProc()

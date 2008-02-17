@@ -51,6 +51,8 @@ architecture Behavioral of ecore is
 
   signal immval : std_logic_vector(7 downto 0) := (others => '0');
 
+  signal isel : std_logic := '0';
+  
   -- alu signals
   signal aop, aopl              : std_logic_vector(3 downto 0)  := (others => '0');
   signal alua, alub, aluy : std_logic_vector(15 downto 0) := (others => '0');
@@ -74,8 +76,6 @@ architecture Behavioral of ecore is
 
   signal opclass : std_logic_vector(1 downto 0) := (others => '0');
 
-  signal iportdatal : std_logic_vector(15 downto 0) := (others => '0');
-  
   component alu
     port (
       A    : in  std_logic_vector(15 downto 0);
@@ -134,7 +134,6 @@ begin  -- Behavioral
       DOB   => regb);
 
   reginsel <= '1' when opclass = "11" else '0'; 
---  regin <= aluy when reginsel = '0' else iportdatal;
   regin <= aluy when reginsel = '0' else iportdata;
 
   wea <= rwe and cphase;
@@ -175,14 +174,19 @@ begin  -- Behavioral
   loportstrobe <= '1' when (opclass = "11" and odir = '1' and cphase = '0')
                   else '0';
   odir <= IDATA(15); 
+  isel <= IDATA(14); 
 
   bsel <= '1' when opclass = "10" else '0';
   
   IADDR <= pc; 
   CPHASEOUT  <= cphase;
 
-  IPORTSTROBE <= '1' when opclass = "11" and odir = '0' and cphase = '0' else '0';
   
+  IPORTSTROBE <= '1' when opclass = "11" and odir = '0' and cphase = '0' else '0';
+
+  IPORTADDR <= immval when isel = '0' else regb(7 downto 0);
+  
+
   main : process(CLK, RESET)
   begin
     if RESET = '1' then
@@ -226,11 +230,9 @@ begin  -- Behavioral
         end if;
         OPORTSTROBE <= loportstrobe;
 
-        iportdatal <= IPORTDATA; 
       end if;
     end if;
 
-    IPORTADDR <= immval; 
   end process main;
 
 

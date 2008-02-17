@@ -64,16 +64,26 @@ def immop(ALUop, immbyte, tgtreg):
     return op
 
 
-def portop(direction, addr, reg):
+def portop(direction, addr, reg,  useRegAddr=False):
     """
     direction = 0 ==> input
     direction = 1 ==> output
+
+    if useRegAddr == True, then
+    addr is actually a register # that we use
 
     """
     op = newOp()
     op[17:16] = [1, 1]
     op[15] = direction
-    op[11:4] = addr
+    
+    if useRegAddr:
+        op[14] = 1
+        op[8:4] = addr
+    else:
+        op[14] = 0
+        op[11:4] = addr
+
     op[3:0] = reg
 
     return op

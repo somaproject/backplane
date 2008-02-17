@@ -144,17 +144,39 @@ architecture Behavioral of netcontrol is
 
   signal nicserwe : std_logic := '0';
   signal nicserrd : std_logic := '0';
-
+  signal nicserdout : std_logic_vector(15 downto 0) := (others => '0');
+  
+  
   signal eaout       : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
   signal edout       : std_logic_vector(95 downto 0)                := (others => '0');
   signal enewout     : std_logic                                    := '0';
   signal enewoutl    : std_logic                                    := '0';
   signal enewoutslow : std_logic                                    := '0';
 
+  component txcounter
+    port (
+      CLK      : in  std_logic;
+      PKTLENEN : in  std_logic;
+      PKTLEN   : in  std_logic_vector(15 downto 0);
+      TXCHAN   : in  std_logic_vector(2 downto 0);
+      -- RESETs
+      RSTCHAN  : in  std_logic_vector(3 downto 0);
+      RSTCNT   : in  std_logic;
+      -- outputs
+      OSEL     : in  std_logic_vector(3 downto 0);
+      CNTOUT   : out std_logic_vector(47 downto 0)
+      );
+  end component;
+
+  signal rsttxcnt : std_logic := '0';
+  signal txcntout : std_logic_vector(47 downto 0) := (others => '0');
+  signal txcnt : std_logic_vector(15 downto 0) := (others => '0');
+  
+
 begin  -- Behavioral
 
   nicserwe <= oportstrobe when oportaddr(7 downto 4) = X"0" else '0';
-  nicserrd <= iportstrobe when oportaddr(7 downto 4) = X"0" else '0';
+  nicserrd <= iportstrobe when iportaddr(7 downto 4) = X"0" else '0';
 
   instruction_ram : RAMB16_S18_S18
     generic map (
@@ -293,7 +315,7 @@ begin  -- Behavioral
       EDRXSEL  => EDSELRX,
       EARX     => EARX);
 
-  
+
 
   nicserialioaddr_inst : entity work.nicserialioaddr
     port map (
@@ -301,7 +323,7 @@ begin  -- Behavioral
       ADDRI   => oportaddr(3 downto 0),
       DIN     => oportdata,
       ADDRO   => iportaddr(3 downto 0),
-      DOUT    => iportdata,
+      DOUT    => nicserdout, 
       WE      => nicserwe,
       RD      => nicserrd,
       NICSOUT => NICSOUT,
@@ -309,12 +331,32 @@ begin  -- Behavioral
       NICSCLK => NICSCLK,
       NICSCS  => NICSCS);
 
+  txcnt_inst: txcounter
+    port map (
+      CLK      => clk,
+      PKTLENEN => TXPKTLENEN,
+      PKTLEN   => TXPKTLEN,
+      TXCHAN   => TXCHAN,
+      RSTCHAN => oportaddr(3 downto 0),
+      RSTCNT => rsttxcnt,
+      OSEL => iportaddr(5 downto 2),
+      CNTOUT => txcntout);
+  
+  iportdata <= nicserdout when oportaddr(7 downto 4) = "0000" else txcnt;
+
+  txcnt <= txcntout(47 downto 32) when iportaddr(1 downto 0) = "00" else
+           txcntout(31 downto 16) when iportaddr(1 downto 0) = "01" else
+           txcntout(15 downto 0);
+
+  rsttxcnt <= '1' when oportaddr(7 downto 4) = "0001"
+              and oportstrobe = '1' else '0';
+             
   process(clk2x)
-    begin
-      if rising_edge(clk2x) then
-        enewoutl <= enewout;
-        enewoutslow <= enewout or enewoutl; 
-        
-      end if;
-    end process; 
+  begin
+    if rising_edge(clk2x) then
+      enewoutl    <= enewout;
+      enewoutslow <= enewout or enewoutl;
+
+    end if;
+  end process;
 end Behavioral;

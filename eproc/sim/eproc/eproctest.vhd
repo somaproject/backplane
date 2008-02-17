@@ -403,6 +403,10 @@ begin  -- Behavioral
         IPORTDATA <= X"1234";
       elsif IPORTADDR = X"11" and IPORTSTROBE = '1' then
         IPORTDATA <= X"5678";
+      elsif IPORTADDR = X"12" and IPORTSTROBE = '1' then
+        IPORTDATA <= X"9ABC";
+      elsif IPORTADDR = X"13" and IPORTSTROBE = '1' then
+        IPORTDATA <= X"DEF0";
       elsif IPORTSTROBE = '1' then
         IPORTDATA <= (others => '0');
       end if;

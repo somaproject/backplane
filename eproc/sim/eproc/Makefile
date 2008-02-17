@@ -1,7 +1,7 @@
 VHDLC=vcom
 VHDLS=vsim
 WORKDIR=work
-all: hw comp sim
+all: hw comp sim always
 
 soma/somabackplane/body.dat: soma/touched ../../../vhdl/somabackplane.vhd
 	mkdir -p soma
@@ -61,3 +61,5 @@ soma/touched:
 work/touched:
 	vlib  work
 	touch  work/touched
+always:
+	python ../../assemble/assemble.py loadtest.py loadtest.iram
