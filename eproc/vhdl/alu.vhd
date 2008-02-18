@@ -64,7 +64,7 @@ begin  -- Behavioral
 
   ybool <= A xor B when AOP(1 downto 0) = "01" else
            A and B when AOP(1 downto 0) = "10" else
-           A or B when AOP(1 downto 0);
+           A or B;
   
 
 

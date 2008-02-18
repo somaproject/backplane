@@ -140,7 +140,9 @@ architecture Behavioral of netcontrol is
 
   signal iportaddr   : std_logic_vector(7 downto 0);
   signal iportdata   : std_logic_vector(15 downto 0);
-  signal iportstrobe : std_logic := '0';
+  signal iportstrobe, iportstrobel,
+    iportstrobell: std_logic := '0';
+  signal iportaddrl : std_logic_vector(7 downto 0) := (others => '0');
 
   signal nicserwe : std_logic := '0';
   signal nicserrd : std_logic := '0';
@@ -172,7 +174,8 @@ architecture Behavioral of netcontrol is
   signal txcntout : std_logic_vector(47 downto 0) := (others => '0');
   signal txcnt : std_logic_vector(15 downto 0) := (others => '0');
   
-
+  signal txmuxsel : integer range 0 to 2;
+    
 begin  -- Behavioral
 
   nicserwe <= oportstrobe when oportaddr(7 downto 4) = X"0" else '0';
@@ -339,16 +342,16 @@ begin  -- Behavioral
       TXCHAN   => TXCHAN,
       RSTCHAN => oportaddr(3 downto 0),
       RSTCNT => rsttxcnt,
-      OSEL => iportaddr(5 downto 2),
+      OSEL => iportaddr(3 downto 0),
       CNTOUT => txcntout);
   
   iportdata <= nicserdout when oportaddr(7 downto 4) = "0000" else txcnt;
 
-  txcnt <= txcntout(47 downto 32) when iportaddr(1 downto 0) = "00" else
-           txcntout(31 downto 16) when iportaddr(1 downto 0) = "01" else
+  txcnt <= txcntout(47 downto 32) when txmuxsel = 0 else
+           txcntout(31 downto 16) when txmuxsel = 1 else
            txcntout(15 downto 0);
 
-  rsttxcnt <= '1' when oportaddr(7 downto 4) = "0001"
+  rsttxcnt <= '1' when oportaddr(7 downto 4) = "0010"
               and oportstrobe = '1' else '0';
              
   process(clk2x)
@@ -357,6 +360,19 @@ begin  -- Behavioral
       enewoutl    <= enewout;
       enewoutslow <= enewout or enewoutl;
 
+      iportstrobel <= iportstrobe;
+      
+      if iportaddr(7 downto 4) = "0010" then
+        if iportstrobel = '1' then
+          if txmuxsel = 2 then
+            txmuxsel <= 0;
+          else
+            txmuxsel <= txmuxsel + 1; 
+          end if;
+        end if;
+      end if;
+
+      
     end if;
   end process;
 end Behavioral;

@@ -76,11 +76,11 @@ architecture Behavioral of netcontroltest is
   signal state : settings := none;
 
 
-  constant DEVICE : std_logic_vector(7 downto 0) := X"01";
+  constant DEVICE   : std_logic_vector(7 downto 0) := X"01";
   constant MYDEVICE : std_logic_vector(7 downto 0) := X"17";
 
-  constant CNTDEVICE : std_logic_vector(7 downto 0) := X"10";
-  constant CNTDEVICEint : integer := 16;
+  constant CNTDEVICE    : std_logic_vector(7 downto 0) := X"10";
+  constant CNTDEVICEint : integer                      := 16;
 
 
   signal receivedcntid : std_logic_vector(15 downto 0) := (others => '0');
@@ -90,8 +90,12 @@ architecture Behavioral of netcontroltest is
   signal mainclk  : std_logic := '0';
 
   signal serialregin : std_logic_vector(39 downto 0) := (others => '0');
-  signal serialbcnt : integer := 0;
-  signal outword : std_logic_vector(31 downto 0) := X"1234ABCD";
+  signal serialbcnt  : integer                       := 0;
+  signal outword     : std_logic_vector(31 downto 0) := X"1234ABCD";
+
+  signal recoveredevent     : eventarray := (others => (others => '0'));
+  signal recoveredeventdone : std_logic  := '0';
+
 
 
 begin  -- Behavioral
@@ -129,7 +133,7 @@ begin  -- Behavioral
 
   netcontrol_uut : entity soma.netcontrol
     generic map (
-      DEVICE       => DEVICE,
+      DEVICE      => DEVICE,
       RAM_INIT_00 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_00,
       RAM_INIT_01 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_01,
       RAM_INIT_02 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INIT_02,
@@ -226,8 +230,8 @@ begin  -- Behavioral
       UNKNOWNIP    => UNKNOWNIP,
       UNKNOWNARP   => UNKNOWNARP,
       UNKNOWNUDP   => UNKNOWNUDP,
-      EVTRXSUC => '0',
-      EVTFIFOFULL => '0',
+      EVTRXSUC     => '0',
+      EVTFIFOFULL  => '0',
       -- settings
       MYMAC        => MYMAC,
       MYBCAST      => MYBCAST,
@@ -277,41 +281,135 @@ begin  -- Behavioral
   end process;
 
 
-  serialin: process (NICSCLK, NICSCS)
+  serialin : process (NICSCLK, NICSCS)
   begin  -- process serialin
     if falling_edge(NICSCS) then
-      serialbcnt <= 0;
+      serialbcnt    <= 0;
     else
       if falling_edge(NICSCLK) then
-        serialbcnt <= serialbcnt + 1; 
+        serialbcnt  <= serialbcnt + 1;
       end if;
     end if;
     if rising_edge(NICSCLK) then
       if NICSCS = '0' then
-        serialregin <= serialregin(38 downto 0) & NICSOUT; 
+        serialregin <= serialregin(38 downto 0) & NICSOUT;
       end if;
-      if serialbcnt >= 7  and serialbcnt < 39 then
-        NICSIN <= outword(39 - serialbcnt - 1); 
+      if serialbcnt >= 7 and serialbcnt < 39 then
+        NICSIN      <= outword(39 - serialbcnt - 1);
       end if;
     end if;
-    
+
   end process serialin;
-  
-  
+
+
+  -- recover the event
   process
-    begin
-  -- send test events
+  begin
     wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    -- extract out the event
+    for i in 0 to 5 loop
+      EDSELRX                        <= std_logic_vector(TO_UNSIGNED(i*2 + 0, 4));
+      wait until rising_edge(CLK);
+      recoveredevent(i)(15 downto 8) <= EDRX;
+      EDSELRX                        <= std_logic_vector(TO_UNSIGNED(i*2 + 1, 4));
+      wait until rising_edge(CLK);
+      recoveredevent(i)(7 downto 0)  <= EDRX;
+    end loop;  -- i
+    EDSELRX                          <= X"0";
+    recoveredEventDone               <= '1';
+    wait until rising_edge(CLK);
+    recoveredEventDone               <= '0';
+
+  end process;
+  process
+  begin
+    -- send test events
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    -------------------------------------------------------------------
+    -- query counter 2
+    -------------------------------------------------------------------
     wait until rising_edge(CLK) and ECYCLE = '1';
     EATX(CNTDEVICEint)           <= '1';
     eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
-    eventinputs(CNTDEVICEint)(1) <= X"0000";
+    eventinputs(CNTDEVICEint)(1) <= X"0002";
     wait until rising_edge(CLK) and ECYCLE = '1';
     EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(recoveredeventdone) and EARX(CNTDEVICEint) = '1';
+
+    assert recoveredevent(0) = X"40" & DEVICE report "error reciving word 0 for Event" severity error;
+    assert recoveredevent(1) = X"0002" report "error reciving word 1 for Event" severity error;
+    assert recoveredevent(2) = X"0000" report "error reciving word 2 for Event" severity error;
+    assert recoveredevent(3) = X"0000" report "error reciving word 3 for Event" severity error;
+    assert recoveredevent(4) = X"0000" report "error reciving word 4 for Event" severity error;
+
+    report "Received response event for query of txcnt 2" severity note;
     wait until rising_edge(CLK) and ECYCLE = '1';
-  -- now verify we got the handle!
+
+    -------------------------------------------------------------------
+    -- increment and measure counter 5
+    -------------------------------------------------------------------
     
+    -- now increment counter #5
+    for i in 0 to 123 loop
+      TXPKTLEN   <= std_logic_vector(TO_UNSIGNED(i* 50, 16));
+      TXCHAN     <= "101";
+      wait until rising_edge(CLK);
+      TXPKTLENEN <= '1';
+      wait until rising_edge(CLK);
+      TXPKTLENEN <= '0';
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+    end loop;  -- i 
+
+    -- Measure the count
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"000B";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(recoveredeventdone) and EARX(CNTDEVICEint) = '1';
+
+    assert recoveredevent(0) = X"40" & DEVICE report "error reciving word 0 for Event" severity error;
+    assert recoveredevent(1) = X"000B" report "error reciving word 1 for Event" severity error;
+    assert recoveredevent(2) = X"0000" report "error reciving word 2 for Event" severity error;
+    assert recoveredevent(3) = X"0000" report "error reciving word 3 for Event" severity error;
+    assert recoveredevent(4) = X"007c" report "error reciving word 4 for Event" severity error;
+
+    report "Received response event for query of txcnt B count" severity note;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    -- Measure the len
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"000A";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(recoveredeventdone) and EARX(CNTDEVICEint) = '1';
+
+    assert recoveredevent(0) = X"40" & DEVICE report "error reciving word 0 for Event" severity error;
+    assert recoveredevent(1) = X"000A" report "error reciving word 1 for Event" severity error;
+    assert recoveredevent(2) = X"0000" report "error reciving word 2 for Event" severity error;
+    assert recoveredevent(3) = X"0005" report "error reciving word 3 for Event" severity error;
+    assert recoveredevent(4) = X"D174" report "error reciving word 4 for Event" severity error;
+
+    report "Received response event for query of txcnt A count" severity note;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
     wait;
-    
-   end process; 
+
+  end process;
 end Behavioral;

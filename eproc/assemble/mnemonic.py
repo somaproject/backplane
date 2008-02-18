@@ -164,3 +164,14 @@ class MnemonicConvert(object):
 
         return opcodes.aluop("SWAPB", destreg, srcreg)
 
+    # Immediate ALU ops
+    def immadd(self, args):
+        """
+        immediate add -- add an immediate to reg and store in reg
+
+        """
+        destreg = args[0]
+        immval = args[1]
+
+        return opcodes.immop("ADD", immval, destreg)
+    

@@ -39,6 +39,8 @@ nextState = env.createVariable("nextState")
 linkNextState = env.createVariable("linkNextState")
 mostRecentDirectNICSerialReq = env.createVariable("mostRecentDirectNICSerialReq")
 linkDelay = env.createVariable("linkDelay")
+counterEventOut = env.createVariable("counterEventOut")
+
 
 
 STATE_NONE = 0
@@ -71,6 +73,7 @@ def jumpIfEqual(proc, tempreg, reg, const, addr):
 def createEnableEventCycleProc():
   newproc = env.createProc("enableEventCycleProc")
   y = newproc.createVariable("y")
+  newproc.load(env.counterEventOut, 0x40)
   newproc.load(y, 1)
   newproc.output(EVENTPROC_ENABLE, y)
   newproc.foreverLoop()
@@ -301,13 +304,32 @@ def cntQuery():
 	Query a particular counter
   """
   proc = env.createEProc((EVTCMD_CNTQUERY, EVTCMD_CNTQUERY), (0, 255))
-  tmp = proc.createVariable("tmp3")
+  cntaddr = proc.createVariable("cntaddr")
+  src = proc.createVariable("src")
+  cntH = proc.createVariable("cntH")
+  cntM = proc.createVariable("cntM")
+  cntL = proc.createVariable("cntL")
+  
+  proc.move(src, ereg.src)
+  proc.output(EVENTOUT_SRC, src)
+  proc.move(cntaddr, ereg.edata[0])
+  proc.output(EVENTOUT_DATA0, cntaddr)
+  proc.immadd(cntaddr, 0x20)
+  proc.inputreg(cntaddr, cntH)
+  proc.inputreg(cntaddr, cntM)
+  proc.inputreg(cntaddr, cntL)
+  proc.output(EVENTOUT_DATA1, cntH)
+  proc.output(EVENTOUT_DATA2, cntM)
+  proc.output(EVENTOUT_DATA3, cntL)
+  proc.output(EVENTOUT_CMD, env.counterEventOut)
+  
   
   
 createEnableEventCycleProc()
 createEventCycleProc()
 rawNicSerialSettingRX()
 bringUpLinkRX()
+cntQuery()
 
 proc_send_ether()
 proc_raiselink()

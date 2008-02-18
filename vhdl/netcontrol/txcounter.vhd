@@ -89,6 +89,7 @@ begin  -- Behavioral
     case cs is
       when none =>
         txchanl(0) <= '0';
+        incwe <= '0'; 
         if PKTLENEN = '1' then
           ns       <= inccnt;
         else
@@ -96,14 +97,17 @@ begin  -- Behavioral
         end if;
 
       when inccnt =>
+        incwe <= '1'; 
         txchanl(0) <= '0';
         ns         <= inclen;
 
       when inclen =>
+        incwe <= '1'; 
         txchanl(0) <= '1';
         ns         <= none;
 
       when others =>
+        incwe <= '0'; 
         txchanl(0) <= '0';
         ns         <= none;
     end case;
