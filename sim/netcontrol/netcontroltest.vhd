@@ -409,7 +409,152 @@ begin  -- Behavioral
     report "Received response event for query of txcnt A count" severity note;
     wait until rising_edge(CLK) and ECYCLE = '1';
 
-    wait;
 
+    -------------------------------------------------------------------
+    -- Reset, re-read counter 5 (both A and B)
+    -------------------------------------------------------------------
+    
+    -- Measure the count
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"41" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"000A";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"41" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"000B";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+     -- now query and validate
+
+    -- Measure the count
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"000B";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(recoveredeventdone) and EARX(CNTDEVICEint) = '1';
+
+    assert recoveredevent(0) = X"40" & DEVICE
+      report "error reciving word 0 for Event post-reset" severity error;
+    assert recoveredevent(1) = X"000B"
+      report "error reciving word 1 for Event post-reset" severity error;
+    assert recoveredevent(2) = X"0000"
+      report "error reciving word 2 for Event post-reset" severity error;
+    assert recoveredevent(3) = X"0000"
+      report "error reciving word 3 for Event post-reset" severity error;
+    assert recoveredevent(4) = X"0000"
+      report "error reciving word 4 for Event post-reset" severity error;
+
+    report "Received response event for query of txcnt B count reset" severity note;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    -- Measure the len
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"000A";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(recoveredeventdone) and EARX(CNTDEVICEint) = '1';
+
+    assert recoveredevent(0) = X"40" & DEVICE
+      report "error reciving word 0 for Event post-reset" severity error;
+    assert recoveredevent(1) = X"000A"
+      report "error reciving word 1 for Event post-reset" severity error;
+    assert recoveredevent(2) = X"0000"
+      report "error reciving word 2 for Event post-reset" severity error;
+    assert recoveredevent(3) = X"0000"
+      report "error reciving word 3 for Event post-reset" severity error;
+    assert recoveredevent(4) = X"0000"
+      report "error reciving word 4 for Event post-reset" severity error;
+
+    report "Received response event for query of txcnt A count reset" severity note;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    -- now let's try a few of the other counters
+    -------------------------------------------------------------------
+    -- Try reading rxiocrcerrcnt
+    -------------------------------------------------------------------
+    -- first, inc the counter a few times
+
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '1'; 
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '1'; 
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '1'; 
+    wait until rising_edge(CLK);
+    RXIOCRCERR <= '0';
+
+    
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"0010";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(recoveredeventdone) and EARX(CNTDEVICEint) = '1';
+
+    assert recoveredevent(0) = X"40" & DEVICE
+      report "error reciving word 0 for Event rxiocrcerrcnt" severity error;
+    assert recoveredevent(1) = X"0010"
+      report "error reciving word 1 for Event rxiocrcerrcnt" severity error;
+    assert recoveredevent(2) = X"0000"
+      report "error reciving word 2 for Event rxiocrcerrcnt" severity error;
+    assert recoveredevent(3) = X"0000"
+      report "error reciving word 3 for Event rxiocrcerrcnt" severity error;
+    assert recoveredevent(4) = X"0003"
+      report "error reciving word 4 for Event rxiocrcerrcnt" severity error;
+
+    report "Received response event for query rxiocrcerrcnt" severity note;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+
+    -------------------------------------------------------------------
+    -- Try reading unknownudp
+    -------------------------------------------------------------------
+    -- first, inc the counter a few times
+
+    for i in 0 to 417 loop
+      wait until rising_edge(CLK);
+      UNKNOWNUDP <= '1'; 
+    end loop;  -- i
+    UNKNOWNUDP <= '0';
+
+    
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"0014";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(recoveredeventdone) and EARX(CNTDEVICEint) = '1';
+
+    assert recoveredevent(0) = X"40" & DEVICE
+      report "error reciving word 0 for Event uknownudpcnt" severity error;
+    assert recoveredevent(1) = X"0014"
+      report "error reciving word 1 for Event uknownudpcnt" severity error;
+    assert recoveredevent(2) = X"0000"
+      report "error reciving word 2 for Event uknownudpcnt" severity error;
+    assert recoveredevent(3) = X"0000"
+      report "error reciving word 3 for Event uknownudpcnt" severity error;
+    assert recoveredevent(4) = X"01a1"
+      report "error reciving word 4 for Event uknownudpcnt" severity error;
+
+    report "Received response event for query unknownudpcnt" severity note;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    
+    wait; 
   end process;
 end Behavioral;

@@ -376,11 +376,11 @@ begin  -- Behavioral
   rsttxcnt <= '1' when oportaddr(7 downto 4) = "0010"
               and oportstrobe = '1' else '0';
 
-  rxcnt <= rxiocrcerrcnt   when rxmuxsel = 0 and iportaddr(3 downto 0) = "0000" else
-           unknownethercnt when rxmuxsel = 0 and iportaddr(3 downto 0) = "0001" else
-           unknownipcnt    when rxmuxsel = 0 and iportaddr(3 downto 0) = "0010" else
-           unknownarpcnt   when rxmuxsel = 0 and iportaddr(3 downto 0) = "0011" else
-           unknownudpcnt   when rxmuxsel = 0 and iportaddr(3 downto 0) = "0100" else
+  rxcnt <= rxiocrcerrcnt   when rxmuxsel = 2 and iportaddr(3 downto 0) = "0000" else
+           unknownethercnt when rxmuxsel = 2 and iportaddr(3 downto 0) = "0001" else
+           unknownipcnt    when rxmuxsel = 2 and iportaddr(3 downto 0) = "0010" else
+           unknownarpcnt   when rxmuxsel = 2 and iportaddr(3 downto 0) = "0011" else
+           unknownudpcnt   when rxmuxsel = 2 and iportaddr(3 downto 0) = "0100" else
            X"0000";
 
   process(clk2x)

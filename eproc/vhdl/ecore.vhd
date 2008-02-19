@@ -225,7 +225,12 @@ begin  -- Behavioral
         aopl <= aop; 
         -- output port
         if loportstrobe = '1' then
-          OPORTADDR <= immval;
+          if isel = '0' then
+            OPORTADDR <= immval;  
+          else
+            OPORTADDR <= regb(7 downto 0); 
+          end if;
+
           OPORTDATA <= rega;
         end if;
         OPORTSTROBE <= loportstrobe;

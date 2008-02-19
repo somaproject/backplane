@@ -96,7 +96,14 @@ class MnemonicConvert(object):
         srcreg = args[1]
         
         return opcodes.portop(1, destaddr, srcreg)
+
+    def outputreg(self, args):
+        srcaddr = args[0]
+        destreg = args[1]
+        
+        return opcodes.portop(1, srcaddr, destreg, True)
     
+
     def input(self, args):
         srcaddr = args[0]
         destreg = args[1]
