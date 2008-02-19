@@ -138,17 +138,17 @@ architecture Behavioral of netcontrol is
   signal oportdata   : std_logic_vector(15 downto 0);
   signal oportstrobe : std_logic := '0';
 
-  signal iportaddr   : std_logic_vector(7 downto 0);
-  signal iportdata   : std_logic_vector(15 downto 0);
+  signal iportaddr  : std_logic_vector(7 downto 0);
+  signal iportdata  : std_logic_vector(15 downto 0);
   signal iportstrobe, iportstrobel,
-    iportstrobell: std_logic := '0';
+    iportstrobell   : std_logic                    := '0';
   signal iportaddrl : std_logic_vector(7 downto 0) := (others => '0');
 
-  signal nicserwe : std_logic := '0';
-  signal nicserrd : std_logic := '0';
+  signal nicserwe   : std_logic                     := '0';
+  signal nicserrd   : std_logic                     := '0';
   signal nicserdout : std_logic_vector(15 downto 0) := (others => '0');
-  
-  
+
+
   signal eaout       : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
   signal edout       : std_logic_vector(95 downto 0)                := (others => '0');
   signal enewout     : std_logic                                    := '0';
@@ -170,12 +170,32 @@ architecture Behavioral of netcontrol is
       );
   end component;
 
-  signal rsttxcnt : std_logic := '0';
+  signal rsttxcnt : std_logic                     := '0';
   signal txcntout : std_logic_vector(47 downto 0) := (others => '0');
-  signal txcnt : std_logic_vector(15 downto 0) := (others => '0');
-  
+  signal txcnt    : std_logic_vector(15 downto 0) := (others => '0');
+
   signal txmuxsel : integer range 0 to 2;
-    
+  signal rxmuxsel : integer range 0 to 2;
+
+  signal rxiocrcerrcnt : std_logic_vector(15 downto 0) := (others => '0');
+  signal rxiocrcerrrst : std_logic := '0';
+  
+  signal unknownethercnt : std_logic_vector(15 downto 0) := (others => '0');
+  signal unknownetherrst : std_logic := '0';
+  
+  signal unknownipcnt : std_logic_vector(15 downto 0) := (others => '0');
+  signal unknowniprst : std_logic := '0';
+  
+  signal unknownarpcnt : std_logic_vector(15 downto 0) := (others => '0');
+  signal unknownarprst : std_logic := '0';
+  
+  signal unknownudpcnt : std_logic_vector(15 downto 0) := (others => '0');
+  signal unknownudprst : std_logic := '0';
+  
+
+  signal rxcnt         : std_logic_vector(15 downto 0) := (others => '0');
+
+  
 begin  -- Behavioral
 
   nicserwe <= oportstrobe when oportaddr(7 downto 4) = X"0" else '0';
@@ -326,7 +346,7 @@ begin  -- Behavioral
       ADDRI   => oportaddr(3 downto 0),
       DIN     => oportdata,
       ADDRO   => iportaddr(3 downto 0),
-      DOUT    => nicserdout, 
+      DOUT    => nicserdout,
       WE      => nicserwe,
       RD      => nicserrd,
       NICSOUT => NICSOUT,
@@ -334,18 +354,20 @@ begin  -- Behavioral
       NICSCLK => NICSCLK,
       NICSCS  => NICSCS);
 
-  txcnt_inst: txcounter
+  txcnt_inst : txcounter
     port map (
       CLK      => clk,
       PKTLENEN => TXPKTLENEN,
       PKTLEN   => TXPKTLEN,
       TXCHAN   => TXCHAN,
-      RSTCHAN => oportaddr(3 downto 0),
-      RSTCNT => rsttxcnt,
-      OSEL => iportaddr(3 downto 0),
-      CNTOUT => txcntout);
-  
-  iportdata <= nicserdout when oportaddr(7 downto 4) = "0000" else txcnt;
+      RSTCHAN  => oportaddr(3 downto 0),
+      RSTCNT   => rsttxcnt,
+      OSEL     => iportaddr(3 downto 0),
+      CNTOUT   => txcntout);
+
+  iportdata <= nicserdout when iportaddr(7 downto 4) = "0000" else
+               txcnt      when iportaddr(7 downto 4) = "0010" else
+               rxcnt;
 
   txcnt <= txcntout(47 downto 32) when txmuxsel = 0 else
            txcntout(31 downto 16) when txmuxsel = 1 else
@@ -353,7 +375,14 @@ begin  -- Behavioral
 
   rsttxcnt <= '1' when oportaddr(7 downto 4) = "0010"
               and oportstrobe = '1' else '0';
-             
+
+  rxcnt <= rxiocrcerrcnt   when rxmuxsel = 0 and iportaddr(3 downto 0) = "0000" else
+           unknownethercnt when rxmuxsel = 0 and iportaddr(3 downto 0) = "0001" else
+           unknownipcnt    when rxmuxsel = 0 and iportaddr(3 downto 0) = "0010" else
+           unknownarpcnt   when rxmuxsel = 0 and iportaddr(3 downto 0) = "0011" else
+           unknownudpcnt   when rxmuxsel = 0 and iportaddr(3 downto 0) = "0100" else
+           X"0000";
+
   process(clk2x)
   begin
     if rising_edge(clk2x) then
@@ -361,18 +390,76 @@ begin  -- Behavioral
       enewoutslow <= enewout or enewoutl;
 
       iportstrobel <= iportstrobe;
-      
+
       if iportaddr(7 downto 4) = "0010" then
         if iportstrobel = '1' then
           if txmuxsel = 2 then
             txmuxsel <= 0;
           else
-            txmuxsel <= txmuxsel + 1; 
+            txmuxsel <= txmuxsel + 1;
           end if;
         end if;
       end if;
 
-      
+      if iportaddr(7 downto 4) = "0011" then
+        if iportstrobel = '1' then
+          if rxmuxsel = 2 then
+            rxmuxsel <= 0;
+          else
+            rxmuxsel <= rxmuxsel + 1;
+          end if;
+        end if;
+      end if;
+
+    end if;
+  end process;
+
+
+  process(clk)
+  begin
+    if rising_edge(CLK) then
+      if rxiocrcerrrst = '1' then
+        rxiocrcerrcnt   <= (others => '0');
+      else
+        if RXIOCRCERR = '1' then
+          rxiocrcerrcnt <= rxiocrcerrcnt + 1;
+        end if;
+      end if;
+
+      if unknownetherrst = '1' then
+        unknownethercnt   <= (others => '0');
+      else
+        if UNKNOWNETHER = '1' then
+          unknownethercnt <= unknownethercnt + 1;
+        end if;
+      end if;
+
+      if unknowniprst = '1' then
+        unknownipcnt   <= (others => '0');
+      else
+        if UNKNOWNIP = '1' then
+          unknownipcnt <= unknownipcnt + 1;
+        end if;
+      end if;
+
+      if unknownarprst = '1' then
+        unknownarpcnt   <= (others => '0');
+      else
+        if UNKNOWNARP = '1' then
+          unknownarpcnt <= unknownarpcnt + 1;
+        end if;
+      end if;
+
+      if unknownudprst = '1' then
+        unknownudpcnt   <= (others => '0');
+      else
+        if UNKNOWNUDP = '1' then
+          unknownudpcnt <= unknownudpcnt + 1;
+        end if;
+      end if;
+
+
+
     end if;
   end process;
 end Behavioral;

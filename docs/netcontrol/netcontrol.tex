@@ -32,7 +32,20 @@ DATA[1] = cntr[47:32]
 data[2] = cntr[31:16]
 data[3] = cntr[15:0]
 
+Counter: 
+0: TX Length 0
+1: TX Counter 0 
+...
+14: TX Length 7
+15: TX Counter 7 
 
+-- the receive error counters are only 16-bits-wide
+
+16: RXIOCRCERR
+17: UNKNOWNETHER
+18: UNKNOWNIP
+19: UNKNOWNARP
+20: UNKNOWNUDP
 
 
 ------------------------------------------------------------------------
@@ -72,3 +85,11 @@ Counter read addresses / positions
 Primary state: STATE_NONE and STATE_RAISELINK
 
 LINK_ are the substates in netcontrol
+
+
+
+----- 
+Uh, what are the PORTADDRS: 
+0x2..: read is txcntr, write is reset counter
+0x0..: nicserial stufff
+
