@@ -67,6 +67,12 @@ BS_YIELDHANDLE = 0x94
 DLINKQUERY_CMD = 0x20
 DLINKQUERY_RESP = 0x20
 
+# manual boot interface commands
+MANBOOTSER_SETMASK = 0x80
+MANBOOTSER_TOGPROG = 0x81
+MANBOOTSER_WRITEBYTES = 0x82
+
+
 # read addresses
 DLINKUP_LOW = 0x00
 DLINKUP_HIGH = 0x01
@@ -428,9 +434,9 @@ def bootStoreFileReadRX():
   for i in xrange(4):
 
     datap.move(tmp, ereg.edata[i+1])
-    datap.output(0x08+2, tmp)
+    datap.output(FPROGOUT_DATA, tmp)
   # then commit
-  datap.output(0x08 + 4, 0x00)
+  datap.output(FPROGOUT_SEND, 0x00)
   datap.load(env.serialSendTimer, 0x6)
   datap.load(env.nextState, STATE_SERWAITTX)
   
@@ -471,7 +477,33 @@ def createDLinkStatusQueryResponse():
     proc.load(tmp, DLINKQUERY_RESP)
     proc.output(EVENTOUT_CMD, tmp)
         
-    
+
+def manual_boot_setmask():
+  proc = env.createEProc((MANBOOTSER_SETMASK, MANBOOTSER_SETMASK),
+                           (0, 255))
+  tmp = proc.createVariable("tmp")
+  proc.move(tmp, ereg.edata[0])
+  proc.output(FPROGOUT_MASKH, tmp)
+  
+  proc.move(tmp, ereg.edata[1])
+  proc.output(FPROGOUT_MASKL, tmp)
+
+def manual_boot_togprog():
+  proc = env.createEProc((MANBOOTSER_TOGPROG, MANBOOTSER_TOGPROG),
+                         (0, 255))
+  tmp = proc.createVariable("tmp")
+  proc.output(FPROGOUT_PROG, tmp)
+
+def manual_boot_writebytes():
+  proc = env.createEProc((MANBOOTSER_WRITEBYTES, MANBOOTSER_WRITEBYTES),
+                           (0, 255))
+  tmp = proc.createVariable("tmp")
+  for i in xrange(4):
+    proc.move(tmp, ereg.edata[i])
+    proc.output(FPROGOUT_DATA, tmp)
+  # then commit
+  proc.output(FPROGOUT_SEND, 0x00)
+  
 
 createEnableEventCycleProc()
 createEventCycleProc()
@@ -489,6 +521,10 @@ postboot_nic()
 bootStoreHandleSetRX()
 bootStoreFileOpenRX()
 bootStoreFileReadRX()
+
+manual_boot_setmask()
+manual_boot_togprog()
+manual_boot_writebytes()
 
 createDLinkStatusQueryResponse()
 

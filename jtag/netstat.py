@@ -1,11 +1,12 @@
 import events
 import sys
-m = events.Mask()
-m.setAddr(4)
-events.setMask(m)
 
 NETCONTROLADDR = 0x04
 JTAGADDR = 0x07
+
+m = events.Mask()
+m.setAddr(NETCONTROLADDR )
+events.setMask(m)
 
 def setMacAddr(addr):
     """
@@ -80,29 +81,29 @@ def getMacAddr() :
 
 ## Dummy read of 0x01234567
 
-## for i in range(0, 32):
-##     a = events.Event()
-##     a.cmd = 0x40
-##     a.src = JTAGADDR
-##     a.setAddr(NETCONTROLADDR)
-##     a.data[0] = i
-##     a.data[1] = 0x00
-##     a.data[2] = 0x00
-##     a.data[3] = 0x00
+for i in range(0, 32):
+    a = events.Event()
+    a.cmd = 0x40
+    a.src = JTAGADDR
+    a.setAddr(NETCONTROLADDR)
+    a.data[0] = i
+    a.data[1] = 0x00
+    a.data[2] = 0x00
+    a.data[3] = 0x00
 
-##     events.sendEvent(a)
-##     e = events.readEvent()
-##     nonecnt = 0
-##     while e == None:
-##         #events.sendEvent(a)
-##         e = events.readEvent()
-##         nonecnt += 1
-##     print e, nonecnt
+    events.sendEvent(a)
+    e = events.readEvent()
+    nonecnt = 0
+    while e == None:
+        #events.sendEvent(a)
+        e = events.readEvent()
+        nonecnt += 1
+    print e, nonecnt
 
-print getMacAddr()
-print setMacAddr([7, 2, 3, 2, 5, 0x21])
-setIP("1.2.3.4")
-setIP("5.6.7.8", bcast=True)
+#print getMacAddr()
+#print setMacAddr([7, 2, 3, 2, 5, 0x21])
+#setIP("1.2.3.4")
+#setIP("5.6.7.8", bcast=True)
 
-print getMacAddr()
+#print getMacAddr()
 

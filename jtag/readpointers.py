@@ -1,6 +1,6 @@
 import events
 m = events.Mask()
-m.setAddr(5)
+m.setAddr(4)
 events.setMask(m)
 
 def readreg(val):
@@ -8,7 +8,7 @@ def readreg(val):
     a = events.Event()
     a.cmd = 0x30
     a.src = 0x07
-    a.setAddr(0x5)
+    a.setAddr(0x4)
     a.data[0] = 0x00
     a.data[1] = val
     a.data[2] = 0x00
