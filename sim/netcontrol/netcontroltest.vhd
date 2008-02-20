@@ -324,6 +324,7 @@ begin  -- Behavioral
     recoveredEventDone               <= '0';
 
   end process;
+  
   process
   begin
     -- send test events

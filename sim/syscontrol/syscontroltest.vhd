@@ -49,8 +49,10 @@ architecture Behavioral of syscontroltest is
 
 
   constant DEVICE   : std_logic_vector(7 downto 0) := X"01";
-  constant MYDEVICE : std_logic_vector(7 downto 0) := X"17";
 
+
+  constant MYDEVICE : std_logic_vector(7 downto 0) := X"17";
+  constant MYDEVICEint : integer := 23;
 
   signal receivedcntid : std_logic_vector(15 downto 0) := (others => '0');
   signal receivedcnt   : std_logic_vector(31 downto 0) := (others => '0');
@@ -65,6 +67,9 @@ architecture Behavioral of syscontroltest is
   signal serout  : std_logic_vector(19 downto 0) := (others => '0');
   signal dlinkup : std_logic_vector(31 downto 0) := X"11223344"; 
 
+
+  signal recoveredevent     : eventarray := (others => (others => '0'));
+  signal recoveredeventdone : std_logic  := '0';
 
 begin  -- Behavioral
 
@@ -232,17 +237,58 @@ begin  -- Behavioral
 
   process
   begin
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    wait until rising_edge(CLK);
+    -- extract out the event
+    for i in 0 to 5 loop
+      EDSELRX                        <= std_logic_vector(TO_UNSIGNED(i*2 + 0, 4));
+      wait until rising_edge(CLK);
+      recoveredevent(i)(15 downto 8) <= EDRX;
+      EDSELRX                        <= std_logic_vector(TO_UNSIGNED(i*2 + 1, 4));
+      wait until rising_edge(CLK);
+      recoveredevent(i)(7 downto 0)  <= EDRX;
+    end loop;  -- i
+    EDSELRX                          <= X"0";
+    recoveredEventDone               <= '1';
+    wait until rising_edge(CLK);
+    recoveredEventDone               <= '0';
+
+  end process;
+
+  process
+  begin
     -- send test events
     wait until rising_edge(CLK) and ECYCLE = '1';
     wait until rising_edge(CLK) and ECYCLE = '1';
-    EATX(0)           <= '1';
-    eventinputs(0)(0) <= X"20" & MYDEVICE;
-    eventinputs(0)(1) <= X"0000";
-    eventinputs(0)(2) <= X"0000";
+    EATX(MYDEVICEint)           <= '1';
+    eventinputs(MYDEVICEint)(0) <= X"20" & MYDEVICE;
+    eventinputs(MYDEVICEint)(1) <= X"0000";
+    eventinputs(MYDEVICEint)(2) <= X"0000";
     wait until rising_edge(CLK) and ECYCLE = '1';
-    EATX(0)           <= '0';
+    EATX(MYDEVICEint)           <= '0';
+    wait until rising_edge(recoveredEventDone) and EARX(MYDEVICEint) ='1';
+    assert recoveredevent(0) = X"20" & DEVICE
+      report "Error reading devincelink" severity Error;
+    assert recoveredevent(1) = X"1122"
+      report "Error reading devincelink" severity Error;
+    assert recoveredevent(2) = X"3344"
+      report "Error reading devincelink" severity Error;
     wait until rising_edge(CLK) and ECYCLE = '1';
-    -- now verify we got the handle!
+
+    ------------------------------------------------------------------------
+    -- Now the the raw boot serial
+    ------------------------------------------------------------------------
+     wait until rising_edge(CLK) and ECYCLE = '1';
+     EATX(MYDEVICEint)           <= '1';
+     eventinputs(MYDEVICEint)(0) <= X"82" & MYDEVICE;
+     eventinputs(MYDEVICEint)(1) <= X"0000";
+     eventinputs(MYDEVICEint)(2) <= X"0000";
+     wait until rising_edge(CLK) and ECYCLE = '1';
+     EATX(MYDEVICEint)           <= '0';
+    
+    
     wait;
 
   end process;

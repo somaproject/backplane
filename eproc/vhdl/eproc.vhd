@@ -357,7 +357,7 @@ begin  -- Behavioral
   ecea(3)   <= not bufsel;
   forceaddr <= evtjumpaddr when jumpsel = '0' else eddaddr;
 
-  etxwe <= '1' when oaddr(7 downto 3) = "10000" else '0';
+  etxwe <= '1' when oaddr(7 downto 3) = "10000" and ostrobe = '1' else '0';
 
   tgtwe <= '1' when oaddr(7 downto 6) = "01" and ostrobe = '1' else '0';
 
