@@ -502,10 +502,11 @@ def manual_boot_writebytes():
     proc.move(tmp, ereg.edata[i])
     proc.output(FPROGOUT_DATA, tmp)
   # then commit
-  proc.output(FPROGOUT_SEND, 0x00)
+  #proc.output(FPROGOUT_SEND, 0x00)
   proc.move(tmp, ereg.src)
   proc.output(EVENTOUT_SRC, tmp)
-  proc.output(EVENTOUT_CMD, MANBOOTSER_WRITEBYTES)
+  proc.load(tmp, MANBOOTSER_WRITEBYTES)
+  proc.output(EVENTOUT_CMD, tmp)
 
 createEnableEventCycleProc()
 createEventCycleProc()
