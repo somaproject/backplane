@@ -492,7 +492,7 @@ def manual_boot_togprog():
   proc = env.createEProc((MANBOOTSER_TOGPROG, MANBOOTSER_TOGPROG),
                          (0, 255))
   tmp = proc.createVariable("tmp")
-  proc.output(FPROGOUT_PROG, tmp)
+  proc.output(FPROGOUT_FPROG, tmp)
 
 def manual_boot_writebytes():
   proc = env.createEProc((MANBOOTSER_WRITEBYTES, MANBOOTSER_WRITEBYTES),
