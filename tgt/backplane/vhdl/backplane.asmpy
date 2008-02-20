@@ -498,9 +498,9 @@ def manual_boot_writebytes():
   proc = env.createEProc((MANBOOTSER_WRITEBYTES, MANBOOTSER_WRITEBYTES),
                            (0, 255))
   tmp = proc.createVariable("tmp")
-  for i in xrange(4):
-    proc.move(tmp, ereg.edata[i])
-    proc.output(FPROGOUT_DATA, tmp)
+  #for i in xrange(4):
+  #  proc.move(tmp, ereg.edata[i])
+  #  proc.output(FPROGOUT_DATA, tmp)
   # then commit
   #proc.output(FPROGOUT_SEND, 0x00)
   proc.move(tmp, ereg.src)
