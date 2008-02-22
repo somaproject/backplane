@@ -161,12 +161,10 @@ begin  -- Behavioral
            ERETXADDR       when mode = 5 else
            "0000000000";
 
-  -- DEBUGGING
-
   
   web       <= '1' when cs = lenupd else '0';
+  
   crcvalidl <= crcvalid;
-
   main : process(CLK, RESET)
   begin
     if RESET = '1' then

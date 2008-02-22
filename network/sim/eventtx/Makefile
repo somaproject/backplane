@@ -1,47 +1,63 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-soma.sym/somabackplane/prim.var: ../../../vhdl/somabackplane.vhd
-	$(VHDLC) -vital2000 -work soma  ../../../vhdl/somabackplane.vhd
+soma/somabackplane/body.dat: soma/touched ../../../vhdl/somabackplane.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/netports/prim.var: ../../vhdl/netports.vhd
-	$(VHDLC) -vital2000 ../../vhdl/netports.vhd
+$(WORKDIR)/netports/body.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/netports.vhd
 
-$(WORKDIR)/networkstack/prim.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd
-	$(VHDLC) -vital2000 ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/body.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/eventbodywriter/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd
-	$(VHDLC) -vital2000 ../../vhdl/eventbodywriter.vhd
+$(WORKDIR)/eventbodywriter/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/eventbodywriter.vhd
 
-$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd
-	$(VHDLC) -vital2000 ../../vhdl/ipchecksum.vhd
+$(WORKDIR)/ipchecksum/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/ipchecksum.vhd
 
-$(WORKDIR)/udpheaderwriter/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
-	$(VHDLC) -vital2000 ../../vhdl/udpheaderwriter.vhd
+$(WORKDIR)/udpheaderwriter/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/udpheaderwriter.vhd
 
-$(WORKDIR)/eventtxpkfifo/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd
-	$(VHDLC) -vital2000 ../../vhdl/eventtxpkfifo.vhd
+$(WORKDIR)/eventtxpktfifo/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/eventtxpkfifo.vhd
 
-$(WORKDIR)/bitcnt/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd ../../vhdl/bitcnt.vhd
-	$(VHDLC) -vital2000 ../../vhdl/bitcnt.vhd
+$(WORKDIR)/bitcnt/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd ../../vhdl/eventtxpkfifo.vhd ../../vhdl/bitcnt.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/bitcnt.vhd
 
-$(WORKDIR)/eventtx/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd ../../vhdl/bitcnt.vhd ../../vhdl/eventtx.vhd
-	$(VHDLC) -vital2000 ../../vhdl/eventtx.vhd
+$(WORKDIR)/eventtx/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/eventbodywriter.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventtxpkfifo.vhd ../../vhdl/eventtxpkfifo.vhd ../../vhdl/bitcnt.vhd ../../vhdl/bitcnt.vhd ../../vhdl/eventtx.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/eventtx.vhd
 
-hw: soma.sym/somabackplane/prim.var $(WORKDIR)/netports/prim.var $(WORKDIR)/networkstack/prim.var $(WORKDIR)/eventbodywriter/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/eventtxpkfifo/_behavioral.var $(WORKDIR)/bitcnt/_behavioral.var $(WORKDIR)/eventtx/_behavioral.var 
+hw: soma/somabackplane/body.dat $(WORKDIR)/netports/body.dat $(WORKDIR)/networkstack/body.dat $(WORKDIR)/eventbodywriter/behavioral.dat $(WORKDIR)/ipchecksum/behavioral.dat $(WORKDIR)/udpheaderwriter/behavioral.dat $(WORKDIR)/eventtxpktfifo/behavioral.dat $(WORKDIR)/bitcnt/behavioral.dat $(WORKDIR)/eventtx/behavioral.dat 
 
 comp: 
 
-$(WORKDIR)/eventtxtest/_behavioral.var: eventtxtest.vhd
-	$(VHDLC) -vital2000 eventtxtest.vhd
+$(WORKDIR)/eventtxtest/behavioral.dat: $(WORKDIR)/touched eventtxtest.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) eventtxtest.vhd
 
-sim: $(WORKDIR)/eventtxtest/_behavioral.var 
+sim: $(WORKDIR)/eventtxtest/behavioral.dat 
 runsim: all
 	$(VHDLS) eventtxtest
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf soma work 
 
+soma/touched:
+	vlib  soma
+	touch  soma/touched
+work/touched:
+	vlib  work
+	touch  work/touched

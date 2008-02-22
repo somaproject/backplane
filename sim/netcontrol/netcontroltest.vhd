@@ -555,7 +555,7 @@ begin  -- Behavioral
     report "Received response event for query unknownudpcnt" severity note;
     wait until rising_edge(CLK) and ECYCLE = '1';
 
-    
+    report "End of Simulation" severity Failure;
     wait; 
   end process;
 end Behavioral;

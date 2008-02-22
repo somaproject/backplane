@@ -2,6 +2,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
+use std.textio.all;
+use ieee.std_logic_textio.all;
+
 
 library soma;
 use soma.somabackplane.all;
@@ -373,14 +376,43 @@ begin  -- Behavioral
 
 -- end process;
 
-  process(NICFCLK)
-  begin
-    if rising_edge(NICFCLK) then
-      latestnicfpgabits <= latestnicfpgabits(62 downto 0) & NICFDIN;
-    end if;
-  end process;
-
   -- send test event
   
+  datainput       : process
+    file req_file : text open read_mode is "client_requests.txt";
+    variable L    : line;
+    variable len  : integer := 0;
+    variable word : std_logic_vector(15 downto 0);
+    variable datagram_ecnt : integer := 0;
+  begin
+    wait for 50 us;
+    
+    while not endfile(req_file) loop
+
+      wait until rising_edge(CLK);
+      readline(req_file, L);
+      read(L, len);
+      wait for 10 us;
+
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      for i in 0 to len-1 loop
+        hread(L, word);
+        NICDINEN           <= '1';
+        NICDIN             <= word;
+        wait until rising_edge(CLK);
+        if i = 23 then
+          datagram_ecnt := to_integer(unsigned(NICDIN));
+        end if;
+      end loop;  -- i 
+      NICDINEN             <= '0';
+      wait until rising_edge(CLK); 
+      wait for 50 us;
+
+    end loop;
+    wait;
+  end process datainput;
+
 
 end Behavioral;

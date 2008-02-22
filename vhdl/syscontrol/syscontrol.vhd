@@ -141,8 +141,8 @@ architecture Behavioral of syscontrol is
 
   signal bsperwe : std_logic := '0';
 
-  signal eaout                 : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
-  signal edout                 : std_logic_vector(95 downto 0)                := (others => '0');
+  signal eaout, eaoutl                 : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+  signal edout, edoutl                 : std_logic_vector(95 downto 0)                := (others => '0');
   signal enewout               : std_logic                                    := '0';
   signal enewoutl, enewoutslow : std_logic                                    := '0';
 
@@ -273,8 +273,8 @@ begin  -- Behavioral
   txeventbuffer_inst : entity eproc.txeventbuffer
     port map (
       CLK      => clk,
-      EVENTIN  => edout,
-      EADDRIN  => eaout,
+      EVENTIN  => edoutl,
+      EADDRIN  => eaoutl,
       NEWEVENT => enewoutslow,
       ECYCLE   => ECYCLE,
       EDRX     => EDRX,
@@ -299,6 +299,10 @@ begin  -- Behavioral
     if rising_edge(CLK2x) then
 
       enewoutl      <= enewout;
+      if enewout = '1'  then
+        eaoutl <= eaout;
+        edoutl <= edout; 
+      end if;
       enewoutslow   <= enewout or enewoutl;
       if iportstrobe = '1' then
         if iportaddr = X"00" then

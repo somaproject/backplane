@@ -149,8 +149,8 @@ architecture Behavioral of netcontrol is
   signal nicserdout : std_logic_vector(15 downto 0) := (others => '0');
 
 
-  signal eaout       : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
-  signal edout       : std_logic_vector(95 downto 0)                := (others => '0');
+  signal eaout, eaoutl       : std_logic_vector(somabackplane.N-1 downto 0) := (others => '0');
+  signal edout, edoutl       : std_logic_vector(95 downto 0)                := (others => '0');
   signal enewout     : std_logic                                    := '0';
   signal enewoutl    : std_logic                                    := '0';
   signal enewoutslow : std_logic                                    := '0';
@@ -330,8 +330,8 @@ begin  -- Behavioral
   txeventbuffer_inst : entity eproc.txeventbuffer
     port map (
       CLK      => clk,
-      EVENTIN  => edout,
-      EADDRIN  => eaout,
+      EVENTIN  => edoutl,
+      EADDRIN  => eaoutl,
       NEWEVENT => enewoutl,
       ECYCLE   => ECYCLE,
       EDRX     => EDRX,
@@ -386,6 +386,11 @@ begin  -- Behavioral
   process(clk2x)
   begin
     if rising_edge(clk2x) then
+      if enewout = '1'  then
+        eaoutl <= eaout;
+        edoutl <= edout; 
+      end if;
+
       enewoutl    <= enewout;
       enewoutslow <= enewout or enewoutl;
 

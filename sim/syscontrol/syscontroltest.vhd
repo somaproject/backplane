@@ -238,9 +238,10 @@ begin  -- Behavioral
   process
   begin
     wait until rising_edge(CLK) and ECYCLE = '1';
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
+    for i in 0 to 19 loop
+      wait until rising_edge(CLK);
+      
+    end loop;  -- i
     -- extract out the event
     for i in 0 to 5 loop
       EDSELRX                        <= std_logic_vector(TO_UNSIGNED(i*2 + 0, 4));
