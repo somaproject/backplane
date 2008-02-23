@@ -6,9 +6,8 @@ m = events.Mask()
 m.setAddr(NETCONTROLADDR)
 events.setMask(m)
 
-# Dummy read of 0x01234567
 a = events.Event()
-a.cmd = 0x31
+a.cmd = 0x40
 a.src = 0x07
 a.setAddr(NETCONTROLADDR)
 a.data[0] = 0x00

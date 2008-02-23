@@ -129,7 +129,7 @@ def loopback_test():
     JTAGADDR = 0x07
 
     m = Mask()
-    m.setAddr(JTAGADDR+2)
+    m.setAddr(JTAGADDR+1)
     setMask(m)
 
     

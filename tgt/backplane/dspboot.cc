@@ -34,25 +34,42 @@ int loopTillEvent(eventcmd_t cmd, eventsource_t src, Network* network)
 }
 
 using namespace std; 
+namespace po = boost::program_options;
 
-int main(void)
+
+int main(int argc, char * argv[])
 {
+  
+  po::options_description desc("Allowed options");
+  desc.add_options()
+    ("help", "produce help message")
+    ("somaip", po::value<string>()->default_value("10.0.0.2"), "soma device IP")
+    ("file", po::value<string>(), "bitfile to load")
+    ;
 
-  std::string SOMAIP("10.0.0.2"); 
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);    
+
+  std::string SOMAIP(vm["somaip"].as<string>()); 
 
   Network somanetwork(SOMAIP); 
   std::list < pEventList_t > pell; 
   std::cout << "Network object created" << std::endl; 
   // now, try and get events: 
   
-  ifstream bitFile ("/home/jonas/soma/dspboard/tgt/dspboard/vhdl/dspboard.bit",
-		   ios::in | ios::binary);
+  ifstream bitFile (vm["file"].as<string>().c_str(), 
+		    ios::in | ios::binary);
   
   if (!bitFile) {
     cerr << "Error reading file" << std::endl;
     exit(1); 
   }
   somanetwork.run(); 
+
+  // first, send the 
+
+
   int pos = 0; 
   while (!bitFile.eof()) {
     
