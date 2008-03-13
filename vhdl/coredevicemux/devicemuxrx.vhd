@@ -14,27 +14,22 @@ entity devicemuxrx is
     CLK      : in  std_logic;
     ECYCLE   : in  std_logic;
     LOCKED   : in  std_logic;
+    -- Data port outputs
+    DATADOUT : out std_logic_vector(7 downto 0);
+    DATADOEN : out std_logic; 
     -- port A
-    DOUTA    : out std_logic_vector(7 downto 0);
-    DOENA    : out std_logic;
     EARXA    : out std_logic_vector(somabackplane.N -1 downto 0);
     EDRXA    : out std_logic_vector(7 downto 0);
     EDSELRXA : in  std_logic_vector(3 downto 0);
     -- port B
-    DOUTB    : out std_logic_vector(7 downto 0);
-    DOENB    : out std_logic;
     EARXB    : out std_logic_vector(somabackplane.N -1 downto 0);
     EDRXB    : out std_logic_vector(7 downto 0);
     EDSELRXB : in  std_logic_vector(3 downto 0);
     -- port C
-    DOUTC    : out std_logic_vector(7 downto 0);
-    DOENC    : out std_logic;
     EARXC    : out std_logic_vector(somabackplane.N -1 downto 0);
     EDRXC    : out std_logic_vector(7 downto 0);
     EDSELRXC : in  std_logic_vector(3 downto 0);
     -- port D
-    DOUTD    : out std_logic_vector(7 downto 0);
-    DOEND    : out std_logic;
     EARXD    : out std_logic_vector(somabackplane.N -1 downto 0);
     EDRXD    : out std_logic_vector(7 downto 0);
     EDSELRXD : in  std_logic_vector(3 downto 0);
@@ -132,6 +127,15 @@ begin
       else
         cs <= lockw;
       end if;
+
+
+      if cs = dwait and rxkin = '0' then
+        DATADOEN <= '1';
+      else
+        DATADOEN <= '0';
+      end if;
+      DATADOUT <= RXDIN;
+      
     end if;
   end process main;
 
