@@ -1,0 +1,22 @@
+what do we need to do to read in counter? remember we just get 12 ticks
+
+load src address
+load cnt address
+or with higher-bits
+load value
+load value
+load value
+output src
+output addr
+output word1
+output word2
+output word3
+output cmd
+
+Every three reads of a particular address cycles through all the words
+in the mux. Yes, this is a hack, but it's a robust one. 
+
+Also, every three reads with the correct OADDR will reset the mux cntr
+to 0.
+
+

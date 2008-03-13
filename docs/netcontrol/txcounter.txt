@@ -1,0 +1,22 @@
+This keeps a record of the number and lenght of packets we have
+transmitted.
+
+The overarching goal was to be as small and fast as possible as we
+continue to run low on slices in our core FPGA. 
+
+PKTLENEN latches the current length for the current tx buffer into the
+register file.
+
+The mapping is
+OSEL[i] = TXCHAN[0] length
+OSEL[i + 8] = TXCHAN[0] count
+
+If a RSTCNT is triggered during the writing of any channel, that
+channel's update will fail and the reset will succeed. This might mean
+that we end up with inconsistent / not 100% accurate counts, but hey,
+they're counters, not mission-critical infrastructure. As it stands
+this should be more than good enough for debugging purposes.
+
+
+
+
