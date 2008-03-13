@@ -785,8 +785,6 @@ mymac <= X"00ADBEEF1234";
         CLK      => CLK,
         ECYCLE   => ecycle,
         -- port A
-        DOUTA    => open,
-        DOENA    => open,
         DGRANTA  => '0',
         EARXA    => earx(DMOFFSET + i*4 + 0 ),
         EDRXA    => edrx(DMOFFSET + i*4 + 0 ),
