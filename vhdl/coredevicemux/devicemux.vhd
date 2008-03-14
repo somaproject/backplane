@@ -13,9 +13,10 @@ entity devicemux is
   port (
     CLK  : in std_logic;
     ECYCLE : in std_logic;
+    -- DATA PORT
+    DATADOUT : out std_logic_vector(7 downto 0);
+    DATADOEN : out std_logic; 
     -- port A
-    DOUTA : out std_logic_vector(7 downto 0);
-    DOENA : out std_logic; 
     DGRANTA : in std_logic;
     EARXA : out std_logic_vector(somabackplane.N -1 downto 0);
     EDRXA : out std_logic_vector(7 downto 0);
@@ -23,8 +24,6 @@ entity devicemux is
     EATXA   : in std_logic_vector(somabackplane.N-1 downto 0);
     EDTXA   : in std_logic_vector(7 downto 0);
     -- port B
-    DOUTB : out std_logic_vector(7 downto 0);
-    DOENB : out std_logic; 
     DGRANTB : in std_logic;
     EARXB : out std_logic_vector(somabackplane.N -1 downto 0);
     EDRXB : out std_logic_vector(7 downto 0);
@@ -32,8 +31,6 @@ entity devicemux is
     EATXB   : in std_logic_vector(somabackplane.N-1 downto 0);
     EDTXB   : in std_logic_vector(7 downto 0);
     -- port C
-    DOUTC : out std_logic_vector(7 downto 0);
-    DOENC : out std_logic; 
     DGRANTC : in std_logic;
     EARXC : out std_logic_vector(somabackplane.N -1 downto 0);
     EDRXC : out std_logic_vector(7 downto 0);
@@ -41,8 +38,6 @@ entity devicemux is
     EATXC   : in std_logic_vector(somabackplane.N-1 downto 0);
     EDTXC   : in std_logic_vector(7 downto 0);
     -- port D
-    DOUTD : out std_logic_vector(7 downto 0);
-    DOEND : out std_logic; 
     DGRANTD : in std_logic;
     EARXD : out std_logic_vector(somabackplane.N -1 downto 0);
     EDRXD : out std_logic_vector(7 downto 0);
@@ -83,26 +78,21 @@ begin
       ECYCLE => ECYCLE,
       LOCKED => LOCKED,
 
-      DOUTA => DOUTA,
-      DOENA => DOENA,
+      DATADOUT => DATADOUT,
+      DATADOEN => DATADOEN,
+
       EARXA => EARXA,
       EDRXA => EDRXA,
       EDSELRXA => EDSELRXA,
       
-      DOUTB => DOUTB,
-      DOENB => DOENB,
       EARXB => EARXB,
       EDRXB => EDRXB,
       EDSELRXB => EDSELRXB,
       
-      DOUTC => DOUTC,
-      DOENC => DOENC,
       EARXC => EARXC,
       EDRXC => EDRXC,
       EDSELRXC => EDSELRXC,
       
-      DOUTD => DOUTD,
-      DOEND => DOEND,
       EARXD => EARXD,
       EDRXD => EDRXD,
       EDSELRXD => EDSELRXD,

@@ -41,10 +41,10 @@ begin  -- Behavioral
             DIN(4) when cnt(4 downto 2) = "100" else
             DIN(5) when cnt(4 downto 2) = "101" else
             DIN(6) when cnt(4 downto 2) = "110" else
-            DIN(7)
+            DIN(7); 
 
-    grantgen: for i in 0 to 15 generate
-      
+    grantgen: for i in 0 to 31 generate
+      DGRANT(i) <= '1' when cnt = conv_std_logic_vector(i, 5) else '0'; 
     end generate grantgen;
     
 end Behavioral;

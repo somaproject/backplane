@@ -108,7 +108,12 @@ architecture Behavioral of backplane is
   signal doutb   : std_logic_vector(7 downto 0) := (others => '0');
   signal doutenb : std_logic                    := '0';
 
-
+  signal dgrant : std_logic_vector(63 downto 0) := (others => '0');
+  
+  type datadout_t is array (0 to 15) of std_logic_vector(7 downto 0);
+  signal datadout : somabackplane.dataroutearray  := (others => (others => '0'));
+  signal datadoen : std_logic_vector(15 downto 0) := (others => '0');
+  
   signal clk, clkint             : std_logic := '0';
   signal clk2x, clk2xint         : std_logic := '0';
   signal clk180, clk180int       : std_logic := '0';
@@ -314,6 +319,16 @@ begin  -- Behavioral
       EATX    => EATX,
       EDTX    => EDTX);
 
+  datarbouter_a : entity soma.datarouter
+    port map (
+      CLK => clk,
+      ECYCLE => ecycle,
+      DIN => datadout, 
+      DINEN => datadoen(7 downto 0),
+      DOUT => douta, 
+      DOEN => doutena,
+      DGRANT => dgrant(31 downto 0));
+    
   timer_inst      : entity soma.timer
     port map (
       CLK         => clk,
@@ -515,13 +530,6 @@ begin  -- Behavioral
       DEBUG     => fiberdebugdebug);
 
 
-  fakedata1 : entity work.fakedata
-    port map (
-      clk    => clk,
-      DOUT   => douta,
-      DOUTEN => doutena,
-      ECYCLE => ecycle);
-
   -- dummy
   process(clk)
     variable blinkcnt : std_logic_vector(21 downto 0)
@@ -571,9 +579,9 @@ mymac <= X"00ADBEEF1234";
 
       -- data bus
       DIENA => doutena,
-      DIENB => '0',
+      DIENB => doutenb, 
       DINA  => douta,
-      DINB  => X"00",
+      DINB  => doutb, 
 
       -- memory interface
       RAMCKE  => RAMCKE,
@@ -784,41 +792,37 @@ mymac <= X"00ADBEEF1234";
       port map (
         CLK      => CLK,
         ECYCLE   => ecycle,
+        -- data output
+        DATADOUT => datadout(i), 
+        DATADOEN => datadoen(i), 
         -- port A
-        DGRANTA  => '0',
+        DGRANTA  => dgrant(i*4 + 0), 
         EARXA    => earx(DMOFFSET + i*4 + 0 ),
         EDRXA    => edrx(DMOFFSET + i*4 + 0 ),
         EDSELRXA => edselrx,
         EATXA    => eatx(DMOFFSET + i*4 + 0 ),
         EDTXA    => edtx,
         -- port B
-        DOUTB    => open,
-        DOENB    => open,
-        DGRANTB  => '0',
+        DGRANTB  => dgrant(i*4 + 1), 
         EARXB    => earx(DMOFFSET + i*4 + 1 ),
         EDRXB    => edrx(DMOFFSET + i*4 + 1),
         EDSELRXB => edselrx,
         EATXB    => eatx(DMOFFSET + i*4 + 1 ),
         EDTXB    => edtx,
         -- port C
-        DOUTC    => open,
-        DOENC    => open,
-        DGRANTC  => '0',
+        DGRANTC  =>  dgrant(i*4 + 2), 
         EARXC    => earx(DMOFFSET + i*4 + 2 ),
         EDRXC    => edrx(DMOFFSET + i*4 + 2 ),
         EDSELRXC => edselrx,
         EATXC    => eatx(DMOFFSET + i*4 + 2 ),
         EDTXC    => edtx,
         -- port D
-        DOUTD    => open,
-        DOEND    => open,
-        DGRANTD  => '0',
+        DGRANTD  =>  dgrant(i*4 + 3), 
         EARXD    => earx(DMOFFSET + i*4 + 3 ),
         EDRXD    => edrx(DMOFFSET + i*4 + 3 ),
         EDSELRXD => edselrx,
         EATXD    => eatx(DMOFFSET + i*4 + 3 ),
         EDTXD    => edtx,
-
         -- IO
         TXDOUT => txdin,
         TXKOUT => txkin,
@@ -858,8 +862,6 @@ mymac <= X"00ADBEEF1234";
        CLK      => CLK,
        ECYCLE   => ecycle,
        -- port A
-       DOUTA    => open,
-       DOENA    => open,
        DGRANTA  => '0',
        EARXA    => earx(73),
        EDRXA    => edrx(73),
@@ -867,8 +869,6 @@ mymac <= X"00ADBEEF1234";
        EATXA    => eatx(73),
        EDTXA    => edtx,
        -- port B
-       DOUTB    => open,
-       DOENB    => open,
        DGRANTB  => '0',
        EARXB    => earx(74),
        EDRXB    => edrx(74),
@@ -876,8 +876,6 @@ mymac <= X"00ADBEEF1234";
        EATXB    => eatx(74),
        EDTXB    => edtx,
        -- port C
-       DOUTC    => open,
-       DOENC    => open,
        DGRANTC  => '0',
        EARXC    => earx(75),
        EDRXC    => edrx(75),
@@ -885,8 +883,6 @@ mymac <= X"00ADBEEF1234";
        EATXC    => eatx(75),
        EDTXC    => edtx,
        -- port D
-       DOUTD    => open,
-       DOEND    => open,
        DGRANTD  => '0',
        EARXD    => open,
        EDRXD    => open,
@@ -928,8 +924,6 @@ mymac <= X"00ADBEEF1234";
        CLK      => CLK,
        ECYCLE   => ecycle,
        -- port A
-       DOUTA    => open,
-       DOENA    => open,
        DGRANTA  => '0',
        EARXA    => earx(76),
        EDRXA    => edrx(76),
@@ -937,8 +931,6 @@ mymac <= X"00ADBEEF1234";
        EATXA    => eatx(76),
        EDTXA    => edtx,
        -- port B
-       DOUTB    => open,
-       DOENB    => open,
        DGRANTB  => '0',
        EARXB    => earx(77),
        EDRXB    => edrx(77),
@@ -946,8 +938,6 @@ mymac <= X"00ADBEEF1234";
        EATXB    => eatx(77),
        EDTXB    => edtx,
        -- port C
-       DOUTC    => open,
-       DOENC    => open,
        DGRANTC  => '0',
        EARXC    => open, 
        EDRXC    => open, 
@@ -955,8 +945,6 @@ mymac <= X"00ADBEEF1234";
        EATXC    => (others => '0'), 
        EDTXC    => X"00",
        -- port D
-       DOUTD    => open,
-       DOEND    => open,
        DGRANTD  => '0',
        EARXD    => open,
        EDRXD    => open,

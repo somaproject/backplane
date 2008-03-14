@@ -60,7 +60,7 @@ begin
             cmdinlll(23 downto 16) when bytesel = 2 else
             cmdinlll(31 downto 24) when bytesel = 3 else
             cmdinlll(39 downto 32) when bytesel = 4 else
-            cmdinlll(47 downto 40) when bytesel = 5; 
+            cmdinlll(47 downto 40); 
 
   din <= bytein when modesel = 0 else
          X"BC"  when modesel = 1 else

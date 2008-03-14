@@ -67,7 +67,7 @@ def writePacket(fid, packet):
     """ randomly writes the packet at some random location inside
     of the event cycle and fills in the other cycles.
 
-    We use an offset of 4 to strip off the calculated ids.
+    We use an offset of 4 to strip off the sequence ids.
     
     """
     os = 4
