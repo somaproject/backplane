@@ -115,7 +115,7 @@ begin  -- Behavioral
     CLKIN_PERIOD       => 20.0,
     CLKFX_DIVIDE       => 1,
     CLKFX_MULTIPLY     => 5,
-    DLL_FREQUENCY_MODE => "HIGH",
+    DLL_FREQUENCY_MODE => "LOW",
     DFS_FREQUENCY_MODE => "HIGH")
     port map (
       CLKIN            => TXCLKIN,
