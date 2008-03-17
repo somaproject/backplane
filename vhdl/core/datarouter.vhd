@@ -43,6 +43,15 @@ begin  -- Behavioral
             DIN(6) when cnt(4 downto 2) = "110" else
             DIN(7); 
 
+    DOEN <= DINEN(0) when cnt(4 downto 2) = "000" else
+            DINEN(1) when cnt(4 downto 2) = "001" else
+            DINEN(2) when cnt(4 downto 2) = "010" else
+            DINEN(3) when cnt(4 downto 2) = "011" else
+            DINEN(4) when cnt(4 downto 2) = "100" else
+            DINEN(5) when cnt(4 downto 2) = "101" else
+            DINEN(6) when cnt(4 downto 2) = "110" else
+            DINEN(7); 
+
     grantgen: for i in 0 to 31 generate
       DGRANT(i) <= '1' when cnt = conv_std_logic_vector(i, 5) else '0'; 
     end generate grantgen;

@@ -76,10 +76,10 @@ entity backplane is
     ADIORXIO_P : in  std_logic;
     ADIORXIO_N : in  std_logic;
     -- SYS / DISPLAY
-    SYSTXIO_P : out std_logic;
-    SYSTXIO_N : out std_logic;
-    SYSRXIO_P : in  std_logic;
-    SYSRXIO_N : in  std_logic;
+    SYSTXIO_P  : out std_logic;
+    SYSTXIO_N  : out std_logic;
+    SYSRXIO_P  : in  std_logic;
+    SYSRXIO_N  : in  std_logic;
     -- NEP
     NEPTXIO_P  : out std_logic;
     NEPTXIO_N  : out std_logic;
@@ -109,11 +109,11 @@ architecture Behavioral of backplane is
   signal doutenb : std_logic                    := '0';
 
   signal dgrant : std_logic_vector(63 downto 0) := (others => '0');
-  
+
   type datadout_t is array (0 to 15) of std_logic_vector(7 downto 0);
   signal datadout : somabackplane.dataroutearray  := (others => (others => '0'));
   signal datadoen : std_logic_vector(15 downto 0) := (others => '0');
-  
+
   signal clk, clkint             : std_logic := '0';
   signal clk2x, clk2xint         : std_logic := '0';
   signal clk180, clk180int       : std_logic := '0';
@@ -321,14 +321,14 @@ begin  -- Behavioral
 
   datarbouter_a : entity soma.datarouter
     port map (
-      CLK => clk,
+      CLK    => clk,
       ECYCLE => ecycle,
-      DIN => datadout, 
-      DINEN => datadoen(7 downto 0),
-      DOUT => douta, 
-      DOEN => doutena,
+      DIN    => datadout,
+      DINEN  => datadoen(7 downto 0),
+      DOUT   => douta,
+      DOEN   => doutena,
       DGRANT => dgrant(31 downto 0));
-    
+
   timer_inst      : entity soma.timer
     port map (
       CLK         => clk,
@@ -428,7 +428,7 @@ begin  -- Behavioral
       EATX         => EATX(1),
       EDTX         => EDTX,
       SEROUT       => lserialboot,
-      DLINKUP => dlinkup);
+      DLINKUP      => dlinkup);
 
   bootstore_inst : entity soma.bootstore
     generic map (
@@ -542,10 +542,10 @@ begin  -- Behavioral
   end process;
 
 
-myip <= X"0A000002";                 -- 10.0.0.2
-mybcast <= X"FFFFFFFF";            -- 10.255.255.255
+  myip    <= X"0A000002";               -- 10.0.0.2
+  mybcast <= X"FFFFFFFF";               -- 10.255.255.255
 
-mymac <= X"00ADBEEF1234";
+  mymac <= X"00ADBEEF1234";
 
   fiberdebugdest(3) <= '1';
   network_inst : entity network.network
@@ -579,9 +579,9 @@ mymac <= X"00ADBEEF1234";
 
       -- data bus
       DIENA => doutena,
-      DIENB => doutenb, 
+      DIENB => doutenb,
       DINA  => douta,
-      DINB  => doutb, 
+      DINB  => doutb,
 
       -- memory interface
       RAMCKE  => RAMCKE,
@@ -787,177 +787,177 @@ mymac <= X"00ADBEEF1234";
         LOCKED    => dllocked);
     dlinkup(i) <= dllocked;
 
-    
+
     devicemux_inst : entity work.devicemux
       port map (
         CLK      => CLK,
         ECYCLE   => ecycle,
         -- data output
-        DATADOUT => datadout(i), 
-        DATADOEN => datadoen(i), 
+        DATADOUT => datadout(i),
+        DATADOEN => datadoen(i),
         -- port A
-        DGRANTA  => dgrant(i*4 + 0), 
+        DGRANTA  => dgrant(i*4 + 0),
         EARXA    => earx(DMOFFSET + i*4 + 0 ),
         EDRXA    => edrx(DMOFFSET + i*4 + 0 ),
         EDSELRXA => edselrx,
         EATXA    => eatx(DMOFFSET + i*4 + 0 ),
         EDTXA    => edtx,
         -- port B
-        DGRANTB  => dgrant(i*4 + 1), 
+        DGRANTB  => dgrant(i*4 + 1),
         EARXB    => earx(DMOFFSET + i*4 + 1 ),
         EDRXB    => edrx(DMOFFSET + i*4 + 1),
         EDSELRXB => edselrx,
         EATXB    => eatx(DMOFFSET + i*4 + 1 ),
         EDTXB    => edtx,
         -- port C
-        DGRANTC  =>  dgrant(i*4 + 2), 
+        DGRANTC  => dgrant(i*4 + 2),
         EARXC    => earx(DMOFFSET + i*4 + 2 ),
         EDRXC    => edrx(DMOFFSET + i*4 + 2 ),
         EDSELRXC => edselrx,
         EATXC    => eatx(DMOFFSET + i*4 + 2 ),
         EDTXC    => edtx,
         -- port D
-        DGRANTD  =>  dgrant(i*4 + 3), 
+        DGRANTD  => dgrant(i*4 + 3),
         EARXD    => earx(DMOFFSET + i*4 + 3 ),
         EDRXD    => edrx(DMOFFSET + i*4 + 3 ),
         EDSELRXD => edselrx,
         EATXD    => eatx(DMOFFSET + i*4 + 3 ),
         EDTXD    => edtx,
         -- IO
-        TXDOUT => txdin,
-        TXKOUT => txkin,
-        RXDIN  => rxdout,
-        RXKIN  => rxkout,
-        LOCKED => dllocked);
+        TXDOUT   => txdin,
+        TXKOUT   => txkin,
+        RXDIN    => rxdout,
+        RXKIN    => rxkout,
+        LOCKED   => dllocked);
 
   end generate devicelinks_and_mux;
 
-   ----------------------------------------------------------------------------
-   -- ADIO DeviceLink
-   ----------------------------------------------------------------------------
-   dl_adio : entity work.coredevicelink
-     generic map (
-       N         => 4)
-     port map (
-       CLK       => clk,
-       RXBITCLK  => clkbitrx,
-       TXHBITCLK => clkbittx,
-       TXWORDCLK => clkwordtx,
-       RESET     => RESET,
-       TXDIN     => txdinadio,
-       TXKIN     => txkinadio,
-       RXDOUT    => rxdoutadio,
-       RXKOUT    => rxkoutadio,
-       TXIO_P    => ADIOTXIO_P,
-       TXIO_N    => ADIOTXIO_N,
-       RXIO_P    => ADIORXIO_P,
-       RXIO_N    => ADIORXIO_N,
-       DROPLOCK  => '0',
-       LOCKED    => dllockedadio);
+  ----------------------------------------------------------------------------
+  -- ADIO DeviceLink
+  ----------------------------------------------------------------------------
+  dl_adio : entity work.coredevicelink
+    generic map (
+      N         => 4)
+    port map (
+      CLK       => clk,
+      RXBITCLK  => clkbitrx,
+      TXHBITCLK => clkbittx,
+      TXWORDCLK => clkwordtx,
+      RESET     => RESET,
+      TXDIN     => txdinadio,
+      TXKIN     => txkinadio,
+      RXDOUT    => rxdoutadio,
+      RXKOUT    => rxkoutadio,
+      TXIO_P    => ADIOTXIO_P,
+      TXIO_N    => ADIOTXIO_N,
+      RXIO_P    => ADIORXIO_P,
+      RXIO_N    => ADIORXIO_N,
+      DROPLOCK  => '0',
+      LOCKED    => dllockedadio);
 
-   dlinkup(16) <= dllockedadio;
-  
-   devicemux_adio_inst : entity work.devicemux
-     port map (
-       CLK      => CLK,
-       ECYCLE   => ecycle,
-       -- port A
-       DGRANTA  => '0',
-       EARXA    => earx(73),
-       EDRXA    => edrx(73),
-       EDSELRXA => edselrx,
-       EATXA    => eatx(73),
-       EDTXA    => edtx,
-       -- port B
-       DGRANTB  => '0',
-       EARXB    => earx(74),
-       EDRXB    => edrx(74),
-       EDSELRXB => edselrx,
-       EATXB    => eatx(74),
-       EDTXB    => edtx,
-       -- port C
-       DGRANTC  => '0',
-       EARXC    => earx(75),
-       EDRXC    => edrx(75),
-       EDSELRXC => edselrx,
-       EATXC    => eatx(75),
-       EDTXC    => edtx,
-       -- port D
-       DGRANTD  => '0',
-       EARXD    => open,
-       EDRXD    => open,
-       EDSELRXD => edselrx,
-       EATXD    => (others => '0'),
-       EDTXD    => X"00",
-       -- IO
-       TXDOUT   => txdinadio,
-       TXKOUT   => txkinadio,
-       RXDIN    => rxdoutadio,
-       RXKIN    => rxkoutadio,
-       LOCKED   => dllockedadio);
+  dlinkup(16) <= dllockedadio;
 
-   ----------------------------------------------------------------------------
-   -- SYS (Display) DeviceLink
-   ----------------------------------------------------------------------------
-   dl_sys : entity work.coredevicelink
-     generic map (
-       N         => 4)
-     port map (
-       CLK       => clk,
-       RXBITCLK  => clkbitrx,
-       TXHBITCLK => clkbittx,
-       TXWORDCLK => clkwordtx,
-       RESET     => RESET,
-       TXDIN     => txdinsys,
-       TXKIN     => txkinsys,
-       RXDOUT    => rxdoutsys,
-       RXKOUT    => rxkoutsys,
-       TXIO_P    => SYSTXIO_P,
-       TXIO_N    => SYSTXIO_N,
-       RXIO_P    => SYSRXIO_P,
-       RXIO_N    => SYSRXIO_N,
-       DROPLOCK  => '0',
-       LOCKED    => dllockedsys);
+  devicemux_adio_inst : entity work.devicemux
+    port map (
+      CLK      => CLK,
+      ECYCLE   => ecycle,
+      -- port A
+      DGRANTA  => '0',
+      EARXA    => earx(73),
+      EDRXA    => edrx(73),
+      EDSELRXA => edselrx,
+      EATXA    => eatx(73),
+      EDTXA    => edtx,
+      -- port B
+      DGRANTB  => '0',
+      EARXB    => earx(74),
+      EDRXB    => edrx(74),
+      EDSELRXB => edselrx,
+      EATXB    => eatx(74),
+      EDTXB    => edtx,
+      -- port C
+      DGRANTC  => '0',
+      EARXC    => earx(75),
+      EDRXC    => edrx(75),
+      EDSELRXC => edselrx,
+      EATXC    => eatx(75),
+      EDTXC    => edtx,
+      -- port D
+      DGRANTD  => '0',
+      EARXD    => open,
+      EDRXD    => open,
+      EDSELRXD => edselrx,
+      EATXD    => (others => '0'),
+      EDTXD    => X"00",
+      -- IO
+      TXDOUT   => txdinadio,
+      TXKOUT   => txkinadio,
+      RXDIN    => rxdoutadio,
+      RXKIN    => rxkoutadio,
+      LOCKED   => dllockedadio);
 
-   devicemux_sys_inst : entity work.devicemux
-     port map (
-       CLK      => CLK,
-       ECYCLE   => ecycle,
-       -- port A
-       DGRANTA  => '0',
-       EARXA    => earx(76),
-       EDRXA    => edrx(76),
-       EDSELRXA => edselrx,
-       EATXA    => eatx(76),
-       EDTXA    => edtx,
-       -- port B
-       DGRANTB  => '0',
-       EARXB    => earx(77),
-       EDRXB    => edrx(77),
-       EDSELRXB => edselrx,
-       EATXB    => eatx(77),
-       EDTXB    => edtx,
-       -- port C
-       DGRANTC  => '0',
-       EARXC    => open, 
-       EDRXC    => open, 
-       EDSELRXC => edselrx,
-       EATXC    => (others => '0'), 
-       EDTXC    => X"00",
-       -- port D
-       DGRANTD  => '0',
-       EARXD    => open,
-       EDRXD    => open,
-       EDSELRXD => edselrx,
-       EATXD    => (others => '0'),
-       EDTXD    => X"00",
-       -- IO
-       TXDOUT   => txdinsys,
-       TXKOUT   => txkinsys,
-       RXDIN    => rxdoutsys,
-       RXKIN    => rxkoutsys,
-       LOCKED   => dllockedsys);
-  
+  ----------------------------------------------------------------------------
+  -- SYS (Display) DeviceLink
+  ----------------------------------------------------------------------------
+  dl_sys : entity work.coredevicelink
+    generic map (
+      N         => 4)
+    port map (
+      CLK       => clk,
+      RXBITCLK  => clkbitrx,
+      TXHBITCLK => clkbittx,
+      TXWORDCLK => clkwordtx,
+      RESET     => RESET,
+      TXDIN     => txdinsys,
+      TXKIN     => txkinsys,
+      RXDOUT    => rxdoutsys,
+      RXKOUT    => rxkoutsys,
+      TXIO_P    => SYSTXIO_P,
+      TXIO_N    => SYSTXIO_N,
+      RXIO_P    => SYSRXIO_P,
+      RXIO_N    => SYSRXIO_N,
+      DROPLOCK  => '0',
+      LOCKED    => dllockedsys);
+
+  devicemux_sys_inst : entity work.devicemux
+    port map (
+      CLK      => CLK,
+      ECYCLE   => ecycle,
+      -- port A
+      DGRANTA  => '0',
+      EARXA    => earx(76),
+      EDRXA    => edrx(76),
+      EDSELRXA => edselrx,
+      EATXA    => eatx(76),
+      EDTXA    => edtx,
+      -- port B
+      DGRANTB  => '0',
+      EARXB    => earx(77),
+      EDRXB    => edrx(77),
+      EDSELRXB => edselrx,
+      EATXB    => eatx(77),
+      EDTXB    => edtx,
+      -- port C
+      DGRANTC  => '0',
+      EARXC    => open,
+      EDRXC    => open,
+      EDSELRXC => edselrx,
+      EATXC    => (others => '0'),
+      EDTXC    => X"00",
+      -- port D
+      DGRANTD  => '0',
+      EARXD    => open,
+      EDRXD    => open,
+      EDSELRXD => edselrx,
+      EATXD    => (others => '0'),
+      EDTXD    => X"00",
+      -- IO
+      TXDOUT   => txdinsys,
+      TXKOUT   => txkinsys,
+      RXDIN    => rxdoutsys,
+      RXKIN    => rxkoutsys,
+      LOCKED   => dllockedsys);
+
   dlinkup(17) <= dllockedsys;
 
 end Behavioral;
