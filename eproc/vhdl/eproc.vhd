@@ -12,12 +12,19 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 entity eproc is
+  generic (
+    EATXMUX : boolean := false);        -- do we use the synchronous mux'ed
+                                        -- EATX interface? 
   port (
     CLK         : in  std_logic;
     RESET       : in  std_logic;
     -- Event Interface, CLK rate
     EDTX        : in  std_logic_vector(7 downto 0);
-    EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
+    EATX        : in  std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
+    EATXBYTE : in std_logic_vector(7 downto 0);  -- interface only used when EATXMUX =
+                                          -- true
+    EATXBYTESEL : out std_logic_vector(3 downto 0);
+    
     ECYCLE      : in  std_logic;
     -- event output interface
     EAOUT        : out std_logic_vector(somabackplane.N - 1 downto 0)
@@ -102,7 +109,7 @@ architecture Behavioral of eproc is
 
   signal etxddata, etxdataendian : std_logic_vector(95 downto 0) := (others => '0');
 
-
+  signal eposaddr : std_logic_vector(6 downto 0) := (others => '0');
 
   component regfile
     generic (
@@ -339,8 +346,15 @@ begin  -- Behavioral
 
   ebufaddr(3) <= bufsel;
 
+  eatxmuxif: if EATXMUX    generate
+    eposaddr <= std_logic_vector(TO_UNSIGNED(epos, 7));
+    EATXBYTESEL <= eposaddr(6 downto 3); 
+    letxbit <= '1' when EATXBYTE(TO_INTEGER(unsigned(eposaddr(2 downto 0)))) = '1' else '0'; 
+  end generate eatxmuxif;
 
-  letxbit <= '1' when eatx(epos) = '1' else '0';
+  eatxmuxnotif: if EATXMUX = false generate
+    letxbit <= '1' when eatx(epos) = '1' else '0';    
+  end generate eatxmuxnotif; 
 
   forcejump <= '1' when evtjump = '1' or
                (cs = ebody and etxbit = '1' and eddmatch = '1'
