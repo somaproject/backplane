@@ -16,7 +16,7 @@ __xdata FATFS  filesysobj;
 #define FPGA_DIN P2_6 
 #define FPGA_PROG P2_5
 #define FPGA_INIT P2_4
-
+#define LED P3_0
 
 void general_setup()
 {
@@ -75,6 +75,12 @@ void configure_port_2()
   
 }
 
+void configure_port_3()
+{
+  // only used for blinking
+  P3MDOUT = 0x0F; 
+
+}
 
 int mmcsimpletest()
 {
@@ -149,6 +155,8 @@ void FPGA_boot()
   FRESULT fres; 
   int t = 0; 
   unsigned int bytesread = 0; 
+  int pos = 0; 
+  int ledstate = 0; 
 
   fres = f_open(&fileobject , "core.bit", FA_READ); 
   checkOK(fres); 
@@ -174,16 +182,30 @@ void FPGA_boot()
   FPGA_send_bits(&buffer[72], bytesread-72); 
 
   // now send the rest of the file
-
   
+
   while (bytesread == BLOCK_SIZE){ 
 
     fres = f_read(&fileobject, buffer, BLOCK_SIZE, &bytesread);  
     checkOK(fres);  
     FPGA_send_bits(buffer, bytesread);  
+
+    // simple power led flashing
+    pos++;
+
+    if (pos % 100 == 0) {
+      ledstate = !ledstate; 
+
+    }
+    if (ledstate) {
+      LED = 1; 
+    } else {
+      LED = 0; 
+    }
+
   }  
   
-
+  LED = 1; 
   // extra ticks to push through configuration
 
   for (t = 0; t < 100; t++) {
@@ -300,7 +322,12 @@ int main(void)
   unsigned long x = 0; 
   unsigned int bytesread = 0; 
   FRESULT fres; 
+  // VDD Monitor Enable
+  VDM0CN |= 2; 
+  RSTSRC  |= 1;
 
+  //RSTSRC |= 0x2; 
+  //RSTSRC  |= PORSF; 
   for (x = 0; x < 10000000; ++x) {
     // idle loop to allow for things to settle on startup
 
@@ -310,10 +337,10 @@ int main(void)
   configure_port_0(); 
   configure_port_1(); 
   configure_port_2(); 
+  configure_port_3(); 
 
   // enable crossbar 
   XBR1 |= 0x40; 
-  P0_0 = 1; 
 
   // filesystem operations
   
