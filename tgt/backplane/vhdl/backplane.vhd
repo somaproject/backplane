@@ -75,16 +75,19 @@ entity backplane is
     ADIOTXIO_N : out std_logic;
     ADIORXIO_P : in  std_logic;
     ADIORXIO_N : in  std_logic;
+    ADIOCFG : out std_logic; 
     -- SYS / DISPLAY
     SYSTXIO_P  : out std_logic;
     SYSTXIO_N  : out std_logic;
     SYSRXIO_P  : in  std_logic;
     SYSRXIO_N  : in  std_logic;
+    SYSCFG : out std_logic; 
     -- NEP
     NEPTXIO_P  : out std_logic;
     NEPTXIO_N  : out std_logic;
     NEPRXIO_P  : in  std_logic;
-    NEPRXIO_N  : in  std_logic
+    NEPRXIO_N  : in  std_logic;
+    NEPCFG: out std_logic
     );
 end backplane;
 
@@ -217,7 +220,7 @@ begin  -- Behavioral
       CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
       CLKFB                 => clk,
       CLK180                => clk180int,
-      CLK90                 => niciointclk,
+      CLK270                 => niciointclk,
       CLKIN                 => CLKIN,
       LOCKED                => locked,
       RST                   => '0'          -- DCM asynchronous reset input
@@ -457,7 +460,9 @@ begin  -- Behavioral
       FDIN  => NICFDIN);
 
   DSPCFG <= lserialboot(19 downto 4);
-
+  ADIOCFG <= lserialboot(3);
+  SYSCFG <= lserialboot(2);
+  NEPCFG <= lserialboot(1); 
 
   LEDPOWER <= lserialboot(0);
   LEDEVENT <= jtagesenddebug(1);
@@ -724,7 +729,15 @@ begin  -- Behavioral
       );
 
 
-  NICIOCLK <= clk;
+  ODDR_INST: oddr
+    port map (
+      Q  => NICIOCLK,
+      C  => clk,
+      CE => '1',
+      D1 => '0',
+      D2 => '1',
+      R  => '0',
+      S  => '0'); 
 
   process(niciointclk)
   begin
@@ -901,7 +914,7 @@ begin  -- Behavioral
   ----------------------------------------------------------------------------
   dl_sys : entity work.coredevicelink
     generic map (
-      N         => 4)
+      N         => 1)
     port map (
       CLK       => clk,
       RXBITCLK  => clkbitrx,
@@ -925,18 +938,18 @@ begin  -- Behavioral
       ECYCLE   => ecycle,
       -- port A
       DGRANTA  => '0',
-      EARXA    => earx(76),
-      EDRXA    => edrx(76),
+      EARXA    => earx(6),
+      EDRXA    => edrx(6),
       EDSELRXA => edselrx,
-      EATXA    => eatx(76),
+      EATXA    => eatx(6),
       EDTXA    => edtx,
       -- port B
       DGRANTB  => '0',
-      EARXB    => earx(77),
-      EDRXB    => edrx(77),
+      EARXB    => open, 
+      EDRXB    => open, 
       EDSELRXB => edselrx,
-      EATXB    => eatx(77),
-      EDTXB    => edtx,
+      EATXB    => (others => '0'), 
+      EDTXB    => X"00", 
       -- port C
       DGRANTC  => '0',
       EARXC    => open,
