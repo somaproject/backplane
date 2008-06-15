@@ -257,7 +257,7 @@ begin  -- Behavioral
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"07";
-        if addra >= len(11 downto 1) then
+        if addra >= len(11 downto 1) or wea = '0' then
           ns       <= crcvfy;
         else
           ns       <= dinw;
