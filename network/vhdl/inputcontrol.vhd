@@ -44,7 +44,8 @@ entity inputcontrol is
     -- input event
     EVENTSTART : out std_logic;
     EVENTADDR  : in  std_logic_vector(9 downto 0);
-    EVENTDONE  : in  std_logic
+    EVENTDONE  : in  std_logic;
+    DEBUG : out std_logic_vector(15 downto 0)
     );
 end inputcontrol;
 
@@ -65,6 +66,7 @@ architecture Behavioral of inputcontrol is
   signal crcreset, crcvalid, crcdone : std_logic := '0';
   signal crcvalidl                   : std_logic := '0';
 
+  
   -- output
   signal intaddrb : std_logic_vector(7 downto 0)  := (others => '0');
   signal addrb    : std_logic_vector(9 downto 0)  := (others => '0');
@@ -102,6 +104,11 @@ architecture Behavioral of inputcontrol is
       DONE     : out std_logic);
   end component;
 
+  signal ldebug : std_logic_vector(15 downto 0) := (others => '0');
+  signal debugstate : std_logic_vector(7 downto 0) := (others => '0');
+
+  signal timeoutcnt : std_logic_vector(7 downto 0) := (others => '0');
+  
 
 begin  -- Behavioral
 
@@ -165,6 +172,8 @@ begin  -- Behavioral
   web       <= '1' when cs = lenupd else '0';
   
   crcvalidl <= crcvalid;
+
+  ldebug(7 downto 0) <= debugstate; 
   main : process(CLK, RESET)
   begin
     if RESET = '1' then
@@ -177,7 +186,7 @@ begin  -- Behavioral
         NEXTFRAME <= lnextframe;
         wea       <= DINEN;
         dinl      <= DIN;
-
+        
         if lnextframe = '0' then
           addra   <= (others => '0');
         else
@@ -187,6 +196,17 @@ begin  -- Behavioral
         end if;
 
 
+        -- timeout counter
+        if wea = '1' then
+          timeoutcnt <= X"00";
+        else
+          if timeoutcnt /= X"FF" then
+            timeoutcnt <= timeoutcnt +1;
+          end if;
+        end if;
+        
+        DEBUG <= ldebug;
+        
         if wea = '1' and addra = "00000000000" then
           len <= dinl(11 downto 0);
         end if;
@@ -235,6 +255,7 @@ begin  -- Behavioral
   begin
     case CS is
       when none =>
+        debugstate <= X"00"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -242,6 +263,7 @@ begin  -- Behavioral
         ns         <= dinst;
 
       when dinst =>
+        debugstate <= X"01"; 
         lnextframe <= '1';
         mode       <= 0;
         start      <= '0';
@@ -253,17 +275,19 @@ begin  -- Behavioral
         end if;
 
       when dinw =>
+        debugstate <= X"02"; 
         lnextframe <= '1';
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"07";
-        if addra >= len(11 downto 1) or wea = '0' then
+        if addra >= len(11 downto 1) or timeoutcnt = X"FF" then
           ns       <= crcvfy;
         else
           ns       <= dinw;
         end if;
 
       when crcvfy =>
+        debugstate <= X"03"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -283,6 +307,7 @@ begin  -- Behavioral
         end if;
         
       when crcerr =>
+        debugstate <= X"04"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -290,6 +315,7 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when lenupd =>
+        debugstate <= X"05"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -297,6 +323,7 @@ begin  -- Behavioral
         ns         <= protoread;
 
       when protoread =>
+        debugstate <= X"06"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -304,6 +331,7 @@ begin  -- Behavioral
         ns         <= fstart;
 
       when fstart =>
+        debugstate <= X"07"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -317,6 +345,7 @@ begin  -- Behavioral
         end if;
 
       when nextpkt =>
+        debugstate <= X"08"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -324,7 +353,7 @@ begin  -- Behavioral
         ns         <= none;
 
       when arppkt =>
-
+        debugstate <= X"09"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -332,7 +361,7 @@ begin  -- Behavioral
         ns         <= arpopchk;
 
       when arpopchk =>
-
+        debugstate <= X"0A"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -344,7 +373,7 @@ begin  -- Behavioral
         end if;
 
       when arpqstart =>
-
+        debugstate <= X"0B"; 
         lnextframe <= '0';
         mode       <= 3;
         start      <= '1';
@@ -352,7 +381,7 @@ begin  -- Behavioral
         ns         <= arpwait;
 
       when arpwait =>
-
+        debugstate <= X"0C"; 
         lnextframe <= '0';
         mode       <= 3;
         start      <= '0';
@@ -368,7 +397,7 @@ begin  -- Behavioral
         -- IP Check path
         -------------------------------------------------------------------
       when ipchka =>
-
+        debugstate <= X"0D"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -376,7 +405,7 @@ begin  -- Behavioral
         ns         <= icmpchk;
 
       when icmpchk =>
-
+        debugstate <= X"0E"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -390,7 +419,7 @@ begin  -- Behavioral
         end if;
 
       when echoreq =>
-
+        debugstate <= X"0F"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -402,7 +431,7 @@ begin  -- Behavioral
         end if;
 
       when icmpstart =>
-
+        debugstate <= X"10"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '1';
@@ -410,7 +439,7 @@ begin  -- Behavioral
         ns         <= pingwait;
 
       when pingwait =>
-
+        debugstate <= X"11"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -426,7 +455,7 @@ begin  -- Behavioral
         -----------------------------------------------------------------------
 
       when udpporta =>
-
+        debugstate <= X"12"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -434,7 +463,7 @@ begin  -- Behavioral
         ns         <= udpchk;
 
       when udpchk =>
-
+        debugstate <= X"13"; 
         lnextframe <= '0';
         mode       <= 0;
         start      <= '0';
@@ -450,7 +479,7 @@ begin  -- Behavioral
         end if;
 
       when dretxst =>
-
+        debugstate <= X"14"; 
         lnextframe <= '0';
         mode       <= 2;
         start      <= '1';
@@ -458,7 +487,7 @@ begin  -- Behavioral
         ns         <= dretxwait;
 
       when dretxwait =>
-
+        debugstate <= X"15";
         lnextframe <= '0';
         mode       <= 2;
         start      <= '0';
@@ -470,6 +499,7 @@ begin  -- Behavioral
         end if;
 
       when eretxst =>
+        debugstate <= X"16"; 
         lnextframe <= '0';
         mode       <= 5;
         start      <= '1';
@@ -477,6 +507,7 @@ begin  -- Behavioral
         ns         <= eretxwait;
 
       when eretxwait =>
+        debugstate <= X"17"; 
         lnextframe <= '0';
         mode       <= 5;
         start      <= '0';
@@ -488,6 +519,7 @@ begin  -- Behavioral
         end if;
 
       when evtstart =>
+        debugstate <= X"18"; 
         lnextframe <= '0';
         mode       <= 4;
         start      <= '1';
@@ -495,6 +527,7 @@ begin  -- Behavioral
         ns         <= evtwait;
 
       when evtwait =>
+        debugstate <= X"19"; 
         lnextframe <= '0';
         mode       <= 4;
         start      <= '0';
@@ -506,6 +539,7 @@ begin  -- Behavioral
         end if;
 
       when etherunk =>
+        debugstate <= X"20"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -513,6 +547,7 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when ipunk =>
+        debugstate <= X"21"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -520,6 +555,7 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when arpunk =>
+        debugstate <= X"22"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -527,6 +563,7 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when udpunk =>
+        debugstate <= X"23"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';
@@ -534,6 +571,7 @@ begin  -- Behavioral
         ns         <= nextpkt;
 
       when others =>
+        debugstate <= X"24"; 
         lnextframe <= '0';
         mode       <= 1;
         start      <= '0';

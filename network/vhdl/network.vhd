@@ -70,7 +70,7 @@ entity network is
     EVTFIFOFULL  : out   std_logic;
 
     -- DEBUG
-    DEBUG : out std_logic_vector(7 downto 0)
+    DEBUG : out std_logic_vector(15 downto 0)
     );
 end network;
 
@@ -113,7 +113,8 @@ architecture Behavioral of network is
                                         -- input event
       EVENTSTART : out std_logic;
       EVENTADDR  : in  std_logic_vector(9 downto 0);
-      EVENTDONE  : in  std_logic
+      EVENTDONE  : in  std_logic;
+      DEBUG : out std_logic_vector(15 downto 0)
       );
   end component;
 
@@ -512,7 +513,8 @@ begin  -- Behavioral
       UNKNOWNETHER => UNKNOWNETHER,
       UNKNOWNIP    => UNKNOWNIP,
       UNKNOWNUDP   => UNKNOWNUDP,
-      UNKNOWNARP   => UNKNOWNARP
+      UNKNOWNARP   => UNKNOWNARP,
+      DEBUG => DEBUG
       );
 
 
