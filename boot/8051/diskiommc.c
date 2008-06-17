@@ -11,8 +11,11 @@ int MMC_disk_initialize() {
 
 
   mmc_configure_spi(); 
+
   mmc_init_card(); 
   mmc_configure_card(); 
+    
+
   //mmc_read_stats(buffer); 
 
   // we should do something intelligent with the status, but

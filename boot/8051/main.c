@@ -59,7 +59,7 @@ void configure_port_0()
 void configure_port_1()
 {
   //P1MDIN = 0x00; 
-  P1MDOUT  |= 0xFF; // port 1 is Push-Pull
+  P1MDOUT  |= 0xFE; // port 1 is Push-Pull
   
 }
 
