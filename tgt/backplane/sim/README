@@ -1,0 +1,13 @@
+A test jig to test our ability to boot devices via syscontrol
+and perform other necessary administration
+
+Potentially a very long simulation. Each file we try and read has some
+legnth. 
+
+1. assert NICFPROG
+2. open filename network.bit
+3. read in all of network.bit's data and write it out the 
+   NICFPGA interface
+4. when done, try and talk to the NIC
+5. next ! 
+

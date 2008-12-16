@@ -73,6 +73,10 @@ MANBOOTSER_SETMASK = 0xA0
 MANBOOTSER_TOGPROG = 0xA1
 MANBOOTSER_WRITEBYTES = 0xA2
 
+# miscellaneous events
+EVENT_CMD_PING = 0x08
+EVENT_CMD_PING_RESPONSE = 0x09
+
 # read addresses
 DLINKUP_LOW = 0x00
 DLINKUP_HIGH = 0x01
@@ -507,10 +511,31 @@ def manual_boot_writebytes(cmd):
   proc.output(EVENTOUT_SRC, tmp)
   proc.output(EVENTOUT_CMD, env.cmdBootserWriteBytes)
 
+def ping_proc():
+  proc = env.createEProc((EVENT_CMD_PING, EVENT_CMD_PING),
+                           (0, 255))
+  tmp = proc.createVariable("tmp")
+  proc.move(tmp, ereg.src)
+  proc.output(EVENTOUT_SRC, tmp)
+  # edata
+  proc.load(tmp, 0x00)
+  proc.output(EVENTOUT_DATA0, tmp)
+  proc.output(EVENTOUT_DATA1, tmp)
+  proc.output(EVENTOUT_DATA2, tmp)
+  proc.output(EVENTOUT_DATA3, tmp)
+  
+  proc.move(tmp, ereg.edata[4])
+  proc.output(EVENTOUT_DATA4, tmp)
+  # send the actual
+
+  proc.load(tmp, EVENT_CMD_PING_RESPONSE)
+  proc.output(EVENTOUT_CMD, tmp)
+
+
 createEnableEventCycleProc()
 createEventCycleProc()
 
-
+ping_proc()
 proc_state_loadbootset()
 proc_state_gethandle()
 proc_state_openfile()

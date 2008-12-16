@@ -178,7 +178,7 @@ char send_command (char cmd, unsigned long arg)
   xmit_spi(arg1); 
   xmit_spi(arg2); 
   xmit_spi(arg3); 
-  xmit_spi(crc);
+  xmit_spi(crc); 
 
   n = 10; 
   do {
@@ -207,7 +207,7 @@ void mmc_init_card() {
 
   DESELECT(); 
   // Power on reset -- apply more than 74 SCLK pulses
-  for (i = 0; i < 20; i++ ) {
+  for (i = 0; i < 10; i++ ) {
     xmit_spi(0xFF); 
   }
 
