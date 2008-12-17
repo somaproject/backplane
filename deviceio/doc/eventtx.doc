@@ -1,6 +1,0 @@
-To transmit an event, something in a different (Application) clock domain writes a contiguous burst of event data, 17 bytes. 
-
-The KCHAR input is for setting the first char of this send. 
-
-The interface is relatively simple, we register the input 17 bytes using a byte-wide shift register, and then sequentially read off those bytes in the TXBYTECLK domain using a simple counter/mux configuration. 
-
