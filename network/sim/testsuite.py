@@ -19,7 +19,7 @@ else:
     # core components
     suite.addTest(vhdlTestCase("arpresponse"))
     suite.addTest(vhdlTestCase("bitcnt"))
-##     suite.addTest(vhdlTestCase("txmux"))
+    suite.addTest(vhdlTestCase("txmux"))
 ##     suite.addTest(vhdlTestCase("inputcontrol"))
 ##     suite.addTest(vhdlTestCase("pingresponse"))
 ##     suite.addTest(vhdlTestCase("eventtx"))
