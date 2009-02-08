@@ -512,7 +512,7 @@ begin  -- Behavioral
 
       when rdbst =>
         rw       <= '0';
-        asel     <= '1';
+        asel     <= '0';
         memstart <= '1';
         ns       <= rdbwait;
 

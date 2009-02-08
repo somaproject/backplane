@@ -41,7 +41,7 @@ $(WORKDIR)/eventretxresponsetest/behavioral.dat: $(WORKDIR)/touched eventretxres
 
 sim: $(WORKDIR)/eventretxresponsetest/behavioral.dat 
 runsim: all
-	$(VHDLS) eventretxresponsetest.vhd
+	$(VHDLS) eventretxresponsetest
 
 
 clean:
