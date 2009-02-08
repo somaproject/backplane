@@ -29,7 +29,7 @@ else:
     suite.addTest(vhdlTestCase("data")) # very slow, takes 8 ms of sim time
     suite.addTest(vhdlTestCase("dataretxresponse"))
 ##     suite.addTest(vhdlTestCase("eventretxresponse"))
-##     suite.addTest(vhdlTestCase("ipchecksum"))
+    suite.addTest(vhdlTestCase("ipchecksum"))
     
 runner = unittest.TextTestRunner()
 runner.run(suite)

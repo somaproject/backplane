@@ -1,23 +1,28 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/ipchecksum.vhd
+$(WORKDIR)/ipchecksum/behavioral.dat: $(WORKDIR)/touched ../../vhdl/ipchecksum.vhd
+	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/ipchecksum.vhd
 
-hw: $(WORKDIR)/ipchecksum/_behavioral.var 
+hw: $(WORKDIR)/ipchecksum/behavioral.dat 
 
 comp: 
 
-$(WORKDIR)/ipchecksumtest/_behavioral.var: ipchecksumtest.vhd
+$(WORKDIR)/ipchecksumtest/behavioral.dat: $(WORKDIR)/touched ipchecksumtest.vhd
+	mkdir -p $(WORKDIR)
 	$(VHDLC) ipchecksumtest.vhd
 
-sim: $(WORKDIR)/ipchecksumtest/_behavioral.var 
+sim: $(WORKDIR)/ipchecksumtest/behavioral.dat 
 runsim: all
 	$(VHDLS) ipchecksumtest
 
 
 clean:
-	rm -Rf $(WORKDIR)$
+	rm -Rf work 
 
+work/touched:
+	vlib  work
+	touch  work/touched
