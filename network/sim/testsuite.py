@@ -22,7 +22,7 @@ else:
     suite.addTest(vhdlTestCase("txmux"))
     suite.addTest(vhdlTestCase("inputcontrol"))
     suite.addTest(vhdlTestCase("pingresponse"))
-##     suite.addTest(vhdlTestCase("eventtx"))
+    suite.addTest(vhdlTestCase("eventtx"))
 ##     suite.addTest(vhdlTestCase("datapacketgen"))
 ##     suite.addTest(vhdlTestCase("eventrx"))
 ##     #suite.addTest(vhdlTestCase("eventretx"))
