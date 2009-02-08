@@ -8,16 +8,18 @@ from somapynet.neteventio import NetEventIO
 
 eio = NetEventIO("10.0.0.2")
 
-eio.addRXMask(xrange(256), eaddr.SYSCONTROL)
+ECMD_PINGREQ = 0x08
+ECMD_PINGRESP = 0x09
+eio.addRXMask(ECMD_PINGRESP, eaddr.SYSCONTROL)
 
 eio.start()
 
 e = Event()
 e.src = eaddr.NETWORK
-e.cmd = 0xA2
+e.cmd = ECMD_PINGREQ
 ea = eaddr.TXDest()
 ea[eaddr.SYSCONTROL] = 1
-print e
+print "sending request", e
 
 eio.sendEvent(ea, e)
 eio.sendEvent(ea, e)
@@ -27,8 +29,10 @@ rxevents = []
 while len(rxevents) < 4:
     erx = eio.getEvents()
     rxevents += erx
-    
-print rxevents
+print "responses"
+
+for e in  rxevents:
+    print e
 
 
 eio.stop()
