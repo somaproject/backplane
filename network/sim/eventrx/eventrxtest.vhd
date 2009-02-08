@@ -1,16 +1,12 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 use std.textio.all;
 use ieee.std_logic_textio.all;
 
 library soma;
 use soma.somabackplane.all;
 use soma.somabackplane;
-
-use ieee.numeric_std.all;
-
 
 entity eventrxtest is
 
