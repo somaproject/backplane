@@ -1,23 +1,28 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/bitcnt/_behavioral.var: ../../vhdl/bitcnt.vhd
-	$(VHDLC) -vital2000 ../../vhdl/bitcnt.vhd
+$(WORKDIR)/bitcnt/behavioral.dat: $(WORKDIR)/touched ../../vhdl/bitcnt.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/bitcnt.vhd
 
-hw: $(WORKDIR)/bitcnt/_behavioral.var 
+hw: $(WORKDIR)/bitcnt/behavioral.dat 
 
 comp: 
 
-$(WORKDIR)/bitcnttest/_behavioral.var: bitcnttest.vhd
-	$(VHDLC) -vital2000 bitcnttest.vhd
+$(WORKDIR)/bitcnttest/behavioral.dat: $(WORKDIR)/touched bitcnttest.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) bitcnttest.vhd
 
-sim: $(WORKDIR)/bitcnttest/_behavioral.var 
+sim: $(WORKDIR)/bitcnttest/behavioral.dat 
 runsim: all
 	$(VHDLS) bitcnttest
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf work 
 
+work/touched:
+	vlib  work
+	touch  work/touched
