@@ -1,53 +1,71 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-soma.sym/somabackplane/prim.var: ../../../vhdl/somabackplane.vhd
-	$(VHDLC) -vital2000 -work soma  ../../../vhdl/somabackplane.vhd
+soma/somabackplane/body.dat: soma/touched ../../../vhdl/somabackplane.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/netports/prim.var: ../../vhdl/netports.vhd
-	$(VHDLC) -vital2000 ../../vhdl/netports.vhd
+$(WORKDIR)/netports/body.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/netports.vhd
 
-$(WORKDIR)/networkstack/prim.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd
-	$(VHDLC) -vital2000 ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/body.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/dataacquire/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd
-	$(VHDLC) -vital2000 ../../vhdl/dataacquire.vhd
+$(WORKDIR)/dataacquire/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/dataacquire.vhd
 
-$(WORKDIR)/bigmem/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd
-	$(VHDLC) -vital2000 ../../vhdl/bigmem.vhd
+$(WORKDIR)/bigmem/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/bigmem.vhd
 
-$(WORKDIR)/dataretxbuf/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd
-	$(VHDLC) -vital2000 ../../vhdl/dataretxbuf.vhd
+$(WORKDIR)/dataretxbuf/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/dataretxbuf.vhd
 
-$(WORKDIR)/datafifo/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd
-	$(VHDLC) -vital2000 ../../vhdl/datafifo.vhd
+$(WORKDIR)/datafifo/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/datafifo.vhd
 
-$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd ../../vhdl/ipchecksum.vhd
-	$(VHDLC) -vital2000 ../../vhdl/ipchecksum.vhd
+$(WORKDIR)/ipchecksum/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd ../../vhdl/datafifo.vhd ../../vhdl/ipchecksum.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/ipchecksum.vhd
 
-$(WORKDIR)/udpheaderwriter/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
-	$(VHDLC) -vital2000 ../../vhdl/udpheaderwriter.vhd
+$(WORKDIR)/udpheaderwriter/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd ../../vhdl/datafifo.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/udpheaderwriter.vhd
 
-$(WORKDIR)/datapacketgen/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/datapacketgen.vhd
-	$(VHDLC) -vital2000 ../../vhdl/datapacketgen.vhd
+$(WORKDIR)/datapacketgen/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd ../../vhdl/datafifo.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/datapacketgen.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/datapacketgen.vhd
 
-$(WORKDIR)/data/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/datapacketgen.vhd ../../vhdl/data.vhd
-	$(VHDLC) -vital2000 ../../vhdl/data.vhd
+$(WORKDIR)/data/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/dataacquire.vhd ../../vhdl/dataacquire.vhd ../../vhdl/bigmem.vhd ../../vhdl/bigmem.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/dataretxbuf.vhd ../../vhdl/datafifo.vhd ../../vhdl/datafifo.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/datapacketgen.vhd ../../vhdl/datapacketgen.vhd ../../vhdl/data.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/data.vhd
 
-hw: soma.sym/somabackplane/prim.var $(WORKDIR)/netports/prim.var $(WORKDIR)/networkstack/prim.var $(WORKDIR)/dataacquire/_behavioral.var $(WORKDIR)/bigmem/_behavioral.var $(WORKDIR)/dataretxbuf/_behavioral.var $(WORKDIR)/datafifo/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/datapacketgen/_behavioral.var $(WORKDIR)/data/_behavioral.var 
+hw: soma/somabackplane/body.dat $(WORKDIR)/netports/body.dat $(WORKDIR)/networkstack/body.dat $(WORKDIR)/dataacquire/behavioral.dat $(WORKDIR)/bigmem/behavioral.dat $(WORKDIR)/dataretxbuf/behavioral.dat $(WORKDIR)/datafifo/behavioral.dat $(WORKDIR)/ipchecksum/behavioral.dat $(WORKDIR)/udpheaderwriter/behavioral.dat $(WORKDIR)/datapacketgen/behavioral.dat $(WORKDIR)/data/behavioral.dat 
 
 comp: 
 
-$(WORKDIR)/datatest/_behavioral.var: datatest.vhd
-	$(VHDLC) -vital2000 datatest.vhd
+$(WORKDIR)/datatest/behavioral.dat: $(WORKDIR)/touched datatest.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) datatest.vhd
 
-sim: $(WORKDIR)/datatest/_behavioral.var 
+sim: $(WORKDIR)/datatest/behavioral.dat 
 runsim: all
 	$(VHDLS) datatest
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf soma work 
 
+soma/touched:
+	vlib  soma
+	touch  soma/touched
+work/touched:
+	vlib  work
+	touch  work/touched
