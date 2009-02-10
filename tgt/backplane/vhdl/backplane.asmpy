@@ -38,6 +38,7 @@ currentState = env.createVariable("currentState")
 nextState = env.createVariable("nextState")
 serialSendTimer = env.createVariable("serialSendTimer")
 cmdBootserWriteBytes = env.createVariable("cmdBootserWriteBytes")
+cmdBootserSendBytes = env.createVariable("cmdBootserSendBytes")
 
 
 
@@ -58,6 +59,7 @@ FPROGOUT_MASKH = 0x09
 FPROGOUT_DATA = 0x0A
 FPROGOUT_FPROG = 0x0B
 FPROGOUT_SEND = 0x0C
+FPROGOUT_DATAPOINTERRST = 0x0D
 
 BS_GETHANDLE = 0x90
 BS_SETFILENAME = 0x91
@@ -72,6 +74,7 @@ DLINKQUERY_RESP = 0x20
 MANBOOTSER_SETMASK = 0xA0
 MANBOOTSER_TOGPROG = 0xA1
 MANBOOTSER_WRITEBYTES = 0xA2
+MANBOOTSER_SENDBYTES = 0xA3
 
 # miscellaneous events
 EVENT_CMD_PING = 0x08
@@ -449,6 +452,7 @@ def createEnableEventCycleProc():
   newproc = env.createProc("enableEventCycleProc")
   y = newproc.createVariable("y")
   newproc.load(env.cmdBootserWriteBytes, MANBOOTSER_WRITEBYTES)  
+  newproc.load(env.cmdBootserSendBytes, MANBOOTSER_SENDBYTES)  
   newproc.load(y, 1)
   newproc.output(EVENTPROC_ENABLE, y)
   newproc.foreverLoop()
@@ -502,14 +506,25 @@ def manual_boot_writebytes(cmd):
   proc = env.createEProc((cmd, cmd),
                            (0, 255))
   tmp = proc.createVariable("tmp")
+  # We always reset the data pointer so the manual operation is idempotent
+  # this means we can only send 64 bits at a time. 
+  proc.output(FPROGOUT_DATAPOINTERRST, tmp)
   for i in xrange(4):
     proc.move(tmp, ereg.edata[i])
     proc.output(FPROGOUT_DATA, tmp)
   # then commit
-  proc.output(FPROGOUT_SEND, tmp)
   proc.move(tmp, ereg.src)
   proc.output(EVENTOUT_SRC, tmp)
   proc.output(EVENTOUT_CMD, env.cmdBootserWriteBytes)
+
+def manual_boot_send_bytes(cmd):
+  proc = env.createEProc((cmd, cmd),
+                           (0, 255))
+  tmp = proc.createVariable("tmp")
+  proc.output(FPROGOUT_SEND, tmp)
+  proc.move(tmp, ereg.src)
+  proc.output(EVENTOUT_SRC, tmp)
+  proc.output(EVENTOUT_CMD, env.cmdBootserSendBytes)
 
 def ping_proc():
   proc = env.createEProc((EVENT_CMD_PING, EVENT_CMD_PING),
@@ -556,6 +571,7 @@ createDLinkStatusQueryResponse()
 manual_boot_setmask()
 manual_boot_togprog()
 manual_boot_writebytes(MANBOOTSER_WRITEBYTES)
+manual_boot_send_bytes(MANBOOTSER_SENDBYTES)
 
 
 

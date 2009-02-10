@@ -13,6 +13,15 @@ from somapynet.neteventio import NetEventIO
 import struct
 import time
 
+def reallysend(eio, ea, ed):
+    while True:
+        try:
+            eio.sendEvent(ea, e)
+            break
+        except IOError:
+            print "Whoa, we didn't hear the answer" 
+            pass
+        
 filename = sys.argv[1]
 devicenums = sys.argv[2:]
 if len(devicenums) == 0:
@@ -27,6 +36,8 @@ eio.start()
 MANBOOTSER_SETMASK = 0xA0
 MANBOOTSER_TOGPROG = 0xA1
 MANBOOTSER_WRITEBYTES = 0xA2
+MANBOOTSER_SENDBYTES = 0xA3
+
 EVENTCMD_YOUARE = 0x01
 
 
@@ -54,6 +65,7 @@ pos = 0
 ecnt = 0
 
 while data:
+    
     e.cmd = MANBOOTSER_WRITEBYTES
     e.src = eaddr.NETWORK
     ea = eaddr.TXDest()
@@ -66,21 +78,23 @@ while data:
     for i in xrange(4):
         e.data[i] = struct.unpack(">H", data[(i*2):(i*2+2)])[0]
 
-    #print "To send", e
-    eio.sendEvent(ea, e)
-    #print "senddone" 
+    reallysend(eio, ea, e)
 
+    # now push the bytes to the client device
+    e.cmd = MANBOOTSER_SENDBYTES
+    e.src = eaddr.NETWORK
+    ea = eaddr.TXDest()
+    ea[eaddr.SYSCONTROL] = 1
+
+    reallysend(eio, ea, e)
     
     erx = eio.getEvents()
-    #for q in erx:
-    #    print q
+
     
     data =fid.read(8)
     pos += 8
 
     ecnt  += 1
-
-    print "pos = ", pos, ecnt
 
 
 time.sleep(1) # superfluous sleep to allow for boot up
