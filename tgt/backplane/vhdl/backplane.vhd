@@ -192,7 +192,9 @@ architecture Behavioral of backplane is
 
   signal dlinkup : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal jtagdebug : std_logic_vector(15 downto 0) := (others => '0');
+  signal jtagdebug : std_logic_vector(31 downto 0) := (others => '0');
+  signal jtagnetdebug : std_logic_vector(15 downto 0) := (others => '0');
+  signal jtagjtagrxdebug : std_logic_vector(15 downto 0) := (others => '0');
   
 begin  -- Behavioral
 
@@ -489,7 +491,7 @@ begin  -- Behavioral
       ECYCLE          => ecycle,
       EDTX            => edtx,
       EATX            => eatx(7),
-      DEBUG           => open);
+      DEBUG           => jtagjtagrxdebug);
 
   DCM_fibertx_inst : DCM_BASE
     generic map (
@@ -540,12 +542,12 @@ begin  -- Behavioral
   jtagdebugout: entity jtagsimpleout
     generic map (
       JTAG_CHAIN => 4,
-      JTAGN      => 16)
+      JTAGN      => 32)
     port map (
       CLK => clk,
       DIN => jtagdebug);
 
-  
+  jtagdebug <= jtagnetdebug & jtagjtagrxdebug; 
   -- dummy
   process(clk)
     variable blinkcnt : std_logic_vector(21 downto 0)
@@ -623,7 +625,7 @@ begin  -- Behavioral
       EVTRXSUC     => evtrxsuc,
       EVTFIFOFULL  => evtfifofull,
 
-      DEBUG=>jtagdebug     
+      DEBUG=>jtagnetdebug     
 
       );
 

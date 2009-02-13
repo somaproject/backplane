@@ -520,11 +520,11 @@ begin  -- Behavioral
         rw       <= '0';
         asel     <= '0';
         memstart <= '0';
---        if MEMDONE = '1' then           -- fixme
+        if MEMDONE = '1' then           -- fixme DEBUGGING
           ns     <= rdbdone;
---        else
---          ns     <= rdbwait;
---        end if;
+        else
+          ns     <= rdbwait;
+        end if;
 
       when rdbdone =>
         rw       <= '0';
