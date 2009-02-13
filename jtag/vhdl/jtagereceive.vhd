@@ -22,7 +22,7 @@ entity jtagereceive is
     ECYCLE : in  std_logic;
     EDTX   : in  std_logic_vector(7 downto 0);
     EATX   : in  std_logic_vector(somabackplane.N - 1 downto 0);
-    DEBUG  : out std_logic_vector(3 downto 0)
+    DEBUG  : out std_logic_vector(15 downto 0)
     );
 end jtagereceive;
 
@@ -417,14 +417,14 @@ begin  -- Behavioral
 
   jtagout : process(SMDRCK, smupdate, smaskreg)
   begin
-    if SMUPDATE = '1' then
-    else
+--    if SMUPDATE = '1' then
+--    else
       if rising_edge(smdrck) then
         if smsel = '1' and smshift = '1' then
           smaskreg <= smtdi & smaskreg(79 downto 1);
         end if;
       end if;
-    end if;
+--    end if;
   end process jtagout;
 
 
