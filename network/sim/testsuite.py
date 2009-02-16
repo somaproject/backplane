@@ -21,11 +21,11 @@ else:
     suite.addTest(vhdlTestCase("bitcnt"))
     suite.addTest(vhdlTestCase("data")) # very slow, takes 11 ms of sim time
     suite.addTest(vhdlTestCase("datapacketgen"))
-##     suite.addTest(vhdlTestCase("dataretxresponse"))
+    suite.addTest(vhdlTestCase("dataretxresponse"))
 ##     suite.addTest(vhdlTestCase("datathroughput"))
 ##     suite.addTest(vhdlTestCase("eventbodywriter"))
 ##     suite.addTest(vhdlTestCase("eventretx"))
-##     suite.addTest(vhdlTestCase("eventretxresponse"))
+    suite.addTest(vhdlTestCase("eventretxresponse"))
 ##     suite.addTest(vhdlTestCase("inputcontrol"))
 ##     suite.addTest(vhdlTestCase("network"))
 ##     suite.addTest(vhdlTestCase("txmux"))

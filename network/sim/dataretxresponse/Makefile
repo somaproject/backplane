@@ -41,7 +41,7 @@ $(WORKDIR)/dataretxresponsetest/behavioral.dat: $(WORKDIR)/touched dataretxrespo
 
 sim: $(WORKDIR)/dataretxresponsetest/behavioral.dat 
 runsim: all
-	$(VHDLS) dataretxresponsetest.vhd
+	$(VHDLS) dataretxresponsetest
 
 
 clean:
