@@ -119,9 +119,13 @@ begin  -- Behavioral
       if wein = '1' and addrin = "010" then
         addra   <= addra + 1;
       else
-        if cs = done then
-          addra <= (others => '0');
-        end if;
+        if wein = '1' and addrin = "101" then
+          addra <= (others => '0');     -- RESET ADDRA counter, so we can be idempotent
+        else
+          if cs = done then
+            addra <= (others => '0');
+          end if;
+        end if; 
       end if;
 
       if cs = nextaddr then
@@ -154,7 +158,8 @@ begin  -- Behavioral
         if WEIN = '1' then
           if addrin = "011" then
             ns <= fprogst1;
-          elsif addrin = "100" then
+          elsif addrin = "100" and addra /= "0000" then  --only send if we have
+                                                         --data to send
             ns <= sendbitl;
           else
             ns <= none;

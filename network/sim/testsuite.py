@@ -7,7 +7,7 @@ import sys
 
 suite = unittest.TestSuite()
 
-vhdlTestCase = vhdltest.SymphonyVhdlSimTestCase
+vhdlTestCase = vhdltest.ModelVhdlSimTestCase
 
 if len(sys.argv) > 1 :
     # run those from the command line
@@ -26,7 +26,7 @@ else:
     suite.addTest(vhdlTestCase("datapacketgen"))
     suite.addTest(vhdlTestCase("eventrx"))
     #suite.addTest(vhdlTestCase("eventretx"))
-    suite.addTest(vhdlTestCase("data"))
+    suite.addTest(vhdlTestCase("data")) # very slow, takes 8 ms of sim time
     suite.addTest(vhdlTestCase("dataretxresponse"))
     suite.addTest(vhdlTestCase("eventretxresponse"))
     suite.addTest(vhdlTestCase("ipchecksum"))

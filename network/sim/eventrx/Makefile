@@ -1,59 +1,79 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-soma.sym/somabackplane/prim.var: ../../../vhdl/somabackplane.vhd
-	$(VHDLC) -vital2000 -work soma  ../../../vhdl/somabackplane.vhd
+soma/somabackplane/body.dat: soma/touched ../../../vhdl/somabackplane.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/netports/prim.var: ../../vhdl/netports.vhd
-	$(VHDLC) -vital2000 ../../vhdl/netports.vhd
+$(WORKDIR)/netports/body.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/netports.vhd
 
-$(WORKDIR)/networkstack/prim.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd
-	$(VHDLC) -vital2000 ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/body.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/crc_combinational/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd
-	$(VHDLC) -vital2000 ../../crc/vhdl/crc_combinational.vhd
+$(WORKDIR)/crc_combinational/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../crc/vhdl/crc_combinational.vhd
 
-$(WORKDIR)/crc16_combinational/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd
-	$(VHDLC) -vital2000 ../../crc/vhdl/crc16_combinational.vhd
+$(WORKDIR)/crc16_combinational/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../crc/vhdl/crc16_combinational.vhd
 
-$(WORKDIR)/crcverify/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd
-	$(VHDLC) -vital2000 ../../crc/vhdl/crcverify.vhd
+$(WORKDIR)/crcverify/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../crc/vhdl/crcverify.vhd
 
-$(WORKDIR)/ipchecksum/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd
-	$(VHDLC) -vital2000 ../../vhdl/ipchecksum.vhd
+$(WORKDIR)/ipchecksum/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/ipchecksum.vhd
 
-$(WORKDIR)/udpheaderwriter/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
-	$(VHDLC) -vital2000 ../../vhdl/udpheaderwriter.vhd
+$(WORKDIR)/udpheaderwriter/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/udpheaderwriter.vhd
 
-$(WORKDIR)/eventrxbusoutput/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd
-	$(VHDLC) -vital2000 ../../vhdl/eventrxbusoutput.vhd
+$(WORKDIR)/eventrxbusoutput/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/eventrxbusoutput.vhd
 
-$(WORKDIR)/eventrxresponsewr/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd
-	$(VHDLC) -vital2000 ../../vhdl/eventrxresponsewr.vhd
+$(WORKDIR)/eventrxresponsewr/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/eventrxresponsewr.vhd
 
-$(WORKDIR)/eventrx/_behavioral.var: ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd ../../vhdl/eventrx.vhd
-	$(VHDLC) -vital2000 ../../vhdl/eventrx.vhd
+$(WORKDIR)/eventrx/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/ipchecksum.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/udpheaderwriter.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxbusoutput.vhd ../../vhdl/eventrxresponsewr.vhd ../../vhdl/eventrxresponsewr.vhd ../../vhdl/eventrx.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/eventrx.vhd
 
-hw: soma.sym/somabackplane/prim.var $(WORKDIR)/netports/prim.var $(WORKDIR)/networkstack/prim.var $(WORKDIR)/crc_combinational/_behavioral.var $(WORKDIR)/crc16_combinational/_behavioral.var $(WORKDIR)/crcverify/_behavioral.var $(WORKDIR)/ipchecksum/_behavioral.var $(WORKDIR)/udpheaderwriter/_behavioral.var $(WORKDIR)/eventrxbusoutput/_behavioral.var $(WORKDIR)/eventrxresponsewr/_behavioral.var $(WORKDIR)/eventrx/_behavioral.var 
+hw: soma/somabackplane/body.dat $(WORKDIR)/netports/body.dat $(WORKDIR)/networkstack/body.dat $(WORKDIR)/crc_combinational/behavioral.dat $(WORKDIR)/crc16_combinational/behavioral.dat $(WORKDIR)/crcverify/behavioral.dat $(WORKDIR)/ipchecksum/behavioral.dat $(WORKDIR)/udpheaderwriter/behavioral.dat $(WORKDIR)/eventrxbusoutput/behavioral.dat $(WORKDIR)/eventrxresponsewr/behavioral.dat $(WORKDIR)/eventrx/behavioral.dat 
 
-$(WORKDIR)/inputcontrol/_behavioral.var: ../../vhdl/inputcontrol.vhd
-	$(VHDLC) -vital2000 ../../vhdl/inputcontrol.vhd
+$(WORKDIR)/inputcontrol/behavioral.dat: $(WORKDIR)/touched ../../vhdl/inputcontrol.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/inputcontrol.vhd
 
-$(WORKDIR)/eventrxverify/_behavioral.var: ../../vhdl/inputcontrol.vhd ../components/eventrxverify/eventrxverify.vhd
-	$(VHDLC) -vital2000 ../components/eventrxverify/eventrxverify.vhd
+$(WORKDIR)/eventrxverify/behavioral.dat: $(WORKDIR)/touched ../../vhdl/inputcontrol.vhd ../components/eventrxverify/eventrxverify.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../components/eventrxverify/eventrxverify.vhd
 
-comp: $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/eventrxverify/_behavioral.var 
+comp: $(WORKDIR)/inputcontrol/behavioral.dat $(WORKDIR)/eventrxverify/behavioral.dat 
 
-$(WORKDIR)/eventrxtest/_behavioral.var: ../../vhdl/inputcontrol.vhd ../components/eventrxverify/eventrxverify.vhd eventrxtest.vhd
-	$(VHDLC) -vital2000 eventrxtest.vhd
+$(WORKDIR)/eventrxtest/behavioral.dat: $(WORKDIR)/touched ../../vhdl/inputcontrol.vhd ../components/eventrxverify/eventrxverify.vhd eventrxtest.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) eventrxtest.vhd
 
-sim: $(WORKDIR)/eventrxtest/_behavioral.var 
+sim: $(WORKDIR)/eventrxtest/behavioral.dat 
 runsim: all
 	$(VHDLS) eventrxtest
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf soma work 
 
+soma/touched:
+	vlib  soma
+	touch  soma/touched
+work/touched:
+	vlib  work
+	touch  work/touched

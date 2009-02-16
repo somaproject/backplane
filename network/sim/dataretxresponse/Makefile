@@ -1,41 +1,52 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
-	$(VHDLC) -vital2000 ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/body.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/netports/prim.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd
-	$(VHDLC) -vital2000 ../../vhdl/netports.vhd
+$(WORKDIR)/netports/body.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/netports.vhd
 
-$(WORKDIR)/crc_combinational/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd
-	$(VHDLC) -vital2000 ../../crc/vhdl/crc_combinational.vhd
+$(WORKDIR)/crc_combinational/behavioral.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../crc/vhdl/crc_combinational.vhd
 
-$(WORKDIR)/crc16_combinational/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd
-	$(VHDLC) -vital2000 ../../crc/vhdl/crc16_combinational.vhd
+$(WORKDIR)/crc16_combinational/behavioral.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../crc/vhdl/crc16_combinational.vhd
 
-$(WORKDIR)/crcverify/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd
-	$(VHDLC) -vital2000 ../../crc/vhdl/crcverify.vhd
+$(WORKDIR)/crcverify/behavioral.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../crc/vhdl/crcverify.vhd
 
-$(WORKDIR)/inputcontrol/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/inputcontrol.vhd
-	$(VHDLC) -vital2000 ../../vhdl/inputcontrol.vhd
+$(WORKDIR)/inputcontrol/behavioral.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/inputcontrol.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/inputcontrol.vhd
 
-$(WORKDIR)/dataretxresponse/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/inputcontrol.vhd ../../vhdl/dataretxresponse.vhd
-	$(VHDLC) -vital2000 ../../vhdl/dataretxresponse.vhd
+$(WORKDIR)/dataretxresponse/behavioral.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/netports.vhd ../../vhdl/netports.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crc16_combinational.vhd ../../crc/vhdl/crcverify.vhd ../../crc/vhdl/crcverify.vhd ../../vhdl/inputcontrol.vhd ../../vhdl/inputcontrol.vhd ../../vhdl/dataretxresponse.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/dataretxresponse.vhd
 
-hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/netports/prim.var $(WORKDIR)/crc_combinational/_behavioral.var $(WORKDIR)/crc16_combinational/_behavioral.var $(WORKDIR)/crcverify/_behavioral.var $(WORKDIR)/inputcontrol/_behavioral.var $(WORKDIR)/dataretxresponse/_behavioral.var 
+hw: $(WORKDIR)/networkstack/body.dat $(WORKDIR)/netports/body.dat $(WORKDIR)/crc_combinational/behavioral.dat $(WORKDIR)/crc16_combinational/behavioral.dat $(WORKDIR)/crcverify/behavioral.dat $(WORKDIR)/inputcontrol/behavioral.dat $(WORKDIR)/dataretxresponse/behavioral.dat 
 
 comp: 
 
-$(WORKDIR)/dataretxresponsetest/_behavioral.var: dataretxresponsetest.vhd
-	$(VHDLC) -vital2000 dataretxresponsetest.vhd
+$(WORKDIR)/dataretxresponsetest/behavioral.dat: $(WORKDIR)/touched dataretxresponsetest.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) dataretxresponsetest.vhd
 
-sim: $(WORKDIR)/dataretxresponsetest/_behavioral.var 
+sim: $(WORKDIR)/dataretxresponsetest/behavioral.dat 
 runsim: all
 	$(VHDLS) dataretxresponsetest.vhd
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf work 
 
+work/touched:
+	vlib  work
+	touch  work/touched

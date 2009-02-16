@@ -12,7 +12,6 @@ from somapynet.neteventio import NetEventIO
 import struct
 
 
-
 def getnum(evt):
     """
     Turns an event into a number

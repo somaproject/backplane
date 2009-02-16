@@ -251,7 +251,7 @@ begin  -- Behavioral
   end process main;
 
   fsm : process(CS, WEA, dob, ARPDONE, PINGDONE, DRETXDONE,
-                ERETXDONE, EVENTDONE, crcvalid, crccnt, crcdone)
+                ERETXDONE, EVENTDONE, crcvalid, crcvalidl, crccnt, crcdone)
   begin
     case CS is
       when none =>

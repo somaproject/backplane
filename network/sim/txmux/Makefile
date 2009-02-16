@@ -1,26 +1,32 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/body.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd
+	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/txmux/_behavioral.var: ../../vhdl/networkstack.vhd ../../vhdl/txmux.vhd
+$(WORKDIR)/txmux/behavioral.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../vhdl/txmux.vhd
+	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/txmux.vhd
 
-hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/txmux/_behavioral.var 
+hw: $(WORKDIR)/networkstack/body.dat $(WORKDIR)/txmux/behavioral.dat 
 
 comp: 
 
-$(WORKDIR)/txmuxtest/_behavioral.var: txmuxtest.vhd
+$(WORKDIR)/txmuxtest/behavioral.dat: $(WORKDIR)/touched txmuxtest.vhd
+	mkdir -p $(WORKDIR)
 	$(VHDLC) txmuxtest.vhd
 
-sim: $(WORKDIR)/txmuxtest/_behavioral.var 
+sim: $(WORKDIR)/txmuxtest/behavioral.dat 
 runsim: all
 	$(VHDLS) txmuxtest
 
 
 clean:
-	rm -Rf $(WORKDIR)$
+	rm -Rf work 
 
+work/touched:
+	vlib  work
+	touch  work/touched
