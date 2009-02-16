@@ -24,7 +24,7 @@ else:
     suite.addTest(vhdlTestCase("dataretxresponse"))
 ##     suite.addTest(vhdlTestCase("datathroughput"))
     suite.addTest(vhdlTestCase("eventbodywriter"))
-##     suite.addTest(vhdlTestCase("eventretx"))
+    suite.addTest(vhdlTestCase("eventretx"))
     suite.addTest(vhdlTestCase("eventretxresponse"))
 ##     suite.addTest(vhdlTestCase("inputcontrol"))
 ##     suite.addTest(vhdlTestCase("network"))
