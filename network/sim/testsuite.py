@@ -18,7 +18,7 @@ else:
 
     # core components
     suite.addTest(vhdlTestCase("arpresponse"))
-##    suite.addTest(vhdlTestCase("bitcnt"))
+    suite.addTest(vhdlTestCase("bitcnt"))
 ##     suite.addTest(vhdlTestCase("data")) # very slow, takes 8 ms of sim time
 ##     suite.addTest(vhdlTestCase("datapacketgen"))
 ##     suite.addTest(vhdlTestCase("dataretxresponse"))
