@@ -20,7 +20,7 @@ else:
     suite.addTest(vhdlTestCase("arpresponse"))
     suite.addTest(vhdlTestCase("bitcnt"))
     suite.addTest(vhdlTestCase("data")) # very slow, takes 11 ms of sim time
-##     suite.addTest(vhdlTestCase("datapacketgen"))
+    suite.addTest(vhdlTestCase("datapacketgen"))
 ##     suite.addTest(vhdlTestCase("dataretxresponse"))
 ##     suite.addTest(vhdlTestCase("datathroughput"))
 ##     suite.addTest(vhdlTestCase("eventbodywriter"))
