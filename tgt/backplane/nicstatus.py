@@ -8,16 +8,24 @@ import sys
 from somapynet.event import Event
 from somapynet import eaddr
 from somapynet.neteventio import NetEventIO
+sys.path.append("../../jtag")
+import jtag
+
+if len(sys.argv) > 1 and sys.argv[1] == "jtag":
+    eio = jtag.JTAGEventIO()
+    src = eaddr.JTAG
+else:
+    eio = NetEventIO("10.0.0.2")
+    src = eaddr.NETWORK
 
 
-eio = NetEventIO("10.0.0.2")
 eio.addRXMask(xrange(256), eaddr.NETCONTROL)
 
 eio.start()
 
 def readreg(val):
     e = Event()
-    e.src = eaddr.NETWORK
+    e.src = src
     e.cmd =  0x30
     
     e.data[0] = 0
