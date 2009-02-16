@@ -1,29 +1,39 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/networkstack/prim.var: ../../vhdl/networkstack.vhd
+$(WORKDIR)/networkstack/body.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd
+	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/networkstack.vhd
 
-$(WORKDIR)/somabackplane/prim.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd
-	$(VHDLC) ../../../vhdl/somabackplane.vhd
+soma/somabackplane/body.dat: soma/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd
+	mkdir -p soma
+	$(VHDLC) -work soma  ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/eventbodywriter/_behavioral.var: ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd
+$(WORKDIR)/eventbodywriter/behavioral.dat: $(WORKDIR)/touched ../../vhdl/networkstack.vhd ../../vhdl/networkstack.vhd ../../../vhdl/somabackplane.vhd ../../vhdl/eventbodywriter.vhd
+	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/eventbodywriter.vhd
 
-hw: $(WORKDIR)/networkstack/prim.var $(WORKDIR)/somabackplane/prim.var $(WORKDIR)/eventbodywriter/_behavioral.var 
+hw: $(WORKDIR)/networkstack/body.dat soma/somabackplane/body.dat $(WORKDIR)/eventbodywriter/behavioral.dat 
 
 comp: 
 
-$(WORKDIR)/eventbodywritertest/_behavioral.var: eventbodywritertest.vhd
+$(WORKDIR)/eventbodywritertest/behavioral.dat: $(WORKDIR)/touched eventbodywritertest.vhd
+	mkdir -p $(WORKDIR)
 	$(VHDLC) eventbodywritertest.vhd
 
-sim: $(WORKDIR)/eventbodywritertest/_behavioral.var 
+sim: $(WORKDIR)/eventbodywritertest/behavioral.dat 
 runsim: all
 	$(VHDLS) eventbodywritertest
 
 
 clean:
-	rm -Rf $(WORKDIR)$
+	rm -Rf soma work 
 
+soma/touched:
+	vlib  soma
+	touch  soma/touched
+work/touched:
+	vlib  work
+	touch  work/touched
