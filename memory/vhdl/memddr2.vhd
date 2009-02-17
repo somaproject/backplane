@@ -449,7 +449,7 @@ begin  -- Behavioral
             startl <= '1';
           end if;
         end if;
-
+        MEMREADY <= lmemready; 
       end if;
     end if;
   end process main;
