@@ -122,6 +122,8 @@ architecture Behavioral of eventretxtest is
 
 
   component inputcontrol
+    generic (
+      USE_CRCVERIFY : boolean);
     port (
       CLK        : in  std_logic;
       RESET      : in  std_logic;
@@ -447,8 +449,9 @@ architecture Behavioral of eventretxtest is
       );
   end component;
 
-  signal eventrxid : std_logic_vector(31 downto 0);
-  signal eventrxts : std_logic_vector(47 downto 0);
+  signal eventrxid : std_logic_vector(31 downto 0) := (others => '0');
+  signal eventrxts : std_logic_vector(47 downto 0) := (others => '0'); 
+                                                      
 
   component retxreq
     port (
@@ -480,6 +483,8 @@ begin  -- Behavioral
       MEMCLK270n => MEMCLK270n );
 
   inputcontrol_inst : inputcontrol
+    generic map (
+      USE_CRCVERIFY => false)
     port map (
       CLK        => CLK,
       RESET      => RESET,
@@ -744,7 +749,7 @@ begin  -- Behavioral
 
   process
   begin
-    wait for 500 us;
+    wait for 700 us;                    -- eat startup
     retxreqid <= X"00000000";
     wait until rising_edge(CLK);
 
@@ -752,14 +757,13 @@ begin  -- Behavioral
 
       retxreqid <= retxreqid + 1;
       wait until rising_edge(CLK);
-
-
-      retxreqreq <= '1';
+      retxreqreq <= '1';                -- request the retransmission
       wait until rising_edge(CLK);
       retxreqreq <= '0';
 
       wait until rising_edge(CLK) and eventrxid = retxreqid;
-
+      report "Successful receive of event retxreqid" severity note;
+      
     end loop;  -- i
 
     report "End of Simulation" severity failure;

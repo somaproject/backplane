@@ -31,7 +31,7 @@ entity eventtx is
     ARM         : out std_logic;
     PKTSUCCESS : out std_logic; 
     -- Retx write interface
-    RETXID      : out std_logic_vector(13 downto 0);
+    RETXID      : out std_logic_vector(13 downto 0) := (others => '0');
     RETXDOUT    : out std_logic_vector(15 downto 0);
     RETXADDR    : out std_logic_vector(8 downto 0);
     RETXDONE    : out std_logic;
