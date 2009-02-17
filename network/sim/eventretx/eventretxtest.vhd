@@ -33,11 +33,13 @@ architecture Behavioral of eventretxtest is
   signal MEMCLK180n : std_logic := '0';
   signal MEMCLK270n : std_logic := '0';
 
-  signal RESET   : std_logic                     := '0';
+  signal MEMREADY  : std_logic                     := '0';
+  signal memreadyn : std_logic                     := '0';
+  signal RESET     : std_logic                     := '0';
   -- config
-  signal MYIP    : std_logic_vector(31 downto 0) := (others => '0');
-  signal MYMAC   : std_logic_vector(47 downto 0) := (others => '0');
-  signal MYBCAST : std_logic_vector(31 downto 0) := (others => '0');
+  signal MYIP      : std_logic_vector(31 downto 0) := (others => '0');
+  signal MYMAC     : std_logic_vector(47 downto 0) := (others => '0');
+  signal MYBCAST   : std_logic_vector(31 downto 0) := (others => '0');
 
   -- input
   signal NICNEXTFRAME : std_logic                     := '0';
@@ -58,8 +60,8 @@ architecture Behavioral of eventretxtest is
   signal EDRX    : std_logic_vector(7 downto 0) := (others => '0');
   signal EDSELRX : std_logic_vector(3 downto 0) := (others => '0');
   signal EATX    : std_logic_vector(somabackplane.N -1 downto 0)
-                                                := (others => '0');
-  signal EDTX    : std_logic_vector(7 downto 0) := (others => '0');
+ := (others => '0');
+  signal EDTX : std_logic_vector(7 downto 0) := (others => '0');
 
   -- data bus
   signal DIENA : std_logic                    := '0';
@@ -96,27 +98,27 @@ architecture Behavioral of eventretxtest is
 
   component HY5PS121621F
     generic (
-      TimingCheckFlag :       boolean                       := true;
-      PUSCheckFlag    :       boolean                       := false;
-      Part_Number     :       PART_NUM_TYPE                 := B400);
+      TimingCheckFlag : boolean       := true;
+      PUSCheckFlag    : boolean       := false;
+      Part_Number     : PART_NUM_TYPE := B400);
     port
-      ( DQ            : inout std_logic_vector(15 downto 0) := (others => 'Z');
-        LDQS          : inout std_logic                     := 'Z';
-        LDQSB         : inout std_logic                     := 'Z';
-        UDQS          : inout std_logic                     := 'Z';
-        UDQSB         : inout std_logic                     := 'Z';
-        LDM           : in    std_logic;
-        WEB           : in    std_logic;
-        CASB          : in    std_logic;
-        RASB          : in    std_logic;
-        CSB           : in    std_logic;
-        BA            : in    std_logic_vector(1 downto 0);
-        ADDR          : in    std_logic_vector(12 downto 0);
-        CKE           : in    std_logic;
-        CLK           : in    std_logic;
-        CLKB          : in    std_logic;
-        UDM           : in    std_logic;
-        odelay        : in    time                          := 0 ps);
+      (DQ      : inout std_logic_vector(15 downto 0) := (others => 'Z');
+        LDQS   : inout std_logic                     := 'Z';
+        LDQSB  : inout std_logic                     := 'Z';
+        UDQS   : inout std_logic                     := 'Z';
+        UDQSB  : inout std_logic                     := 'Z';
+        LDM    : in    std_logic;
+        WEB    : in    std_logic;
+        CASB   : in    std_logic;
+        RASB   : in    std_logic;
+        CSB    : in    std_logic;
+        BA     : in    std_logic_vector(1 downto 0);
+        ADDR   : in    std_logic_vector(12 downto 0);
+        CKE    : in    std_logic;
+        CLK    : in    std_logic;
+        CLKB   : in    std_logic;
+        UDM    : in    std_logic;
+        odelay : in    time                          := 0 ps);
   end component;
 
 
@@ -179,6 +181,7 @@ architecture Behavioral of eventretxtest is
   component eventtx
     port (
       CLK         : in  std_logic;
+      RESET       : in  std_logic;
       -- header fields
       MYMAC       : in  std_logic_vector(47 downto 0);
       MYIP        : in  std_logic_vector(31 downto 0);
@@ -228,34 +231,35 @@ architecture Behavioral of eventretxtest is
 
   component memddr2
     port (
-      CLK    : in    std_logic;
-      CLK90  : in    std_logic;
-      CLK180 : in    std_logic;
-      CLK270 : in    std_logic;
-      RESET  : in    std_logic;
+      CLK      : in    std_logic;
+      CLK90    : in    std_logic;
+      CLK180   : in    std_logic;
+      CLK270   : in    std_logic;
+      RESET    : in    std_logic;
+      MEMREADY : out   std_logic;
       -- RAM!
-      CKE    : out   std_logic := '0';
-      CAS    : out   std_logic;
-      RAS    : out   std_logic;
-      CS     : out   std_logic;
-      WE     : out   std_logic;
-      ADDR   : out   std_logic_vector(12 downto 0);
-      BA     : out   std_logic_vector(1 downto 0);
-      DQSH   : inout std_logic;
-      DQSL   : inout std_logic;
-      DQ     : inout std_logic_vector(15 downto 0);
+      CKE      : out   std_logic := '0';
+      CAS      : out   std_logic;
+      RAS      : out   std_logic;
+      CS       : out   std_logic;
+      WE       : out   std_logic;
+      ADDR     : out   std_logic_vector(12 downto 0);
+      BA       : out   std_logic_vector(1 downto 0);
+      DQSH     : inout std_logic;
+      DQSL     : inout std_logic;
+      DQ       : inout std_logic_vector(15 downto 0);
       -- interface
-      START  : in    std_logic;
-      RW     : in    std_logic;
-      DONE   : out   std_logic;
+      START    : in    std_logic;
+      RW       : in    std_logic;
+      DONE     : out   std_logic;
       -- write interface
-      ROWTGT : in    std_logic_vector(14 downto 0);
-      WRADDR : out   std_logic_vector(7 downto 0);
-      WRDATA : in    std_logic_vector(31 downto 0);
+      ROWTGT   : in    std_logic_vector(14 downto 0);
+      WRADDR   : out   std_logic_vector(7 downto 0);
+      WRDATA   : in    std_logic_vector(31 downto 0);
       -- read interface
-      RDADDR : out   std_logic_vector(7 downto 0);
-      RDDATA : out   std_logic_vector(31 downto 0);
-      RDWE   : out   std_logic
+      RDADDR   : out   std_logic_vector(7 downto 0);
+      RDDATA   : out   std_logic_vector(31 downto 0);
+      RDWE     : out   std_logic
       );
   end component;
 
@@ -450,8 +454,8 @@ architecture Behavioral of eventretxtest is
   end component;
 
   signal eventrxid : std_logic_vector(31 downto 0) := (others => '0');
-  signal eventrxts : std_logic_vector(47 downto 0) := (others => '0'); 
-                                                      
+  signal eventrxts : std_logic_vector(47 downto 0) := (others => '0');
+
 
   component retxreq
     port (
@@ -480,7 +484,7 @@ begin  -- Behavioral
       MEMCLKn    => MEMCLKn,
       MEMCLK90n  => MEMCLK90n,
       MEMCLK180n => MEMCLK180n,
-      MEMCLK270n => MEMCLK270n );
+      MEMCLK270n => MEMCLK270n);
 
   inputcontrol_inst : inputcontrol
     generic map (
@@ -530,6 +534,7 @@ begin  -- Behavioral
   eventtx_inst : eventtx
     port map (
       CLK         => CLK,
+      RESET       => memreadyn,
       MYMAC       => MYMAC,
       MYIP        => MYIP,
       MYBCAST     => MYBCAST,
@@ -610,30 +615,31 @@ begin  -- Behavioral
 
   memddr2_inst : memddr2
     port map (
-      CLK    => MEMCLK,
-      CLK90  => memclk90,
-      CLK180 => memclk180,
-      CLK270 => memclk270,
-      RESET  => RESET,
-      CKE    => RAMCKE,
-      CAS    => RAMCAS,
-      RAS    => RAMRAS,
-      CS     => RAMCS,
-      WE     => RAMWE,
-      ADDR   => RAMADDR,
-      BA     => RAMBA,
-      DQSH   => RAMDQSH,
-      DQSL   => RAMDQSL,
-      DQ     => RAMDQ,
-      START  => MEMSTART,
-      RW     => MEMRW,
-      DONE   => memdone,
-      ROWTGT => memrowtgt,
-      WRADDR => memwraddr,
-      WRDATA => memwrdata,
-      RDADDR => memrdaddr,
-      RDDATA => memrddata,
-      RDWE   => memrdwe);
+      CLK      => MEMCLK,
+      CLK90    => memclk90,
+      CLK180   => memclk180,
+      CLK270   => memclk270,
+      RESET    => RESET,
+      MEMREADY => MEMREADY,
+      CKE      => RAMCKE,
+      CAS      => RAMCAS,
+      RAS      => RAMRAS,
+      CS       => RAMCS,
+      WE       => RAMWE,
+      ADDR     => RAMADDR,
+      BA       => RAMBA,
+      DQSH     => RAMDQSH,
+      DQSL     => RAMDQSL,
+      DQ       => RAMDQ,
+      START    => MEMSTART,
+      RW       => MEMRW,
+      DONE     => memdone,
+      ROWTGT   => memrowtgt,
+      WRADDR   => memwraddr,
+      WRDATA   => memwrdata,
+      RDADDR   => memrdaddr,
+      RDDATA   => memrddata,
+      RDWE     => memrdwe);
 
   memory_inst : HY5PS121621F
     generic map (
@@ -641,28 +647,28 @@ begin  -- Behavioral
       PUSCheckFlag    => true,
       PArt_number     => B400)
     port map (
-      DQ              => RAMDQ,
-      LDQS            => RAMDQSL,
-      UDQS            => RAMDQSH,
-      WEB             => RAMWE,
-      LDM             => '0',
-      UDM             => '0',
-      CASB            => RAMCAS,
-      RASB            => RAMRAS,
-      CSB             => RAMCS,
-      BA              => RAMBA,
-      ADDR            => RAMADDR,
-      CKE             => RAMCKE,
-      CLK             => MEMCLK90,
-      CLKB            => MEMCLK90N,
-      odelay          => odelay);
+      DQ     => RAMDQ,
+      LDQS   => RAMDQSL,
+      UDQS   => RAMDQSH,
+      WEB    => RAMWE,
+      LDM    => '0',
+      UDM    => '0',
+      CASB   => RAMCAS,
+      RASB   => RAMRAS,
+      CSB    => RAMCS,
+      BA     => RAMBA,
+      ADDR   => RAMADDR,
+      CKE    => RAMCKE,
+      CLK    => MEMCLK90,
+      CLKB   => MEMCLK90N,
+      odelay => odelay);
 
 
   NICIOCLK <= CLK;
 
   RESET     <= '0' after 20 ns;
   STARTWAIT <= '0' after 300 us;
-
+  memreadyn <= not MEMREADY;
 
   ecycle_gen : process(CLK)
   begin
@@ -706,13 +712,13 @@ begin  -- Behavioral
     end loop;
   end process;
 
-  EATX                    <= (others                                 => '1');
+  EATX <= (others => '1');
   -- time stamp event
-  ts_eventgen             : process(CLK)
+  ts_eventgen : process(CLK)
     variable eventtimepos : std_logic_vector(47 downto 0) := (others => '0');
   begin
     if rising_edge(CLK) then
-      if ECYCLE = '1' then
+      if ECYCLE = '1' and MEMREADY = '1' then
         eventinputs(0)(0) <= X"1000";
         eventinputs(0)(1) <= eventtimepos(47 downto 32);
         eventinputs(0)(2) <= eventtimepos(31 downto 16);
@@ -755,7 +761,7 @@ begin  -- Behavioral
 
     for i in 0 to 10 loop
 
-      retxreqid <= retxreqid + 1;
+      retxreqid  <= retxreqid + 1;
       wait until rising_edge(CLK);
       retxreqreq <= '1';                -- request the retransmission
       wait until rising_edge(CLK);
