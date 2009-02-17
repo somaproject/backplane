@@ -143,37 +143,76 @@ $(WORKDIR)/clockgen/behavioral.dat: $(WORKDIR)/touched ../components/clockgen/cl
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../components/clockgen/clockgen.vhd
 
-$(WORKDIR)/hy5ps121621f_pack/body.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd
+fmf/conversions/body.dat: fmf/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/conversions.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../../../memory/sim/components/freemodel/conversions.vhd
+
+fmf/ecl_package/body.dat: fmf/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/ecl_package.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../../../memory/sim/components/freemodel/ecl_package.vhd
+
+fmf/ecl_utils/body.dat: fmf/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/ecl_utils.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../../../memory/sim/components/freemodel/ecl_utils.vhd
+
+fmf/ff_package/body.dat: fmf/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/ff_package.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../../../memory/sim/components/freemodel/ff_package.vhd
+
+fmf/gen_utils/body.dat: fmf/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/gen_utils.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../../../memory/sim/components/freemodel/gen_utils.vhd
+
+fmf/memory/body.dat: fmf/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/memory.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../../../memory/sim/components/freemodel/memory.vhd
+
+fmf/state_tab_package/body.dat: fmf/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/state_tab_package.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../../../memory/sim/components/freemodel/state_tab_package.vhd
+
+fmf/TRI_BUF/behavior.dat: fmf/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/switch_pkg.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../../../memory/sim/components/freemodel/switch_pkg.vhd
+
+$(WORKDIR)/mt47h64m16/vhdl_behavioral.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/mt47h64m16.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../../memory/sim/components/freemodel/mt47h64m16.vhd
+
+$(WORKDIR)/hy5ps121621f_pack/body.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/mt47h64m16.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd
 
-$(WORKDIR)/HY5PS121621F/behavioral_model_hy5ps121621f.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd
+$(WORKDIR)/HY5PS121621F/behavioral_model_hy5ps121621f.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/mt47h64m16.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../../memory/sim/components/hynix/HY5PS121621F.vhd
 
-$(WORKDIR)/retxreq/behavioral.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd retxreq.vhd
+$(WORKDIR)/retxreq/behavioral.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/mt47h64m16.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd retxreq.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) retxreq.vhd
 
-$(WORKDIR)/eventrxdecode/behavioral.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd retxreq.vhd eventrxdecode.vhd
+$(WORKDIR)/eventrxdecode/behavioral.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/mt47h64m16.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd retxreq.vhd eventrxdecode.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) eventrxdecode.vhd
 
-$(WORKDIR)/eventretxtest/behavioral.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd retxreq.vhd eventrxdecode.vhd eventretxtest.vhd
+$(WORKDIR)/eventretxtest/behavioral.dat: $(WORKDIR)/touched ../components/clockgen/clockgen.vhd ../../../memory/sim/components/freemodel/mt47h64m16.vhd ../../../memory/sim/components/hynix/HY5PS121621F_PACK.vhd ../../../memory/sim/components/hynix/HY5PS121621F.vhd retxreq.vhd eventrxdecode.vhd eventretxtest.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) eventretxtest.vhd
 
-sim: $(WORKDIR)/clockgen/behavioral.dat $(WORKDIR)/hy5ps121621f_pack/body.dat $(WORKDIR)/HY5PS121621F/behavioral_model_hy5ps121621f.dat $(WORKDIR)/retxreq/behavioral.dat $(WORKDIR)/eventrxdecode/behavioral.dat $(WORKDIR)/eventretxtest/behavioral.dat 
+sim: $(WORKDIR)/clockgen/behavioral.dat fmf/conversions/body.dat fmf/ecl_package/body.dat fmf/ecl_utils/body.dat fmf/ff_package/body.dat fmf/gen_utils/body.dat fmf/memory/body.dat fmf/state_tab_package/body.dat fmf/TRI_BUF/behavior.dat $(WORKDIR)/mt47h64m16/vhdl_behavioral.dat $(WORKDIR)/hy5ps121621f_pack/body.dat $(WORKDIR)/HY5PS121621F/behavioral_model_hy5ps121621f.dat $(WORKDIR)/retxreq/behavioral.dat $(WORKDIR)/eventrxdecode/behavioral.dat $(WORKDIR)/eventretxtest/behavioral.dat 
 runsim: all
 	$(VHDLS) eventretxtest
 
 
 clean:
-	rm -Rf soma work 
+	rm -Rf soma fmf work 
 
 soma/touched:
 	vlib  soma
 	touch  soma/touched
+fmf/touched:
+	vlib  fmf
+	touch  fmf/touched
 work/touched:
 	vlib  work
 	touch  work/touched

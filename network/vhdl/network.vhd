@@ -181,6 +181,7 @@ architecture Behavioral of network is
   component eventtx
     port (
       CLK         : in  std_logic;
+      RESET : in std_logic; 
       -- header fields
       MYMAC       : in  std_logic_vector(47 downto 0);
       MYIP        : in  std_logic_vector(31 downto 0);
@@ -372,6 +373,8 @@ architecture Behavioral of network is
   end component;
 
 -- memory
+  signal memddr2ready : std_logic := '0';
+  signal memddr2readyn : std_logic := '0';
   signal memstart : std_logic := '0';
   signal memrw    : std_logic := '0';
   signal memdone  : std_logic := '0';
@@ -514,7 +517,7 @@ begin  -- Behavioral
       UNKNOWNIP    => UNKNOWNIP,
       UNKNOWNUDP   => UNKNOWNUDP,
       UNKNOWNARP   => UNKNOWNARP,
-      DEBUG => DEBUG
+      DEBUG => open -- DEBUG
       );
 
 
@@ -578,6 +581,7 @@ begin  -- Behavioral
   eventtx_inst : eventtx
     port map (
       CLK         => CLK,
+      RESET => memddr2readyn, 
       MYMAC       => MYMAC,
       MYIP        => MYIP,
       MYBCAST     => MYBCAST,
@@ -727,6 +731,7 @@ begin  -- Behavioral
       CLK180 => memclk180,
       CLK270 => memclk270,
       RESET  => RESET,
+      MEMREADY => memddr2ready, 
       CKE    => RAMCKE,
       CAS    => RAMCAS,
       RAS    => RAMRAS,
@@ -745,9 +750,11 @@ begin  -- Behavioral
       WRDATA => memwrdata,
       RDADDR => memrdaddr,
       RDDATA => memrddata,
-      RDWE   => memrdwe);
+      RDWE   => memrdwe,
+      DEBUG => open);
 
 
+  memddr2readyn <= not memddr2ready; 
   process(CLK)
     variable newframel, newframel2 : std_logic := '0';
   begin
