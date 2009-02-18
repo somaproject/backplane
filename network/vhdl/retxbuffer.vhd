@@ -172,7 +172,10 @@ begin  -- Behavioral
         RDONEA <= '0';
       end if;
 
-      WPENDINGA <= wdoneal; 
+      WPENDINGA <= wdoneal;
+      
+      RWROUTA <= rena;
+      
     end if;
 
   end process read_a;
@@ -202,7 +205,7 @@ begin  -- Behavioral
 
       WPENDINGB <= wdonebl; 
 
-
+      RWROUTB <= renb;
 
     end if;
   end process read_B;
@@ -258,7 +261,6 @@ begin  -- Behavioral
 
 
 
-      RWROUTA <= rena;
       --output B
       if rreqb = '1' then
         ridbl <= RIDB;
@@ -279,8 +281,6 @@ begin  -- Behavioral
           crstb <= '1';
         end if;
       end if;
-
-      RWROUTB <= renb;
 
       if asel = '1' then
         MEMWRDATA <= wda;
