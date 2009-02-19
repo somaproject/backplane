@@ -569,10 +569,10 @@ begin  -- Behavioral
 
   begin
     if rising_edge(CLK) then
-       WRDATA <= (wraddrl(5 downto 0) & "00" &
-                  wraddrl(5 downto 0) & "01" &
-                  wraddrl(5 downto 0) & "10" &
-                  wraddrl(5 downto 0) & "11"); 
+       WRDATA <= ("1" & wraddrl(4 downto 0) & "00" &
+                  "1" & wraddrl(4 downto 0) & "01" &
+                  "0" & wraddrl(4 downto 0) & "10" &
+                  "0" & wraddrl(4 downto 0) & "11"); 
                   
       wraddrl := WRADDR;
 
@@ -598,6 +598,8 @@ begin  -- Behavioral
       for i in 0 to 10 loop
         START <= '1';
         RW    <= '1';
+        wait until rising_edge(CLK) ;
+        START <= '0'; 
         wait until rising_edge(CLK) and DONE = '1';
 
         START <= '0';
@@ -608,6 +610,8 @@ begin  -- Behavioral
 
         START <= '1';
         RW    <= '0';
+        wait until rising_edge(CLK) ;
+        START <= '0'; 
         wait until rising_edge(CLK) and DONE = '1';
 
         START <= '0';
@@ -650,10 +654,10 @@ begin  -- Behavioral
 
       while DONE /= '1' loop
         if RDWE = '1' then
-          if rddata = (rdaddr(5 downto 0) & "00" &
-                  rdaddr(5 downto 0) & "01" &
-                  rdaddr(5 downto 0) & "10" &
-                  rdaddr(5 downto 0) & "11")  then
+          if rddata = ("1" & rdaddr(4 downto 0) & "00" &
+                       "1" & rdaddr(4 downto 0) & "01" &
+                       "0" & rdaddr(4 downto 0) & "10" &
+                       "0" & rdaddr(4 downto 0) & "11")  then
             wrdcnt <= wrdcnt + 1; 
           else
             report "error reading back data" severity error;
