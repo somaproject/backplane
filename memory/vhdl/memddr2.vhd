@@ -219,6 +219,7 @@ architecture Behavioral of memddr2 is
 
   signal latencyextra : std_logic_vector(1 downto 0) := (others => '0');
   signal lmemready : std_logic := '0';
+  signal memreadyl : std_logic := '0';
   
   component memcontmux
     port (
@@ -381,7 +382,7 @@ begin  -- Behavioral
 
   DEBUG(1 downto 0) <= latencyextra;
   DEBUG(3)          <= rstart;
-
+  DEBUG(31) <= lmemready; 
 
   aldone <= aldonel and aldoneh;
 
@@ -449,7 +450,8 @@ begin  -- Behavioral
             startl <= '1';
           end if;
         end if;
-        MEMREADY <= lmemready; 
+        MEMREADY <= lmemready;
+        memreadyl <= lmemready; 
       end if;
     end if;
   end process main;
