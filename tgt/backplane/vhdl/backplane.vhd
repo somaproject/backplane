@@ -75,19 +75,19 @@ entity backplane is
     ADIOTXIO_N : out std_logic;
     ADIORXIO_P : in  std_logic;
     ADIORXIO_N : in  std_logic;
-    ADIOCFG : out std_logic; 
+    ADIOCFG    : out std_logic;
     -- SYS / DISPLAY
     SYSTXIO_P  : out std_logic;
     SYSTXIO_N  : out std_logic;
     SYSRXIO_P  : in  std_logic;
     SYSRXIO_N  : in  std_logic;
-    SYSCFG : out std_logic; 
+    SYSCFG     : out std_logic;
     -- NEP
     NEPTXIO_P  : out std_logic;
     NEPTXIO_N  : out std_logic;
     NEPRXIO_P  : in  std_logic;
     NEPRXIO_N  : in  std_logic;
-    NEPCFG: out std_logic
+    NEPCFG     : out std_logic
     );
 end backplane;
 
@@ -113,7 +113,7 @@ architecture Behavioral of backplane is
 
   signal dgrant : std_logic_vector(63 downto 0) := (others => '0');
 
-  type datadout_t is array (0 to 15) of std_logic_vector(7 downto 0);
+  type   datadout_t is array (0 to 15) of std_logic_vector(7 downto 0);
   signal datadout : somabackplane.dataroutearray  := (others => (others => '0'));
   signal datadoen : std_logic_vector(15 downto 0) := (others => '0');
 
@@ -192,8 +192,9 @@ architecture Behavioral of backplane is
 
   signal dlinkup : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal jtagdebug : std_logic_vector(31 downto 0) := (others => '0');
-  signal jtagnetdebug : std_logic_vector(15 downto 0) := (others => '0');
+  signal jtagdebug       : std_logic_vector(31 downto 0) := (others => '0');
+  signal netdebug        : std_logic_vector(31 downto 0) := (others => '0');
+  signal dincapture_data : std_logic_vector(15 downto 0) := (others => '0');
   signal jtagjtagrxdebug : std_logic_vector(15 downto 0) := (others => '0');
   
 begin  -- Behavioral
@@ -219,15 +220,15 @@ begin  -- Behavioral
       DUTY_CYCLE_CORRECTION => true,
       STARTUP_WAIT          => true)
     port map (
-      CLK0                  => clkint,      -- 0 degree DCM CLK ouptput
-      CLK2x                 => clk2xint,
-      CLKFX                 => memclkbint,  -- DCM CLK synthesis out (M/D)
-      CLKFB                 => clk,
-      CLK180                => clk180int,
-      CLK270                 => niciointclk,
-      CLKIN                 => CLKIN,
-      LOCKED                => locked,
-      RST                   => '0'          -- DCM asynchronous reset input
+      CLK0   => clkint,                 -- 0 degree DCM CLK ouptput
+      CLK2x  => clk2xint,
+      CLKFX  => memclkbint,             -- DCM CLK synthesis out (M/D)
+      CLKFB  => clk,
+      CLK180 => clk180int,
+      CLK270 => niciointclk,
+      CLKIN  => CLKIN,
+      LOCKED => locked,
+      RST    => '0'                     -- DCM asynchronous reset input
       );
 
   clk_bufg : BUFG
@@ -264,7 +265,8 @@ begin  -- Behavioral
 
       CLKIN_DIVIDE_BY_2     => false,
       CLKIN_PERIOD          => 6.0,
-      CLKOUT_PHASE_SHIFT    => "NONE",
+      CLKOUT_PHASE_SHIFT    => "FIXED",
+      PHASE_SHIFT           => 0,
       CLK_FEEDBACK          => "1X",
       DCM_AUTOCALIBRATION   => true,
       DCM_PERFORMANCE_MODE  => "MAX_SPEED",
@@ -274,14 +276,14 @@ begin  -- Behavioral
       DUTY_CYCLE_CORRECTION => true,
       STARTUP_WAIT          => false)
     port map (
-      CLK0                  => memclkint,
-      CLK180                => memclk180int,
-      CLK270                => memclk270int,
-      CLK90                 => memclk90int,
-      CLKFB                 => memclk,
-      CLKIN                 => memclkb,
-      LOCKED                => locked2,
-      RST                   => resetint(7)
+      CLK0   => memclkint,
+      CLK180 => memclk180int,
+      CLK270 => memclk270int,
+      CLK90  => memclk90int,
+      CLKFB  => memclk,
+      CLKIN  => memclkb,
+      LOCKED => locked2,
+      RST    => resetint(7)
 
       );
 
@@ -311,9 +313,10 @@ begin  -- Behavioral
     generic map (
       IOSTANDARD => "DEFAULT")
     port map (
-      O          => RAMCLKOUT_P,
-      OB         => RAMCLKOUT_N,
-      I          => memclk270
+      O  => RAMCLKOUT_P,
+      OB => RAMCLKOUT_N,
+      I  => memclk270
+--      I          => memclk90
       );
 
   eventrouter_inst : entity soma.eventrouter
@@ -336,15 +339,15 @@ begin  -- Behavioral
       DOEN   => doutena,
       DGRANT => dgrant(31 downto 0));
 
-  timer_inst      : entity soma.timer
+  timer_inst : entity soma.timer
     port map (
-      CLK         => clk,
-      ECYCLe      => ECYCLE,
-      EARX        => EARX(0),
-      EDRX        => EDRX(0),
-      EDSELRX     => EDSELRX,
-      EATX        => EATX(0),
-      EDTX        => EDTX);
+      CLK     => clk,
+      ECYCLe  => ECYCLE,
+      EARX    => EARX(0),
+      EDRX    => EDRX(0),
+      EDSELRX => EDSELRX,
+      EATX    => EATX(0),
+      EDTX    => EDTX);
   -- init syscontrol with the ram values so that we can properly sim
   syscontrol_inst : entity syscon.syscontrol
     generic map (
@@ -425,21 +428,21 @@ begin  -- Behavioral
       RAM_INITP_06 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_06,
       RAM_INITP_07 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_07)
     port map (
-      CLK          => clk,
-      CLK2X        => clk2x,
-      RESET        => RESET,
-      ECYCLe       => ECYCLE,
-      EARX         => EARX(1),
-      EDRX         => EDRX(1),
-      EDSELRX      => EDSELRX,
-      EATX         => EATX(1),
-      EDTX         => EDTX,
-      SEROUT       => lserialboot,
-      DLINKUP      => dlinkup);
+      CLK     => clk,
+      CLK2X   => clk2x,
+      RESET   => RESET,
+      ECYCLe  => ECYCLE,
+      EARX    => EARX(1),
+      EDRX    => EDRX(1),
+      EDSELRX => EDSELRX,
+      EATX    => EATX(1),
+      EDTX    => EDTX,
+      SEROUT  => lserialboot,
+      DLINKUP => dlinkup);
 
   bootstore_inst : entity soma.bootstore
     generic map (
-      DEVICE  => X"02")
+      DEVICE => X"02")
     port map (
       CLK     => clk,
       CLKHI   => memclk,
@@ -463,10 +466,10 @@ begin  -- Behavioral
       FCLK  => NICFCLK,
       FDIN  => NICFDIN);
 
-  DSPCFG <= lserialboot(19 downto 4);
+  DSPCFG  <= lserialboot(19 downto 4);
   ADIOCFG <= lserialboot(3);
-  SYSCFG <= lserialboot(2);
-  NEPCFG <= lserialboot(1); 
+  SYSCFG  <= lserialboot(2);
+  NEPCFG  <= lserialboot(1);
 
   LEDPOWER <= lserialboot(0);
   LEDEVENT <= jtagesenddebug(1);
@@ -475,23 +478,23 @@ begin  -- Behavioral
     generic map (
       JTAG_CHAIN => 1)
     port map (
-      CLK        => clk,
-      ECYCLE     => ecycle,
-      EARX       => earx(7),
-      EDRX       => edrx(7),
-      EDSELRX    => edselrx,
-      DEBUG      => jtagesenddebug);
+      CLK     => clk,
+      ECYCLE  => ecycle,
+      EARX    => earx(7),
+      EDRX    => edrx(7),
+      EDSELRX => edselrx,
+      DEBUG   => jtagesenddebug);
 
   jtagreceive_inst : entity jtag.jtagereceive
     generic map (
       JTAG_CHAIN_MASK => 2,
-      JTAG_CHAIN_OUT  => 3 )
+      JTAG_CHAIN_OUT  => 3)
     port map (
-      CLK             => clk,
-      ECYCLE          => ecycle,
-      EDTX            => edtx,
-      EATX            => eatx(7),
-      DEBUG           => jtagjtagrxdebug);
+      CLK    => clk,
+      ECYCLE => ecycle,
+      EDTX   => edtx,
+      EATX   => eatx(7),
+      DEBUG  => jtagjtagrxdebug);
 
   DCM_fibertx_inst : DCM_BASE
     generic map (
@@ -499,12 +502,12 @@ begin  -- Behavioral
       CLKFX_MULTIPLY => 8,
       STARTUP_WAIT   => true)
     port map (
-      CLKFX          => fibertxclkint,
-      CLKIN          => clk,
-      CLK0           => fibertxclkintdummy,
-      CLKFB          => fibertxclkdummy,
-      LOCKED         => open,
-      RST            => '0'             -- DCM asynchronous reset input
+      CLKFX  => fibertxclkint,
+      CLKIN  => clk,
+      CLK0   => fibertxclkintdummy,
+      CLKFB  => fibertxclkdummy,
+      LOCKED => open,
+      RST    => '0'                     -- DCM asynchronous reset input
       );
 
   clk_fibertx_bufg : BUFG
@@ -519,7 +522,7 @@ begin  -- Behavioral
 
   fiberdebug_inst : entity soma.fiberdebug
     generic map (
-      DEVICE    => X"4C")
+      DEVICE => X"4C")
     port map (
       CLK       => CLK,
       TXCLK     => fibertxclk,
@@ -539,19 +542,21 @@ begin  -- Behavioral
       DEBUG     => fiberdebugdebug);
 
 
-  jtagdebugout: entity jtagsimpleout
-    generic map (
-      JTAG_CHAIN => 4,
-      JTAGN      => 32)
-    port map (
-      CLK => clk,
-      DIN => jtagdebug);
+--  jtagdebugout: entity jtagsimpleout
+--    generic map (
+--      JTAG_CHAIN => 4,
+--      JTAGN      => 32)
+--    port map (
+--      CLK => clk,
+--      DIN => jtagdebug);
 
-  jtagdebug <= jtagnetdebug & jtagjtagrxdebug; 
-  -- dummy
+  --jtagdebug <= jtagnetdebug & jtagjtagrxdebug; 
+
+
+-- dummy
   process(clk)
     variable blinkcnt : std_logic_vector(21 downto 0)
-               := (others => '0');
+ := (others => '0');
   begin
     if rising_edge(clk) then
       blinkcnt := blinkcnt + 1;
@@ -625,7 +630,7 @@ begin  -- Behavioral
       EVTRXSUC     => evtrxsuc,
       EVTFIFOFULL  => evtfifofull,
 
-      DEBUG=>jtagnetdebug     
+      DEBUG => netdebug
 
       );
 
@@ -744,7 +749,7 @@ begin  -- Behavioral
       );
 
 
-  ODDR_INST: oddr
+  ODDR_INST : oddr
     port map (
       Q  => NICIOCLK,
       C  => clk,
@@ -788,7 +793,7 @@ begin  -- Behavioral
   -- DSP DeviceLinks
   ----------------------------------------------------------------------------
 
-  devicelinks_and_mux    : for i in 0 to 7 generate
+  devicelinks_and_mux : for i in 0 to 7 generate
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
     signal dllocked      : std_logic                    := '0';
@@ -796,7 +801,7 @@ begin  -- Behavioral
   begin
     dl : entity work.coredevicelink
       generic map (
-        N         => 4)
+        N => 4)
       port map (
         CLK       => clk,
         RXBITCLK  => clkbitrx,
@@ -825,31 +830,31 @@ begin  -- Behavioral
         DATADOEN => datadoen(i),
         -- port A
         DGRANTA  => dgrant(i*4 + 0),
-        EARXA    => earx(DMOFFSET + i*4 + 0 ),
-        EDRXA    => edrx(DMOFFSET + i*4 + 0 ),
+        EARXA    => earx(DMOFFSET + i*4 + 0),
+        EDRXA    => edrx(DMOFFSET + i*4 + 0),
         EDSELRXA => edselrx,
-        EATXA    => eatx(DMOFFSET + i*4 + 0 ),
+        EATXA    => eatx(DMOFFSET + i*4 + 0),
         EDTXA    => edtx,
         -- port B
         DGRANTB  => dgrant(i*4 + 1),
-        EARXB    => earx(DMOFFSET + i*4 + 1 ),
+        EARXB    => earx(DMOFFSET + i*4 + 1),
         EDRXB    => edrx(DMOFFSET + i*4 + 1),
         EDSELRXB => edselrx,
-        EATXB    => eatx(DMOFFSET + i*4 + 1 ),
+        EATXB    => eatx(DMOFFSET + i*4 + 1),
         EDTXB    => edtx,
         -- port C
         DGRANTC  => dgrant(i*4 + 2),
-        EARXC    => earx(DMOFFSET + i*4 + 2 ),
-        EDRXC    => edrx(DMOFFSET + i*4 + 2 ),
+        EARXC    => earx(DMOFFSET + i*4 + 2),
+        EDRXC    => edrx(DMOFFSET + i*4 + 2),
         EDSELRXC => edselrx,
-        EATXC    => eatx(DMOFFSET + i*4 + 2 ),
+        EATXC    => eatx(DMOFFSET + i*4 + 2),
         EDTXC    => edtx,
         -- port D
         DGRANTD  => dgrant(i*4 + 3),
-        EARXD    => earx(DMOFFSET + i*4 + 3 ),
-        EDRXD    => edrx(DMOFFSET + i*4 + 3 ),
+        EARXD    => earx(DMOFFSET + i*4 + 3),
+        EDRXD    => edrx(DMOFFSET + i*4 + 3),
         EDSELRXD => edselrx,
-        EATXD    => eatx(DMOFFSET + i*4 + 3 ),
+        EATXD    => eatx(DMOFFSET + i*4 + 3),
         EDTXD    => edtx,
         -- IO
         TXDOUT   => txdin,
@@ -865,7 +870,7 @@ begin  -- Behavioral
   ----------------------------------------------------------------------------
   dl_adio : entity work.coredevicelink
     generic map (
-      N         => 4)
+      N => 4)
     port map (
       CLK       => clk,
       RXBITCLK  => clkbitrx,
@@ -929,7 +934,7 @@ begin  -- Behavioral
   ----------------------------------------------------------------------------
   dl_sys : entity work.coredevicelink
     generic map (
-      N         => 1)
+      N => 1)
     port map (
       CLK       => clk,
       RXBITCLK  => clkbitrx,
@@ -960,11 +965,11 @@ begin  -- Behavioral
       EDTXA    => edtx,
       -- port B
       DGRANTB  => '0',
-      EARXB    => open, 
-      EDRXB    => open, 
+      EARXB    => open,
+      EDRXB    => open,
       EDSELRXB => edselrx,
-      EATXB    => (others => '0'), 
-      EDTXB    => X"00", 
+      EATXB    => (others => '0'),
+      EDTXB    => X"00",
       -- port C
       DGRANTC  => '0',
       EARXC    => open,
@@ -987,5 +992,12 @@ begin  -- Behavioral
       LOCKED   => dllockedsys);
 
   dlinkup(17) <= dllockedsys;
+
+  dincapture_data <= netdebug(31 downto 16);
+  dincapture_inst : entity dincapture
+    port map (
+      CLK   => clk,
+      DINEN => netdebug(0),
+      DIN   => dincapture_data); 
 
 end Behavioral;
