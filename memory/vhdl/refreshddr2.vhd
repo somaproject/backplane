@@ -12,10 +12,10 @@ entity refreshddr2 is
     START  : in  std_logic;
     DONE   : out std_logic;
     -- ram interface
-    CS     : out std_logic;
-    RAS    : out std_logic;
-    CAS    : out std_logic;
-    WE     : out std_logic
+    CS     : out std_logic := '0';
+    RAS    : out std_logic := '1';
+    CAS    : out std_logic := '1';
+    WE     : out std_logic := '1'
     );
 end refreshddr2;
 

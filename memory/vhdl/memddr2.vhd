@@ -16,10 +16,10 @@ entity memddr2 is
     MEMREADY    : out std_logic; 
     -- RAM!
     CKE         : out   std_logic := '0';
-    CAS         : out   std_logic;
-    RAS         : out   std_logic;
-    CS          : out   std_logic;
-    WE          : out   std_logic;
+    CAS         : out   std_logic := '1';
+    RAS         : out   std_logic := '1';
+    CS          : out   std_logic := '1';
+    WE          : out   std_logic := '1';
     ADDR        : out   std_logic_vector(12 downto 0);
     BA          : out   std_logic_vector(1 downto 0);
     DQSH        : inout std_logic := '0';
@@ -270,6 +270,9 @@ architecture Behavioral of memddr2 is
 
   signal rddataint : std_logic_vector(31 downto 0) := (others => '0');
   signal dqts     : std_logic                     := '0';
+
+  signal initwait : std_logic_vector(23 downto 0) := (others => '0');
+  
 begin  -- Behavioral
 
 
@@ -451,13 +454,14 @@ begin  -- Behavioral
           end if;
         end if;
         MEMREADY <= lmemready;
-        memreadyl <= lmemready; 
+        memreadyl <= lmemready;
+        initwait <= initwait + 1;
       end if;
     end if;
   end process main;
 
   fsm : process(ocs, bootdone, aldone, rdone, wdone, refdone, start,
-                startl, rw)
+                startl, rw, initwait)
   begin
     case ocs is
       when none =>
@@ -470,7 +474,12 @@ begin  -- Behavioral
         alstart   <= '0';
         dqts     <= '1';
         lmemready <= '0';
-        ons       <= boot;
+        if initwait(23) = '0' then
+          ons <= none;
+        else
+          ons       <= boot;      
+        end if;
+
 
       when boot =>
         dsel      <= 1;

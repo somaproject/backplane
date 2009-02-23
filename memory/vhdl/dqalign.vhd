@@ -74,7 +74,7 @@ architecture Behavioral of dqalign is
 
   constant PPOS : integer := 22;
 
-  signal startwcnt : integer range 0 to 31 := 0;
+  signal startwcnt : integer range 0 to 127 := 0;
 
   signal dqstsint, dqstsint2 : std_logic := '1';
   signal dqtsint          : std_logic := '1';
@@ -231,7 +231,7 @@ begin  -- Behavioral
         startwcnt     <= 0;
       else
         if cs = startw then
-          if startwcnt = 31 then
+          if startwcnt = 127 then
             null;
           else
             startwcnt <= startwcnt + 1;
@@ -312,7 +312,7 @@ begin  -- Behavioral
         dqsce  <= '0';
         dqinc  <= '0';
         dqce   <= '0';
-        if startwcnt = 30 then
+        if startwcnt = 126 then
           ns   <= startw3;
         else
           ns   <= startw;

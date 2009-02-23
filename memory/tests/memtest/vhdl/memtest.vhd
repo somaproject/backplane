@@ -66,6 +66,15 @@ architecture Behavioral of memtest is
       );
   end component;
 
+  component ddr2clkdriver
+    port (
+      CLKIN    : in  std_logic;
+      RESET    : in  std_logic;
+      CLKOUT_P : out std_logic;
+      CLKOUT_N : out std_logic
+      );
+
+  end component;
   signal clkb, clkbint         : std_logic := '0';
   signal clkbfast, clkbfastint : std_logic := '0';
 
@@ -96,7 +105,7 @@ architecture Behavioral of memtest is
 
   signal clkout : std_logic := '0';
 
-  type states is (none, writestart, writedone, readstart, readdone);
+  type   states is (none, writestart, writedone, readstart, readdone);
   signal ocs, ons : states := none;
 
   signal locked, locked2 : std_logic := '0';
@@ -106,17 +115,17 @@ architecture Behavioral of memtest is
 
   component jtagmemif
     port (
-      CLK      : in  std_logic;
-      MEMSTART : out std_logic;
-      MEMRW    : out std_logic;
-      MEMDONE  : in  std_logic;
-      ROWTGT   : out std_logic_vector(14 downto 0);
-      WRADDR   : in  std_logic_vector(7 downto 0);
-      WRDATA   : out std_logic_vector(31 downto 0);
-      RDADDR   : in  std_logic_vector(7 downto 0);
-      RDDATA   : in  std_logic_vector(31 downto 0);
-      RDWE     : in  std_logic;
-      READSTART : in std_logic
+      CLK       : in  std_logic;
+      MEMSTART  : out std_logic;
+      MEMRW     : out std_logic;
+      MEMDONE   : in  std_logic;
+      ROWTGT    : out std_logic_vector(14 downto 0);
+      WRADDR    : in  std_logic_vector(7 downto 0);
+      WRDATA    : out std_logic_vector(31 downto 0);
+      RDADDR    : in  std_logic_vector(7 downto 0);
+      RDDATA    : in  std_logic_vector(31 downto 0);
+      RDWE      : in  std_logic;
+      READSTART : in  std_logic
       );
   end component;
 
@@ -159,54 +168,54 @@ architecture Behavioral of memtest is
   signal cdrck, csel, cshift, cupdate, cupdatel,
     ctdo, ctdi : std_logic := '0';
 
-  signal csreg : std_logic_vector(39 downto 0) := (others => '0');
-  signal reset1, reset2 : std_logic := '0';
+  signal csreg          : std_logic_vector(39 downto 0) := (others => '0');
+  signal reset1, reset2 : std_logic                     := '0';
   
 begin
 
   jtagmemif_inst : jtagmemif
     port map (
-      CLK      => CLK,
-      MEMSTART => START,
-      MEMRW    => RW,
-      MEMDONE  => DONE,
-      ROWTGT   => ROWTGT,
-      WRADDR   => wraddr,
-      WRDATA   => wrdata,
-      RDADDR   => rdaddr,
-      RDDATA   => rddata,
-      RDWE     => rdwe , 
-      READSTART => memdebug(3) 
+      CLK       => CLK,
+      MEMSTART  => START,
+      MEMRW     => RW,
+      MEMDONE   => DONE,
+      ROWTGT    => ROWTGT,
+      WRADDR    => wraddr,
+      WRDATA    => wrdata,
+      RDADDR    => rdaddr,
+      RDDATA    => rddata,
+      RDWE      => rdwe ,
+      READSTART => memdebug(3)
       );
 
 
   memddr2_inst : memddr2
     port map (
-      CLK        => clk,
-      CLK90      => clk90,
-      CLK180     => clk180,
-      CLK270     => clk270,
-      RESET      => reset,
-      CKE        => CKE,
-      CAS        => CAS,
-      RAS        => RAS,
-      CS         => CS,
-      WE         => WE,
-      ADDR       => ADDR,
-      BA         => BA,
-      DQSH       => DQSH,
-      DQSL       => DQSL,
-      DQ         => DQ,
-      START      => START,
-      RW         => RW,
-      DONE       => DONE,
-      ROWTGT     => ROWTGT,
-      WRADDR     => WRADDR,
-      WRDATA     => WRDATA,
-      RDADDR     => RDADDR,
-      RDDATA     => RDDATA,
-      RDWE       => RDWE,
-      DEBUG      => memdebug, 
+      CLK         => clk,
+      CLK90       => clk90,
+      CLK180      => clk180,
+      CLK270      => clk270,
+      RESET       => reset,
+      CKE         => CKE,
+      CAS         => CAS,
+      RAS         => RAS,
+      CS          => CS,
+      WE          => WE,
+      ADDR        => ADDR,
+      BA          => BA,
+      DQSH        => DQSH,
+      DQSL        => DQSL,
+      DQ          => DQ,
+      START       => START,
+      RW          => RW,
+      DONE        => DONE,
+      ROWTGT      => ROWTGT,
+      WRADDR      => WRADDR,
+      WRDATA      => WRDATA,
+      RDADDR      => RDADDR,
+      RDDATA      => RDDATA,
+      RDWE        => RDWE,
+      DEBUG       => memdebug,
       DQALIGNPOSL => DQALIGNPOSL,
       DQALIGNPOSH => DQALIGNPOSH);
 
@@ -226,12 +235,12 @@ begin
       DUTY_CYCLE_CORRECTION => true,
       STARTUP_WAIT          => true)
     port map (
-      CLK0                  => clkbint,      -- 0 degree DCM CLK ouptput
-      CLKFX                 => clkbfastint,  -- DCM CLK synthesis out (M/D)
-      CLKFB                 => clkb,
-      CLKIN                 => CLKIN,
-      LOCKED                => locked,
-      RST                   => '0'           -- DCM asynchronous reset input
+      CLK0   => clkbint,                -- 0 degree DCM CLK ouptput
+      CLKFX  => clkbfastint,            -- DCM CLK synthesis out (M/D)
+      CLKFB  => clkb,
+      CLKIN  => CLKIN,
+      LOCKED => locked,
+      RST    => '0'                     -- DCM asynchronous reset input
       );
 
   clkb_bufg : BUFG
@@ -261,19 +270,19 @@ begin
       DUTY_CYCLE_CORRECTION => true,
       STARTUP_WAIT          => true)
     port map (
-      CLK0                  => clkint,
-      CLK180                => clk180int,
-      CLK270                => clk270int,
-      CLK90                 => clk90int,
-      CLKFB                 => clk,
-      CLKIN                 => clkbfast,
-      LOCKED                => locked2,
-      RST                   => reset1
+      CLK0   => clkint,
+      CLK180 => clk180int,
+      CLK270 => clk270int,
+      CLK90  => clk90int,
+      CLKFB  => clk,
+      CLKIN  => clkbfast,
+      LOCKED => locked2,
+      RST    => reset1
       );
 
   reset1 <= not locked;
-  reset2 <= not locked2; 
-  RESET <= not locked2;
+  reset2 <= not locked2;
+  RESET  <= not locked2;
 
   clk_bufg : BUFG
     port map (
@@ -295,17 +304,23 @@ begin
       O => clk270,
       I => clk270int);
 
-  CLKOUT <= clk270;
+--  CLKOUT <= clk270;
 
-  TXIO_obufds : OBUFDS
-    generic map (
-      IOSTANDARD => "DEFAULT")
+--  TXIO_obufds : OBUFDS
+--    generic map (
+--      IOSTANDARD => "DEFAULT")
+--    port map (
+--      O          => CLKOUT_P,
+--      OB         => CLKOUT_N,
+--      I          => clkout
+--      );
+  ddr2clkdriver_inst: ddr2clkdriver
     port map (
-      O          => CLKOUT_P,
-      OB         => CLKOUT_N,
-      I          => clkout
-      );
-
+      CLKIN    => clk270,
+      RESET    => RESET,
+      CLKOUT_P => CLKOUT_P,
+      CLKOUT_N => CLKOUT_N); 
+  
   LEDRESET <= memdebug(0);
   LEDERROR <= memdebug(1);
 
@@ -322,14 +337,14 @@ begin
     generic map (
       JTAG_CHAIN => 4)
     port map (
-      CAPTURE    => open,
-      DRCK       => cdrck,
-      reset      => open,
-      SEL        => csel,
-      SHIFT      => cshift,
-      TDI        => ctdi,
-      UPDATE     => cupdate,
-      TDO        => ctdo);
+      CAPTURE => open,
+      DRCK    => cdrck,
+      reset   => open,
+      SEL     => csel,
+      SHIFT   => cshift,
+      TDI     => ctdi,
+      UPDATE  => cupdate,
+      TDO     => ctdo);
 
 
   process(cdrck, cupdate)
@@ -337,16 +352,16 @@ begin
 
   begin
     if cupdate = '1' then
-      pos   := 0;
+      pos := 0;
     else
       if rising_edge(cdrck) then
-        ctdo   <= csreg(pos);
-        pos := pos + 1;
+        ctdo <= csreg(pos);
+        pos  := pos + 1;
       end if;
     end if;
   end process;
 
-  csreg   <= X"AB" & DQALIGNPOSL & X"CD" & DQALIGNPOSH & X"EF";
+  csreg <= X"AB" & DQALIGNPOSL & X"CD" & DQALIGNPOSH & X"EF";
 
   process(CLK)
   begin
