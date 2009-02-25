@@ -21,12 +21,15 @@ end memddr2test;
 architecture Behavioral of memddr2test is
 
   component memddr2
+    generic (
+      INITWAIT_ENABLE : in boolean);
     port (
       CLK    : in    std_logic;
       CLK90  : in    std_logic;
       CLK180 : in    std_logic;
       CLK270 : in    std_logic;
       RESET  : in    std_logic;
+      MEMREADY : out std_logic; 
       -- RAM!
       CKE    : out   std_logic;
       CAS    : out   std_logic;
@@ -335,7 +338,7 @@ architecture Behavioral of memddr2test is
   signal memclk, memclkn : std_logic := '0';
 
   signal udqsneg, ldqsneg : std_logic := '0';
-
+  signal MEMREADY : std_logic := '0';
 
 
 
@@ -347,12 +350,15 @@ begin  -- Behavioral
   ldqsneg <= 'H';
 
   memddr2_uut : memddr2
+    generic map (
+      INITWAIT_ENABLE => false)
     port map (
       CLK    => CLK,
       CLK90  => CLK90,
       CLK180 => CLK180,
       CLK270 => CLK270,
       RESET  => RESET,
+      MEMREADY => MEMREADY, 
       CKE    => CKE,
       CAS    => CAS,
       RAS    => RAS,
@@ -602,7 +608,8 @@ begin  -- Behavioral
       wait for 50 ns;
 
       RESET <= '0';
-      wait for 550 us;
+      wait until rising_edge(MEMREADY);
+      
 
       --odelay <= 107 ps * tpos;
 
@@ -651,7 +658,8 @@ begin  -- Behavioral
     -- wait for read to start
 
 
-    wait until falling_edge(RESET);
+    wait until falling_edge(RESET);     
+    wait until rising_edge(MEMREADY);   
 
     ---------------------------------------------------------------------------
     -- READ AND VERIFY 10 BURSTS

@@ -23,15 +23,19 @@ $(WORKDIR)/writeddr2/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd .
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/writeddr2.vhd
 
-$(WORKDIR)/memcontmux/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/memcontmux.vhd
+$(WORKDIR)/ddr2clkdriver/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/ddr2clkdriver.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/ddr2clkdriver.vhd
+
+$(WORKDIR)/memcontmux/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/ddr2clkdriver.vhd ../../vhdl/ddr2clkdriver.vhd ../../vhdl/memcontmux.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/memcontmux.vhd
 
-$(WORKDIR)/memddr2/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/memcontmux.vhd ../../vhdl/memcontmux.vhd ../../vhdl/memddr2.vhd
+$(WORKDIR)/memddr2/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/ddr2clkdriver.vhd ../../vhdl/ddr2clkdriver.vhd ../../vhdl/memcontmux.vhd ../../vhdl/memcontmux.vhd ../../vhdl/memddr2.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/memddr2.vhd
 
-hw: $(WORKDIR)/dqalign/behavioral.dat $(WORKDIR)/bootddr2/behavioral.dat $(WORKDIR)/readddr2/behavioral.dat $(WORKDIR)/refreshddr2/behavioral.dat $(WORKDIR)/writeddr2/behavioral.dat $(WORKDIR)/memcontmux/behavioral.dat $(WORKDIR)/memddr2/behavioral.dat 
+hw: $(WORKDIR)/dqalign/behavioral.dat $(WORKDIR)/bootddr2/behavioral.dat $(WORKDIR)/readddr2/behavioral.dat $(WORKDIR)/refreshddr2/behavioral.dat $(WORKDIR)/writeddr2/behavioral.dat $(WORKDIR)/ddr2clkdriver/behavioral.dat $(WORKDIR)/memcontmux/behavioral.dat $(WORKDIR)/memddr2/behavioral.dat 
 
 comp: 
 

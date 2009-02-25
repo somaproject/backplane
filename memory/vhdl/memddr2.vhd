@@ -7,6 +7,9 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity memddr2 is
+  generic (
+    INITWAIT_ENABLE : in boolean := true
+    ); 
   port (
     CLK         : in    std_logic;
     CLK90       : in    std_logic;
@@ -474,7 +477,7 @@ begin  -- Behavioral
         alstart   <= '0';
         dqts     <= '1';
         lmemready <= '0';
-        if initwait(23) = '0' then
+        if initwait(23) = '0' and INITWAIT_ENABLE then
           ons <= none;
         else
           ons       <= boot;      
