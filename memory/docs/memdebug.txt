@@ -1,0 +1,33 @@
+The memory debug interface is designed to be used in conjunction
+with the memddr2 interface to allow us to make sure that the 
+memory interface is "doing what it's supposed to do".
+
+This includes: 
+  - reading and writing arbitrary rows
+  - resetting the interface
+  - running on an independent clock
+
+The interface is designed to mate to an EventProc. For each value,
+it is possible to read out the value that had been written. 
+
+addr 0 : read / write debug register
+addr 1 : write 0x0001 to reset the RAM interface
+addr 2 : read the MEMREADY signal 
+addr 3 : read / write the rowtgt address
+addr 4 : set the address of the FIFO to
+addr 5 : write the word of the FIFO 
+addr 6 :
+addr 7 : 
+addr 8 : 
+addr 9 : read the word of the output FIFO
+addr 10:
+addr 11: 
+addr 12: start a memory read transaction; value written is a nonce for this txn
+addr 13: start a memory write transaction : value written is a nonce for this txn
+addr 14: returns the most recently completed txn nonce
+addr 15: 
+
+Implementation
+-------------------------------------------
+
+Internally we use two block rams, one for reading and one for writing. 

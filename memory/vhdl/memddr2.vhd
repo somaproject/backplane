@@ -444,6 +444,7 @@ begin  -- Behavioral
   begin
     if reset = '1' then
       ocs <= none;
+      MEMREADY <= '0'; 
     else
       if rising_edge(CLK) then
 
@@ -477,12 +478,20 @@ begin  -- Behavioral
         alstart   <= '0';
         dqts     <= '1';
         lmemready <= '0';
-        if initwait(23) = '0' and INITWAIT_ENABLE then
-          ons <= none;
+        if INITWAIT_ENABLE then
+          if initwait(23) = '0' then
+            ons <= none;
+          else
+            ons       <= boot;      
+          end if;
         else
-          ons       <= boot;      
-        end if;
-
+          
+          if initwait(14) = '0' then
+            ons <= none;
+          else
+            ons       <= boot;      
+          end if;
+        end if; 
 
       when boot =>
         dsel      <= 1;
