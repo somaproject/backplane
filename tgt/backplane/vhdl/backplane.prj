@@ -43,10 +43,13 @@ vhdl soma "../../../vhdl/singleeventdesttx.vhd"
 # network memory interface
 vhdl memory "../../../memory/vhdl/dqalign.vhd"
 vhdl memory "../../../memory/vhdl/bootddr2.vhd"
+vhdl memory "../../../memory/vhdl/ddr2clkdriver.vhd"
 vhdl memory "../../../memory/vhdl/readddr2.vhd"
 vhdl memory "../../../memory/vhdl/memcontmux.vhd"
 vhdl memory "../../../memory/vhdl/refreshddr2.vhd"
 vhdl memory "../../../memory/vhdl/writeddr2.vhd"
+vhdl memory "../../../memory/vhdl/memdebug.vhd"
+vhdl memory "../../../memory/vhdl/memifmux.vhd"
 vhdl memory "../../../memory/vhdl/memddr2.vhd" 
 
 # network

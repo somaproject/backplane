@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.numeric_std.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -28,8 +28,10 @@ entity dqalign is
 end dqalign;
 
 architecture Behavioral of dqalign is
-
-  -- data strobe signals
+  
+  constant MAXDELAY : integer := 22;
+  constant FIXEDDELAY : integer := 24;
+-- data strobe signals
   signal dqsinc : std_logic := '0';
   signal inrst  : std_logic := '0';
   signal dqsce  : std_logic := '0';
@@ -64,7 +66,7 @@ architecture Behavioral of dqalign is
   -- state machine
   type states is (none, resetall, startw, startw3,
                   propw1, propw2, propw3, propw4, nexttick,
-                  datainc, propdone, dones);
+                  datainc, propdone, delaychk, dones);
 
   signal cs, ns : states := none;
 
@@ -79,6 +81,7 @@ architecture Behavioral of dqalign is
   signal dqstsint, dqstsint2 : std_logic := '1';
   signal dqtsint          : std_logic := '1';
 
+  signal dqsddrin : std_logic := '0';
 
 begin  -- Behavioral
 
@@ -86,14 +89,15 @@ begin  -- Behavioral
 
   IDELAY_dqs : IDELAY
     generic map (
-      IOBDELAY_TYPE  => "VARIABLE",
-      IOBDELAY_VALUE => 0)
+      --IOBDELAY_TYPE  => "VARIABLE",
+      IOBDELAY_TYPE => "FIXED", 
+      IOBDELAY_VALUE => FIXEDDELAY)
     port map (
       O              => dqsdelay,
       C              => CLK,
       CE             => dqsce,
       I              => dqsin,
-      INC            => dqsinc,
+      INC            => '0', --dqsinc,
       RST            => inrst
       );
 
@@ -101,7 +105,7 @@ begin  -- Behavioral
     port map (
       O  => dqsin,
       IO => DQS,
-      I  => CLK270,                     
+      I  => dqsddrin,                     
       T  => dqstsint
       );        
 
@@ -142,8 +146,8 @@ begin  -- Behavioral
 
     IDELAY_dq : IDELAY
       generic map (
-        IOBDELAY_TYPE  => "VARIABLE",
-        IOBDELAY_VALUE => 0)
+        IOBDELAY_TYPE  => "FIXED",
+        IOBDELAY_VALUE => FIXEDDELAY)
       port map (
         O              => dqdelay(i),
         C              => CLK,
@@ -185,9 +189,23 @@ begin  -- Behavioral
         );
   end generate iogen;
 
+  ODDR_dqs : ODDR
+      generic map(
+        DDR_CLK_EDGE => "SAME_EDGE",
+        INIT         => '0',
+        SRTYPE       => "SYNC")
+      port map (
+        Q            => dqsddrin, 
+        C            => CLK90,
+        CE           => '1',
+        D1           => '0',
+        D2           => '1',
+        R            => '0',
+        S            => '0'
+        );
 
-  DONE <= '1' when cs = dones else '0';
-
+  --DONE <= '1' when cs = dones else '0';
+  DONE <= '1'; 
 
   dqs_dq : IDDR
     generic map (
@@ -264,15 +282,15 @@ begin  -- Behavioral
         DOUT(7 downto 0)  <= ddq1l;
      end if;
 
-      if cs = propw4 then
-         if dqscnt >= 20 then
-           osel <= '1';
-         else
-           osel <= '0';
-         end if;
-      end if;
+--      if cs = propw4 then
+--         if dqscnt >= 20 then
+--           osel <= '1';
+--         else
+        osel <= '1';
+--         end if;
+--      end if;
 
-      POSOUT <= "00" & dqscnt;
+      POSOUT <= osel & "0" & dqscnt;
 
     end if;
   end process main;
@@ -404,8 +422,21 @@ begin  -- Behavioral
         dqsce  <= '0';
         dqinc  <= '0';
         dqce   <= '0';
-        ns     <= dones;
+        ns     <= delaychk;
 
+      when delaychk =>
+        inrst  <= '0';
+        dqsamp <= '0';
+        dqsinc <= '0';
+        dqsce  <= '0';
+        dqinc  <= '0';
+        dqce   <= '0';
+--        if TO_INTEGER(unsigned(dqscnt)) > MAXDELAY then
+--          ns <= resetall;
+--        else
+          ns     <= dones;
+--        end if; 
+        
       when dones =>
         inrst  <= '0';
         dqsamp <= '0';

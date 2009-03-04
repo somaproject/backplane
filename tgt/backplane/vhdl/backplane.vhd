@@ -14,6 +14,8 @@ use jtag.all;
 
 library network;
 use network.all;
+library memory;
+use memory.all;
 library syscon;
 use syscon.all;
 
@@ -146,6 +148,7 @@ architecture Behavioral of backplane is
   signal evtrxsuc     : std_logic                     := '0';
   signal evtfifofull  : std_logic                     := '0';
 
+  signal ramdqalignh, ramdqalignl : std_logic_vector(7 downto 0) := (others => '0');
 
   signal nicnextframeint : std_logic := '0';
 
@@ -196,7 +199,17 @@ architecture Behavioral of backplane is
   signal netdebug        : std_logic_vector(31 downto 0) := (others => '0');
   signal dincapture_data : std_logic_vector(15 downto 0) := (others => '0');
   signal jtagjtagrxdebug : std_logic_vector(15 downto 0) := (others => '0');
+
+
+  -- memory debug
+  signal MEMDEBUGRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
+  signal MEMDEBUGWRADDR : std_logic_vector(3 downto 0)  := (others => '0');
+  signal MEMDEBUGWE     : std_logic                     := '0';
+  signal MEMDEBUGRD     : std_logic                     := '0';
+  signal MEMDEBUGDIN    : std_logic_vector(15 downto 0) := (others => '0');
+  signal MEMDEBUGDOUT   : std_logic_vector(15 downto 0) := (others => '0');
   
+
 begin  -- Behavioral
 
 
@@ -309,14 +322,12 @@ begin  -- Behavioral
       O => memclk270,
       I => memclk270int);
 
-  TXIO_obufds : OBUFDS
-    generic map (
-      IOSTANDARD => "DEFAULT")
+  memclk_driver : entity memory.ddr2clkdriver
     port map (
-      O  => RAMCLKOUT_P,
-      OB => RAMCLKOUT_N,
-      I  => memclk270
---      I          => memclk90
+      CLKOUT_P => RAMCLKOUT_P,
+      CLKOUT_N => RAMCLKOUT_N,
+      CLKIN    => memclk270,
+      RESET    => reset
       );
 
   eventrouter_inst : entity soma.eventrouter
@@ -619,16 +630,27 @@ begin  -- Behavioral
       RAMDQ   => RAMDQ,
 
       -- counters
-      RXIOCRCERR   => rxiocrcerr,
-      UNKNOWNETHER => unknownether,
-      UNKNOWNIP    => unknownip,
-      UNKNOWNUDP   => unknownudp,
-      UNKNOWNARP   => unknownarp,
-      TXPKTLENEN   => txpktlenen,
-      TXPKTLEN     => txpktlen,
-      TXCHAN       => txchan,
-      EVTRXSUC     => evtrxsuc,
-      EVTFIFOFULL  => evtfifofull,
+      RXIOCRCERR     => rxiocrcerr,
+      UNKNOWNETHER   => unknownether,
+      UNKNOWNIP      => unknownip,
+      UNKNOWNUDP     => unknownudp,
+      UNKNOWNARP     => unknownarp,
+      TXPKTLENEN     => txpktlenen,
+      TXPKTLEN       => txpktlen,
+      TXCHAN         => txchan,
+      EVTRXSUC       => evtrxsuc,
+      EVTFIFOFULL    => evtfifofull,
+      -- debug control for memory
+      RAMDQALIGNH    => ramdqalignh,
+      RAMDQALIGNL    => ramdqalignl,
+      -- memory debug interface,
+      MEMDEBUGCLK    => clk2x,
+      MEMDEBUGRDADDR => memdebugrdaddr,
+      MEMDEBUGWRADDR => memdebugwraddr,
+      MEMDEBUGWE     => memdebugwe,
+      MEMDEBUGRD     => memdebugrd,
+      MEMDEBUGDOUT   => memdebugdin,
+      MEMDEBUGDIN    => memdebugdout,
 
       DEBUG => netdebug
 
@@ -715,37 +737,47 @@ begin  -- Behavioral
 -- RAM_INITP_07 => work.backplane_mem_pkg.netcontrol_inst_instruction_ram_INITP_07)
       )
     port map (
-      CLK          => CLK,
-      CLK2X        => CLK2X,
-      RESET        => RESET,
+      CLK            => CLK,
+      CLK2X          => CLK2X,
+      RESET          => RESET,
       -- standard event-bus interface
-      ECYCLE       => ECYCLE,
-      EDTX         => EDTX,
-      EATX         => EATX(4),
-      EARX         => EARX(4),
-      EDRX         => EDRX(4),
-      EDSELRX      => EDSELRX,
+      ECYCLE         => ECYCLE,
+      EDTX           => EDTX,
+      EATX           => EATX(4),
+      EARX           => EARX(4),
+      EDRX           => EDRX(4),
+      EDSELRX        => EDSELRX,
       -- tx counter input
-      TXPKTLENEN   => txpktlenen,
-      TXPKTLEN     => txpktlen,
-      TXCHAN       => txchan,
+      TXPKTLENEN     => txpktlenen,
+      TXPKTLEN       => txpktlen,
+      TXCHAN         => txchan,
       -- other counters
-      RXIOCRCERR   => rxiocrcerr,
-      UNKNOWNETHER => unknownether,
-      UNKNOWNIP    => unknownip,
-      UNKNOWNARP   => unknownarp,
-      UNKNOWNUDP   => unknownudp,
-      EVTRXSUC     => evtrxsuc,
-      EVTFIFOFULL  => evtfifofull,
+      RXIOCRCERR     => rxiocrcerr,
+      UNKNOWNETHER   => unknownether,
+      UNKNOWNIP      => unknownip,
+      UNKNOWNARP     => unknownarp,
+      UNKNOWNUDP     => unknownudp,
+      EVTRXSUC       => evtrxsuc,
+      EVTFIFOFULL    => evtfifofull,
+      -- debug for memory
+      MEMDEBUGRDADDR => memdebugrdaddr,
+      MEMDEBUGWRADDR => memdebugwraddr,
+      MEMDEBUGWE     => memdebugwe,
+      MEMDEBUGRD     => memdebugrd,
+      MEMDEBUGDIN    => memdebugdin,
+      MEMDEBUGDOUT   => memdebugdout,
+
+      RAMDQALIGNH => ramdqalignh,
+      RAMDQALIGNL => ramdqalignl,
       -- output network control settings
       --MYMAC        => mymac,
       --MYBCAST      => mybcast,
       --MYIP         => myip,
       -- NIC interface
-      NICSOUT      => NICSOUT,
-      NICSIN       => NICSIN,
-      NICSCLK      => NICSCLK,
-      NICSCS       => NICSCS
+      NICSOUT     => NICSOUT,
+      NICSIN      => NICSIN,
+      NICSCLK     => NICSCLK,
+      NICSCS      => NICSCS
       );
 
 
@@ -793,7 +825,7 @@ begin  -- Behavioral
   -- DSP DeviceLinks
   ----------------------------------------------------------------------------
 
-  devicelinks_and_mux : for i in 0 to 7 generate
+  devicelinks_and_mux : for i in 0 to 3 generate
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
     signal dllocked      : std_logic                    := '0';

@@ -118,6 +118,16 @@ entity netcontrol is
     UNKNOWNUDP   : in  std_logic;
     EVTRXSUC     : in  std_logic;
     EVTFIFOFULL  : in  std_logic;
+    -- memory debug control
+    MEMDEBUGRDADDR : out    std_logic_vector(3 downto 0);
+    MEMDEBUGWRADDR : out   std_logic_vector(3 downto 0);
+    MEMDEBUGWE     : out    std_logic;
+    MEMDEBUGRD     : out    std_logic;
+    MEMDEBUGDIN   : in   std_logic_vector(15 downto 0);
+    MEMDEBUGDOUT    : out    std_logic_vector(15 downto 0); 
+    -- ram control
+    RAMDQALIGNH  : in std_logic_vector(7 downto 0);
+    RAMDQALIGNL : in std_logic_vector(7 downto 0); 
     -- output network control settings
     MYMAC        : out std_logic_vector(47 downto 0);
     MYBCAST      : out std_logic_vector(31 downto 0);
@@ -192,7 +202,8 @@ architecture Behavioral of netcontrol is
   signal unknownudpcnt : std_logic_vector(15 downto 0) := (others => '0');
   signal unknownudprst : std_logic := '0';
   
-
+  signal ramdqalignll, ramdqalignhl : std_logic_vector(7 downto 0) := (others => '0');
+  
   signal rxcnt         : std_logic_vector(15 downto 0) := (others => '0');
 
   
@@ -367,7 +378,13 @@ begin  -- Behavioral
 
   iportdata <= nicserdout when iportaddr(7 downto 4) = "0000" else
                txcnt      when iportaddr(7 downto 4) = "0010" else
-               rxcnt;
+               rxcnt      when iportaddr(7 downto 4) = "0011" else
+               MEMDEBUGDIN when iportaddr(7 downto 4) = "0001" else
+               X"0000";
+  MEMDEBUGRDADDR <= iportaddr(3 downto 0); 
+  
+
+  MEMDEBUGRD  <= iportstrobe  when iportaddr(7 downto 4) = "0001" else '0'; 
 
   txcnt <= txcntout(47 downto 32) when txmuxsel = 0 else
            txcntout(31 downto 16) when txmuxsel = 1 else
@@ -381,6 +398,7 @@ begin  -- Behavioral
            unknownipcnt    when rxmuxsel = 2 and iportaddr(3 downto 0) = "0010" else
            unknownarpcnt   when rxmuxsel = 2 and iportaddr(3 downto 0) = "0011" else
            unknownudpcnt   when rxmuxsel = 2 and iportaddr(3 downto 0) = "0100" else
+           ramdqalignhl & ramdqalignll when rxmuxsel = 2 and iportaddr(3 downto 0) = "1000" else
            X"0000";
 
   process(clk2x)
@@ -415,7 +433,14 @@ begin  -- Behavioral
           end if;
         end if;
       end if;
+      if oportstrobe = '1' and oportaddr(7 downto 4) = "0001" then
+        MEMDEBUGWE  <= '1';
+        MEMDEBUGDOUT <= oportdata;
+        MEMDEBUGWRADDR  <= oportaddr(3 downto 0); 
 
+      else
+        MEMDEBUGWE <= '0';
+      end if; 
     end if;
   end process;
 
@@ -463,7 +488,8 @@ begin  -- Behavioral
         end if;
       end if;
 
-
+      ramdqalignll <= RAMDQALIGNL;
+      ramdqalignhl <= RAMDQALIGNH; 
 
     end if;
   end process;

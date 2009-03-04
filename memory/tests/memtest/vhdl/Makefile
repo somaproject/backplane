@@ -90,7 +90,7 @@ timing: build/$(PROJECT).twr
 
 
 build/$(PROJECT).twr: build/$(PROJECT).ncd build/$(PROJECT).pcf
-	trce -intstyle ise -e 3 -l 3 -s $(SPEED) -xml $(PROJECT) build/$(PROJECT).ncd -o build/$(PROJECT).twr build/$(PROJECT).pcf
+	trce -intstyle ise -e 3 -l 3  -u  -s $(SPEED) -xml $(PROJECT) build/$(PROJECT).ncd -o build/$(PROJECT).twr build/$(PROJECT).pcf
 
 
 # simulations

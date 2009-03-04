@@ -38,42 +38,65 @@ architecture Behavioral of networktest is
       MEMCLK180 : in std_logic;
       MEMCLK270 : in std_logic;
 
-      RESET        : in    std_logic;
+      RESET          : in    std_logic;
       -- config
-      MYIP         : in    std_logic_vector(31 downto 0);
-      MYMAC        : in    std_logic_vector(47 downto 0);
-      MYBCAST      : in    std_logic_vector(31 downto 0);
+      MYIP           : in    std_logic_vector(31 downto 0);
+      MYMAC          : in    std_logic_vector(47 downto 0);
+      MYBCAST        : in    std_logic_vector(31 downto 0);
       -- input
-      NICNEXTFRAME : out   std_logic;
-      NICDINEN     : in    std_logic;
-      NICDIN       : in    std_logic_vector(15 downto 0);
+      NICNEXTFRAME   : out   std_logic;
+      NICDINEN       : in    std_logic;
+      NICDIN         : in    std_logic_vector(15 downto 0);
       -- output
-      NICDOUT      : out   std_logic_vector(15 downto 0);
-      NICNEWFRAME  : out   std_logic;
-      NICIOCLK     : out   std_logic;
+      NICDOUT        : out   std_logic_vector(15 downto 0);
+      NICNEWFRAME    : out   std_logic;
+      NICIOCLK       : out   std_logic;
       -- event bus
-      ECYCLE       : in    std_logic;
-      EARX         : out   std_logic_vector(somabackplane.N -1 downto 0);
-      EDRX         : out   std_logic_vector(7 downto 0);
-      EDSELRX      : in    std_logic_vector(3 downto 0);
-      EATX         : in    std_logic_vector(somabackplane.N -1 downto 0);
-      EDTX         : in    std_logic_vector(7 downto 0);
+      ECYCLE         : in    std_logic;
+      EARX           : out   std_logic_vector(somabackplane.N -1 downto 0);
+      EDRX           : out   std_logic_vector(7 downto 0);
+      EDSELRX        : in    std_logic_vector(3 downto 0);
+      EATX           : in    std_logic_vector(somabackplane.N -1 downto 0);
+      EDTX           : in    std_logic_vector(7 downto 0);
       -- data bus
-      DIENA        : in    std_logic;
-      DINA         : in    std_logic_vector(7 downto 0);
-      DIENB        : in    std_logic;
-      DINB         : in    std_logic_vector(7 downto 0);
+      DIENA          : in    std_logic;
+      DINA           : in    std_logic_vector(7 downto 0);
+      DIENB          : in    std_logic;
+      DINB           : in    std_logic_vector(7 downto 0);
       -- memory interface
-      RAMCKE       : out   std_logic := '0';
-      RAMCAS       : out   std_logic;
-      RAMRAS       : out   std_logic;
-      RAMCS        : out   std_logic;
-      RAMWE        : out   std_logic;
-      RAMADDR      : out   std_logic_vector(12 downto 0);
-      RAMBA        : out   std_logic_vector(1 downto 0);
-      RAMDQSH      : inout std_logic;
-      RAMDQSL      : inout std_logic;
-      RAMDQ        : inout std_logic_vector(15 downto 0)
+      RAMCKE         : out   std_logic := '0';
+      RAMCAS         : out   std_logic;
+      RAMRAS         : out   std_logic;
+      RAMCS          : out   std_logic;
+      RAMWE          : out   std_logic;
+      RAMADDR        : out   std_logic_vector(12 downto 0);
+      RAMBA          : out   std_logic_vector(1 downto 0);
+      RAMDQSH        : inout std_logic;
+      RAMDQSL        : inout std_logic;
+      RAMDQ          : inout std_logic_vector(15 downto 0); 
+      -- error signals and counters
+      RXIOCRCERR     : out   std_logic;
+      UNKNOWNETHER   : out   std_logic;
+      UNKNOWNIP      : out   std_logic;
+      UNKNOWNUDP     : out   std_logic;
+      UNKNOWNARP     : out   std_logic;
+      TXPKTLENEN     : out   std_logic;
+      TXPKTLEN       : out   std_logic_vector(15 downto 0);
+      TXCHAN         : out   std_logic_vector(2 downto 0);
+      EVTRXSUC       : out   std_logic;
+      EVTFIFOFULL    : out   std_logic;
+      -- DEBUG CONTROL FOR MEMORY
+      RAMDQALIGNH    : out   std_logic_vector(7 downto 0);
+      RAMDQALIGNL    : out   std_logic_vector(7 downto 0);
+      -- Memory Debug interface
+      MEMDEBUGRDADDR : in    std_logic_vector(3 downto 0);
+      MEMDEBUGWRADDR : in    std_logic_vector(3 downto 0);
+      MEMDEBUGWE     : in    std_logic;
+      MEMDEBUGRD     : in    std_logic;
+      MEMDEBUGDOUT   : out   std_logic_vector(15 downto 0);
+      MEMDEBUGDIN    : in    std_logic_vector(15 downto 0);
+      -- DEBUG
+      DEBUG          : out   std_logic_vector(31 downto 0)
 
       );
   end component;
@@ -172,6 +195,30 @@ architecture Behavioral of networktest is
   signal RAMDQ   : std_logic_vector(15 downto 0) := (others => '0');
 
 
+  signal RXIOCRCERR     : std_logic                     := '0';
+  signal UNKNOWNETHER   : std_logic                     := '0';
+  signal UNKNOWNIP      : std_logic                     := '0';
+  signal UNKNOWNUDP     : std_logic                     := '0';
+  signal UNKNOWNARP     : std_logic                     := '0';
+  signal TXPKTLENEN     : std_logic                     := '0';
+  signal TXPKTLEN       : std_logic_vector(15 downto 0) := (others => '0');
+  signal TXCHAN         : std_logic_vector(2 downto 0)  := (others => '0');
+  signal EVTRXSUC       : std_logic                     := '0';
+  signal EVTFIFOFULL    : std_logic                     := '0';
+  -- DEBUG CONTROL FOR MEMORY
+  signal RAMDQALIGNH    : std_logic_vector(7 downto 0)  := (others => '0');
+  signal RAMDQALIGNL    : std_logic_vector(7 downto 0)  := (others => '0');
+  -- Memory Debug interface
+  signal MEMDEBUGRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
+  signal MEMDEBUGWRADDR : std_logic_vector(3 downto 0)  := (others => '0');
+  signal MEMDEBUGWE     : std_logic                     := '0';
+  signal MEMDEBUGRD     : std_logic                     := '0';
+  signal MEMDEBUGDOUT   : std_logic_vector(15 downto 0) := (others => '0');
+  signal MEMDEBUGDIN    : std_logic_vector(15 downto 0) := (others => '0');
+  -- DEBUG
+  signal DEBUG          : std_logic_vector(31 downto 0) := (others => '0');
+
+
   -- data bus
   signal dina, dinb   : std_logic_vector(7 downto 0) := (others => '0');
   signal diena, dienb : std_logic                    := '0';
@@ -182,11 +229,11 @@ architecture Behavioral of networktest is
 -- memory signals
   signal ramwel, ramwell     : std_logic := '1';
   signal ramaddrl, ramaddrll : std_logic_vector(16 downto 0)
-                                         := (others => '0');
+ := (others => '0');
 
   signal data_rxgood    : std_logic_vector(63 downto 0) := (others => '0');
   signal data_rxmissing : std_logic_vector(63 downto 0) := (others => '0');
-  type rxcntarray is array (0 to 63) of integer;
+  type   rxcntarray is array (0 to 63) of integer;
   signal data_rxcnt     : rxcntarray                    := (others => 0);
 
   signal event_rxgood    : std_logic := '0';
@@ -413,12 +460,12 @@ architecture Behavioral of networktest is
       MEMCLK180  : out std_logic;
       MEMCLK180n : out std_logic;
 
-      MEMCLK270           : out std_logic;
-      MEMCLK270n          : out std_logic
+      MEMCLK270  : out std_logic;
+      MEMCLK270n : out std_logic
       );
   end component;
-  
-  signal ldqsneg, udqsneg :     std_logic := '0';
+
+  signal ldqsneg, udqsneg : std_logic := '0';
 
 begin  -- Behavioral
   RESET <= '0' after 20 ns;
@@ -471,13 +518,39 @@ begin  -- Behavioral
       RAMCAS => RAMCAS,
       RAMRAS => RAMRAS,
 
-      RAMCS        => RAMCS,
-      RAMWE        => RAMWE,
-      RAMADDR      => RAMADDR,
-      RAMBA        => RAMBA,
-      RAMDQSH      => RAMDQSH,
-      RAMDQSL      => RAMDQSL,
-      RAMDQ        => RAMDQ);
+      RAMCS   => RAMCS,
+      RAMWE   => RAMWE,
+      RAMADDR => RAMADDR,
+      RAMBA   => RAMBA,
+      RAMDQSH => RAMDQSH,
+      RAMDQSL => RAMDQSL,
+      RAMDQ   => RAMDQ,
+
+      -- error signals and counters
+      RXIOCRCERR     => RXIOCRCERR,
+      UNKNOWNETHER   => UNKNOWNETHER,
+      UNKNOWNIP      => UNKNOWNIP,
+      UNKNOWNUDP     => UNKNOWNUDP,
+      UNKNOWNARP     => UNKNOWNARP,
+      TXPKTLENEN     => TXPKTLENEN,
+      TXPKTLEN       => TXPKTLEN,
+      TXCHAN         => TXCHAN,
+      EVTRXSUC       => EVTRXSUC,
+      EVTFIFOFULL    => EVTFIFOFULL ,
+      -- DEBUG CONTROL FOR MEMORY
+      RAMDQALIGNH    => RAMDQALIGNH ,
+      RAMDQALIGNL    => RAMDQALIGNL ,
+      -- Memory Debug interface
+      MEMDEBUGRDADDR => MEMDEBUGRDADDR,
+      MEMDEBUGWRADDR => MEMDEBUGWRADDR,
+      MEMDEBUGWE     => MEMDEBUGWE,
+      MEMDEBUGRD     => MEMDEBUGRD ,
+      MEMDEBUGDOUT   => MEMDEBUGDOUT ,
+      MEMDEBUGDIN    => MEMDEBUGDIN ,
+      -- DEBUG
+      DEBUG          => DEBUG 
+      );
+  
   memory_inst : mt47h64m16
     generic map (
       -- tipd delays: interconnect path delays
@@ -612,56 +685,56 @@ begin  -- Behavioral
       --mem_file_name => ,
 
 
-      TimingModel => "MT47H64M16BT-3" )
+      TimingModel => "MT47H64M16BT-3")
     port map (
-      ODT         => '0',
-      CK          => memclk270,
-      CKNeg       => memclk270n,
-      CKE         => RAMCKE,
-      CSNeg       => RAMCS,
-      RASNeg      => RAMRAS,
-      CASNEG      => RAMCAS,
-      WENeg       => RAMWE,
-      LDM         => '0',
-      UDM         => '0',
-      BA0         => RAMBA(0),
-      BA1         => RAMBA(1),
-      BA2         => '0',
-      A0          => RAMADDR(0),
-      A1          => RAMADDR(1),
-      A2          => RAMADDR(2),
-      A3          => RAMADDR(3),
-      A4          => RAMADDR(4),
-      A5          => RAMADDR(5),
-      A6          => RAMADDR(6),
-      A7          => RAMADDR(7),
-      A8          => RAMADDR(8),
-      A9          => RAMADDR(9),
-      A10         => RAMADDR(10),
-      A11         => RAMADDR(11),
-      A12         => RAMADDR(12),
-      DQ0         => RAMDQ(0),
-      DQ1         => RAMDQ(1),
-      DQ2         => RAMDQ(2),
-      DQ3         => RAMDQ(3),
-      DQ4         => RAMDQ(4),
-      DQ5         => RAMDQ(5),
-      DQ6         => RAMDQ(6),
-      DQ7         => RAMDQ(7),
-      DQ8         => RAMDQ(8),
-      DQ9         => RAMDQ(9),
-      DQ10        => RAMDQ(10),
-      DQ11        => RAMDQ(11),
-      DQ12        => RAMDQ(12),
-      DQ13        => RAMDQ(13),
-      DQ14        => RAMDQ(14),
-      DQ15        => RAMDQ(15),
-      UDQS        => RAMDQSH,
-      UDQSNeg     => udqsneg,
-      LDQS        => RAMDQSL,
-      LDQSNeg     => ldqsneg);
+      ODT     => '0',
+      CK      => memclk270,
+      CKNeg   => memclk270n,
+      CKE     => RAMCKE,
+      CSNeg   => RAMCS,
+      RASNeg  => RAMRAS,
+      CASNEG  => RAMCAS,
+      WENeg   => RAMWE,
+      LDM     => '0',
+      UDM     => '0',
+      BA0     => RAMBA(0),
+      BA1     => RAMBA(1),
+      BA2     => '0',
+      A0      => RAMADDR(0),
+      A1      => RAMADDR(1),
+      A2      => RAMADDR(2),
+      A3      => RAMADDR(3),
+      A4      => RAMADDR(4),
+      A5      => RAMADDR(5),
+      A6      => RAMADDR(6),
+      A7      => RAMADDR(7),
+      A8      => RAMADDR(8),
+      A9      => RAMADDR(9),
+      A10     => RAMADDR(10),
+      A11     => RAMADDR(11),
+      A12     => RAMADDR(12),
+      DQ0     => RAMDQ(0),
+      DQ1     => RAMDQ(1),
+      DQ2     => RAMDQ(2),
+      DQ3     => RAMDQ(3),
+      DQ4     => RAMDQ(4),
+      DQ5     => RAMDQ(5),
+      DQ6     => RAMDQ(6),
+      DQ7     => RAMDQ(7),
+      DQ8     => RAMDQ(8),
+      DQ9     => RAMDQ(9),
+      DQ10    => RAMDQ(10),
+      DQ11    => RAMDQ(11),
+      DQ12    => RAMDQ(12),
+      DQ13    => RAMDQ(13),
+      DQ14    => RAMDQ(14),
+      DQ15    => RAMDQ(15),
+      UDQS    => RAMDQSH,
+      UDQSNeg => udqsneg,
+      LDQS    => RAMDQSL,
+      LDQSNeg => ldqsneg);
 
-  RESET        <= '0' after 100 ns;
+  RESET <= '0' after 100 ns;
   -- ecycle generation
   ecycle_gen : process(CLK)
   begin
@@ -705,7 +778,7 @@ begin  -- Behavioral
 
   end process main;
 
-  datainput                   : process
+  datainput : process
     file datafilea, datafileb : text;
     variable L                : line;
     variable doen             : std_logic                    := '0';
@@ -740,7 +813,7 @@ begin  -- Behavioral
 
   -- retx request and verify
 
-  datareceivers       : for i in 0 to 63 generate
+  datareceivers : for i in 0 to 63 generate
     datareceiver_inst : datareceiver
       port map (
         typ       => 0,
@@ -782,7 +855,7 @@ begin  -- Behavioral
   EATX <= (others => '1');
 
   -- time stamp event
-  ts_eventgen             : process(CLK)
+  ts_eventgen : process(CLK)
     variable eventtimepos : std_logic_vector(47 downto 0) := (others => '0');
   begin
     if rising_edge(CLK) then

@@ -25,6 +25,7 @@ architecture Behavioral of memdebugtest is
       MEMCLK   : in  std_logic;
       MEMRESET : out std_logic;
       MEMREADY : in  std_logic;
+      MEMIFSEL : out std_logic;
       START    : out std_logic;
       RW       : out std_logic;
       DONE     : in  std_logic;
@@ -52,35 +53,38 @@ architecture Behavioral of memdebugtest is
     generic (
       INITWAIT_ENABLE : in boolean);
     port (
-      CLK      : in    std_logic;
-      CLK90    : in    std_logic;
-      CLK180   : in    std_logic;
-      CLK270   : in    std_logic;
-      RESET    : in    std_logic;
-      MEMREADY : out   std_logic;
+      CLK         : in    std_logic;
+      CLK90       : in    std_logic;
+      CLK180      : in    std_logic;
+      CLK270      : in    std_logic;
+      RESET       : in    std_logic;
+      MEMREADY    : out   std_logic;
       -- RAM!
-      CKE      : out   std_logic;
-      CAS      : out   std_logic;
-      RAS      : out   std_logic;
-      CS       : out   std_logic;
-      WE       : out   std_logic;
-      ADDR     : out   std_logic_vector(12 downto 0);
-      BA       : out   std_logic_vector(1 downto 0);
-      DQSH     : inout std_logic := '0';
-      DQSL     : inout std_logic := '0';
-      DQ       : inout std_logic_vector(15 downto 0);
+      CKE         : out   std_logic;
+      CAS         : out   std_logic;
+      RAS         : out   std_logic;
+      CS          : out   std_logic;
+      WE          : out   std_logic;
+      ADDR        : out   std_logic_vector(12 downto 0);
+      BA          : out   std_logic_vector(1 downto 0);
+      DQSH        : inout std_logic := '0';
+      DQSL        : inout std_logic := '0';
+      DQ          : inout std_logic_vector(15 downto 0);
       -- interface
-      START    : in    std_logic;
-      RW       : in    std_logic;
-      DONE     : out   std_logic;
+      START       : in    std_logic;
+      RW          : in    std_logic;
+      DONE        : out   std_logic;
       -- write interface
-      ROWTGT   : in    std_logic_vector(14 downto 0);
-      WRADDR   : out   std_logic_vector(7 downto 0);
-      WRDATA   : in    std_logic_vector(31 downto 0);
+      ROWTGT      : in    std_logic_vector(14 downto 0);
+      WRADDR      : out   std_logic_vector(7 downto 0);
+      WRDATA      : in    std_logic_vector(31 downto 0);
       -- read interface
-      RDADDR   : out   std_logic_vector(7 downto 0);
-      RDDATA   : out   std_logic_vector(31 downto 0);
-      RDWE     : out   std_logic
+      RDADDR      : out   std_logic_vector(7 downto 0);
+      RDDATA      : out   std_logic_vector(31 downto 0);
+      RDWE        : out   std_logic;
+      DQALIGNPOSL : out   std_logic_vector(7 downto 0);
+      DQALIGNPOSH : out   std_logic_vector(7 downto 0)
+
       );
   end component;
 
@@ -125,7 +129,15 @@ architecture Behavioral of memdebugtest is
   signal RDDATA : std_logic_vector(31 downto 0) := (others => '0');
   signal RDWE   : std_logic                     := '0';
 
+  signal MEMIFSEL : std_logic := '0';
+
+  signal DQALIGNPOSL : std_logic_vector(7 downto 0) := (others => '0');
+
+  signal DQALIGNPOSH : std_logic_vector(7 downto 0) := (others => '0');
+
+
   -- debug IF
+
   signal CCLK    : std_logic                     := '0';
   signal CWRADDR : std_logic_vector(3 downto 0)  := (others => '0');
   signal CRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
@@ -447,7 +459,9 @@ begin  -- Behavioral
       WRDATA   => WRDATA,
       RDADDR   => RDADDR,
       RDDATA   => RDDATA,
-      RDWE     => RDWE);
+      RDWE     => RDWE,
+      DQALIGNPOSL => DQALIGNPOSL,
+      DQALIGNPOSH => DQALIGNPOSH);
 
   mainclk <= not mainclk after (clk_period / 2);
 
@@ -676,6 +690,7 @@ begin  -- Behavioral
       MEMCLK   => clk,
       MEMRESET => memrst,
       MEMREADY => memready,
+      MEMIFSEL => memifsel,
       START    => start,
       rw       => rw,
       DONE     => done,
@@ -713,14 +728,14 @@ begin  -- Behavioral
       exit when CDOUT = X"0001";
     end loop;
     wait for 20 us;
-    
+
     -- write four rows, and read them back
     for rowtgti in 0 to 3 loop
       
       for i in 0 to 511 loop
         -- write the address
         writeword(4, std_logic_vector(TO_UNSIGNED(i, 16)), cwraddr, cwe, cdin);
-        writeword(5, std_logic_vector(TO_UNSIGNED(i + 1 + rowtgti * 256, 16)),
+        writeword(5, std_logic_vector(TO_UNSIGNED(i + 12 + rowtgti * 256, 16)),
                   cwraddr, cwe, cdin);
       end loop;  -- i
       -- write row tgt 
@@ -748,7 +763,7 @@ begin  -- Behavioral
 
     -- Read four rows, and verify their contents
     for rowtgti in 0 to 3 loop
-      
+
       -- write row tgt 
       writeword(3, std_logic_vector(TO_UNSIGNED(rowtgti, 16)), cwraddr, cwe, cdin);
       -- check that the row tgt was written
@@ -773,22 +788,23 @@ begin  -- Behavioral
       for i in 0 to 511 loop
         -- write the address
         writeword(4, std_logic_vector(TO_UNSIGNED(i, 16)), cwraddr, cwe, cdin);
-        readword(9, crdaddr, crd); 
-        assert CDOUT = std_logic_vector(TO_UNSIGNED(i + 1 +  rowtgti * 256, 16))
+        readword(9, crdaddr, crd);
+        assert CDOUT = std_logic_vector(TO_UNSIGNED(i + 12 + rowtgti * 256, 16))
           report "Error reading out word" severity error;
       end loop;  -- i
       
     end loop;  -- rowi
 
+    report "End of Simulation" severity failure;
 
-     --  Try and reset the interface
-    writeword(1,X"0001", 
+    --  Try and reset the interface
+    writeword(1, X"0001",
               cwraddr, cwe, cdin);
     wait until rising_edge(CLK) and MEMREADY = '0';
     
-    writeword(1,X"0000", 
+    writeword(1, X"0000",
               cwraddr, cwe, cdin);
-    
+
     -- now wait unti memready
     while true loop
       wait until rising_edge(CLK);
@@ -796,7 +812,11 @@ begin  -- Behavioral
       exit when CDOUT = X"0001";
     end loop;
     wait for 20 us;
-    
+
+-- try and assert control of the IF
+    writeword(7, X"0001",
+              cwraddr, cwe, cdin);
+    wait until rising_edge(CLK) and MEMIFSEL = '1';
 
 
     report "End of Simulation" severity failure;
