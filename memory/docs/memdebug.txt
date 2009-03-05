@@ -21,7 +21,7 @@ addr 7 : write '1' to select the debug memory interface, 0 to disable
 addr 8 : 
 addr 9 : read the word of the output FIFO
 addr 10:
-addr 11: 
+addr 11: debugging write counts
 addr 12: start a memory read transaction; value written is a nonce for this txn
 addr 13: start a memory write transaction : value written is a nonce for this txn
 addr 14: returns the most recently completed txn nonce

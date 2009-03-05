@@ -830,7 +830,7 @@ begin  -- Behavioral
   -- DSP DeviceLinks
   ----------------------------------------------------------------------------
 
-  devicelinks_and_mux : for i in 0 to 3 generate
+  devicelinks_and_mux : for i in 0 to 7 generate
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
     signal dllocked      : std_logic                    := '0';

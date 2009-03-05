@@ -774,6 +774,8 @@ begin  -- Behavioral
       MEMRDWE   => netmemrdwe);
 
   memddr2_inst : entity memory.memddr2
+    generic map (
+      DQALIGN_USEDYNAMIC => false)
     port map (
       CLK         => MEMCLK,
       CLK90       => memclk90,

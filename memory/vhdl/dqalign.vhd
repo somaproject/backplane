@@ -7,7 +7,8 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity dqalign is
-
+  generic (
+    USEDYNAMIC : boolean := true);
   port (
     CLK          : in    std_logic;
     CLK90        : in    std_logic;
@@ -87,19 +88,37 @@ begin  -- Behavioral
 
   LATENCYEXTRA <= osel;
 
-  IDELAY_dqs : IDELAY
-    generic map (
-      IOBDELAY_TYPE  => "VARIABLE",
-      --IOBDELAY_TYPE => "FIXED", 
-      IOBDELAY_VALUE => 0)              -- FIXEDDELAY)
-    port map (
-      O   => dqsdelay,
-      C   => CLK,
-      CE  => dqsce,
-      I   => dqsin,
-      INC => dqsinc,
-      RST => inrst
-      );
+  use_dynamic_dqs_true : if USEDYNAMIC = true generate
+    IDELAY_dqs : IDELAY
+      generic map (
+        IOBDELAY_TYPE  => "VARIABLE",
+        IOBDELAY_VALUE => 0)
+      port map (
+        O   => dqsdelay,
+        C   => CLK,
+        CE  => dqsce,
+        I   => dqsin,
+        INC => dqsinc,
+        RST => inrst
+        );
+  end generate use_dynamic_dqs_true;
+
+  use_dynamic_dqs_false : if USEDYNAMIC = false generate
+    IDELAY_dqs : IDELAY
+      generic map (
+        IOBDELAY_TYPE  => "FIXED",
+        IOBDELAY_VALUE => FIXEDDELAY)
+      port map (
+        O => dqsdelay,
+        C => CLK,
+        CE  => '0',
+        I => dqsin,
+        INC => '0',
+        RST => inrst
+        );
+  end generate use_dynamic_dqs_false;
+
+
 
   IOBUF_inst : IOBUF
     port map (
@@ -143,19 +162,37 @@ begin  -- Behavioral
         T  => dqtsint
         );
 
+    use_dynamic_dq_true : if USEDYNAMIC = true generate
 
-    IDELAY_dq : IDELAY
-      generic map (
-        IOBDELAY_TYPE  => "VARIABLE",
-        IOBDELAY_VALUE => 0)            --FIXEDDELAY)
-      port map (
-        O   => dqdelay(i),
-        C   => CLK,
-        CE  => dqce,
-        I   => dqi(i),
-        INC => dqinc,
-        RST => inrst
-        );
+      IDELAY_dq : IDELAY
+        generic map (
+          IOBDELAY_TYPE  => "VARIABLE",
+          IOBDELAY_VALUE => 0)
+        port map (
+          O   => dqdelay(i),
+          C   => CLK,
+          CE  => dqce,
+          I   => dqi(i),
+          INC => dqinc,
+          RST => inrst
+          );
+    end generate use_dynamic_dq_true;
+
+    use_dynamic_dq_false : if USEDYNAMIC = false generate
+
+      IDELAY_dq : IDELAY
+        generic map (
+          IOBDELAY_TYPE  => "FIXED",
+          IOBDELAY_VALUE => FIXEDDELAY)
+        port map (
+          O => dqdelay(i),
+          C => CLK,
+          CE  => '0',
+          I => dqi(i),
+          INC => '0',
+          RST => inrst
+          );
+    end generate use_dynamic_dq_false;
 
     IDDR_dq : IDDR
       generic map (
@@ -204,9 +241,9 @@ begin  -- Behavioral
       S  => '0'
       );
 
-  DONE <= '1' when cs = dones else '0';
-  --DONE <= '1'; 
-
+  DONE <= '1' when USEDYNAMIC = false else
+          '1' when cs = dones else '0';
+  
   dqs_dq : IDDR
     generic map (
       DDR_CLK_EDGE => "OPPOSITE_EDGE",
@@ -282,14 +319,17 @@ begin  -- Behavioral
         DOUT(7 downto 0)  <= ddq1l;
       end if;
 
-      if cs = propw4 then
-        if dqscnt >= 20 then
-          osel <= '1';
-        else
-          osel <= '0';
+      if USEDYNAMIC = false then
+        osel <= '1';
+      else
+        if cs = propw4 then
+          if dqscnt >= 20 then
+            osel <= '1';
+          else
+            osel <= '0';
+          end if;
         end if;
       end if;
-
       POSOUT <= osel & "0" & dqscnt;
 
     end if;
