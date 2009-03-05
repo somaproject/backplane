@@ -170,6 +170,7 @@ architecture Behavioral of memtest is
 
   signal csreg          : std_logic_vector(39 downto 0) := (others => '0');
   signal reset1, reset2 : std_logic                     := '0';
+  signal delayready : std_logic := '0';
   
 begin
 
@@ -282,7 +283,7 @@ begin
 
   reset1 <= not locked;
   reset2 <= not locked2;
-  RESET  <= not locked2;
+  RESET  <= not delayready;
 
   clk_bufg : BUFG
     port map (
@@ -326,9 +327,9 @@ begin
 
   dlyctrl : IDELAYCTRL
     port map(
-      RDY    => open,
+      RDY    => delayready,
       REFCLK => clk,
-      RST    => reset
+      RST    => reset2
       );
 
 

@@ -52,7 +52,10 @@ architecture Behavioral of memddr2test is
       -- read interface
       RDADDR : out   std_logic_vector(7 downto 0);
       RDDATA : out   std_logic_vector(31 downto 0);
-      RDWE   : out   std_logic
+      RDWE   : out   std_logic;
+      -- debug 
+      DQALIGNPOSL : out   std_logic_vector(7 downto 0);
+      DQALIGNPOSH : out   std_logic_vector(7 downto 0)
       );
   end component;
 
@@ -96,6 +99,11 @@ architecture Behavioral of memddr2test is
   signal RDADDR : std_logic_vector(7 downto 0)  := (others => '0');
   signal RDDATA : std_logic_vector(31 downto 0) := (others => '0');
   signal RDWE   : std_logic                     := '0';
+
+  -- debug
+  signal DQALIGNPOSL : std_logic_vector(7 downto 0) := (others => '0'); 
+  signal DQALIGNPOSH : std_logic_vector(7 downto 0) := (others => '0'); 
+                                                       
 
   component HY5PS121621F
     generic (
@@ -377,7 +385,9 @@ begin  -- Behavioral
       WRDATA => WRDATA,
       RDADDR => RDADDR,
       RDDATA => RDDATA,
-      RDWE   => RDWE);
+      RDWE   => RDWE,
+      DQALIGNPOSL => DQALIGNPOSL,
+      DQALIGNPOSH => DQALIGNPOSH);
 
   mainclk <= not mainclk after (clk_period / 2);
 

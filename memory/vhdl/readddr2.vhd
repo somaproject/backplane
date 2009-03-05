@@ -96,6 +96,7 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgtl(12
       rwesreg   <= rwesreg(12 downto 0) & incacnt;
       raddrsreg <= raddrsreg(12 downto 0) & acnt(7 downto 0);
 
+      
       RDATA <= DIN;
 
 

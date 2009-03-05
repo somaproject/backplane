@@ -208,8 +208,11 @@ architecture Behavioral of backplane is
   signal MEMDEBUGRD     : std_logic                     := '0';
   signal MEMDEBUGDIN    : std_logic_vector(15 downto 0) := (others => '0');
   signal MEMDEBUGDOUT   : std_logic_vector(15 downto 0) := (others => '0');
-  
 
+  signal mainclkrst : std_logic := '1';
+
+  signal dcm2reset : std_logic := '1';
+  
 begin  -- Behavioral
 
 
@@ -300,7 +303,7 @@ begin  -- Behavioral
 
       );
 
-  RESET <= not locked2;
+  dcm2reset <= not locked2;
 
   memclk_bufg : BUFG
     port map (
@@ -811,10 +814,12 @@ begin  -- Behavioral
     end if;
   end process;
 
-
+  RESET <= not maindcmlocked;
+  
   devicelinkclk_inst : entity work.devicelinkclk
     port map (
-      CLKIN       => CLKIN,
+      CLKIN       => clk,
+      RESET =>  dcm2reset, 
       CLKBITTX    => clkbittx,
       CLKBITTX180 => clkbittx180,
       CLKBITRX    => clkbitrx,

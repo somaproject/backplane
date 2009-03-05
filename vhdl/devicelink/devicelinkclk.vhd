@@ -12,6 +12,7 @@ use UNISIM.VComponents.all;
 entity devicelinkclk is
   port (
     CLKIN       : in  std_logic;        -- 50 MHz input clock
+    RESET : in std_logic; 
     CLKBITTX    : out std_logic;        -- 300 MHz output clock
     CLKBITTX180 : out std_logic;        -- 300 MHz output clock, 180 phase
     CLKBITRX    : out std_logic;        -- 250 MHz output clock 
@@ -43,6 +44,9 @@ architecture Behavioral of devicelinkclk is
   signal clkwordtxdc, clkwordtxdcint : std_logic := '0';
 
   signal txworddc_lock : std_logic := '0';
+
+  signal delayready : std_logic := '0';
+  
 begin  -- Behavioral
 
   -- Turn the 50 MHz clock into a 150 MHz Clock
@@ -67,7 +71,7 @@ begin  -- Behavioral
       CLK0                  => clkint,
       CLKFB                 => clk,
       CLKFX                 => clksrcint,
-      RST                   => '0',
+      RST                   => RESET,
       LOCKED                => base_lock
       );
 
@@ -154,7 +158,7 @@ begin  -- Behavioral
 
   dlyctrl : IDELAYCTRL
     port map(
-      RDY    => open,
+      RDY    => delayready,
       REFCLK => clkwordtxout,
       RST    => dcmreset
       );
@@ -192,6 +196,6 @@ begin  -- Behavioral
 
   CLKWORDTX <= clkwordtxout;
   
-  STARTUPDONE <= txworddc_lock;
+  STARTUPDONE <= txworddc_lock and delayready;
 end Behavioral;
 
