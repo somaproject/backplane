@@ -26,7 +26,15 @@ def getnum(evt):
     num |= evt.data[3]
     return num
 
-eio = NetEventIO("10.0.0.2")
+sys.path.append("../../jtag")
+import jtag
+
+if len(sys.argv) > 1 and sys.argv[1] == "jtag":
+    eio = jtag.JTAGEventIO()
+    src = eaddr.JTAG
+else:
+    eio = NetEventIO("10.0.0.2")
+    src = eaddr.NETWORK
 
 eio.addRXMask(xrange(256), eaddr.NETCONTROL)
 
@@ -55,7 +63,7 @@ print "Event counters---------------------------------------"
 for i in xrange(7):
     # first query the count
     e = Event()
-    e.src = eaddr.NETWORK
+    e.src = src
     e.cmd =  0x40
     e.data[0] = i*2+1
     
@@ -73,7 +81,7 @@ for i in xrange(7):
 
     #then get the legnt
     e = Event()
-    e.src = eaddr.NETWORK
+    e.src = src
     e.cmd =  0x40
     e.data[0] = i*2
     
@@ -94,7 +102,7 @@ print
 print "Network error Counters ----------------------------------"
 for i in xrange(5):
     e = Event()
-    e.src = eaddr.NETWORK
+    e.src = src
     e.cmd =  0x40
     e.data[0] = i + 0x10
     
@@ -112,6 +120,28 @@ for i in xrange(5):
     cntevt = erx[0]
     print "%s \t %10d packets" % (ERRORCNT[i], getnum(cntevt))
 
+print
+print "Memory interface info ---------------------------------------"
+for i in range(1):
+    e = Event()
+    e.src = src
+    e.cmd =  0x40
+    e.data[0] = 0x18
+    
+    ea = eaddr.TXDest()
+    ea[eaddr.NETCONTROL] = 1
+    while True:
+        try:
+            eio.sendEvent(ea, e)
+            break
+        except IOError:
+            pass
+    
+    erx = eio.getEvents()
+    cntevt = erx[0]
+    print "memory delay low : %d " % (cntevt.data[3] % 0xFF)
+    print "memory delay low : %d " % (cntevt.data[3] >> 8)
+    
     
 
 eio.stop()
