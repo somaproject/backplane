@@ -11,6 +11,8 @@ library work;
 use work.netports;
 
 entity inputcontrol is
+  generic (
+    USE_CRCVERIFY : boolean := true);
   port (
     CLK          : in  std_logic;
     RESET        : in  std_logic;
@@ -170,8 +172,16 @@ begin  -- Behavioral
 
   
   web       <= '1' when cs = lenupd else '0';
-  
-  crcvalidl <= crcvalid;
+
+  use_input_crc: if USE_CRCVERIFY generate
+    crcvalidl <= crcvalid;
+  end generate use_input_crc;
+
+
+  not_use_input_crc: if USE_CRCVERIFY = false generate
+    crcvalidl <= '1'; 
+  end generate not_use_input_crc;
+
 
   ldebug(7 downto 0) <= debugstate; 
   main : process(CLK, RESET)
@@ -292,20 +302,23 @@ begin  -- Behavioral
         mode       <= 0;
         start      <= '0';
         intaddrb   <= X"07";
-        if crccnt = 14 then             -- CRC validation timeout check
-          ns <= crcerr;
-        else
-          if crcdone = '1' then
-            if crcvalidl = '1' then
-              ns <= lenupd;
-            else
-              ns <= crcerr;
-            end if;
+        if USE_CRCVERIFY then
+          if crccnt = 14 then             -- CRC validation timeout check
+            ns <= crcerr;
           else
-            ns   <= crcvfy;
+            if crcdone = '1' then
+              if crcvalidl = '1' then
+                ns <= lenupd;
+              else
+                ns <= crcerr;
+              end if;
+            else
+              ns   <= crcvfy;
+            end if;
           end if;
-        end if;
-        
+        else
+          ns <= lenupd;
+        end if; 
       when crcerr =>
         debugstate <= X"04"; 
         lnextframe <= '0';

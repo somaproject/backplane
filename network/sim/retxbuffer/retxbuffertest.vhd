@@ -1,7 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 use IEEE.VITAL_timing.all;
 use IEEE.VITAL_primitives.all;
@@ -126,6 +124,7 @@ architecture Behavioral of retxbuffertest is
       CLK180 : in    std_logic;
       CLK270 : in    std_logic;
       RESET  : in    std_logic;
+      MEMREADY : out std_logic; 
       -- RAM!
       CKE    : out   std_logic := '0';
       CAS    : out   std_logic;
@@ -386,6 +385,7 @@ architecture Behavioral of retxbuffertest is
   signal outbufferb : outbuffer;
 
   signal ldqsneg, udqsneg : std_logic := '0';
+  signal MEMREADY : std_logic := '0';
   
 begin  -- Behavioral
 
@@ -400,6 +400,7 @@ begin  -- Behavioral
       CLK180 => CLK180,
       CLK270 => CLK270,
       RESET  => RESET,
+      MEMREADY => MEMREADY, 
       CKE    => CKE,
       CAS    => CAS,
       RAS    => RAS,
@@ -704,8 +705,9 @@ begin  -- Behavioral
   -- input A process
   inputA : process
   begin
-    wait for 450 us;
-    for i in 0 to 63 loop
+    wait until rising_edge(CLK) and MEMREADY = '1';
+    
+    for i in 0 to 31 loop
       for j in 0 to 511 loop
         wait until rising_edge(CLKnom);
         wdina  <= "1" & std_logic_vector(TO_UNSIGNED(i, 5))
@@ -739,8 +741,9 @@ begin  -- Behavioral
     variable expected : std_logic_vector(15 downto 0) := (others => '0');
     
   begin
-    wait for 480 us;
-    for i in 0 to 63 loop
+    wait until rising_edge(CLK) and MEMREADY = '1';
+    wait for 50 us;                   -- extra delay so we lag writer
+    for i in 0 to 31 loop
       wait until rising_edge(CLKnom);
       rida  <= std_logic_vector(to_UNSIGNED((i+1) * 7, 14));
       rreqa <= '1';
@@ -754,7 +757,7 @@ begin  -- Behavioral
         assert expected = outbuffera(j)
           report "Error in reading outputA buffer A: addr = "
           & integer'image(j) & " " 
-          & integer'image(to_integer(unsigned(expected))) & " != " &
+          & integer'image(to_integer(unsigned(expected))) & " (expected) != " &
           integer'image(to_integer(unsigned(outbuffera(j))))
           severity error;
 
@@ -770,8 +773,9 @@ begin  -- Behavioral
     -- input B process
     inputB : process
     begin
-      wait for 450 us;
-      for i in 0 to 63 loop
+      wait until rising_edge(CLK) and MEMREADY = '1';
+
+      for i in 0 to 31 loop
         for j in 0 to 511 loop
           wait until rising_edge(CLKnom);
           wdinb  <= "0" & std_logic_vector(TO_UNSIGNED(i, 5))
@@ -795,8 +799,7 @@ begin  -- Behavioral
     begin
       if rising_edge(CLKnom) then
         if RWROUTB = '1' then
-          outbufferb(to_INTEGER(unsigned(raddrb))) <= (rdoutb(7 downto 0) &
-                                                       rdoutb(15 downto 8));
+          outbufferb(to_INTEGER(unsigned(raddrb))) <= rdoutb; 
         end if;
       end if;
     end process;
@@ -806,8 +809,9 @@ begin  -- Behavioral
           variable expected : std_logic_vector(15 downto 0) := (others => '0');
 
     begin
-      wait for 500 us;
-      for i in 0 to 63 loop
+      wait until rising_edge(CLK) and MEMREADY = '1';
+      wait for 50 us;                   -- extra delay so we lag writer
+      for i in 0 to 31 loop
         wait until rising_edge(CLKnom);
         ridb  <= std_logic_vector(to_UNSIGNED((i+1) * 13, 14));
         rreqb <= '1';
@@ -821,7 +825,7 @@ begin  -- Behavioral
         assert expected = outbufferb(j)
           report "Error in reading outputB buffer B: addr = "
           & integer'image(j) & " " 
-          & integer'image(to_integer(unsigned(expected))) & " != " &
+          & integer'image(to_integer(unsigned(expected))) & " (expected) != " &
           integer'image(to_integer(unsigned(outbufferb(j))))
           severity error;
 

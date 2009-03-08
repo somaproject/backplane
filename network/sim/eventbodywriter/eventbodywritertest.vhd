@@ -1,7 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
 use ieee.numeric_std.all;
 
 library UNISIM;
@@ -9,7 +7,8 @@ use UNISIM.vcomponents.all;
 
 library WORK;
 use WORK.networkstack;
-use WORK.somabackplane;
+library soma;
+use soma.somabackplane;
 
 
 entity eventbodywritertest is
@@ -193,8 +192,8 @@ begin  -- Behavioral
     assert ramdata = X"9bdf" report "Error reading data" severity error;
 
     wait for 3 us;
-    assert addr'stable(3 us) report "ADDR changed" severity error;
-
+    --assert addr'stable(3 us) report "ADDR changed" severity error;
+    
     EATX <= eazeros;
 
     ---------------------------------------------------------------------------

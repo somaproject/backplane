@@ -1,2 +1,16 @@
-Here we attempt to test and verify that the event retx module works as expected. 
+
+We listen to event transmission packets, and then wait for the event to be 
+transmitted with the old requested sequence number
+
+
+eventrxdecode:
+
+Decodes the events transmitted by the network
+interface. At the moment we are just transmitting timestamps from timer, 
+so we extract out the event sequence ID and the timestamp. 
+
+
+retxreq_inst: 
+
+Requests a retransmission when RETXREQREQ is asserted
 

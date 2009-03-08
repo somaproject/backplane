@@ -16,6 +16,7 @@ use work.netports;
 entity eventtx is
   port (
     CLK         : in  std_logic;
+    RESET       : in  std_logic;
     -- header fields
     MYMAC       : in  std_logic_vector(47 downto 0);
     MYIP        : in  std_logic_vector(31 downto 0);
@@ -29,9 +30,9 @@ entity eventtx is
     DOEN        : out std_logic;
     GRANT       : in  std_logic;
     ARM         : out std_logic;
-    PKTSUCCESS : out std_logic; 
+    PKTSUCCESS  : out std_logic;
     -- Retx write interface
-    RETXID      : out std_logic_vector(13 downto 0);
+    RETXID      : out std_logic_vector(13 downto 0) := (others => '0');
     RETXDOUT    : out std_logic_vector(15 downto 0);
     RETXADDR    : out std_logic_vector(8 downto 0);
     RETXDONE    : out std_logic;
@@ -87,7 +88,7 @@ architecture Behavioral of eventtx is
   signal wea   : std_logic                     := '0';
   signal addra : std_logic_vector(8 downto 0)  := (others => '0');
 
-  type instates is (none, firstchk, fullchk, hdrs, hdrw, idwrh, idwrl, flipbuf);
+  type   instates is (none, firstchk, fullchk, hdrs, hdrw, idwrh, idwrl, flipbuf);
   signal ics, ins : instates := none;
 
   -- TX Mux output side
@@ -98,7 +99,7 @@ architecture Behavioral of eventtx is
   signal outen         : std_logic                     := '0';
   signal ovalid, onext : std_logic                     := '0';
 
-  type outstates is (none, armw, pktout, pktsuc, done);
+  type   outstates is (none, armw, pktout, pktsuc, done);
   signal ocs, ons : outstates := none;
 
   -- retx output side
@@ -108,7 +109,7 @@ architecture Behavioral of eventtx is
 
   signal revalid, renext : std_logic := '0';
 
-  type restates is (none, fifowr, fifodone, fifow, done);
+  type   restates is (none, fifowr, fifodone, fifow, done);
   signal recs, rens : restates := none;
 
 
@@ -204,15 +205,15 @@ begin  -- Behavioral
 
   -- combinationals, input side
 
-  dia <= idword  when osel = 0 else
+  dia <= idword when osel = 0 else
          douthdr when osel = 1 else
          doutbody;
 
-  wea <= '1'      when osel = 0 else
+  wea <= '1' when osel = 0 else
          weouthdr when osel = 1
          else weoutbody;
 
-  addra <= idaddr              when osel = 0 else
+  addra <= idaddr when osel = 0 else
            addrhdr(8 downto 0) when osel = 1 else
            (dataaddr + "000011000");
 
@@ -225,39 +226,42 @@ begin  -- Behavioral
   wlen     <= ('0' & datalen) + "0000000010";
   dataaddr <= addrbody + datalen;
 
-  nextpktsize <= ('0' & ebcnt & "000") + ("00" & datalen );
+  nextpktsize <= ('0' & ebcnt & "000") + ("00" & datalen);
 
-  PKTSUCCESS <= '1' when ocs = pktsuc else '0'; 
-  main_input : process(CLK)
+  PKTSUCCESS <= '1' when ocs = pktsuc else '0';
+  main_input : process(CLK, RESET)
   begin
-    if rising_edge(CLK) then
-      ics <= ins;
+    if RESET = '1' then
 
-      if ebcntdone = '1' then
-        ebcnt <= lebcnt;
-      end if;
-      ecyclel <= ECYCLE;
+    else
+      if rising_edge(CLK) then
+        ics <= ins;
 
-      if nextbuf = '1' then
-        datalen   <= (others => '0');
-      else
-        if ebdone = '1' then
-          datalen <= dataaddr;
-        end if;
-      end if;
-
-      if nextbuf = '1' then
-        ecnt   <= 1;
-      else
         if ebcntdone = '1' then
-          ecnt <= ecnt + 1;
+          ebcnt <= lebcnt;
+        end if;
+        ecyclel <= ECYCLE;
+
+        if nextbuf = '1' then
+          datalen <= (others => '0');
+        else
+          if ebdone = '1' then
+            datalen <= dataaddr;
+          end if;
+        end if;
+
+        if nextbuf = '1' then
+          ecnt <= 1;
+        else
+          if ebcntdone = '1' then
+            ecnt <= ecnt + 1;
+          end if;
+        end if;
+
+        if nextbuf = '1' then
+          id <= id + 1;
         end if;
       end if;
-
-      if nextbuf = '1' then
-        id <= id + 1;
-      end if;
-
     end if;
   end process main_input;
 
@@ -271,9 +275,9 @@ begin  -- Behavioral
         osel     <= 2;
         idsel    <= '0';
         if ebcntdone = '1' then
-          ins    <= firstchk;
+          ins <= firstchk;
         else
-          ins    <= none;
+          ins <= none;
         end if;
 
       when firstchk =>
@@ -282,9 +286,9 @@ begin  -- Behavioral
         osel     <= 2;
         idsel    <= '0';
         if ecnt = 1 then
-          ins    <= none;
+          ins <= none;
         else
-          ins    <= fullchk;
+          ins <= fullchk;
         end if;
 
       when fullchk =>
@@ -292,12 +296,12 @@ begin  -- Behavioral
         hdrstart <= '0';
         osel     <= 2;
         idsel    <= '0';
-        if ecnt = 26 or            -- we are in the 26 ecycle, so there
+        if ecnt = 26 or                 -- we are in the 26 ecycle, so there
           -- are 25 in the buffer
-          (nextpktsize > "00111101000" ) then
-          ins    <= hdrs;
+          (nextpktsize > "00111101000") then
+          ins <= hdrs;
         else
-          ins    <= none;
+          ins <= none;
         end if;
 
       when hdrs =>
@@ -313,9 +317,9 @@ begin  -- Behavioral
         osel     <= 1;
         idsel    <= '0';
         if hdrdone = '1' then
-          ins    <= idwrh;
+          ins <= idwrh;
         else
-          ins    <= hdrw;
+          ins <= hdrw;
         end if;
 
       when idwrh =>
@@ -382,7 +386,7 @@ begin  -- Behavioral
       DOEN <= outen;
 
       if ocs = none then
-        oaddr   <= (others => '0');
+        oaddr <= (others => '0');
       else
         if outen = '1' then
           oaddr <= oaddr + 1;
@@ -423,8 +427,8 @@ begin  -- Behavioral
         end if;
       when pktsuc =>
         onext <= '0';
-        ons <= done; 
-      when done   =>
+        ons   <= done;
+      when done =>
         onext <= '1';
         ons   <= none;
       when others =>
@@ -448,12 +452,12 @@ begin  -- Behavioral
       VALID    => revalid,
       FIFONEXT => renext);
 
-  RETXDOUT <= redata; 
+  RETXDOUT <= redata;
 
   main_retxoutput : process(CLK)
   begin
     if rising_edge(CLK) then
-      recs     <= rens;
+      recs <= rens;
       if readdr = "000011000" then
         RETXID <= redata(13 downto 0);
       end if;
@@ -462,7 +466,7 @@ begin  -- Behavioral
       RETXWE   <= reen;
 
       if renext = '1' then
-        readdr   <= (others => '0');
+        readdr <= (others => '0');
       else
         if reen = '1' then
           readdr <= readdr + 1;
@@ -482,9 +486,9 @@ begin  -- Behavioral
         renext   <= '0';
         RETXDONE <= '0';
         if revalid = '1' then
-          rens   <= fifowr;
+          rens <= fifowr;
         else
-          rens   <= none;
+          rens <= none;
         end if;
 
       when fifowr =>
@@ -492,9 +496,9 @@ begin  -- Behavioral
         renext   <= '0';
         RETXDONE <= '0';
         if readdr = "111111111" then
-          rens   <= fifodone;
+          rens <= fifodone;
         else
-          rens   <= fifowr;
+          rens <= fifowr;
         end if;
 
       when fifodone =>
@@ -502,9 +506,9 @@ begin  -- Behavioral
         renext   <= '0';
         RETXDONE <= '1';
         if RETXPENDING = '1' then
-          rens   <= fifow;
+          rens <= fifow;
         else
-          rens   <= fifodone;
+          rens <= fifodone;
         end if;
 
       when fifow =>
@@ -512,9 +516,9 @@ begin  -- Behavioral
         renext   <= '0';
         RETXDONE <= '0';
         if RETXPENDING = '0' then
-          rens   <= done;
+          rens <= done;
         else
-          rens   <= fifow;
+          rens <= fifow;
         end if;
 
       when done =>

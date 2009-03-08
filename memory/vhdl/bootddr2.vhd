@@ -15,10 +15,10 @@ entity bootddr2 is
     DONE  : out std_logic;
     -- ram interface
     CKE   : out std_logic := '0';
-    CS    : out std_logic;
-    RAS   : out std_logic;
-    CAS   : out std_logic;
-    WE    : out std_logic;
+    CS    : out std_logic := '1';
+    RAS   : out std_logic := '1';
+    CAS   : out std_logic := '1';
+    WE    : out std_logic := '1';
     ADDR  : out std_logic_vector(12 downto 0);
     BA    : out std_logic_vector(1 downto 0);
     -- parameters

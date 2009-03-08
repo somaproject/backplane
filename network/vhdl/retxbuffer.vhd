@@ -172,7 +172,10 @@ begin  -- Behavioral
         RDONEA <= '0';
       end if;
 
-      WPENDINGA <= wdoneal; 
+      WPENDINGA <= wdoneal;
+      
+      RWROUTA <= rena;
+      
     end if;
 
   end process read_a;
@@ -202,7 +205,7 @@ begin  -- Behavioral
 
       WPENDINGB <= wdonebl; 
 
-
+      RWROUTB <= renb;
 
     end if;
   end process read_B;
@@ -258,7 +261,6 @@ begin  -- Behavioral
 
 
 
-      RWROUTA <= rena;
       --output B
       if rreqb = '1' then
         ridbl <= RIDB;
@@ -280,8 +282,6 @@ begin  -- Behavioral
         end if;
       end if;
 
-      RWROUTB <= renb;
-
       if asel = '1' then
         MEMWRDATA <= wda;
       else
@@ -291,8 +291,8 @@ begin  -- Behavioral
     end if;
   end process himain;
 
-  rena <= '1' when lraddra /= "1000000001" else '0';
-  renb <= '1' when lraddrb /= "1000000001" else '0';
+  rena <= '1' when lraddra /= "1000000000" else '0';
+  renb <= '1' when lraddrb /= "1000000000" else '0';
 
 
   main : process(CLK)
@@ -520,11 +520,11 @@ begin  -- Behavioral
         rw       <= '0';
         asel     <= '0';
         memstart <= '0';
---        if MEMDONE = '1' then           -- fixme
+        if MEMDONE = '1' then           -- fixme DEBUGGING
           ns     <= rdbdone;
---        else
---          ns     <= rdbwait;
---        end if;
+        else
+          ns     <= rdbwait;
+        end if;
 
       when rdbdone =>
         rw       <= '0';

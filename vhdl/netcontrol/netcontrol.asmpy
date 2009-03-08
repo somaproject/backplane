@@ -24,6 +24,9 @@ EVTCMDRSP_CNTQUERY = 0x40
 
 EVTCMD_CNTRESET = 0x41
 
+EVTCMD_MEMDEBUG_WRITE = 0x54
+EVTCMD_MEMDEBUG_READ = 0x55
+MEMDEBUG_ADDR_OFFSET = 0x10
 
 NICSERADDR_START = 0x00
 NICSERADDR_RW    = 0x01
@@ -40,7 +43,7 @@ linkNextState = env.createVariable("linkNextState")
 mostRecentDirectNICSerialReq = env.createVariable("mostRecentDirectNICSerialReq")
 linkDelay = env.createVariable("linkDelay")
 counterEventOut = env.createVariable("counterEventOut")
-
+debugvar = env.createVariable("debugvar")
 
 
 STATE_NONE = 0
@@ -335,7 +338,48 @@ def cntReset():
   proc.immadd(cntaddr, 0x20)
   proc.outputreg(cntaddr, cntaddr)
   
+def proc_memdebug_write():
+  """
+  Write to a particular memdebug address
+  """
+  proc = env.createEProc((EVTCMD_MEMDEBUG_WRITE, EVTCMD_MEMDEBUG_WRITE), (0, 255))
+  tmp = proc.createVariable("tmp2")
+  addrtgt = proc.createVariable("addrtgt")
+  proc.nop()
+  proc.move(addrtgt, ereg.edata[0])
+  proc.immadd(addrtgt, MEMDEBUG_ADDR_OFFSET) # add the offset
+  proc.move(tmp, ereg.edata[1])
+  proc.outputreg(addrtgt, tmp)
+  proc.immadd(env.debugvar, 1)
+  proc.nop()
   
+
+def proc_memdebug_read():
+  """
+  read from a particular MEMDEBUG address
+  """
+  proc = env.createEProc((EVTCMD_MEMDEBUG_READ, EVTCMD_MEMDEBUG_READ), (0, 255))
+  tmp = proc.createVariable("tmp2")
+  src = proc.createVariable("src")
+  tgtcmd = proc.createVariable("tgtcmd")
+  
+  addrtgt = proc.createVariable("addrtgt")
+  addrval = proc.createVariable("addrval")
+  proc.move(addrtgt, ereg.edata[0])
+  proc.move(addrval, ereg.edata[0])
+  proc.immadd(addrtgt, MEMDEBUG_ADDR_OFFSET) # add the offset
+  proc.output(addrtgt, ereg.edata[1])
+  proc.inputreg(addrtgt, tmp)
+  # now send it as an event
+  proc.move(src, ereg.src)
+  proc.output(EVENTOUT_SRC, src)
+  proc.output(EVENTOUT_DATA0, addrval)
+  proc.output(EVENTOUT_DATA1, tmp)
+  proc.output(EVENTOUT_DATA2, env.debugvar)
+  proc.load(tgtcmd, EVTCMD_MEMDEBUG_READ)
+  proc.output(EVENTOUT_CMD, tgtcmd)
+
+
 createEnableEventCycleProc()
 createEventCycleProc()
 rawNicSerialSettingRX()
@@ -345,3 +389,5 @@ cntReset()
 
 proc_send_ether()
 proc_raiselink()
+proc_memdebug_read()
+proc_memdebug_write()

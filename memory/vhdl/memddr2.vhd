@@ -7,18 +7,23 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity memddr2 is
+  generic (
+    INITWAIT_ENABLE    : in boolean := true;
+    DQALIGN_USEDYNAMIC : in boolean := true
+    ); 
   port (
     CLK         : in    std_logic;
     CLK90       : in    std_logic;
     CLK180      : in    std_logic;
     CLK270      : in    std_logic;
     RESET       : in    std_logic;
+    MEMREADY    : out   std_logic;
     -- RAM!
     CKE         : out   std_logic := '0';
-    CAS         : out   std_logic;
-    RAS         : out   std_logic;
-    CS          : out   std_logic;
-    WE          : out   std_logic;
+    CAS         : out   std_logic := '1';
+    RAS         : out   std_logic := '1';
+    CS          : out   std_logic := '1';
+    WE          : out   std_logic := '1';
     ADDR        : out   std_logic_vector(12 downto 0);
     BA          : out   std_logic_vector(1 downto 0);
     DQSH        : inout std_logic := '0';
@@ -55,17 +60,17 @@ architecture Behavioral of memddr2 is
   -- Refresh module
   component refreshddr2
     port (
-      CLK                  : in  std_logic;
-      START                : in  std_logic;
-      DONE                 : out std_logic;
+      CLK   : in  std_logic;
+      START : in  std_logic;
+      DONE  : out std_logic;
       -- ram interface
-      CS                   : out std_logic;
-      RAS                  : out std_logic;
-      CAS                  : out std_logic;
-      WE                   : out std_logic
+      CS    : out std_logic;
+      RAS   : out std_logic;
+      CAS   : out std_logic;
+      WE    : out std_logic
       );
   end component;
-  signal refstart, refdone :     std_logic := '0';
+  signal refstart, refdone : std_logic := '0';
 
   signal refcas : std_logic := '0';
   signal refras : std_logic := '0';
@@ -144,7 +149,7 @@ architecture Behavioral of memddr2 is
 
 
   component readddr2
-    port ( CLK          : in  std_logic;
+    port (CLK           : in  std_logic;
            START        : in  std_logic;
            DONE         : out std_logic;
            -- ram interface
@@ -178,6 +183,8 @@ architecture Behavioral of memddr2 is
   signal notterminate : std_logic := '0';
 
   component dqalign
+    generic (
+      USEDYNAMIC : boolean := true);
     port (
       CLK          : in    std_logic;
       CLK90        : in    std_logic;
@@ -217,6 +224,8 @@ architecture Behavioral of memddr2 is
   signal doutl, douth : std_logic_vector(15 downto 0) := (others => '0');
 
   signal latencyextra : std_logic_vector(1 downto 0) := (others => '0');
+  signal lmemready    : std_logic                    := '0';
+  signal memreadyl    : std_logic                    := '0';
 
   component memcontmux
     port (
@@ -266,7 +275,10 @@ architecture Behavioral of memddr2 is
   end component;
 
   signal rddataint : std_logic_vector(31 downto 0) := (others => '0');
-  signal dqts     : std_logic                     := '0';
+  signal dqts      : std_logic                     := '0';
+
+  signal initwait : std_logic_vector(23 downto 0) := (others => '0');
+  
 begin  -- Behavioral
 
 
@@ -343,6 +355,8 @@ begin  -- Behavioral
   RDDATA <= rddataint;
 
   dqalign_inst_low : dqalign
+    generic map (
+      USEDYNAMIC => DQALIGN_USEDYNAMIC)
     port map (
       CLK          => CLK,
       CLK90        => CLK90,
@@ -360,6 +374,8 @@ begin  -- Behavioral
       POSOUT       => DQALIGNPOSL);
 
   dqalign_inst_high : dqalign
+    generic map (
+      USEDYNAMIC => DQALIGN_USEDYNAMIC)
     port map (
       CLK          => CLK,
       CLK90        => CLK90,
@@ -379,7 +395,7 @@ begin  -- Behavioral
 
   DEBUG(1 downto 0) <= latencyextra;
   DEBUG(3)          <= rstart;
-
+  DEBUG(31)         <= lmemready;
 
   aldone <= aldonel and aldoneh;
 
@@ -434,26 +450,29 @@ begin  -- Behavioral
   main : process(CLK)
   begin
     if reset = '1' then
-      ocs <= none;
+      ocs      <= none;
+      MEMREADY <= '0';
     else
       if rising_edge(CLK) then
 
         ocs <= ons;
 
         if ocs = readdone or ocs = writedone then
-          startl   <= '0';
+          startl <= '0';
         else
           if START = '1' then
             startl <= '1';
           end if;
         end if;
-
+        MEMREADY  <= lmemready;
+        memreadyl <= lmemready;
+        initwait  <= initwait + 1;
       end if;
     end if;
   end process main;
 
   fsm : process(ocs, bootdone, aldone, rdone, wdone, refdone, start,
-                startl, rw)
+                startl, rw, initwait)
   begin
     case ocs is
       when none =>
@@ -464,8 +483,22 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '1';
-        ons       <= boot;
+        dqts      <= '1';
+        lmemready <= '0';
+        if INITWAIT_ENABLE then
+          if initwait(23) = '0' then
+            ons <= none;
+          else
+            ons <= boot;
+          end if;
+        else
+          
+          if initwait(14) = '0' then
+            ons <= none;
+          else
+            ons <= boot;
+          end if;
+        end if;
 
       when boot =>
         dsel      <= 1;
@@ -475,11 +508,12 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '0';
         if bootdone = '1' then
-          ons     <= dumbread;
+          ons <= dumbread;
         else
-          ons     <= boot;
+          ons <= boot;
         end if;
 
       when dumbread =>
@@ -490,7 +524,8 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '1';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '0';
         ons       <= aligns;
 
       when aligns =>
@@ -501,7 +536,8 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '1';
         alstart   <= '1';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '0';
         ons       <= alignw;
 
       when alignw =>
@@ -512,11 +548,12 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '1';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '0';
         if aldone = '1' then
-          ons     <= drw;
+          ons <= drw;
         else
-          ons     <= alignw;
+          ons <= alignw;
         end if;
 
       when drw =>
@@ -527,11 +564,12 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '1';
         if rdone = '1' then
-          ons     <= refresh;
+          ons <= refresh;
         else
-          ons     <= drw;
+          ons <= drw;
         end if;
 
       when refresh =>
@@ -542,11 +580,12 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '1';
         if refdone = '1' then
-          ons     <= inchk;
+          ons <= inchk;
         else
-          ons     <= refresh;
+          ons <= refresh;
         end if;
 
       when inchk =>
@@ -557,15 +596,16 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '1';
         if startl = '1' then
           if rw = '0' then
-            ons   <= read;
+            ons <= read;
           else
-            ons   <= write;
+            ons <= write;
           end if;
         else
-          ons     <= refresh;
+          ons <= refresh;
         end if;
 
       when read =>
@@ -576,11 +616,12 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '1';
         if rdone = '1' then
-          ons     <= readdone;
+          ons <= readdone;
         else
-          ons     <= read;
+          ons <= read;
         end if;
 
       when readdone =>
@@ -591,7 +632,8 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '1';
         ons       <= refresh;
 
       when write =>
@@ -602,11 +644,12 @@ begin  -- Behavioral
         wstart    <= '1';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '0';
+        dqts      <= '0';
+        lmemready <= '1';
         if wdone = '1' then
-          ons     <= writedone;
+          ons <= writedone;
         else
-          ons     <= write;
+          ons <= write;
         end if;
 
       when writedone =>
@@ -617,7 +660,8 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '0';
+        dqts      <= '0';
+        lmemready <= '1';
         ons       <= refresh;
 
       when others =>
@@ -628,7 +672,8 @@ begin  -- Behavioral
         wstart    <= '0';
         noterm    <= '0';
         alstart   <= '0';
-        dqts     <= '1';
+        dqts      <= '1';
+        lmemready <= '0';
         ons       <= none;
     end case;
 

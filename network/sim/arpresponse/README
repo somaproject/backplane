@@ -1,12 +1,11 @@
-We connect the inputcontrol to the arpquery interface and pass in three arp packets: 
+We connect the inputcontrol to the arpquery interface and pass in
+three arp packets:
 
 1. a correct arp who-has? which is targeted at us
 2. a correct arp who-has? which isn't targeted at us
-3. a rarp or something like that 
 
 
 We use a framework of "transmitted packet", "verify packet" to make
 sure our output is as expected.
 
 The input packet is just a list of input 16-bit words, as is the output packet.
-

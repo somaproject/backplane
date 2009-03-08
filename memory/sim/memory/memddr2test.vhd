@@ -21,12 +21,15 @@ end memddr2test;
 architecture Behavioral of memddr2test is
 
   component memddr2
+    generic (
+      INITWAIT_ENABLE : in boolean);
     port (
       CLK    : in    std_logic;
       CLK90  : in    std_logic;
       CLK180 : in    std_logic;
       CLK270 : in    std_logic;
       RESET  : in    std_logic;
+      MEMREADY : out std_logic; 
       -- RAM!
       CKE    : out   std_logic;
       CAS    : out   std_logic;
@@ -49,9 +52,13 @@ architecture Behavioral of memddr2test is
       -- read interface
       RDADDR : out   std_logic_vector(7 downto 0);
       RDDATA : out   std_logic_vector(31 downto 0);
-      RDWE   : out   std_logic
+      RDWE   : out   std_logic;
+      -- debug 
+      DQALIGNPOSL : out   std_logic_vector(7 downto 0);
+      DQALIGNPOSH : out   std_logic_vector(7 downto 0)
       );
   end component;
+
 
   signal CLK, CLKN       : std_logic := '0';
   signal CLK90, CLK90N   : std_logic := '0';
@@ -59,6 +66,15 @@ architecture Behavioral of memddr2test is
   signal CLK270, clk270n : std_logic := '0';
   signal RESET           : std_logic := '1';
 
+  component ddr2clkdriver
+    port (
+      CLKIN    : in  std_logic;
+      RESET    : in  std_logic;
+      CLKOUT_P : out std_logic;
+      CLKOUT_N : out std_logic
+      );
+
+  end component;
 
   -- RAM!
   signal CKE    : std_logic                     := '0';
@@ -84,29 +100,34 @@ architecture Behavioral of memddr2test is
   signal RDDATA : std_logic_vector(31 downto 0) := (others => '0');
   signal RDWE   : std_logic                     := '0';
 
+  -- debug
+  signal DQALIGNPOSL : std_logic_vector(7 downto 0) := (others => '0'); 
+  signal DQALIGNPOSH : std_logic_vector(7 downto 0) := (others => '0'); 
+                                                       
+
   component HY5PS121621F
     generic (
-      TimingCheckFlag :       boolean                       := true;
-      PUSCheckFlag    :       boolean                       := false;
-      Part_Number     :       PART_NUM_TYPE                 := B400);
+      TimingCheckFlag : boolean       := true;
+      PUSCheckFlag    : boolean       := false;
+      Part_Number     : PART_NUM_TYPE := B400);
     port
-      ( DQ            : inout std_logic_vector(15 downto 0) := (others => 'Z');
-        LDQS          : inout std_logic                     := 'Z';
-        LDQSB         : inout std_logic                     := 'Z';
-        UDQS          : inout std_logic                     := 'Z';
-        UDQSB         : inout std_logic                     := 'Z';
-        LDM           : in    std_logic;
-        WEB           : in    std_logic;
-        CASB          : in    std_logic;
-        RASB          : in    std_logic;
-        CSB           : in    std_logic;
-        BA            : in    std_logic_vector(1 downto 0);
-        ADDR          : in    std_logic_vector(12 downto 0);
-        CKE           : in    std_logic;
-        CLK           : in    std_logic;
-        CLKB          : in    std_logic;
-        UDM           : in    std_logic;
-        odelay        : in    time                          := 0 ps);
+      (DQ      : inout std_logic_vector(15 downto 0) := (others => 'Z');
+        LDQS   : inout std_logic                     := 'Z';
+        LDQSB  : inout std_logic                     := 'Z';
+        UDQS   : inout std_logic                     := 'Z';
+        UDQSB  : inout std_logic                     := 'Z';
+        LDM    : in    std_logic;
+        WEB    : in    std_logic;
+        CASB   : in    std_logic;
+        RASB   : in    std_logic;
+        CSB    : in    std_logic;
+        BA     : in    std_logic_vector(1 downto 0);
+        ADDR   : in    std_logic_vector(12 downto 0);
+        CKE    : in    std_logic;
+        CLK    : in    std_logic;
+        CLKB   : in    std_logic;
+        UDM    : in    std_logic;
+        odelay : in    time                          := 0 ps);
   end component;
 
   component mt47h64m16
@@ -319,13 +340,13 @@ architecture Behavioral of memddr2test is
   signal odelay : time := 0 ps;
 
 
-  type outbuffer is array (0 to 1023) of std_logic_vector(15 downto 0);
+  type   outbuffer is array (0 to 1023) of std_logic_vector(15 downto 0);
   signal outbufferA : outbuffer := (others => (others => '0'));
 
   signal memclk, memclkn : std_logic := '0';
 
   signal udqsneg, ldqsneg : std_logic := '0';
-
+  signal MEMREADY : std_logic := '0';
 
 
 
@@ -337,12 +358,15 @@ begin  -- Behavioral
   ldqsneg <= 'H';
 
   memddr2_uut : memddr2
+    generic map (
+      INITWAIT_ENABLE => false)
     port map (
       CLK    => CLK,
       CLK90  => CLK90,
       CLK180 => CLK180,
       CLK270 => CLK270,
       RESET  => RESET,
+      MEMREADY => MEMREADY, 
       CKE    => CKE,
       CAS    => CAS,
       RAS    => RAS,
@@ -361,7 +385,9 @@ begin  -- Behavioral
       WRDATA => WRDATA,
       RDADDR => RDADDR,
       RDDATA => RDDATA,
-      RDWE   => RDWE);
+      RDWE   => RDWE,
+      DQALIGNPOSL => DQALIGNPOSL,
+      DQALIGNPOSH => DQALIGNPOSH);
 
   mainclk <= not mainclk after (clk_period / 2);
 
@@ -500,80 +526,84 @@ begin  -- Behavioral
       --mem_file_name => ,
 
 
-      TimingModel => "MT47H64M16BT-3" )
+      TimingModel => "MT47H64M16BT-3")
     port map (
-      ODT         => '0',
-      CK          => memCLK,
-      CKNeg       => memCLKN,
-      CKE         => CKE,
-      CSNeg       => CS,
-      RASNeg      => RAS,
-      CASNEG      => CAS,
-      WENeg       => WE,
-      LDM         => '0',
-      UDM         => '0',
-      BA0         => BA(0),
-      BA1         => BA(1),
-      BA2         => '0',
-      A0          => ADDR(0),
-      A1          => ADDR(1),
-      A2          => ADDR(2),
-      A3          => ADDR(3),
-      A4          => ADDR(4),
-      A5          => ADDR(5),
-      A6          => ADDR(6),
-      A7          => ADDR(7),
-      A8          => ADDR(8),
-      A9          => ADDR(9),
-      A10         => ADDR(10),
-      A11         => ADDR(11),
-      A12         => ADDR(12),
-      DQ0         => DQ(0),
-      DQ1         => DQ(1),
-      DQ2         => DQ(2),
-      DQ3         => DQ(3),
-      DQ4         => DQ(4),
-      DQ5         => DQ(5),
-      DQ6         => DQ(6),
-      DQ7         => DQ(7),
-      DQ8         => DQ(8),
-      DQ9         => DQ(9),
-      DQ10        => DQ(10),
-      DQ11        => DQ(11),
-      DQ12        => DQ(12),
-      DQ13        => DQ(13),
-      DQ14        => DQ(14),
-      DQ15        => DQ(15),
-      UDQS        => DQSH,
-      UDQSNeg     => udqsneg,
-      LDQS        => DQSL,
-      LDQSNeg     => ldqsneg);
+      ODT     => '0',
+      CK      => memCLK,
+      CKNeg   => memCLKN,
+      CKE     => CKE,
+      CSNeg   => CS,
+      RASNeg  => RAS,
+      CASNEG  => CAS,
+      WENeg   => WE,
+      LDM     => '0',
+      UDM     => '0',
+      BA0     => BA(0),
+      BA1     => BA(1),
+      BA2     => '0',
+      A0      => ADDR(0),
+      A1      => ADDR(1),
+      A2      => ADDR(2),
+      A3      => ADDR(3),
+      A4      => ADDR(4),
+      A5      => ADDR(5),
+      A6      => ADDR(6),
+      A7      => ADDR(7),
+      A8      => ADDR(8),
+      A9      => ADDR(9),
+      A10     => ADDR(10),
+      A11     => ADDR(11),
+      A12     => ADDR(12),
+      DQ0     => DQ(0),
+      DQ1     => DQ(1),
+      DQ2     => DQ(2),
+      DQ3     => DQ(3),
+      DQ4     => DQ(4),
+      DQ5     => DQ(5),
+      DQ6     => DQ(6),
+      DQ7     => DQ(7),
+      DQ8     => DQ(8),
+      DQ9     => DQ(9),
+      DQ10    => DQ(10),
+      DQ11    => DQ(11),
+      DQ12    => DQ(12),
+      DQ13    => DQ(13),
+      DQ14    => DQ(14),
+      DQ15    => DQ(15),
+      UDQS    => DQSH,
+      UDQSNeg => udqsneg,
+      LDQS    => DQSL,
+      LDQSNeg => ldqsneg);
 
 
   CLK     <= transport mainclk after clk_period * 1 / 4;
   CLK90   <= transport mainclk after clk_period * 2 / 4;
   CLK180  <= transport mainclk after clk_period * 3 / 4;
-  CLK270  <= transport mainclk; 
+  CLK270  <= transport mainclk;
   CLKN    <= not CLK;
   CLK90N  <= not CLK90;
   CLK270N <= not clk270;
   CLK180N <= not clk180;
 
-  memclk  <= clk270;
-  memclkn <= clk270n;
+  ddr2clkdriver_inst : ddr2clkdriver
+    port map (
+      CLKIN    => clk270,
+      RESET    => RESET,
+      CLKOUT_P => memclk,
+      CLKOUT_N => memclkn); 
 
 
   -- fake write memory
-  wrmem              : process(CLK)
+  wrmem : process(CLK)
     variable wraddrl : std_logic_vector(7 downto 0) := (others => '0');
 
   begin
     if rising_edge(CLK) then
-       WRDATA <= (wraddrl(5 downto 0) & "00" &
-                  wraddrl(5 downto 0) & "01" &
-                  wraddrl(5 downto 0) & "10" &
-                  wraddrl(5 downto 0) & "11"); 
-                  
+      WRDATA <= ("1" & wraddrl(4 downto 0) & "00" &
+                 "1" & wraddrl(4 downto 0) & "01" &
+                 "0" & wraddrl(4 downto 0) & "10" &
+                 "0" & wraddrl(4 downto 0) & "11"); 
+
       wraddrl := WRADDR;
 
     end if;
@@ -588,7 +618,8 @@ begin  -- Behavioral
       wait for 50 ns;
 
       RESET <= '0';
-      wait for 550 us;
+      wait until rising_edge(MEMREADY);
+      
 
       --odelay <= 107 ps * tpos;
 
@@ -598,6 +629,8 @@ begin  -- Behavioral
       for i in 0 to 10 loop
         START <= '1';
         RW    <= '1';
+        wait until rising_edge(CLK);
+        START <= '0';
         wait until rising_edge(CLK) and DONE = '1';
 
         START <= '0';
@@ -608,6 +641,8 @@ begin  -- Behavioral
 
         START <= '1';
         RW    <= '0';
+        wait until rising_edge(CLK);
+        START <= '0';
         wait until rising_edge(CLK) and DONE = '1';
 
         START <= '0';
@@ -633,7 +668,8 @@ begin  -- Behavioral
     -- wait for read to start
 
 
-    wait until falling_edge(RESET);
+    wait until falling_edge(RESET);     
+    wait until rising_edge(MEMREADY);   
 
     ---------------------------------------------------------------------------
     -- READ AND VERIFY 10 BURSTS
@@ -650,11 +686,11 @@ begin  -- Behavioral
 
       while DONE /= '1' loop
         if RDWE = '1' then
-          if rddata = (rdaddr(5 downto 0) & "00" &
-                  rdaddr(5 downto 0) & "01" &
-                  rdaddr(5 downto 0) & "10" &
-                  rdaddr(5 downto 0) & "11")  then
-            wrdcnt <= wrdcnt + 1; 
+          if rddata = ("1" & rdaddr(4 downto 0) & "00" &
+                       "1" & rdaddr(4 downto 0) & "01" &
+                       "0" & rdaddr(4 downto 0) & "10" &
+                       "0" & rdaddr(4 downto 0) & "11")  then
+            wrdcnt <= wrdcnt + 1;
           else
             report "error reading back data" severity error;
           end if;

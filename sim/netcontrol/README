@@ -1,14 +1,4 @@
-Test the NetControl interface
-
-We run two independent testing configurations: 
-1. To test nicserial, linkup, etc. 
-2. To test the netcounter stuff
-
---------------------------------------------------
-TEST THE NICSERIAL INTERFACE
---------------------------------------------------
-
-[FIXME]
+Test the NetControl eproc
 
 --------------------------------------------------
 TEST THE COUNTER INTERFACE
@@ -17,14 +7,19 @@ TEST THE COUNTER INTERFACE
 We query and reset the counter using a device at address CNTDEVICE
 (CNTDEVICEint). 
 
-1. read and verify that we get a zero response
-2. 
+1. query counters
+2. increment, query, and reset counters
+
+--------------------------------------------------
+TEST THE NICSERIAL INTERFACE
+--------------------------------------------------
+
+FIXME : we still need to do this. 
 
 
-
-
-
-
-
-
-
+--------------------------------------------------
+TEST THE MEMDEBUG INTERFACE
+--------------------------------------------------
+1. can we read RAMDQ delays? 
+2. can we set and read the MEMDDR2 interface? 
+3. 

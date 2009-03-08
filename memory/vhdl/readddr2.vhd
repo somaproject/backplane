@@ -96,6 +96,7 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgtl(12
       rwesreg   <= rwesreg(12 downto 0) & incacnt;
       raddrsreg <= raddrsreg(12 downto 0) & acnt(7 downto 0);
 
+      
       RDATA <= DIN;
 
 
@@ -109,10 +110,10 @@ laddr <= ("000" & acnt(8 downto 1) & READOFFSET) when asel = '1' else rowtgtl(12
 
 
    RWE <=  rwesreg(11) when  latencyextra(0) = '0' else
-            rwesreg(11); 
+            rwesreg(12); 
 
    RADDR <= raddrsreg(11) when latencyextra(0) = '0' else
-            raddrsreg(11); 
+            raddrsreg(12); 
 
   fsm : process(ocs, start, acnt, rwesreg)
   begin

@@ -1,7 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
 use ieee.numeric_std.all;
 
 
@@ -12,10 +10,10 @@ entity eventrxdecode is
     NICNEWFRAME : in  std_logic;
     NICDINEN    : in  std_logic;
     NICDIN      : in  std_logic_vector(15 downto 0);
-    RXIDEN      : out std_logic;
-    RXID        : out std_logic_vector(31 downto 0);
-    RXTSEN      : out std_logic;
-    RXTS        : out std_logic_vector(47 downto 0)
+    RXIDEN      : out std_logic := '0'; 
+    RXID        : out std_logic_vector(31 downto 0) := (others => '0');
+    RXTSEN      : out std_logic := '0'; 
+    RXTS        : out std_logic_vector(47 downto 0 ) := (others => '0')
     );
 
 end eventrxdecode;
@@ -33,7 +31,7 @@ begin  -- Behavioral
     while true loop
 
 
-      -- we re%ad the entire packet and _then_ do all the processing on it
+      -- we read the entire packet and _then_ do all the processing on it
       packetpos             <= 0;
       maybegood             <= 1;
       wait until rising_edge(CLK) and NICNEWFRAME = '1';

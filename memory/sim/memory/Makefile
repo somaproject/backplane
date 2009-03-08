@@ -1,74 +1,103 @@
-VHDLC=vhdlp
-VHDLS=vhdle
-WORKDIR=work.sym
+VHDLC=vcom
+VHDLS=vsim
+WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/dqalign/_behavioral.var: ../../vhdl/dqalign.vhd
-	$(VHDLC) -vital2000 ../../vhdl/dqalign.vhd
+$(WORKDIR)/dqalign/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/dqalign.vhd
 
-$(WORKDIR)/bootddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd
-	$(VHDLC) -vital2000 ../../vhdl/bootddr2.vhd
+$(WORKDIR)/bootddr2/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/bootddr2.vhd
 
-$(WORKDIR)/readddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd
-	$(VHDLC) -vital2000 ../../vhdl/readddr2.vhd
+$(WORKDIR)/readddr2/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/readddr2.vhd
 
-$(WORKDIR)/refreshddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd
-	$(VHDLC) -vital2000 ../../vhdl/refreshddr2.vhd
+$(WORKDIR)/refreshddr2/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/refreshddr2.vhd
 
-$(WORKDIR)/writeddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd
-	$(VHDLC) -vital2000 ../../vhdl/writeddr2.vhd
+$(WORKDIR)/writeddr2/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/writeddr2.vhd
 
-$(WORKDIR)/memcontmux/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/memcontmux.vhd
-	$(VHDLC) -vital2000 ../../vhdl/memcontmux.vhd
+$(WORKDIR)/ddr2clkdriver/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/ddr2clkdriver.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/ddr2clkdriver.vhd
 
-$(WORKDIR)/memddr2/_behavioral.var: ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/memcontmux.vhd ../../vhdl/memddr2.vhd
-	$(VHDLC) -vital2000 ../../vhdl/memddr2.vhd
+$(WORKDIR)/memcontmux/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/ddr2clkdriver.vhd ../../vhdl/ddr2clkdriver.vhd ../../vhdl/memcontmux.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/memcontmux.vhd
 
-hw: $(WORKDIR)/dqalign/_behavioral.var $(WORKDIR)/bootddr2/_behavioral.var $(WORKDIR)/readddr2/_behavioral.var $(WORKDIR)/refreshddr2/_behavioral.var $(WORKDIR)/writeddr2/_behavioral.var $(WORKDIR)/memcontmux/_behavioral.var $(WORKDIR)/memddr2/_behavioral.var 
+$(WORKDIR)/memddr2/behavioral.dat: $(WORKDIR)/touched ../../vhdl/dqalign.vhd ../../vhdl/dqalign.vhd ../../vhdl/bootddr2.vhd ../../vhdl/bootddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/readddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/refreshddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/writeddr2.vhd ../../vhdl/ddr2clkdriver.vhd ../../vhdl/ddr2clkdriver.vhd ../../vhdl/memcontmux.vhd ../../vhdl/memcontmux.vhd ../../vhdl/memddr2.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/memddr2.vhd
+
+hw: $(WORKDIR)/dqalign/behavioral.dat $(WORKDIR)/bootddr2/behavioral.dat $(WORKDIR)/readddr2/behavioral.dat $(WORKDIR)/refreshddr2/behavioral.dat $(WORKDIR)/writeddr2/behavioral.dat $(WORKDIR)/ddr2clkdriver/behavioral.dat $(WORKDIR)/memcontmux/behavioral.dat $(WORKDIR)/memddr2/behavioral.dat 
 
 comp: 
 
-fmf.sym/conversions/prim.var: ../components/freemodel/conversions.vhd
-	$(VHDLC) -vital2000 -work fmf  ../components/freemodel/conversions.vhd
+fmf/conversions/body.dat: fmf/touched ../components/freemodel/conversions.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../components/freemodel/conversions.vhd
 
-fmf.sym/ecl_package/prim.var: ../components/freemodel/ecl_package.vhd
-	$(VHDLC) -vital2000 -work fmf  ../components/freemodel/ecl_package.vhd
+fmf/ecl_package/body.dat: fmf/touched ../components/freemodel/ecl_package.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../components/freemodel/ecl_package.vhd
 
-fmf.sym/ecl_utils/prim.var: ../components/freemodel/ecl_utils.vhd
-	$(VHDLC) -vital2000 -work fmf  ../components/freemodel/ecl_utils.vhd
+fmf/ecl_utils/body.dat: fmf/touched ../components/freemodel/ecl_utils.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../components/freemodel/ecl_utils.vhd
 
-fmf.sym/ff_package/prim.var: ../components/freemodel/ff_package.vhd
-	$(VHDLC) -vital2000 -work fmf  ../components/freemodel/ff_package.vhd
+fmf/ff_package/body.dat: fmf/touched ../components/freemodel/ff_package.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../components/freemodel/ff_package.vhd
 
-fmf.sym/gen_utils/prim.var: ../components/freemodel/gen_utils.vhd
-	$(VHDLC) -vital2000 -work fmf  ../components/freemodel/gen_utils.vhd
+fmf/gen_utils/body.dat: fmf/touched ../components/freemodel/gen_utils.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../components/freemodel/gen_utils.vhd
 
-fmf.sym/memory/prim.var: ../components/freemodel/memory.vhd
-	$(VHDLC) -vital2000 -work fmf  ../components/freemodel/memory.vhd
+fmf/memory/body.dat: fmf/touched ../components/freemodel/memory.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../components/freemodel/memory.vhd
 
-fmf.sym/state_tab_package/prim.var: ../components/freemodel/state_tab_package.vhd
-	$(VHDLC) -vital2000 -work fmf  ../components/freemodel/state_tab_package.vhd
+fmf/state_tab_package/body.dat: fmf/touched ../components/freemodel/state_tab_package.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../components/freemodel/state_tab_package.vhd
 
-fmf.sym/switch_pkg/_behavior.var: ../components/freemodel/switch_pkg.vhd
-	$(VHDLC) -vital2000 -work fmf  ../components/freemodel/switch_pkg.vhd
+fmf/TRI_BUF/behavior.dat: fmf/touched ../components/freemodel/switch_pkg.vhd
+	mkdir -p fmf
+	$(VHDLC) -work fmf  ../components/freemodel/switch_pkg.vhd
 
-$(WORKDIR)/mt47h64m16/_vhdl_behavioral.var: ../components/freemodel/mt47h64m16.vhd
-	$(VHDLC) -vital2000 ../components/freemodel/mt47h64m16.vhd
+$(WORKDIR)/mt47h64m16/vhdl_behavioral.dat: $(WORKDIR)/touched ../components/freemodel/mt47h64m16.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../components/freemodel/mt47h64m16.vhd
 
-$(WORKDIR)/hy5ps121621f_pack/prim.var: ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd
-	$(VHDLC) -vital2000 ../components/hynix/HY5PS121621F_PACK.vhd
+$(WORKDIR)/hy5ps121621f_pack/body.dat: $(WORKDIR)/touched ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../components/hynix/HY5PS121621F_PACK.vhd
 
-$(WORKDIR)/hy5ps121621f/_behavioral_model_hy5ps121621f.var: ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd ../components/hynix/HY5PS121621F.vhd
-	$(VHDLC) -vital2000 ../components/hynix/HY5PS121621F.vhd
+$(WORKDIR)/HY5PS121621F/behavioral_model_hy5ps121621f.dat: $(WORKDIR)/touched ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd ../components/hynix/HY5PS121621F.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../components/hynix/HY5PS121621F.vhd
 
-work.sym/memddr2test/_behavioral.var: ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd ../components/hynix/HY5PS121621F.vhd memddr2test.vhd
-	$(VHDLC) -vital2000 -work work  memddr2test.vhd
+work/memddr2test/behavioral.dat: work/touched ../components/freemodel/mt47h64m16.vhd ../components/hynix/HY5PS121621F_PACK.vhd ../components/hynix/HY5PS121621F.vhd memddr2test.vhd
+	mkdir -p work
+	$(VHDLC) -work work  memddr2test.vhd
 
-sim: fmf.sym/conversions/prim.var fmf.sym/ecl_package/prim.var fmf.sym/ecl_utils/prim.var fmf.sym/ff_package/prim.var fmf.sym/gen_utils/prim.var fmf.sym/memory/prim.var fmf.sym/state_tab_package/prim.var fmf.sym/switch_pkg/_behavior.var $(WORKDIR)/mt47h64m16/_vhdl_behavioral.var $(WORKDIR)/hy5ps121621f_pack/prim.var $(WORKDIR)/hy5ps121621f/_behavioral_model_hy5ps121621f.var work.sym/memddr2test/_behavioral.var 
+sim: fmf/conversions/body.dat fmf/ecl_package/body.dat fmf/ecl_utils/body.dat fmf/ff_package/body.dat fmf/gen_utils/body.dat fmf/memory/body.dat fmf/state_tab_package/body.dat fmf/TRI_BUF/behavior.dat $(WORKDIR)/mt47h64m16/vhdl_behavioral.dat $(WORKDIR)/hy5ps121621f_pack/body.dat $(WORKDIR)/HY5PS121621F/behavioral_model_hy5ps121621f.dat work/memddr2test/behavioral.dat 
 runsim: all
 	$(VHDLS) memddr2test
 
 
 clean:
-	rm -Rf *.sym
+	rm -Rf fmf work 
 
+fmf/touched:
+	vlib  fmf
+	touch  fmf/touched
+work/touched:
+	vlib  work
+	touch  work/touched

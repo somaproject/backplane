@@ -1,7 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.numeric_std.all;
 
 library soma;
@@ -96,7 +94,19 @@ architecture Behavioral of netcontroltest is
   signal recoveredevent     : eventarray := (others => (others => '0'));
   signal recoveredeventdone : std_logic  := '0';
 
+  signal RAMDQALIGNH    : std_logic_vector(7 downto 0)  := (others => '0');
+  signal RAMDQALIGNL    : std_logic_vector(7 downto 0)  := (others => '0');
+  -- Memory Debug interface
+  signal MEMDEBUGCLK    : std_logic                     := '0';
+  signal MEMDEBUGRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
+  signal MEMDEBUGWRADDR : std_logic_vector(3 downto 0)  := (others => '0');
+  signal MEMDEBUGWE     : std_logic                     := '0';
+  signal MEMDEBUGRD     : std_logic                     := '0';
+  signal MEMDEBUGDOUT   : std_logic_vector(15 downto 0) := (others => '0');
+  signal MEMDEBUGDIN    : std_logic_vector(15 downto 0) := (others => '0');
 
+  type   memdebugarray_t is array (0 to 15) of std_logic_vector(15 downto 0);
+  signal memdebugarray : memdebugarray_t := (others => (others => '0'));
 
 begin  -- Behavioral
 
@@ -209,38 +219,48 @@ begin  -- Behavioral
       RAM_INITP_04 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_04,
       RAM_INITP_05 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_05,
       RAM_INITP_06 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_06,
-      RAM_INITP_07 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_07 )
+      RAM_INITP_07 => work.netcontroltest_mem_pkg.netcontrol_inst_ram_INITP_07)
     port map (
-      CLK          => CLK,
-      CLK2X        => CLK2X,
-      RESET        => RESET,
-      ECYCLE       => ECYCLE,
-      EDTX         => EDTX,
-      EATX         => EATX,
-      EARX         => EARX,
-      EDRX         => EDRX,
-      EDSELRX      => EDSELRX,
+      CLK            => CLK,
+      CLK2X          => CLK2X,
+      RESET          => RESET,
+      ECYCLE         => ECYCLE,
+      EDTX           => EDTX,
+      EATX           => EATX,
+      EARX           => EARX,
+      EDRX           => EDRX,
+      EDSELRX        => EDSELRX,
       -- tx counter input
-      TXPKTLENEN   => TXPKTLENEN,
-      TXPKTLEN     => TXPKTLEN,
-      TXCHAN       => TXCHAN,
+      TXPKTLENEN     => TXPKTLENEN,
+      TXPKTLEN       => TXPKTLEN,
+      TXCHAN         => TXCHAN,
       -- other counters
-      RXIOCRCERR   => RXIOCRCERR,
-      UNKNOWNETHER => UNKNOWNETHER,
-      UNKNOWNIP    => UNKNOWNIP,
-      UNKNOWNARP   => UNKNOWNARP,
-      UNKNOWNUDP   => UNKNOWNUDP,
-      EVTRXSUC     => '0',
-      EVTFIFOFULL  => '0',
+      RXIOCRCERR     => RXIOCRCERR,
+      UNKNOWNETHER   => UNKNOWNETHER,
+      UNKNOWNIP      => UNKNOWNIP,
+      UNKNOWNARP     => UNKNOWNARP,
+      UNKNOWNUDP     => UNKNOWNUDP,
+      EVTRXSUC       => '0',
+      EVTFIFOFULL    => '0',
+      -- memory debug control
+      MEMDEBUGRDADDR => MEMDEBUGRDADDR,
+      MEMDEBUGWRADDR => MEMDEBUGWRADDR,
+      MEMDEBUGWE     => MEMDEBUGWE,
+      MEMDEBUGRD     => MEMDEBUGRD,
+      MEMDEBUGDIN    => MEMDEBUGDIN,
+      MEMDEBUGDOUT   => MEMDEBUGDOUT,
+      -- ram control
+      RAMDQALIGNH    => RAMDQALIGNH,
+      RAMDQALIGNL    => RAMDQALIGNL,
       -- settings
-      MYMAC        => MYMAC,
-      MYBCAST      => MYBCAST,
-      MYIP         => MYIP,
+      MYMAC          => MYMAC,
+      MYBCAST        => MYBCAST,
+      MYIP           => MYIP,
       -- NIC interface
-      NICSOUT      => NICSOUT,
-      NICSIN       => NICSIN,
-      NICSCLK      => NICSCLK,
-      NICSCS       => NICSCS);
+      NICSOUT        => NICSOUT,
+      NICSIN         => NICSIN,
+      NICSCLK        => NICSCLK,
+      NICSCS         => NICSCS);
 
   ecycle_generation : process(CLK)
   begin
@@ -284,10 +304,10 @@ begin  -- Behavioral
   serialin : process (NICSCLK, NICSCS)
   begin  -- process serialin
     if falling_edge(NICSCS) then
-      serialbcnt    <= 0;
+      serialbcnt <= 0;
     else
       if falling_edge(NICSCLK) then
-        serialbcnt  <= serialbcnt + 1;
+        serialbcnt <= serialbcnt + 1;
       end if;
     end if;
     if rising_edge(NICSCLK) then
@@ -295,7 +315,7 @@ begin  -- Behavioral
         serialregin <= serialregin(38 downto 0) & NICSOUT;
       end if;
       if serialbcnt >= 7 and serialbcnt < 39 then
-        NICSIN      <= outword(39 - serialbcnt - 1);
+        NICSIN <= outword(39 - serialbcnt - 1);
       end if;
     end if;
 
@@ -318,13 +338,27 @@ begin  -- Behavioral
       wait until rising_edge(CLK);
       recoveredevent(i)(7 downto 0)  <= EDRX;
     end loop;  -- i
-    EDSELRX                          <= X"0";
-    recoveredEventDone               <= '1';
+    EDSELRX            <= X"0";
+    recoveredEventDone <= '1';
     wait until rising_edge(CLK);
-    recoveredEventDone               <= '0';
+    recoveredEventDone <= '0';
 
   end process;
-  
+
+  memdebug : process(clk2x, RESET)
+  begin
+    if reset = '1' then
+      memdebugarray(7) <= X"AABB";
+    else
+      if rising_edge(clk2x) then
+        if memdebugwe = '1' then
+          memdebugarray(TO_INTEGER(unsigned(memdebugwraddr))) <= memdebugdout;
+        end if;
+      end if;
+    end if;
+  end process;
+  memdebugdin <= memdebugarray(TO_INTEGER(unsigned(memdebugrdaddr)));
+
   process
   begin
     -- send test events
@@ -354,7 +388,7 @@ begin  -- Behavioral
     -------------------------------------------------------------------
     -- increment and measure counter 5
     -------------------------------------------------------------------
-    
+
     -- now increment counter #5
     for i in 0 to 123 loop
       TXPKTLEN   <= std_logic_vector(TO_UNSIGNED(i* 50, 16));
@@ -414,7 +448,7 @@ begin  -- Behavioral
     -------------------------------------------------------------------
     -- Reset, re-read counter 5 (both A and B)
     -------------------------------------------------------------------
-    
+
     -- Measure the count
 
     wait until rising_edge(CLK) and ECYCLE = '1';
@@ -428,7 +462,7 @@ begin  -- Behavioral
     wait until rising_edge(CLK) and ECYCLE = '1';
     EATX(CNTDEVICEint)           <= '0';
 
-     -- now query and validate
+    -- now query and validate
 
     -- Measure the count
 
@@ -487,15 +521,15 @@ begin  -- Behavioral
     -- first, inc the counter a few times
 
     wait until rising_edge(CLK);
-    RXIOCRCERR <= '1'; 
+    RXIOCRCERR <= '1';
     wait until rising_edge(CLK);
-    RXIOCRCERR <= '1'; 
+    RXIOCRCERR <= '1';
     wait until rising_edge(CLK);
-    RXIOCRCERR <= '1'; 
+    RXIOCRCERR <= '1';
     wait until rising_edge(CLK);
     RXIOCRCERR <= '0';
 
-    
+
     wait until rising_edge(CLK) and ECYCLE = '1';
     EATX(CNTDEVICEint)           <= '1';
     eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
@@ -527,11 +561,11 @@ begin  -- Behavioral
 
     for i in 0 to 417 loop
       wait until rising_edge(CLK);
-      UNKNOWNUDP <= '1'; 
+      UNKNOWNUDP <= '1';
     end loop;  -- i
     UNKNOWNUDP <= '0';
 
-    
+
     wait until rising_edge(CLK) and ECYCLE = '1';
     EATX(CNTDEVICEint)           <= '1';
     eventinputs(CNTDEVICEint)(0) <= X"40" & CNTDEVICE;
@@ -555,7 +589,54 @@ begin  -- Behavioral
     report "Received response event for query unknownudpcnt" severity note;
     wait until rising_edge(CLK) and ECYCLE = '1';
 
-    report "End of Simulation" severity Failure;
-    wait; 
+
+
+    -------------------------------------------------------------------
+    -- Try writing MEMDEBUG address
+    -------------------------------------------------------------------
+    -- first, inc the counter a few times
+    report "Beginning memdebug work" severity note;
+
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"44" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"0001";
+    eventinputs(CNTDEVICEint)(2) <= X"5678";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(CLK2X) and memdebugarray(1) = X"5678";
+    -- send a read event:
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '1';
+    eventinputs(CNTDEVICEint)(0) <= X"45" & CNTDEVICE;
+    eventinputs(CNTDEVICEint)(1) <= X"0007";
+    eventinputs(CNTDEVICEint)(2) <= X"0000";
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(CNTDEVICEint)           <= '0';
+
+    wait until rising_edge(recoveredeventdone) and EARX(CNTDEVICEint) = '1';
+
+    assert recoveredevent(0) = X"45" & DEVICE
+      report "error receiving mem debug read" severity error;
+    assert recoveredevent(1) = X"0007"
+      report "error reciving addr word" severity error;
+    assert recoveredevent(2) = X"AABB"
+      report "error reciving word 2 for Event uknownudpcnt" severity error;
+--    assert recoveredevent(3) = X"0000"
+--      report "error reciving word 3 for Event uknownudpcnt" severity error;
+--    assert recoveredevent(4) = X"01a1"
+--      report "error reciving word 4 for Event uknownudpcnt" severity error;
+
+--    report "Received response event for query unknownudpcnt" severity note;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    wait for 100 us;
+
+
+
+
+
+    report "End of Simulation" severity failure;
+    wait;
   end process;
 end Behavioral;

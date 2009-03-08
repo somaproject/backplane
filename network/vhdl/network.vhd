@@ -16,61 +16,71 @@ use UNISIM.vcomponents.all;
 
 entity network is
   port (
-    CLK          : in    std_logic;
-    MEMCLK       : in    std_logic;
-    MEMCLK90     : in    std_logic;
-    MEMCLK180    : in    std_logic;
-    MEMCLK270    : in    std_logic;
-    RESET        : in    std_logic;
+    CLK            : in    std_logic;
+    MEMCLK         : in    std_logic;
+    MEMCLK90       : in    std_logic;
+    MEMCLK180      : in    std_logic;
+    MEMCLK270      : in    std_logic;
+    RESET          : in    std_logic;
     -- input
-    NICNEXTFRAME : out   std_logic;
-    NICDINEN     : in    std_logic;
-    NICDIN       : in    std_logic_vector(15 downto 0);
+    NICNEXTFRAME   : out   std_logic;
+    NICDINEN       : in    std_logic;
+    NICDIN         : in    std_logic_vector(15 downto 0);
     -- output
-    NICDOUT      : out   std_logic_vector(15 downto 0);
-    NICNEWFRAME  : out   std_logic;
-    NICIOCLK     : out   std_logic;
+    NICDOUT        : out   std_logic_vector(15 downto 0);
+    NICNEWFRAME    : out   std_logic;
+    NICIOCLK       : out   std_logic;
     -- event bus
-    ECYCLE       : in    std_logic;
-    EARX         : out   std_logic_vector(somabackplane.N -1 downto 0);
-    EDRX         : out   std_logic_vector(7 downto 0);
-    EDSELRX      : in    std_logic_vector(3 downto 0);
-    EATX         : in    std_logic_vector(somabackplane.N -1 downto 0);
-    EDTX         : in    std_logic_vector(7 downto 0);
+    ECYCLE         : in    std_logic;
+    EARX           : out   std_logic_vector(somabackplane.N -1 downto 0);
+    EDRX           : out   std_logic_vector(7 downto 0);
+    EDSELRX        : in    std_logic_vector(3 downto 0);
+    EATX           : in    std_logic_vector(somabackplane.N -1 downto 0);
+    EDTX           : in    std_logic_vector(7 downto 0);
     -- data bus
-    DIENA        : in    std_logic;
-    DINA         : in    std_logic_vector(7 downto 0);
-    DIENB        : in    std_logic;
-    DINB         : in    std_logic_vector(7 downto 0);
+    DIENA          : in    std_logic;
+    DINA           : in    std_logic_vector(7 downto 0);
+    DIENB          : in    std_logic;
+    DINB           : in    std_logic_vector(7 downto 0);
     -- memory interface
-    RAMCKE       : out   std_logic := '0';
-    RAMCAS       : out   std_logic;
-    RAMRAS       : out   std_logic;
-    RAMCS        : out   std_logic;
-    RAMWE        : out   std_logic;
-    RAMADDR      : out   std_logic_vector(12 downto 0);
-    RAMBA        : out   std_logic_vector(1 downto 0);
-    RAMDQSH      : inout std_logic;
-    RAMDQSL      : inout std_logic;
-    RAMDQ        : inout std_logic_vector(15 downto 0);
+    RAMCKE         : out   std_logic := '0';
+    RAMCAS         : out   std_logic;
+    RAMRAS         : out   std_logic;
+    RAMCS          : out   std_logic;
+    RAMWE          : out   std_logic;
+    RAMADDR        : out   std_logic_vector(12 downto 0);
+    RAMBA          : out   std_logic_vector(1 downto 0);
+    RAMDQSH        : inout std_logic;
+    RAMDQSL        : inout std_logic;
+    RAMDQ          : inout std_logic_vector(15 downto 0);
     -- config
-    MYIP         : in    std_logic_vector(31 downto 0);
-    MYMAC        : in    std_logic_vector(47 downto 0);
-    MYBCAST      : in    std_logic_vector(31 downto 0);
+    MYIP           : in    std_logic_vector(31 downto 0);
+    MYMAC          : in    std_logic_vector(47 downto 0);
+    MYBCAST        : in    std_logic_vector(31 downto 0);
     -- error signals and counters
-    RXIOCRCERR   : out   std_logic;
-    UNKNOWNETHER : out   std_logic;
-    UNKNOWNIP    : out   std_logic;
-    UNKNOWNUDP   : out   std_logic;
-    UNKNOWNARP   : out   std_logic;
-    TXPKTLENEN   : out   std_logic;
-    TXPKTLEN     : out   std_logic_vector(15 downto 0);
-    TXCHAN       : out   std_logic_vector(2 downto 0);
-    EVTRXSUC     : out   std_logic;
-    EVTFIFOFULL  : out   std_logic;
-
+    RXIOCRCERR     : out   std_logic;
+    UNKNOWNETHER   : out   std_logic;
+    UNKNOWNIP      : out   std_logic;
+    UNKNOWNUDP     : out   std_logic;
+    UNKNOWNARP     : out   std_logic;
+    TXPKTLENEN     : out   std_logic;
+    TXPKTLEN       : out   std_logic_vector(15 downto 0);
+    TXCHAN         : out   std_logic_vector(2 downto 0);
+    EVTRXSUC       : out   std_logic;
+    EVTFIFOFULL    : out   std_logic;
+    -- DEBUG CONTROL FOR MEMORY
+    RAMDQALIGNH    : out   std_logic_vector(7 downto 0);
+    RAMDQALIGNL    : out   std_logic_vector(7 downto 0);
+    -- Memory Debug interface
+    MEMDEBUGCLK : in std_logic; 
+    MEMDEBUGRDADDR : in    std_logic_vector(3 downto 0);
+    MEMDEBUGWRADDR : in    std_logic_vector(3 downto 0);
+    MEMDEBUGWE     : in    std_logic;
+    MEMDEBUGRD     : in    std_logic;
+    MEMDEBUGDOUT   : out   std_logic_vector(15 downto 0);
+    MEMDEBUGDIN    : in    std_logic_vector(15 downto 0); 
     -- DEBUG
-    DEBUG : out std_logic_vector(15 downto 0)
+    DEBUG          : out   std_logic_vector(31 downto 0)
     );
 end network;
 
@@ -114,7 +124,7 @@ architecture Behavioral of network is
       EVENTSTART : out std_logic;
       EVENTADDR  : in  std_logic_vector(9 downto 0);
       EVENTDONE  : in  std_logic;
-      DEBUG : out std_logic_vector(15 downto 0)
+      DEBUG      : out std_logic_vector(15 downto 0)
       );
   end component;
 
@@ -181,6 +191,7 @@ architecture Behavioral of network is
   component eventtx
     port (
       CLK         : in  std_logic;
+      RESET       : in  std_logic;
       -- header fields
       MYMAC       : in  std_logic_vector(47 downto 0);
       MYIP        : in  std_logic_vector(31 downto 0);
@@ -372,19 +383,46 @@ architecture Behavioral of network is
   end component;
 
 -- memory
-  signal memstart : std_logic := '0';
-  signal memrw    : std_logic := '0';
-  signal memdone  : std_logic := '0';
+  signal memddr2ready  : std_logic := '0';
+  signal memddr2readyn : std_logic := '0';
+  -- network memory interface
+  signal netmemstart   : std_logic := '0';
+  signal netmemrw      : std_logic := '0';
+  signal netmemdone    : std_logic := '0';
+  signal netmemrowtgt : std_logic_vector(14 downto 0) := (others => '0');
+  signal netmemwraddr : std_logic_vector(7 downto 0)  := (others => '0');
+  signal netmemwrdata : std_logic_vector(31 downto 0) := (others => '0');
+  signal netmemrdaddr : std_logic_vector(7 downto 0)  := (others => '0');
+  signal netmemrddata : std_logic_vector(31 downto 0) := (others => '0');
+  signal netmemrdwe   : std_logic                     := '0';
 
+  -- debug memory interface
+  signal debugmemstart   : std_logic := '0';
+  signal debugmemrw      : std_logic := '0';
+  signal debugmemdone    : std_logic := '0';
+  signal debugmemrowtgt : std_logic_vector(14 downto 0) := (others => '0');
+  signal debugmemwraddr : std_logic_vector(7 downto 0)  := (others => '0');
+  signal debugmemwrdata : std_logic_vector(31 downto 0) := (others => '0');
+  signal debugmemrdaddr : std_logic_vector(7 downto 0)  := (others => '0');
+  signal debugmemrddata : std_logic_vector(31 downto 0) := (others => '0');
+  signal debugmemrdwe   : std_logic                     := '0';
+
+  signal debugmemreset : std_logic := '0';
+  signal debugmemready : std_logic := '0';
+  
+  -- memory interface
+  signal memstart   : std_logic := '0';
+  signal memrw      : std_logic := '0';
+  signal memdone    : std_logic := '0';
   signal memrowtgt : std_logic_vector(14 downto 0) := (others => '0');
   signal memwraddr : std_logic_vector(7 downto 0)  := (others => '0');
   signal memwrdata : std_logic_vector(31 downto 0) := (others => '0');
-  -- read interface
   signal memrdaddr : std_logic_vector(7 downto 0)  := (others => '0');
   signal memrddata : std_logic_vector(31 downto 0) := (others => '0');
   signal memrdwe   : std_logic                     := '0';
 
-
+  signal memifacesel : std_logic := '0';
+  
 -- input if
 
   signal pktdata : std_logic_vector(15 downto 0) := (others => '0');
@@ -482,6 +520,20 @@ architecture Behavioral of network is
   signal lnicnewframe : std_logic := '0';
   signal txdoutenl2   : std_logic := '0';
 
+  -- mem debug interface
+  signal MEMRESET : std_logic                     := '0';
+  signal MEMREADY : std_logic                     := '0';
+  signal START    : std_logic                     := '0';
+  signal RW       : std_logic                     := '0';
+  signal DONE     : std_logic                     := '0';
+  signal ROWTGT   : std_logic_vector(14 downto 0) := (others => '0');
+
+  signal WRADDR : std_logic_vector(7 downto 0)  := (others => '0');
+  signal WRDATA : std_logic_vector(31 downto 0) := (others => '0');
+  signal RDADDR : std_logic_vector(7 downto 0)  := (others => '0');
+  signal RDDATA : std_logic_vector(31 downto 0) := (others => '0');
+  signal RDWE   : std_logic                     := '0';
+  
 begin  -- Behavioral
 
   inputcontrol_inst : inputcontrol
@@ -514,7 +566,7 @@ begin  -- Behavioral
       UNKNOWNIP    => UNKNOWNIP,
       UNKNOWNUDP   => UNKNOWNUDP,
       UNKNOWNARP   => UNKNOWNARP,
-      DEBUG => DEBUG
+      DEBUG        => open              -- DEBUG
       );
 
 
@@ -578,6 +630,7 @@ begin  -- Behavioral
   eventtx_inst : eventtx
     port map (
       CLK         => CLK,
+      RESET       => memddr2readyn,
       MYMAC       => MYMAC,
       MYIP        => MYIP,
       MYBCAST     => MYBCAST,
@@ -710,44 +763,113 @@ begin  -- Behavioral
       RDONEB    => rdoneb,
       RWROUTB   => rwroutb,
       RCLKB     => clk,
-      MEMSTART  => memstart,
-      MEMRW     => memrw,
-      MEMDONE   => memdone,
-      MEMWRADDR => memwraddr,
-      MEMWRDATA => memwrdata,
-      MEMROWTGT => memrowtgt,
-      MEMRDDATA => memrddata,
-      MEMRDADDR => memrdaddr,
-      MEMRDWE   => memrdwe);
+      MEMSTART  => netmemstart,
+      MEMRW     => netmemrw,
+      MEMDONE   => netmemdone,
+      MEMWRADDR => netmemwraddr,
+      MEMWRDATA => netmemwrdata,
+      MEMROWTGT => netmemrowtgt,
+      MEMRDDATA => netmemrddata,
+      MEMRDADDR => netmemrdaddr,
+      MEMRDWE   => netmemrdwe);
 
   memddr2_inst : entity memory.memddr2
+    generic map (
+      DQALIGN_USEDYNAMIC => false)
     port map (
-      CLK    => MEMCLK,
-      CLK90  => memclk90,
-      CLK180 => memclk180,
-      CLK270 => memclk270,
-      RESET  => RESET,
-      CKE    => RAMCKE,
-      CAS    => RAMCAS,
-      RAS    => RAMRAS,
-      CS     => RAMCS,
-      WE     => RAMWE,
-      ADDR   => RAMADDR,
-      BA     => RAMBA,
-      DQSH   => RAMDQSH,
-      DQSL   => RAMDQSL,
-      DQ     => RAMDQ,
-      START  => MEMSTART,
-      RW     => MEMRW,
-      DONE   => memdone,
+      CLK         => MEMCLK,
+      CLK90       => memclk90,
+      CLK180      => memclk180,
+      CLK270      => memclk270,
+      RESET       => memRESET,
+      MEMREADY    => memddr2ready,
+      CKE         => RAMCKE,
+      CAS         => RAMCAS,
+      RAS         => RAMRAS,
+      CS          => RAMCS,
+      WE          => RAMWE,
+      ADDR        => RAMADDR,
+      BA          => RAMBA,
+      DQSH        => RAMDQSH,
+      DQSL        => RAMDQSL,
+      DQ          => RAMDQ,
+      -- control interface
+      START       => MEMSTART,
+      RW          => MEMRW,
+      DONE        => memdone,
+      ROWTGT      => memrowtgt,
+      WRADDR      => memwraddr,
+      WRDATA      => memwrdata,
+      RDADDR      => memrdaddr,
+      RDDATA      => memrddata,
+      RDWE        => memrdwe,
+      -- debug interface
+      DQALIGNPOSL => ramdqalignl,
+      DQALIGNPOSH => ramdqalignh,
+      DEBUG       => open);
+
+  memreset <= RESET when memifacesel = '0' else debugmemreset;
+  debugmemready <= memddr2ready; 
+  memdebug_inst : entity memory.memdebug
+    port map (
+      MEMCLK   => MEMCLK,
+      MEMRESET => debugmemreset,
+      memifsel => memifacesel, 
+      MEMREADY => debugmemready,
+      START    => debugmemstart,
+      RW       => debugmemrw,
+      DONE     => debugmemdone,
+      ROWTGT   => debugmemrowtgt,
+      WRADDR   => debugmemwraddr,
+      WRDATA   => debugmemwrdata,
+      RDADDR   => debugmemrdaddr,
+      RDDATA   => debugmemrddata,
+      RDWE     => debugmemrdwe,
+      CCLK     => MEMDEBUGCLK,
+      CRDADDR  => MEMDEBUGRDADDR,
+      CWRADDR  => MEMDEBUGWRADDR,
+      CWE      => MEMDEBUGWE,
+      CRD      => MEMDEBUGRD,
+      CDOUT    => MEMDEBUGDOUT,
+      CDIN     => MEMDEBUGDIN); 
+
+  memifmux_inst: entity memory.memifmux 
+    port map (
+      IFACESEL => memifacesel,
+      -- output
+      START => memstart,
+      RW => memrw,
+      DONE => memdone,
       ROWTGT => memrowtgt,
       WRADDR => memwraddr,
       WRDATA => memwrdata,
       RDADDR => memrdaddr,
       RDDATA => memrddata,
-      RDWE   => memrdwe);
+      RDWE => memrdwe,
+      -- input A, network
+      STARTA => netmemstart,
+      RWA => netmemrw,
+      DONEA => netmemdone,
+      ROWTGTA => netmemrowtgt,
+      WRADDRA => netmemwraddr,
+      WRDATAA => netmemwrdata, 
+      RDADDRA => netmemrdaddr,
+      RDDATAA => netmemrddata,
+      RDWEA => netmemrdwe,
+      
+      -- input b, debug
+      STARTB => debugmemstart,
+      RWB => debugmemrw,
+      DONEB => debugmemdone,
+      ROWTGTB => debugmemrowtgt,
+      WRADDRB => debugmemwraddr,
+      WRDATAB => debugmemwrdata, 
+      RDADDRB => debugmemrdaddr,
+      RDDATAB => debugmemrddata,
+      RDWEB => debugmemrdwe);
 
-
+  
+  memddr2readyn <= not memddr2ready;
   process(CLK)
     variable newframel, newframel2 : std_logic := '0';
   begin
@@ -757,6 +879,8 @@ begin  -- Behavioral
       NICDOUT     <= lnicdout;
       NICNEWFRAME <= lnicnewframe;
 
+      DEBUG(31 downto 16) <= din3;
+      DEBUG(0)            <= den(3);
 
     end if;
   end process;

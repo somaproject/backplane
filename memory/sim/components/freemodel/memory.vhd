@@ -20,10 +20,13 @@
 --
 --------------------------------------------------------------------------------
 LIBRARY IEEE;          USE IEEE.std_logic_1164.ALL;
-                       USE IEEE.VITAL_primitives.ALL;
-                       USE IEEE.VITAL_timing.ALL;
-                       USE IEEE.VITAL_memory.ALL;
-
+--                       USE IEEE.VITAL_primitives.ALL;
+--                       USE IEEE.VITAL_timing.ALL;
+--                       USE IEEE.VITAL_memory.ALL;
+LIBRARY vital2000;
+USE vital2000.vital_primitives.all;
+USE vital2000.vital_timing.all;
+USE vital2000.vital_memory.all;
 --------------------------------------------------------------------------------
 PACKAGE memory IS
 
