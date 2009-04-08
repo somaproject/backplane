@@ -112,14 +112,15 @@ transsim: build/$(PROJECT).ngd
 # update roms
 # It's not clear how we handle mutliple roms? 
 
-$(PROJECT).postmem.bit: $(PROJECT).mem build/$(PROJECT).bit
+$(PROJECT).postmem.bit: $(PROJECT).mem build/$(PROJECT).bit $(PROJECT).syscontrol.mem $(PROJECT).netcontrol.mem
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
 	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).syscontrol.imem $(PROJECT).netcontrol.imem
 
-forceromupdate: $(PROJECT).mem
+forceromupdate: $(PROJECT).mem  $(PROJECT).syscontrol.mem $(PROJECT).netcontrol.mem
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
 	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).syscontrol.imem $(PROJECT).netcontrol.imem
 	cp $(PROJECT).postmem.bit $(PROJECT).bit
+
 $(PROJECT).syscontrol.mem:  backplane.asmpy
 	python ../../../eproc/assemble/assemble.py backplane.asmpy \
 	$(PROJECT).syscontrol.imem $(PROJECT).syscontrol.mem > $(PROJECT).syscontrol.log
