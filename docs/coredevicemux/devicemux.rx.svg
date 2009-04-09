@@ -2,7 +2,7 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -10,13 +10,21 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="devicemux.rx.svg"
    sodipodi:docbase="/home/jonas/soma/backplane/docs/coredevicemux"
-   inkscape:version="0.44.1"
+   inkscape:version="0.46"
    sodipodi:version="0.32"
    id="svg1996"
    height="792.00000pt"
-   width="612.00000pt">
+   width="612.00000pt"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs3">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 495 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="765 : 495 : 1"
+       inkscape:persp3d-origin="382.5 : 330 : 1"
+       id="perspective277" />
     <marker
        inkscape:stockid="TriangleInM"
        orient="auto"
@@ -47,24 +55,20 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="0"
-     inkscape:window-x="1600"
-     inkscape:window-height="1200"
+     inkscape:window-y="25"
+     inkscape:window-x="0"
+     inkscape:window-height="1129"
      inkscape:window-width="1600"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
      gridtolerance="10000"
-     gridoriginx="0.0000000pt"
-     gridoriginy="0.0000000pt"
-     gridspacingx="2.5000000pt"
-     gridspacingy="2.5000000pt"
      inkscape:grid-points="true"
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="pt"
-     inkscape:cy="400.65749"
-     inkscape:cx="684.68437"
-     inkscape:zoom="1.4142136"
+     inkscape:cy="869.19075"
+     inkscape:cx="762.80728"
+     inkscape:zoom="5.6568544"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -73,7 +77,20 @@
      id="base"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:object-paths="false" />
+     inkscape:object-paths="false">
+    <inkscape:grid
+       id="GridFromPre046Settings"
+       type="xygrid"
+       originx="0px"
+       originy="0.0000000pt"
+       spacingx="2.5000000pt"
+       spacingy="2.5000000pt"
+       color="#0000ff"
+       empcolor="#0000ff"
+       opacity="0.2"
+       empopacity="0.4"
+       empspacing="5" />
+  </sodipodi:namedview>
   <metadata
      id="metadata4">
     <rdf:RDF>
@@ -897,19 +914,23 @@
          id="tspan13376">RXDIN=0x7C</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="737.5"
-       y="127.5"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="753.125"
+       y="118.125"
        id="text13378"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan13380"
-         x="737.5"
-         y="127.5">RXKIN=1 &amp;</tspan><tspan
+         x="753.125"
+         y="118.125">RXKIN=1 &amp;</tspan><tspan
          sodipodi:role="line"
-         x="737.5"
-         y="136.25"
-         id="tspan13382">RXDIN=0xFC</tspan></text>
+         x="753.125"
+         y="126.875"
+         id="tspan13382">RXDIN=0xFC or</tspan><tspan
+         sodipodi:role="line"
+         x="753.125"
+         y="135.625"
+         id="tspan2650">pktcnt &gt; 768</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:black;stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM)"
        d="M 709.375,140 L 812.5,140 C 812.5,140 825,140 825,152.5 C 825,165 825,518.125 825,518.125 C 825,518.125 825,530.625 812.5,530.625 C 800,530.625 340.625,530.625 340.625,530.625 C 340.625,530.625 328.125,530.625 328.125,518.125 C 328.125,505.625 328.125,318.125 328.125,318.125"

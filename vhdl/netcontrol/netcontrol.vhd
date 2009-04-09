@@ -118,6 +118,7 @@ entity netcontrol is
     UNKNOWNUDP   : in  std_logic;
     EVTRXSUC     : in  std_logic;
     EVTFIFOFULL  : in  std_logic;
+    DATAFIFOOFERR : in std_logic; 
     -- memory debug control
     MEMDEBUGRDADDR : out    std_logic_vector(3 downto 0);
     MEMDEBUGWRADDR : out   std_logic_vector(3 downto 0);
@@ -201,6 +202,9 @@ architecture Behavioral of netcontrol is
   
   signal unknownudpcnt : std_logic_vector(15 downto 0) := (others => '0');
   signal unknownudprst : std_logic := '0';
+  
+  signal datafifooferrcnt : std_logic_vector(15 downto 0) := (others => '0');
+  signal datafifooferrrst : std_logic := '0';
   
   signal ramdqalignll, ramdqalignhl : std_logic_vector(7 downto 0) := (others => '0');
   
@@ -398,6 +402,7 @@ begin  -- Behavioral
            unknownipcnt    when rxmuxsel = 2 and iportaddr(3 downto 0) = "0010" else
            unknownarpcnt   when rxmuxsel = 2 and iportaddr(3 downto 0) = "0011" else
            unknownudpcnt   when rxmuxsel = 2 and iportaddr(3 downto 0) = "0100" else
+           datafifooferrcnt   when rxmuxsel = 2 and iportaddr(3 downto 0) = "0100" else
            ramdqalignhl & ramdqalignll when rxmuxsel = 2 and iportaddr(3 downto 0) = "1000" else
            X"0000";
 
@@ -485,6 +490,14 @@ begin  -- Behavioral
       else
         if UNKNOWNUDP = '1' then
           unknownudpcnt <= unknownudpcnt + 1;
+        end if;
+      end if;
+
+      if datafifooferrrst = '1' then
+        datafifooferrcnt   <= (others => '0');
+      else
+        if DATAFIFOOFERR = '1' then
+          datafifooferrcnt <= datafifooferrcnt + 1;
         end if;
       end if;
 

@@ -183,6 +183,8 @@ begin  -- Behavioral
       wait until rising_edge(CLK);
 
     end loop;
+
+
     assert false report "End of Simulation" severity failure;
 
 
