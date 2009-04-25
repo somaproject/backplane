@@ -146,7 +146,11 @@ architecture Behavioral of syscontrol is
   signal enewout               : std_logic                                    := '0';
   signal enewoutl, enewoutslow : std_logic                                    := '0';
 
-
+  type dlink_countarray is array (0 to 31) of std_logic_vector(7 downto 0);
+  signal dlinkcount : dlink_countarray := (others => (others => '0'));
+  signal dlinkupl : std_logic_vector(31 downto 0) := (others => '0');
+  
+  
 begin  -- Behavioral
 
 
@@ -294,10 +298,23 @@ begin  -- Behavioral
              else '0';
 
 
+  dlinkcnt: for i in 0 to 17 generate
+    process (CLK2x)
+      begin
+        if rising_edge(CLK2x) then
+          if dlinkupl(i) = '1' and DLINKUP(i) = '0' then
+            -- dropped link!
+            dlinkcount(i) <= dlinkcount(i) + 1; 
+          end if; 
+        end if;
+      end process;
+  end generate dlinkcnt;
+  
   process(CLK2x)
   begin
     if rising_edge(CLK2x) then
 
+      dlinkupl <= DLINKUP; 
       enewoutl      <= enewout;
       if enewout = '1'  then
         eaoutl <= eaout;
@@ -312,8 +329,10 @@ begin  -- Behavioral
         elsif iportaddr = X"02" then
           iportdata <= DLINKUP(15 downto 0);
         elsif iportaddr = X"32" then
-          iportdata <= X"1234"; 
-        end if;
+          iportdata <= X"1234";
+        elsif iportaddr(7 downto 4) = X"4" then
+          iportdata <= X"00" & dlinkcount(TO_INTEGER(UNSIGNED(iportaddr(3 downto 0))));
+       end if;
       end if;
     end if;
   end process;

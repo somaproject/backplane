@@ -61,20 +61,20 @@ build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf
 
 
 # third stage: map: produces pcf, map.ncd
+PLACER_COST_ENTRY = 5
 
 map: build/$(PROJECT)_map.ncd
 
 build/$(PROJECT)_map.ncd: build/$(PROJECT).ngd
-	map -p $(PART) -ol $(OPTIMIZE) -timing -logic_opt on -cm speed  -xe n \
+	map -p $(PART) -t $(PLACER_COST_ENTRY) -ol $(OPTIMIZE) -timing -logic_opt on -cm speed  -xe n \
 	-register_duplication  -pr b -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
 
 build/$(PROJECT).pcf: build/$(PROJECT)_map.ncd
 
 
 # forth stage: par
-
 build/$(PROJECT).ncd: build/$(PROJECT).pcf
-	par -w -pl $(OPTIMIZE) -rl $(OPTIMIZE)  build/$(PROJECT)_map.ncd build/$(PROJECT).ncd build/$(PROJECT).pcf
+	par -w -t $(PLACER_COST_ENTRY) -pl $(OPTIMIZE) -rl $(OPTIMIZE)  build/$(PROJECT)_map.ncd build/$(PROJECT).ncd build/$(PROJECT).pcf
 
 build/$(PROJECT).bit: build/$(PROJECT).pcf build/$(PROJECT).ncd
 	bitgen -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf

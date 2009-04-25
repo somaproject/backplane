@@ -70,6 +70,10 @@ BS_YIELDHANDLE = 0x94
 DLINKQUERY_CMD = 0x20
 DLINKQUERY_RESP = 0x20
 
+DLINKQUERY_COUNT_CMD = 0x21
+DLINKQUERY_COUNT_RESP = 0x21
+
+DLINKQUERY_COUNT_ADDR_BASE = 0x40
 # manual boot interface commands
 MANBOOTSER_SETMASK = 0xA0
 MANBOOTSER_TOGPROG = 0xA1
@@ -485,6 +489,31 @@ def createDLinkStatusQueryResponse():
     proc.load(tmp, DLINKQUERY_RESP)
     proc.output(EVENTOUT_CMD, tmp)
         
+def createDLinkStatusCountResponse():
+    proc = env.createEProc((DLINKQUERY_COUNT_CMD, DLINKQUERY_COUNT_CMD),
+                           (0, 255))
+    tgtaddr = proc.createVariable("tgtaddr")
+    count = proc.createVariable("count")
+    tmp = proc.createVariable("tmp")
+
+    proc.move(tgtaddr, ereg.edata[0])
+    proc.output(EVENTOUT_DATA0, tgtaddr)
+
+    proc.immadd(tgtaddr, DLINKQUERY_COUNT_ADDR_BASE)
+    
+    proc.output(EVENTOUT_DATA1, tgtaddr)
+
+    proc.inputreg(tgtaddr, count)
+    proc.output(EVENTOUT_DATA2, count)
+    
+    # now create the response event
+    proc.move(tmp, ereg.src)
+    proc.output(EVENTOUT_SRC, tmp)
+
+    # event
+    proc.load(tmp, DLINKQUERY_COUNT_RESP)
+    proc.output(EVENTOUT_CMD, tmp)
+        
 
 def manual_boot_setmask():
   proc = env.createEProc((MANBOOTSER_SETMASK, MANBOOTSER_SETMASK),
@@ -567,6 +596,7 @@ bootStoreFileReadRX()
 
 
 createDLinkStatusQueryResponse()
+createDLinkStatusCountResponse()
 
 manual_boot_setmask()
 manual_boot_togprog()
