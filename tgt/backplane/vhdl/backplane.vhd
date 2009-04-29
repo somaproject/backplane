@@ -486,8 +486,8 @@ begin  -- Behavioral
   SYSCFG  <= lserialboot(2);
   NEPCFG  <= lserialboot(1);
 
-  LEDPOWER <= lserialboot(0);
-  LEDEVENT <= jtagesenddebug(1);
+  LEDPOWER <= dlinkup(0); 
+  LEDEVENT <= dlinkup(1); 
 
   jtagsend_inst : entity jtag.jtagesend
     generic map (
