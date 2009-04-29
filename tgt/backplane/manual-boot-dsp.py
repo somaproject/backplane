@@ -44,9 +44,15 @@ EVENTCMD_YOUARE = 0x01
 e = Event()
 e.src = eaddr.NETWORK
 e.cmd =  MANBOOTSER_SETMASK
+
+wrd = 0
+for d in [int(x) for x in devicenums]:
+    wrd |= (1 << (d + 4))
+print "word = %8.8X" % wrd
+        
 # FIXME: 
-e.data[0] = 0xFFFF # right now we just boot everyone
-e.data[1] = 0xFFF0
+e.data[0] = wrd >> 16 
+e.data[1] = wrd & 0xFFFF
 
 ea = eaddr.TXDest()
 ea[eaddr.SYSCONTROL] = 1
