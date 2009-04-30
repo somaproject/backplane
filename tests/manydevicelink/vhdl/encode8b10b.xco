@@ -1,44 +1,58 @@
+##############################################################
+#
+# Xilinx Core Generator version K.31
+# Date: Wed Apr 29 22:00:09 2009
+#
+##############################################################
+#
+#  This file contains the customisation parameters for a
+#  Xilinx CORE Generator IP GUI. It is strongly recommended
+#  that you do not manually alter this file as it may cause
+#  unexpected and unsupported behavior.
+#
+##############################################################
+#
 # BEGIN Project Options
-SET flowvendor = Other
-SET vhdlsim = True
-SET verilogsim = False
-SET workingdirectory = /tmp/coregen/tmp
-SET speedgrade = -10
-SET simulationfiles = Behavioral
-SET asysymbol = False
 SET addpads = False
-SET device = xc4vlx25
-SET implementationfiletype = Edif
+SET asysymbol = False
 SET busformat = BusFormatAngleBracketNotRipped
-SET foundationsym = False
-SET package = ff668
 SET createndf = False
 SET designentry = VHDL
+SET device = xc4vlx25
 SET devicefamily = virtex4
+SET flowvendor = Other
 SET formalverification = False
+SET foundationsym = False
+SET implementationfiletype = Edif
+SET package = ff668
 SET removerpms = False
+SET simulationfiles = Behavioral
+SET speedgrade = -10
+SET verilogsim = False
+SET vhdlsim = True
 # END Project Options
 # BEGIN Select
 SELECT Encode_8b/10b family Xilinx,_Inc. 5.0
 # END Select
 # BEGIN Parameters
-CSET secondary_encoder=false
-CSET force_code_symbol=D_10_2_pos
-CSET b_new_data=false
-CSET b_force_code_symbol=B_D_10_2_pos
-CSET clock_enable=false
-CSET new_data=false
-CSET force_disparity=false
-CSET force_code=false
-CSET b_force_code=false
+CSET b_clock_enable=false
+CSET b_code_error_output=false
 CSET b_disparity_output=false
+CSET b_force_code=false
+CSET b_force_code_symbol=B_D_10_2_pos
+CSET b_force_disparity=false
+CSET b_new_data=false
+CSET clock_enable=false
 CSET code_error_output=false
 CSET component_name=encode8b10b
-CSET b_code_error_output=false
-CSET implementation=LUT_Based
 CSET disparity_output=false
-CSET b_clock_enable=false
-CSET b_force_disparity=false
+CSET force_code=false
+CSET force_code_symbol=D_10_2_pos
+CSET force_disparity=false
+CSET implementation=LUT_Based
+CSET new_data=false
+CSET secondary_encoder=false
 # END Parameters
 GENERATE
+# CRC: 53861765
 

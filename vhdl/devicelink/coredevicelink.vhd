@@ -11,7 +11,10 @@ use UNISIM.VComponents.all;
 
 entity coredevicelink is
   generic (
-    N         :     integer := 0);      -- number of ticks in input bit cycle
+    N :     integer := 0;  -- number of ticks in input bit cycle
+      -- needs to be at least 100k to acquire lock because DCMs are slow
+    DCNTMAX : integer                    := 200000
+    );     
   port (
     CLK       : in  std_logic;          -- should be a 50 MHz clock 
     RXBITCLK  : in  std_logic;          -- should be a 250 MHz clock
@@ -88,8 +91,6 @@ architecture Behavioral of coredevicelink is
   signal omux : integer range 0 to 1 := 0;
 
   signal   dcntrst : std_logic                  := '0';
-  -- needs to be 100k to acquire lock because DCMs are slow
-  constant DCNTMAX : integer                    := 200000;
   signal   dcnt    : integer range 0 to DCNTMAX := 0;
 
   signal rxio : std_logic := '0';
@@ -105,6 +106,8 @@ architecture Behavioral of coredevicelink is
   signal dlyrst  : std_logic := '0';
   signal dlyce   : std_logic := '0';
   signal dlyinc  : std_logic := '0';
+  signal dlycnt : std_logic_vector(7 downto 0) := (others => '0');
+  
   signal bitslip : std_logic := '0';
 
   signal lrxkout : std_logic                    := '0';
@@ -252,6 +255,18 @@ begin  -- Behavioral
           bitcnt <= bitcnt + 1; 
         end if;
 
+        -- delay count for debugging
+        if dlyrst = '1' then
+          dlycnt <= X"00";
+        else
+          if dlyce = '1'  then
+            if dlyinc = '1' then
+              dlycnt <= dlycnt + 1;
+            else
+              dlycnt <= dlycnt - 1; 
+            end if;
+          end if;
+        end if;
       end if;
     end if;
 
@@ -274,6 +289,7 @@ begin  -- Behavioral
         stoptx  <= '0';
         bitcntrst <= '1'; 
         ns      <= snull;
+        
       when snull =>
         dcntrst <= '1';
         llocked <= '0';
@@ -471,6 +487,7 @@ begin  -- Behavioral
         stoptx  <= '0';
         bitcntrst <= '1'; 
         ns      <= wrdinc;
+        
       when wrdinc   =>
         dcntrst <= '0';
         llocked <= '0';
@@ -482,6 +499,7 @@ begin  -- Behavioral
         stoptx  <= '0';
         bitcntrst <= '1'; 
         ns      <= wrdlock;
+        
       when wrdlock  =>
         dcntrst <= '0';
         llocked <= '0';
@@ -493,6 +511,7 @@ begin  -- Behavioral
         stoptx  <= '0';
         bitcntrst <= '1'; 
         ns      <= wrddly;
+        
       when wrddly   =>
         dcntrst <= '0';
         llocked <= '0';
@@ -530,6 +549,7 @@ begin  -- Behavioral
             ns  <= wrdinc;
           end if;
         end if;
+        
       when validchk1 =>
         dcntrst <= '0';
         llocked <= '0';
@@ -545,6 +565,7 @@ begin  -- Behavioral
         else
           ns    <= none;
         end if;
+        
       when validchk2 =>
         dcntrst <= '0';
         llocked <= '0';
@@ -560,6 +581,7 @@ begin  -- Behavioral
         else
           ns    <= none;
         end if;
+        
       when validchk3 =>
         dcntrst <= '0';
         llocked <= '0';
@@ -575,6 +597,7 @@ begin  -- Behavioral
         else
           ns    <= none;
         end if;
+        
       when validchk4 =>
         dcntrst <= '0';
         llocked <= '0';
@@ -590,6 +613,7 @@ begin  -- Behavioral
         else
           ns    <= none;
         end if;
+        
       when sendlock  =>
         dcntrst <= '0';
         llocked <= '0';
