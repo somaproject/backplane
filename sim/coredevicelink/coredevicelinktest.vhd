@@ -253,4 +253,18 @@ begin
   DL_RXDIN <= DL_TXDOUT;
   DL_RXKIN <= DL_TXKOUT;
 
+  process
+    variable last_din : std_logic_vector(7 downto 0) := (others => '0');
+    begin
+      wait for 200 us;
+      wait until rising_edge(CLK);
+      last_din := RXDOUT;
+      for i in 0 to 1000 loop
+        wait until rising_edge(CLK);
+
+        assert RXDOUT = (last_din + 1) report "Error reading RXDOUT" severity error;
+        last_din := RXDOUT; 
+      end loop;  -- i
+      report "End of Simulation" severity failure;
+    end process; 
 end Behavioral;
