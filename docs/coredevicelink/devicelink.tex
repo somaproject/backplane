@@ -30,13 +30,17 @@ device lock for another 4 ms.
 This is the most difficult part of the interface; we use the IDELAY
 adjustable input delay in the Virtex-4 input buffer. We attempt to
 increment the delay three times without changing the received word
-(that is, keeping \signal{RXWORDL} = \signal{RXWORDLL}). Any change in
-the received word causes a reversion to the original state
-\state{BITINC1}.
+(that is, keeping \signal{RXWORDL} = \signal{RXWORDLL}). The logic
+here is that if we can increment the delay N times without seeing
+a change in the bit pattern, we're in a ``stable'' region of the eye, and
+so we center on that region. 
 
-Assuming three successful delay increments without changing the
-received word, we transition to \state{BITBACK} and create a delay
-decrement to center ourselves on the eye of the received words.
+The FSM starts in BITINC, increments the delay, and then waits for 64
+ticks, making sure it receives the same word that entire time. If so,
+we transition to BITGOOD and increment BITGOODCNT. When Assuming three
+successful delay increments without changing the received word, we
+transition to \state{BITBACKUP} and create a delay decrement to center
+ourselves on the eye of the received words.
 
 Should this process take longer than 20 microseconds, we assume the
 link is invalid and transition back to \state{NONE}.

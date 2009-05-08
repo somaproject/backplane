@@ -1,0 +1,62 @@
+##############################################################
+#
+# Xilinx Core Generator version K.31
+# Date: Wed Apr 29 23:28:29 2009
+#
+##############################################################
+#
+#  This file contains the customisation parameters for a
+#  Xilinx CORE Generator IP GUI. It is strongly recommended
+#  that you do not manually alter this file as it may cause
+#  unexpected and unsupported behavior.
+#
+##############################################################
+#
+# BEGIN Project Options
+SET addpads = False
+SET asysymbol = False
+SET busformat = BusFormatAngleBracketNotRipped
+SET createndf = False
+SET designentry = VHDL
+SET device = xc4vlx25
+SET devicefamily = virtex4
+SET flowvendor = Other
+SET formalverification = False
+SET foundationsym = False
+SET implementationfiletype = Edif
+SET package = ff668
+SET removerpms = False
+SET simulationfiles = Behavioral
+SET speedgrade = -10
+SET verilogsim = False
+SET vhdlsim = True
+# END Project Options
+# BEGIN Select
+SELECT Decode_8b/10b family Xilinx,_Inc. 7.1
+# END Select
+# BEGIN Parameters
+CSET b_clock_enable=false
+CSET b_code_violation_out=false
+CSET b_disparity_violation_out=false
+CSET b_new_data=false
+CSET b_running_disparity_in=false
+CSET b_running_disparity_out=false
+CSET b_symbol_disparity_out=false
+CSET b_synchronous_reset=false
+CSET b_synchronous_reset_value=B_D_0_0_pos
+CSET clock_enable=false
+CSET code_violation_out=true
+CSET component_name=decode8b10b
+CSET disparity_violation_out=true
+CSET implementation=LUT_Based
+CSET new_data=false
+CSET running_disparity_in=false
+CSET running_disparity_out=false
+CSET secondary_decoder=false
+CSET symbol_disparity_out=false
+CSET synchronous_reset=false
+CSET synchronous_reset_value=D_0_0_pos
+# END Parameters
+GENERATE
+# CRC: e1faa662
+

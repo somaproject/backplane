@@ -156,7 +156,7 @@ begin
 
   process
     variable j : integer := 0;
-    constant noisecnt : integer := 70;  -- how many 10 ps bursts do we have
+    constant noisecnt : integer := 60;  -- how many 10 ps bursts do we have
                                         -- noise in
     variable lastval : std_logic := '0';
   begin
@@ -173,7 +173,7 @@ begin
     -- then the good value
     DEVICE_TO_CORE_DELAYED_P <= DEVICE_TO_CORE_P;
     DEVICE_TO_CORE_DELAYED_N <= DEVICE_TO_CORE_N;
-    wait for 550 ps;
+    wait for 750 ps;
 
     -- footer
     for i in 0 to noisecnt loop
