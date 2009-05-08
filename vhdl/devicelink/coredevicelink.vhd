@@ -30,7 +30,8 @@ entity coredevicelink is
     RXDOUT    : out std_logic_vector(7 downto 0);
     RXKOUT    : out std_logic;
     DROPLOCK  : in  std_logic;
-    LOCKED    : out std_logic
+    LOCKED    : out std_logic;
+    DEBUG     : out std_logic_vector(15 downto 0)
     );
 
 end coredevicelink;
@@ -279,6 +280,8 @@ begin  -- Behavioral
             end if;
           end if;
         end if;
+
+        DEBUG(7 downto 0) <= dlycnt; 
       end if;
     end if;
 
@@ -288,7 +291,7 @@ begin  -- Behavioral
 
 
   fsm : process (cs, dcnt, rxwordl, rxwordll, lrxkout, lrxdout, rxcodeerr,
-               bitgoodcnt, droplock)
+                 bitgoodcnt, droplock)
   begin  -- process fsm
     case cs is
       when none =>
@@ -398,7 +401,7 @@ begin  -- Behavioral
         stoptx    <= '0';
         bitcntrst <= '0';
         if rxwordl /= rxwordll then
-          ns <= bitbad;                -- failed to establish lock
+          ns <= bitbad;                 -- failed to establish lock
         else
           if bitcnt = 63 then
             ns <= bitgood;
@@ -420,7 +423,7 @@ begin  -- Behavioral
         if bitgoodcnt = 3 then
           ns <= bitbackup;
         else
-          ns        <= bitinc; 
+          ns <= bitinc;
         end if;
 
       when bitbad =>
@@ -433,7 +436,7 @@ begin  -- Behavioral
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '0';
-        ns        <= bitinc; 
+        ns        <= bitinc;
 
       when bitbackup =>
         dcntrst   <= '0';

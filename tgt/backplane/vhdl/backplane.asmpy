@@ -74,6 +74,10 @@ DLINKQUERY_COUNT_CMD = 0x21
 DLINKQUERY_COUNT_RESP = 0x21
 
 DLINKQUERY_COUNT_ADDR_BASE = 0x40
+
+EVENT_DLINKDEBUG_CMD = 0x22
+EVENT_DLINKDEBUG_RESP = 0x22
+
 # manual boot interface commands
 MANBOOTSER_SETMASK = 0xA0
 MANBOOTSER_TOGPROG = 0xA1
@@ -83,6 +87,7 @@ MANBOOTSER_SENDBYTES = 0xA3
 # miscellaneous events
 EVENT_CMD_PING = 0x08
 EVENT_CMD_PING_RESPONSE = 0x09
+
 
 # read addresses
 DLINKUP_LOW = 0x00
@@ -575,6 +580,32 @@ def ping_proc():
   proc.load(tmp, EVENT_CMD_PING_RESPONSE)
   proc.output(EVENTOUT_CMD, tmp)
 
+def debug_proc():
+  """
+  Debug proc 
+  """
+  proc = env.createEProc((EVENT_DLINKDEBUG_CMD, EVENT_DLINKDEBUG_CMD),
+                           (0, 255))
+  tmp = proc.createVariable("tmp")
+  proc.move(tmp, ereg.src)
+  proc.output(EVENTOUT_SRC, tmp)
+  # edata
+  proc.input(0x50, tmp)
+  proc.output(EVENTOUT_DATA0, tmp)
+
+  proc.input(0x51, tmp)
+  proc.output(EVENTOUT_DATA1, tmp)
+
+  proc.input(0x52, tmp)
+  proc.output(EVENTOUT_DATA2, tmp)
+
+  proc.input(0x53, tmp)
+  proc.output(EVENTOUT_DATA3, tmp)
+  
+  # send the actual
+  proc.load(tmp, EVENT_DLINKDEBUG_RESP)
+  proc.output(EVENTOUT_CMD, tmp)
+
 
 createEnableEventCycleProc()
 createEventCycleProc()
@@ -597,6 +628,7 @@ bootStoreFileReadRX()
 
 createDLinkStatusQueryResponse()
 createDLinkStatusCountResponse()
+debug_proc()
 
 manual_boot_setmask()
 manual_boot_togprog()

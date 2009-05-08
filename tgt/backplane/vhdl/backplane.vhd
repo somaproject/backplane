@@ -201,6 +201,8 @@ architecture Behavioral of backplane is
   signal dincapture_data : std_logic_vector(15 downto 0) := (others => '0');
   signal jtagjtagrxdebug : std_logic_vector(15 downto 0) := (others => '0');
 
+  type dldebug_t is array (0 to 17) of std_logic_vector(15 downto 0);
+  signal dldebug : dldebug_t := (others => (others => '0'));
 
   -- memory debug
   signal MEMDEBUGRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
@@ -453,7 +455,12 @@ begin  -- Behavioral
       EATX    => EATX(1),
       EDTX    => EDTX,
       SEROUT  => lserialboot,
-      DLINKUP => dlinkup);
+      DLINKUP => dlinkup,
+      dldebug_A => dldebug(0),
+      dldebug_B => dldebug(1),
+      dldebug_C => dldebug(6),
+      dldebug_D => dldebug(7)
+      );
 
   bootstore_inst : entity soma.bootstore
     generic map (
@@ -857,7 +864,8 @@ begin  -- Behavioral
         RXIO_P    => DSPRXIO_P(i),
         RXIO_N    => DSPRXIO_N(i),
         DROPLOCK  => '0',
-        LOCKED    => dllocked);
+        LOCKED    => dllocked,
+        DEBUG => dldebug(i));
     dlinkup(i) <= dllocked;
 
 
