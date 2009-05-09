@@ -127,7 +127,7 @@ architecture Behavioral of coredevicelink is
   signal kin : std_logic                    := '0';
 
 
-  signal bitgoodcnt : integer range 0 to 15 := 0;
+  signal bitgoodcnt : integer range 0 to 31 := 0;
   
   type states is (none, snull, wnull, ssync, wsync, bitstart,
                   bitinc, bitwait, bitbad, bitgood, bitbackup,
@@ -143,6 +143,10 @@ architecture Behavioral of coredevicelink is
 
   attribute DIFF_TERM                : string;
   attribute DIFF_TERM of RXIO_ibufds : label is "TRUE";
+
+  constant TARGET_EYE_WIDTH : integer := 3;
+  constant TARGET_EYE_LOCATION : integer := 1;
+  
 begin  -- Behavioral
 
 
@@ -384,7 +388,7 @@ begin  -- Behavioral
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
-        if dcnt > 1000 then
+        if dcnt > 10000 then
           ns <= none;                   -- failed to establish lock
         else
           ns <= bitwait;
@@ -401,7 +405,7 @@ begin  -- Behavioral
         stoptx    <= '0';
         bitcntrst <= '0';
         if rxwordl /= rxwordll then
-          ns <= bitbad;                 -- failed to establish lock
+          ns <= bitbad;                -- failed to establish lock
         else
           if bitcnt = 63 then
             ns <= bitgood;
@@ -420,7 +424,7 @@ begin  -- Behavioral
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '0';
-        if bitgoodcnt = 3 then
+        if bitgoodcnt = TARGET_EYE_WIDTH then
           ns <= bitbackup;
         else
           ns <= bitinc;
@@ -448,7 +452,7 @@ begin  -- Behavioral
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
-        if bitgoodcnt = 2 then
+        if bitgoodcnt = TARGET_EYE_LOCATION then
           ns <= wrdstart;
         else
           ns <= bitbackup;
@@ -518,7 +522,7 @@ begin  -- Behavioral
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
-        if dcnt > 2000 then
+        if dcnt > DCNTMAX - 1 then
           ns <= none;
         else
           if (rxword = "1101000011") or (rxword = "0010111100") then

@@ -66,10 +66,6 @@ architecture Behavioral of coredevicelinktest is
   signal RESET     : std_logic                    := '1';
   signal TXDIN     : std_logic_vector(7 downto 0) := (others => '0');
   signal TXKIN     : std_logic                    := '0';
-  signal TXIO_P    : std_logic                    := '0';
-  signal TXIO_N    : std_logic                    := '0';
-  signal RXIO_P    : std_logic                    := '0';
-  signal RXIO_N    : std_logic                    := '0';
   signal RXDOUT    : std_logic_vector(7 downto 0) := (others => '0');
 
   signal RXKOUT   : std_logic := '0';
@@ -156,7 +152,7 @@ begin
 
   process
     variable j : integer := 0;
-    constant noisecnt : integer := 60;  -- how many 10 ps bursts do we have
+    constant noisecnt : integer := 30;  -- how many 10 ps bursts do we have
                                         -- noise in
     variable lastval : std_logic := '0';
   begin
@@ -173,7 +169,7 @@ begin
     -- then the good value
     DEVICE_TO_CORE_DELAYED_P <= DEVICE_TO_CORE_P;
     DEVICE_TO_CORE_DELAYED_N <= DEVICE_TO_CORE_N;
-    wait for 750 ps;
+    wait for 1350 ps;
 
     -- footer
     for i in 0 to noisecnt loop
@@ -256,7 +252,7 @@ begin
   process
     variable last_din : std_logic_vector(7 downto 0) := (others => '0');
     begin
-      wait for 200 us;
+      wait for 400 us;
       wait until rising_edge(CLK);
       last_din := RXDOUT;
       for i in 0 to 1000 loop
