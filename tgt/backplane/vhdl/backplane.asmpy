@@ -591,17 +591,13 @@ def debug_proc():
   proc.output(EVENTOUT_SRC, tmp)
   # edata
   proc.input(0x50, tmp)
+  proc.input(0x50, tmp)
   proc.output(EVENTOUT_DATA0, tmp)
 
   proc.input(0x51, tmp)
+  proc.input(0x51, tmp)
   proc.output(EVENTOUT_DATA1, tmp)
 
-  proc.input(0x52, tmp)
-  proc.output(EVENTOUT_DATA2, tmp)
-
-  proc.input(0x53, tmp)
-  proc.output(EVENTOUT_DATA3, tmp)
-  
   # send the actual
   proc.load(tmp, EVENT_DLINKDEBUG_RESP)
   proc.output(EVENTOUT_CMD, tmp)

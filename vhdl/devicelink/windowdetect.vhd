@@ -100,7 +100,7 @@ begin  -- Behavioral
       if cs = dones then
         DONE <= '1';
         OUTLEN <= spanlenl;
-        FAIL <= notfail; 
+        FAIL <= not notfail; 
       else
         DONE <= '0';
       end if;

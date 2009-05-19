@@ -35,6 +35,7 @@ architecture Behavioral of devicelinkclk is
   signal clkbittxint, clkbittx180int : std_logic := '0';
   signal clkbitrxint  : std_logic := '0';
   signal clknone, clknoneint : std_logic := '0';
+  signal clknone2, clknone2int : std_logic := '0';
   
   signal base_rst_delay : std_logic_vector(9 downto 0) := (others => '0');
 
@@ -43,9 +44,14 @@ architecture Behavioral of devicelinkclk is
   signal clkwordtxout, clkwordtxint : std_logic := '0';
   signal clkwordtxdc, clkwordtxdcint : std_logic := '0';
 
+  signal clkdelayctrl : std_logic := '0';
+  signal clkdelayctrlint : std_logic := '0';
   signal txworddc_lock : std_logic := '0';
 
   signal delayready : std_logic := '0';
+
+  signal startupdoneint : std_logic := '0';
+  signal delayctrlrst : std_logic := '1';
   
 begin  -- Behavioral
 
@@ -156,14 +162,47 @@ begin  -- Behavioral
       O => clkwordtxdc,
       I => clkwordtxdcint);
 
+--  delayctrl_clock_dcm : DCM_BASE
+--    generic map (
+--      CLKFX_MULTIPLY        => 4,
+--      CLKFX_DIVIDE          => 3,
+--      CLKIN_PERIOD          => 2.5,
+--      CLKOUT_PHASE_SHIFT    => "NONE",
+--      CLK_FEEDBACK          => "1X",
+--      DCM_AUTOCALIBRATION   => true,
+--      DCM_PERFORMANCE_MODE  => "MAX_SPEED",
+--      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
+--      DFS_FREQUENCY_MODE    => "LOW",
+--      DLL_FREQUENCY_MODE    => "LOW",
+--      DUTY_CYCLE_CORRECTION => true,
+--      FACTORY_JF            => X"F0F0",
+--      PHASE_SHIFT           => 0,
+--      STARTUP_WAIT          => false)
+--    port map(
+--      CLKIN                 => clk,     -- input 150 MHz
+--      clk0                  => clknone2int,
+--      CLKFB                 => clknone2,
+--      --CLK2X    => clkbittxint,
+--      --CLK2X180 => clkbittx180int,
+--      CLKFX    => clkdelayctrl,
+--      --CLKDV    => clkwordtxdcint,
+--      RST      => base_rst_delay(7)
+----      LOCKED   => maindcmlocke
+--      );
+
+  delayctrl_clk_bufg : BUFG
+    port map (
+      O => clkdelayctrl,
+      I => clkdelayctrlint);
+
   dlyctrl : IDELAYCTRL
     port map(
       RDY    => delayready,
-      REFCLK => clkwordtxout,
-      RST    => dcmreset
+      REFCLK => clkdelayctrl,
+      RST    => delayctrlrst 
       );
 
-
+  
   -- Duty cycle correction
 
   
@@ -172,6 +211,8 @@ begin  -- Behavioral
       CLKIN_PERIOD          => 2.5,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
+      CLKFX_MULTIPLY => 10,
+      CLKFX_DIVIDE => 3,
       DCM_AUTOCALIBRATION   => true,
       DCM_PERFORMANCE_MODE  => "MAX_SPEED",
       DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
@@ -185,6 +226,7 @@ begin  -- Behavioral
       CLKIN                 => clkwordtxdc,
       clk0                  => clkwordtxint,
       CLKFB                 => clkwordtxout,
+      CLKFX => clkdelayctrlint, 
       RST => dcmreset,
       LOCKED => txworddc_lock 
       );
@@ -196,6 +238,8 @@ begin  -- Behavioral
 
   CLKWORDTX <= clkwordtxout;
   
-  STARTUPDONE <= txworddc_lock and delayready;
+  startupdoneint <= txworddc_lock and delayready;
+  delayctrlrst <= not txworddc_lock; 
+  STARTUPDONE <= startupdoneint; 
 end Behavioral;
 

@@ -16,22 +16,25 @@ entity coredevicelink is
     DCNTMAX : integer := 200000
     );     
   port (
-    CLK       : in  std_logic;          -- should be a 50 MHz clock 
-    RXBITCLK  : in  std_logic;          -- should be a 250 MHz clock
-    TXHBITCLK : in  std_logic;          -- should be a 300 MHz clock
-    TXWORDCLK : in  std_logic;          -- should be a 60 MHz clock
-    RESET     : in  std_logic;
-    TXDIN     : in  std_logic_vector(7 downto 0);
-    TXKIN     : in  std_logic;
-    TXIO_P    : out std_logic;
-    TXIO_N    : out std_logic;
-    RXIO_P    : in  std_logic;
-    RXIO_N    : in  std_logic;
-    RXDOUT    : out std_logic_vector(7 downto 0);
-    RXKOUT    : out std_logic;
-    DROPLOCK  : in  std_logic;
-    LOCKED    : out std_logic;
-    DEBUG     : out std_logic_vector(15 downto 0)
+    CLK         : in  std_logic;        -- should be a 50 MHz clock 
+    RXBITCLK    : in  std_logic;        -- should be a 250 MHz clock
+    TXHBITCLK   : in  std_logic;        -- should be a 300 MHz clock
+    TXWORDCLK   : in  std_logic;        -- should be a 60 MHz clock
+    RESET       : in  std_logic;
+    AUTOLINK    : in  std_logic := '1';
+    ATTEMPTLINK : in  std_logic := '0';
+    TXDIN       : in  std_logic_vector(7 downto 0);
+    TXKIN       : in  std_logic;
+    TXIO_P      : out std_logic;
+    TXIO_N      : out std_logic;
+    RXIO_P      : in  std_logic;
+    RXIO_N      : in  std_logic;
+    RXDOUT      : out std_logic_vector(7 downto 0);
+    RXKOUT      : out std_logic;
+    DROPLOCK    : in  std_logic;
+    LOCKED      : out std_logic;
+    DEBUGADDR   : in  std_logic_vector(7 downto 0);
+    DEBUG       : out std_logic_vector(15 downto 0)
     );
 
 end coredevicelink;
@@ -86,6 +89,25 @@ architecture Behavioral of coredevicelink is
       disp_err : out std_logic);
   end component;
 
+
+  component delaylock
+    port (
+      CLK       : in  std_logic;
+      START     : in  std_logic;
+      DONE      : out std_logic;
+      LOCKED    : out std_logic;
+      DEBUG     : out std_logic;
+      DEBUGADDR : in  std_logic_vector(4 downto 0);
+      WINPOS    : out std_logic_vector(4 downto 0);
+      WINLEN    : out std_logic_vector(4 downto 0);
+      -- delay interface
+      DLYRST    : out std_logic;
+      DLYINC    : out std_logic;
+      DLYCE     : out std_logic;
+      DIN       : in  std_logic_vector(9 downto 0)
+      );
+  end component;
+
   signal encdata, encdatal : std_logic_vector(9 downto 0) := (others => '0');
   signal oframe, ol, oll   : std_logic_vector(9 downto 0) := (others => '0');
 
@@ -102,6 +124,8 @@ architecture Behavioral of coredevicelink is
 
   signal rxcodeerr : std_logic := '0';
 
+  signal autolinkl    : std_logic := '0';
+  signal attemptlinkl : std_logic := '0';
 
 
   signal dlyrst : std_logic                    := '0';
@@ -144,8 +168,13 @@ architecture Behavioral of coredevicelink is
   attribute DIFF_TERM                : string;
   attribute DIFF_TERM of RXIO_ibufds : label is "TRUE";
 
-  constant TARGET_EYE_WIDTH : integer := 3;
-  constant TARGET_EYE_LOCATION : integer := 1;
+  -- eye lock signals
+  signal eyelockstart  : std_logic := '0';
+  signal eyelockdone   : std_logic := '0';
+  signal eyelocklocked : std_logic := '0';
+  
+  signal eyelockpos : std_logic_vector(4 downto 0) := (others => '0');
+  signal eyelocklen : std_logic_vector(4 downto 0) := (others => '0');
   
 begin  -- Behavioral
 
@@ -192,6 +221,20 @@ begin  -- Behavioral
       CODE_ERR => cerr,
       DISP_ERR => derr);
 
+  eyelock_inst : delaylock
+    port map (
+      CLK       => CLK,
+      START     => eyelockstart,
+      DONE      => eyelockdone,
+      LOCKED    => eyelocklocked,
+      DEBUG     => open,
+      DEBUGADDR => "00000",
+      WINPOS    => eyelockpos,
+      WINLEN    => eyelocklen,
+      DLYRST    => DLYRST,
+      DLYINC    => DLYINC,
+      DLYCE     => DLYCE,
+      DIN       => rxword); 
 
   TXIO_obufds : OBUFDS
     generic map (
@@ -248,6 +291,9 @@ begin  -- Behavioral
         rxwordl  <= rxword;
         rxwordll <= rxwordl;
 
+        autolinkl    <= AUTOLINK;
+        attemptlinkl <= ATTEMPTLINK;
+
         -- out
         RXDOUT <= lrxdout;
         RXKOUT <= lrxkout;
@@ -272,29 +318,20 @@ begin  -- Behavioral
           end if;
         end if;
 
-        -- delay count for debugging
-        if dlyrst = '1' then
-          dlycnt <= X"00";
-        else
-          if dlyce = '1' then
-            if dlyinc = '1' then
-              dlycnt <= dlycnt + 1;
-            else
-              dlycnt <= dlycnt - 1;
-            end if;
-          end if;
-        end if;
-
-        DEBUG(7 downto 0) <= dlycnt; 
+        debug(4 downto 0) <= eyelockpos;
+        debug(12 downto 8) <= eyelocklen;
+        
       end if;
     end if;
 
   end process main;
 
-
+  eyelockstart <= '1' when cs = bitstart else '0';
+  
 
 
   fsm : process (cs, dcnt, rxwordl, rxwordll, lrxkout, lrxdout, rxcodeerr,
+                 autolinkl, attemptlinkl, eyelockdone, eyelocklocked,
                  bitgoodcnt, droplock)
   begin  -- process fsm
     case cs is
@@ -302,21 +339,20 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 1;
-        dlyrst    <= '1';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
-        ns        <= snull;
+        if attemptlink = '1' or autolink = '1' then
+          ns <= snull;
+        else
+          ns <= none;
+        end if;
+
         
       when snull =>
         dcntrst   <= '1';
         llocked   <= '0';
         omux      <= 1;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '1';
         bitcntrst <= '1';
@@ -326,9 +362,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 1;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '1';
         bitcntrst <= '1';
@@ -342,9 +375,6 @@ begin  -- Behavioral
         dcntrst   <= '1';
         llocked   <= '0';
         omux      <= 1;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -354,9 +384,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 1;
-        dlyrst    <= '1';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -367,104 +394,36 @@ begin  -- Behavioral
         end if;
 
       when bitstart =>
-        dcntrst   <= '1';
-        llocked   <= '0';
-        omux      <= 0;
-        dlyrst    <= '1';
-        dlyce     <= '0';
-        dlyinc    <= '0';
-        bitslip   <= '0';
-        stoptx    <= '0';
-        bitcntrst <= '1';
-        ns        <= bitinc;
-
-      when bitinc =>
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '1';
-        dlyinc    <= '1';
         bitslip   <= '0';
         stoptx    <= '0';
-        bitcntrst <= '1';
-        if dcnt > 10000 then
-          ns <= none;                   -- failed to establish lock
-        else
-          ns <= bitwait;
-        end if;
+        bitcntrst <= '0';
+
+        ns <= bitwait;
 
       when bitwait =>
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
-        bitslip   <= '0';
-        stoptx    <= '0';
-        bitcntrst <= '0';
-        if rxwordl /= rxwordll then
-          ns <= bitbad;                -- failed to establish lock
-        else
-          if bitcnt = 63 then
-            ns <= bitgood;
-          else
-            ns <= bitwait;
-          end if;
-        end if;
-        
-      when bitgood =>
-        dcntrst   <= '0';
-        llocked   <= '0';
-        omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
-        bitslip   <= '0';
-        stoptx    <= '0';
-        bitcntrst <= '0';
-        if bitgoodcnt = TARGET_EYE_WIDTH then
-          ns <= bitbackup;
-        else
-          ns <= bitinc;
-        end if;
-
-      when bitbad =>
-        dcntrst   <= '0';
-        llocked   <= '0';
-        omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
-        bitslip   <= '0';
-        stoptx    <= '0';
-        bitcntrst <= '0';
-        ns        <= bitinc;
-
-      when bitbackup =>
-        dcntrst   <= '0';
-        llocked   <= '0';
-        omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '1';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
-        if bitgoodcnt = TARGET_EYE_LOCATION then
-          ns <= wrdstart;
+        if eyelockdone = '1' then
+          if eyelocklocked = '1' then
+            ns <= wrdstart;
+          else
+            ns <= none;
+          end if;
         else
-          ns <= bitbackup;
+          ns <= bitwait;
         end if;
 
       when wrdstart =>
         dcntrst   <= '1';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -474,9 +433,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '1';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -486,9 +442,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -498,9 +451,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '0';
@@ -516,9 +466,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -536,9 +483,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -552,9 +496,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -565,12 +506,10 @@ begin  -- Behavioral
         end if;
         
       when validchk3 =>
-        dcntrst   <= '0';
-        llocked   <= '0';
-        omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
+        dcntrst <= '0';
+        llocked <= '0';
+        omux    <= 0;
+
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -581,12 +520,10 @@ begin  -- Behavioral
         end if;
         
       when validchk4 =>
-        dcntrst   <= '0';
-        llocked   <= '0';
-        omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
+        dcntrst <= '0';
+        llocked <= '0';
+        omux    <= 0;
+
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -600,9 +537,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -612,9 +546,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '1';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';
@@ -628,9 +559,6 @@ begin  -- Behavioral
         dcntrst   <= '0';
         llocked   <= '0';
         omux      <= 0;
-        dlyrst    <= '0';
-        dlyce     <= '0';
-        dlyinc    <= '0';
         bitslip   <= '0';
         stoptx    <= '0';
         bitcntrst <= '1';

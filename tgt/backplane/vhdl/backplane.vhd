@@ -202,8 +202,11 @@ architecture Behavioral of backplane is
   signal jtagjtagrxdebug : std_logic_vector(15 downto 0) := (others => '0');
 
   type dldebug_t is array (0 to 17) of std_logic_vector(15 downto 0);
+  type dldebug_addr_t is array(0 to 17) of std_logic_vector(7 downto 0);
+  
   signal dldebug : dldebug_t := (others => (others => '0'));
-
+  signal dldebugaddr : dldebug_addr_t := (others => (others => '0'));
+  
   -- memory debug
   signal MEMDEBUGRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
   signal MEMDEBUGWRADDR : std_logic_vector(3 downto 0)  := (others => '0');
@@ -840,7 +843,7 @@ begin  -- Behavioral
   -- DSP DeviceLinks
   ----------------------------------------------------------------------------
 
-  devicelinks_and_mux : for i in 0 to 1 generate  -- debugging
+  devicelinks_and_mux : for i in 0 to 5 generate  -- debugging
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
     signal dllocked      : std_logic                    := '0';
@@ -865,7 +868,8 @@ begin  -- Behavioral
         RXIO_N    => DSPRXIO_N(i),
         DROPLOCK  => '0',
         LOCKED    => dllocked,
-        DEBUG => dldebug(i));
+        DEBUG => dldebug(i),
+        DEBUGADDR => dldebugaddr(i));
     dlinkup(i) <= dllocked;
 
 

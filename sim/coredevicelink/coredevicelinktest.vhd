@@ -23,6 +23,8 @@ architecture Behavioral of coredevicelinktest is
       TXHBITCLK : in  std_logic;        -- should be a 300 MHz clock
       TXWORDCLK : in  std_logic;        -- should be a 60 MHz clock
       RESET     : in  std_logic;
+      AUTOLINK : in std_logic := '1';
+      ATTEMPTLINK : in std_logic := '0'; 
       TXDIN     : in  std_logic_vector(7 downto 0);
       TXKIN     : in  std_logic;
       TXIO_P    : out std_logic;
@@ -32,7 +34,9 @@ architecture Behavioral of coredevicelinktest is
       RXDOUT    : out std_logic_vector(7 downto 0);
       RXKOUT    : out std_logic;
       DROPLOCK  : in  std_logic;
-      LOCKED    : out std_logic
+      LOCKED    : out std_logic;
+      DEBUG : out std_logic_vector(15 downto 0);
+      DEBUGADDR : in std_logic_vector(7 downto 0)
       );
   end component;
 
@@ -72,6 +76,9 @@ architecture Behavioral of coredevicelinktest is
   signal DROPLOCK : std_logic := '0';
   signal LOCKED   : std_logic := '0';
 
+  signal DEBUG : std_logic_vector(15 downto 0) := (others => '0');
+  signal DEBUGADDR : std_logic_vector(7 downto 0) := (others => '0');
+  
   signal CORE_TO_DEVICE_P : std_logic := '0';
   signal CORE_TO_DEVICE_N : std_logic := '1';
 
@@ -131,7 +138,9 @@ begin
       RXDOUT    => RXDOUT,
       RXKOUT    => RXKOUT,
       DROPLOCK  => DROPLOCK,
-      LOCKED    => LOCKED);
+      LOCKED    => LOCKED,
+      DEBUG => DEBUG,
+      DEBUGADDR => DEBUGADDR);
 
   devicelink_uut : devicelink
     port map (
@@ -152,8 +161,10 @@ begin
 
   process
     variable j : integer := 0;
-    constant noisecnt : integer := 30;  -- how many 10 ps bursts do we have
+    constant noisecnt : integer := 65;  -- how many 10 ps bursts do we have
                                         -- noise in
+    constant bitsequence : std_logic_vector(19 downto 0)
+      := "10001110110010101110";
     variable lastval : std_logic := '0';
   begin
     wait until RXBITCLK'event;
@@ -162,20 +173,20 @@ begin
     for i in 0 to noisecnt loop
       DEVICE_TO_CORE_DELAYED_P <= lastval; 
       DEVICE_TO_CORE_DELAYED_N <= not lastval;
-      lastval := not lastval;
+      lastval := bitsequence(i mod 20); 
       wait for 10 ps;
     end loop;  -- i
 
     -- then the good value
     DEVICE_TO_CORE_DELAYED_P <= DEVICE_TO_CORE_P;
     DEVICE_TO_CORE_DELAYED_N <= DEVICE_TO_CORE_N;
-    wait for 1350 ps;
+    wait for 600 ps;
 
     -- footer
     for i in 0 to noisecnt loop
       DEVICE_TO_CORE_DELAYED_P <= lastval; 
       DEVICE_TO_CORE_DELAYED_N <= not lastval;
-      lastval := not lastval;
+      lastval := bitsequence(i mod 20); 
       wait for 10 ps;
     end loop;  -- i
         

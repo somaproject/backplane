@@ -111,9 +111,13 @@ entity syscontrol is
     -- devicelink monitoring
     DLINKUP      : in  std_logic_vector(31 downto 0);
     dldebug_A : in std_logic_vector(15 downto 0);  -- these are a bit hackish
+    dldebug_addr_A : out std_logic_vector(7 downto 0); 
     dldebug_B : in std_logic_vector(15 downto 0);
+    dldebug_addr_B : out std_logic_vector(7 downto 0); 
     dldebug_C : in std_logic_vector(15 downto 0);
-    dldebug_D : in std_logic_vector(15 downto 0)  
+    dldebug_addr_C : out std_logic_vector(7 downto 0); 
+    dldebug_D : in std_logic_vector(15 downto 0); 
+    dldebug_addr_D : out std_logic_vector(7 downto 0)
     );
 
 
@@ -347,6 +351,22 @@ begin  -- Behavioral
           
        end if;
       end if;
+      
+      if oportstrobe = '1' then
+        if oportaddr = X"50" then
+          dldebug_addr_A <= oportdata(7 downto 0); 
+        end if;
+        if oportaddr = X"51" then
+          dldebug_addr_B <= oportdata(7 downto 0); 
+        end if;
+        if oportaddr = X"52" then
+          dldebug_addr_C <= oportdata(7 downto 0); 
+        end if;
+        if oportaddr = X"53" then
+          dldebug_addr_D <= oportdata(7 downto 0); 
+        end if;
+      end if;
+      
     end if;
   end process;
 
