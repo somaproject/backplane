@@ -112,7 +112,7 @@ begin  -- Behavioral
       DCM_AUTOCALIBRATION   => true,
       DCM_PERFORMANCE_MODE  => "MAX_SPEED",
       DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
-      DFS_FREQUENCY_MODE    => "LOW",
+      DFS_FREQUENCY_MODE    => "HIGH",
       DLL_FREQUENCY_MODE    => "LOW",
       DUTY_CYCLE_CORRECTION => true,
       FACTORY_JF            => X"F0F0",
