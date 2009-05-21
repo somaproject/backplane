@@ -39,7 +39,7 @@ nextState = env.createVariable("nextState")
 serialSendTimer = env.createVariable("serialSendTimer")
 cmdBootserWriteBytes = env.createVariable("cmdBootserWriteBytes")
 cmdBootserSendBytes = env.createVariable("cmdBootserSendBytes")
-
+debugCounter = env.createVariable("debugCounter")
 
 
 ### CONSTANTS
@@ -506,11 +506,14 @@ def createDLinkStatusCountResponse():
 
     proc.immadd(tgtaddr, DLINKQUERY_COUNT_ADDR_BASE)
     
-    proc.output(EVENTOUT_DATA1, tgtaddr)
+    #proc.output(EVENTOUT_DATA1, tgtaddr)
 
     proc.inputreg(tgtaddr, count)
     proc.output(EVENTOUT_DATA2, count)
-    
+
+    proc.immadd(env.debugCounter, 1)
+    proc.move(tmp, env.debugCounter)
+    proc.output(EVENTOUT_DATA3, tmp)
     # now create the response event
     proc.move(tmp, ereg.src)
     proc.output(EVENTOUT_SRC, tmp)
@@ -591,12 +594,16 @@ def debug_proc():
   proc.output(EVENTOUT_SRC, tmp)
   # edata
   proc.input(0x50, tmp)
-  proc.input(0x50, tmp)
   proc.output(EVENTOUT_DATA0, tmp)
 
   proc.input(0x51, tmp)
-  proc.input(0x51, tmp)
   proc.output(EVENTOUT_DATA1, tmp)
+
+  proc.input(0x52, tmp)
+  proc.output(EVENTOUT_DATA2, tmp)
+
+  proc.input(0x53, tmp)
+  proc.output(EVENTOUT_DATA3, tmp)
 
   # send the actual
   proc.load(tmp, EVENT_DLINKDEBUG_RESP)

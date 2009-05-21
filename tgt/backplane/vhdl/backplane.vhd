@@ -461,8 +461,8 @@ begin  -- Behavioral
       DLINKUP => dlinkup,
       dldebug_A => dldebug(0),
       dldebug_B => dldebug(1),
-      dldebug_C => dldebug(6),
-      dldebug_D => dldebug(7)
+      dldebug_C => dldebug(2),
+      dldebug_D => dldebug(3)
       );
 
   bootstore_inst : entity soma.bootstore
@@ -843,7 +843,7 @@ begin  -- Behavioral
   -- DSP DeviceLinks
   ----------------------------------------------------------------------------
 
-  devicelinks_and_mux : for i in 0 to 5 generate  -- debugging
+  devicelinks_and_mux : for i in 0 to 3 generate  
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
     signal dllocked      : std_logic                    := '0';

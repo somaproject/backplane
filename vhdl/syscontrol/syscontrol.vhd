@@ -328,6 +328,7 @@ begin  -- Behavioral
         eaoutl <= eaout;
         edoutl <= edout; 
       end if;
+
       enewoutslow   <= enewout or enewoutl;
       if iportstrobe = '1' then
         if iportaddr = X"00" then

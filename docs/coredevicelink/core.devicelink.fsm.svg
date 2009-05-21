@@ -58,9 +58,9 @@
     </marker>
   </defs>
   <sodipodi:namedview
-     inkscape:window-y="0"
-     inkscape:window-x="1600"
-     inkscape:window-height="1177"
+     inkscape:window-y="25"
+     inkscape:window-x="0"
+     inkscape:window-height="1127"
      inkscape:window-width="1600"
      guidetolerance="2.5000000pt"
      inkscape:grid-bbox="false"
@@ -69,9 +69,9 @@
      showgrid="true"
      inkscape:current-layer="layer3"
      inkscape:document-units="pt"
-     inkscape:cy="692.04806"
-     inkscape:cx="472.42685"
-     inkscape:zoom="1.4142136"
+     inkscape:cy="818.59534"
+     inkscape:cx="276.09671"
+     inkscape:zoom="4.0000001"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -226,29 +226,29 @@
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="252.63373"
-       y="236.3708"
+       x="262.5"
+       y="236.875"
        id="text2832"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
-         x="252.63373"
-         y="236.3708"
+         x="262.5"
+         y="236.875"
          id="tspan2834">DCNTRST=0</tspan><tspan
          sodipodi:role="line"
-         x="252.63373"
-         y="245.3708"
+         x="262.5"
+         y="245.875"
          id="tspan2836">LLOCKED=0</tspan><tspan
          sodipodi:role="line"
-         x="252.63373"
-         y="254.3708"
+         x="262.5"
+         y="254.875"
          id="tspan2838">OMUX=0</tspan><tspan
          sodipodi:role="line"
-         x="252.63373"
-         y="272.37079"
+         x="262.5"
+         y="263.875"
          id="tspan2846">BITSLIP=0</tspan><tspan
          sodipodi:role="line"
-         x="252.63373"
-         y="299.37079"
+         x="262.5"
+         y="272.875"
          id="tspan2848">BITCNTRST = 1</tspan></text>
     <path
        style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
@@ -279,8 +279,8 @@
     <text
        sodipodi:linespacing="100%"
        id="text2786"
-       y="172.15112"
-       x="296.71677"
+       y="177.5"
+       x="300.85254"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.25;display:inline;font-family:Bitstream Vera Sans"
        xml:space="preserve"><tspan
          id="tspan2788">else</tspan></text>
@@ -302,18 +302,37 @@
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
-       x="237.5"
-       y="158.75"
+       x="150"
+       y="108.75"
        id="text4404"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4406"
-         x="237.5"
-         y="158.75">EYELOCKDONE=1 &amp; </tspan><tspan
+         x="150"
+         y="108.75">EYELOCKDONE=1 &amp; </tspan><tspan
          sodipodi:role="line"
-         x="237.5"
-         y="167.5"
-         id="tspan4408">EYELOCKLOCKED=0</tspan></text>
+         x="150"
+         y="117.5"
+         id="tspan4408">EYELOCKLOCKED=0</tspan><tspan
+         sodipodi:role="line"
+         x="150"
+         y="126.25"
+         id="tspan4006">or EYELOCKPOS  = 0</tspan><tspan
+         sodipodi:role="line"
+         x="150"
+         y="135"
+         id="tspan4008">or EYELOCKLEN=0x1A</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       x="177.84822"
+       y="299.45111"
+       id="text3994"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="177.84822"
+         y="299.45111"
+         id="tspan4002" /></text>
   </g>
   <g
      id="layer1"
@@ -731,30 +750,30 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="109.37498"
-       y="240"
+       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="137.5"
+       y="236.875"
        id="text8001"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan8003"
-         x="109.37498"
-         y="240">DCNTRST=1</tspan><tspan
+         x="137.5"
+         y="236.875">DCNTRST=1</tspan><tspan
          sodipodi:role="line"
-         x="109.37498"
-         y="249"
+         x="137.5"
+         y="245.875"
          id="tspan8005">LLOCKED=0</tspan><tspan
          sodipodi:role="line"
-         x="109.37498"
-         y="258"
+         x="137.5"
+         y="254.875"
          id="tspan8007">OMUX=0</tspan><tspan
          sodipodi:role="line"
-         x="109.37498"
-         y="276"
+         x="137.5"
+         y="263.875"
          id="tspan8019">BITSLIP=0</tspan><tspan
          sodipodi:role="line"
-         x="109.37498"
-         y="303"
+         x="137.5"
+         y="272.875"
          id="tspan4319">BITCNTRST = 1</tspan></text>
     <g
        id="g8185"
@@ -1607,15 +1626,6 @@
        d="M 359.375,205.625 L 381.25,205.625 C 381.25,205.625 393.75,205.625 393.75,218.125 C 393.75,230.625 393.75,386.875 393.75,386.875 C 393.75,386.875 393.75,399.375 381.25,399.375 L 150,399.375 C 150,399.375 137.5,399.375 137.5,411.875 C 137.5,424.375 137.5,477.5 137.5,477.5"
        id="path4333"
        sodipodi:nodetypes="ccscccsc" />
-    <text
-       sodipodi:linespacing="100%"
-       id="text4335"
-       y="124.36803"
-       x="184.2554"
-       style="font-size:7.00037766px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.25;display:inline;font-family:Bitstream Vera Sans"
-       xml:space="preserve"
-       transform="scale(0.999947,1.000053)"><tspan
-         id="tspan4337">DCNT&gt;1000</tspan></text>
     <path
        id="path6366"
        d="M 465.1329,492.47763 L 465.1329,492.47763"

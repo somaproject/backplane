@@ -172,7 +172,7 @@ architecture Behavioral of coredevicelink is
   signal eyelockstart  : std_logic := '0';
   signal eyelockdone   : std_logic := '0';
   signal eyelocklocked : std_logic := '0';
-  
+
   signal eyelockpos : std_logic_vector(4 downto 0) := (others => '0');
   signal eyelocklen : std_logic_vector(4 downto 0) := (others => '0');
   
@@ -318,7 +318,7 @@ begin  -- Behavioral
           end if;
         end if;
 
-        debug(4 downto 0) <= eyelockpos;
+        debug(4 downto 0)  <= eyelockpos;
         debug(12 downto 8) <= eyelocklen;
         
       end if;
@@ -401,7 +401,7 @@ begin  -- Behavioral
         stoptx    <= '0';
         bitcntrst <= '0';
 
-        ns <= bitwait;
+        ns <= bitwait;        
 
       when bitwait =>
         dcntrst   <= '0';
@@ -411,10 +411,15 @@ begin  -- Behavioral
         stoptx    <= '0';
         bitcntrst <= '1';
         if eyelockdone = '1' then
-          if eyelocklocked = '1' then
-            ns <= wrdstart;
-          else
+          if eyelockpos = "00000" or eyelocklen = "11100" then
             ns <= none;
+          else
+            
+            if eyelocklocked = '1' then
+              ns <= wrdstart;
+            else
+              ns <= none;
+            end if;
           end if;
         else
           ns <= bitwait;
