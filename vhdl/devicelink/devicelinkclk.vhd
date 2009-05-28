@@ -12,7 +12,7 @@ use UNISIM.VComponents.all;
 entity devicelinkclk is
   port (
     CLKIN       : in  std_logic;        -- 50 MHz input clock
-    RESET : in std_logic; 
+    RESET       : in  std_logic;
     CLKBITTX    : out std_logic;        -- 300 MHz output clock
     CLKBITTX180 : out std_logic;        -- 300 MHz output clock, 180 phase
     CLKBITRX    : out std_logic;        -- 250 MHz output clock 
@@ -29,29 +29,39 @@ architecture Behavioral of devicelinkclk is
   signal base_lock : std_logic := '0';
 
 
-  signal clk, clkint : std_logic := '0';
+  signal clk, clkint       : std_logic := '0';
   signal clksrc, clksrcint : std_logic := '0';
 
   signal clkbittxint, clkbittx180int : std_logic := '0';
-  signal clkbitrxint  : std_logic := '0';
-  signal clknone, clknoneint : std_logic := '0';
-  signal clknone2, clknone2int : std_logic := '0';
-  
-  signal base_rst_delay : std_logic_vector(9 downto 0) := (others => '0');
+  signal clkbitrxint                 : std_logic := '0';
+  signal clknone, clknoneint         : std_logic := '0';
+  signal clknone2, clknone2int       : std_logic := '0';
+
+  signal base_rst_delay : std_logic_vector(9 downto 0) := (others => '1');
 
   signal dcmreset, maindcmlocked : std_logic := '0';
 
-  signal clkwordtxout, clkwordtxint : std_logic := '0';
+  signal clkwordtxout, clkwordtxint  : std_logic := '0';
   signal clkwordtxdc, clkwordtxdcint : std_logic := '0';
 
-  signal clkdelayctrl : std_logic := '0';
+  signal clkdelayctrl    : std_logic := '0';
   signal clkdelayctrlint : std_logic := '0';
-  signal txworddc_lock : std_logic := '0';
+  signal txworddc_lock   : std_logic := '0';
 
   signal delayready : std_logic := '0';
 
   signal startupdoneint : std_logic := '0';
-  signal delayctrlrst : std_logic := '1';
+  signal delayctrlrst   : std_logic := '1';
+
+  -- need to keep DCM in reset for at least 200 ms of stable input clock.
+  --
+  signal second_stage_delay : std_logic_vector(31 downto 0) := X"00001000"; 
+  signal second_stage_delay_rst : std_logic_vector(31 downto 0) := X"01000000"; 
+  signal second_stage_rst : std_logic := '0';
+  
+  signal third_stage_delay : std_logic_vector(31 downto 0) := X"00001000"; 
+  signal third_stage_delay_rst : std_logic_vector(31 downto 0) := X"01000000"; 
+  signal third_stage_rst : std_logic := '0';
   
 begin  -- Behavioral
 
@@ -73,12 +83,12 @@ begin  -- Behavioral
       PHASE_SHIFT           => 0,
       STARTUP_WAIT          => false)
     port map(
-      CLKIN                 => CLKIN,
-      CLK0                  => clkint,
-      CLKFB                 => clk,
-      CLKFX                 => clksrcint,
-      RST                   => RESET,
-      LOCKED                => base_lock
+      CLKIN  => CLKIN,
+      CLK0   => clkint,
+      CLKFB  => clk,
+      CLKFX  => clksrcint,
+      RST    => RESET,
+      LOCKED => base_lock
       );
 
 
@@ -93,11 +103,26 @@ begin  -- Behavioral
       O => clksrc,
       I => clksrcint);
 
+  -- synthesis translate_off
+  second_stage_delay_rst <= X"00001000";  -- make simulation time bearable
+  -- synthesis translate_on 
 
-  process(clk)
+                    
+  process(clk, RESET)
   begin
-    if rising_edge(clk) then
-      base_rst_delay <= base_rst_delay(8 downto 0) & (not base_lock);
+    if RESET = '1' then
+      second_stage_delay <= second_stage_delay_rst; 
+    else
+      if rising_edge(clk) then
+        if base_lock = '1' then
+          if second_stage_delay /= X"00000000" then
+            second_stage_delay <= second_stage_delay -1;
+            second_stage_rst <= '1'; 
+          else
+            second_stage_rst <= '0'; 
+          end if;
+        end if;
+      end if;
     end if;
   end process;
 
@@ -119,19 +144,19 @@ begin  -- Behavioral
       PHASE_SHIFT           => 0,
       STARTUP_WAIT          => false)
     port map(
-      CLKIN                 => clksrc,
-      clk0                  => clknoneint,
-      CLKFB                 => clknone,
+      CLKIN => clksrc,
+      clk0  => clknoneint,
+      CLKFB => clknone,
 
       CLK2X    => clkbittxint,
       CLK2X180 => clkbittx180int,
       CLKFX    => clkbitrxint,
       CLKDV    => clkwordtxdcint,
-      RST      => base_rst_delay(7),
+      RST      => second_stage_rst, 
       LOCKED   => maindcmlocked
       );
 
-    clkbittx_bufg : BUFG
+  clkbittx_bufg : BUFG
     port map (
       O => CLKBITTX,
       I => clkbittxint);
@@ -145,7 +170,7 @@ begin  -- Behavioral
 
   dcmreset <= not maindcmlocked;
 
-  
+
   clknonebufg : BUFG
     port map (
       O => clknone,
@@ -199,11 +224,35 @@ begin  -- Behavioral
     port map(
       RDY    => delayready,
       REFCLK => clkdelayctrl,
-      RST    => delayctrlrst 
+      RST    => delayctrlrst
       );
 
-  
+
   -- Duty cycle correction
+
+
+  -- synthesis translate_off
+  third_stage_delay_rst <= X"00001000";  -- make simulation time bearable
+  -- synthesis translate_on 
+
+                    
+  process(clk, dcmreset)
+  begin
+    if dcmreset = '1' then
+      third_stage_delay <= third_stage_delay_rst; 
+    else
+      if rising_edge(clk) then
+        if base_lock = '1' then
+          if third_stage_delay /= X"00000000" then
+            third_stage_delay <= third_stage_delay -1;
+            third_stage_rst <= '1'; 
+          else
+            third_stage_rst <= '0'; 
+          end if;
+        end if;
+      end if;
+    end if;
+  end process;
 
   
   txword_dcm : DCM_BASE
@@ -211,8 +260,8 @@ begin  -- Behavioral
       CLKIN_PERIOD          => 2.5,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
-      CLKFX_MULTIPLY => 10,
-      CLKFX_DIVIDE => 3,
+      CLKFX_MULTIPLY        => 10,
+      CLKFX_DIVIDE          => 3,
       DCM_AUTOCALIBRATION   => true,
       DCM_PERFORMANCE_MODE  => "MAX_SPEED",
       DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
@@ -223,12 +272,12 @@ begin  -- Behavioral
       PHASE_SHIFT           => 0,
       STARTUP_WAIT          => false)
     port map(
-      CLKIN                 => clkwordtxdc,
-      clk0                  => clkwordtxint,
-      CLKFB                 => clkwordtxout,
-      CLKFX => clkdelayctrlint, 
-      RST => dcmreset,
-      LOCKED => txworddc_lock 
+      CLKIN  => clkwordtxdc,
+      clk0   => clkwordtxint,
+      CLKFB  => clkwordtxout,
+      CLKFX  => clkdelayctrlint,
+      RST    => third_stage_rst,
+      LOCKED => txworddc_lock
       );
 
   clkwordtxbufg : BUFG
@@ -237,9 +286,9 @@ begin  -- Behavioral
       I => clkwordtxint);
 
   CLKWORDTX <= clkwordtxout;
-  
+
   startupdoneint <= txworddc_lock and delayready;
-  delayctrlrst <= not txworddc_lock; 
-  STARTUPDONE <= startupdoneint; 
+  delayctrlrst   <= not txworddc_lock;
+  STARTUPDONE    <= startupdoneint;
 end Behavioral;
 

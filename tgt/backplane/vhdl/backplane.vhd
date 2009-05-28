@@ -182,7 +182,7 @@ architecture Behavioral of backplane is
 
   signal validint : std_logic_vector(18 downto 0) := (others => '0');
 
-  signal maindcmlocked : std_logic := '0';
+  signal devicelinkdcmlocked : std_logic := '0';
 
   constant DMOFFSET : integer := 8;
 
@@ -223,7 +223,7 @@ begin  -- Behavioral
 
 
   ---------------------------------------------------------------------------
-  -- CLOCKING
+  -- CLOCKING : Primary clock
   ---------------------------------------------------------------------------
 
   DCM_BASE_inst : DCM_BASE
@@ -242,15 +242,15 @@ begin  -- Behavioral
       DUTY_CYCLE_CORRECTION => true,
       STARTUP_WAIT          => true)
     port map (
-      CLK0   => clkint,                 -- 0 degree DCM CLK ouptput
-      CLK2x  => clk2xint,
-      CLKFX  => memclkbint,             -- DCM CLK synthesis out (M/D)
+      CLK0   => clkint,
+      CLK2x  => clk2xint,                   
+      CLKFX  => memclkbint,
       CLKFB  => clk,
       CLK180 => clk180int,
       CLK270 => niciointclk,
       CLKIN  => CLKIN,
       LOCKED => locked,
-      RST    => '0'                     -- DCM asynchronous reset input
+      RST    => '0'                    
       );
 
   clk_bufg : BUFG
@@ -827,17 +827,17 @@ begin  -- Behavioral
     end if;
   end process;
 
-  RESET <= not maindcmlocked;
+  --RESET <= (not devicelinkdcmlocked) or dcm2reset;
   
   devicelinkclk_inst : entity work.devicelinkclk
     port map (
-      CLKIN       => clk,
-      RESET =>  dcm2reset, 
+      CLKIN       => CLKIN, -- clk,
+      RESET       => dcm2reset, 
       CLKBITTX    => clkbittx,
       CLKBITTX180 => clkbittx180,
       CLKBITRX    => clkbitrx,
       CLKWORDTX   => clkwordtx,
-      STARTUPDONE => maindcmlocked);
+      STARTUPDONE => devicelinkdcmlocked);
 
   ----------------------------------------------------------------------------
   -- DSP DeviceLinks

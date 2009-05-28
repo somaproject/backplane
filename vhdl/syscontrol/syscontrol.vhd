@@ -263,7 +263,6 @@ begin  -- Behavioral
 
   eproc_inst : entity eproc.eproc
     port map (
-      CLK         => clk,
       RESET       => RESET,
       EDTX        => EDTX,
       EATX        => EATX,
