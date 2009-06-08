@@ -68,6 +68,7 @@ entity network is
     TXCHAN         : out   std_logic_vector(2 downto 0);
     EVTRXSUC       : out   std_logic;
     EVTFIFOFULL    : out   std_logic;
+    DATAFIFOOFERR  : out std_logic; 
     -- DEBUG CONTROL FOR MEMORY
     RAMDQALIGNH    : out   std_logic_vector(7 downto 0);
     RAMDQALIGNL    : out   std_logic_vector(7 downto 0);
@@ -224,6 +225,7 @@ architecture Behavioral of network is
       MYIP        : in  std_logic_vector(31 downto 0);
       MYMAC       : in  std_logic_vector(47 downto 0);
       MYBCAST     : in  std_logic_vector(31 downto 0);
+      FIFOOFERR : out std_logic; 
       -- input
       DIENA       : in  std_logic;
       DINA        : in  std_logic_vector(7 downto 0);
@@ -465,6 +467,7 @@ architecture Behavioral of network is
   signal txdout              : std_logic_vector(15 downto 0) := (others => '0');
   signal txdouten, txdoutenl : std_logic                     := '0';
 
+  --signal datafifooferr : std_logic := '0'
   -- retx interface
   signal retxdout : std_logic_vector(15 downto 0) := (others => '0');
   signal retxaddr : std_logic_vector(8 downto 0)  := (others => '0');
@@ -656,6 +659,7 @@ begin  -- Behavioral
       MYIP        => MYIP,
       MYBCAST     => MYBCAST,
       MYMAC       => MYMAC,
+      FIFOOFERR => datafifooferr,
       ECYCLE      => ECYCLE,
       DIENA       => DIENA,
       DINA        => DINA,

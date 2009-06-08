@@ -73,6 +73,9 @@ architecture Behavioral of devicemuxrx is
       EDSELRX : in  std_logic_vector(3 downto 0));
   end component;
 
+  constant MAXDATASIZE : integer :=  768;
+  signal datacnt : integer range 0 to 1023 := 0;
+  
 begin
 
   eventrxA_inst : devicemuxeventrx2
@@ -135,7 +138,14 @@ begin
         DATADOEN <= '0';
       end if;
       DATADOUT <= RXDIN;
-      
+
+      if RXDIN = K28_6 and rxkin = '1' then
+        datacnt <= 0;
+      else
+        if cs = dwait then
+          datacnt <= datacnt + 1; 
+        end if;
+      end if; 
     end if;
   end process main;
 
@@ -144,7 +154,7 @@ begin
   estart(2) <= '1' when cs = estart3 else '0';
   estart(3) <= '1' when cs = estart4 else '0';
   
-  fsm : process(cs, locked, edone, RXKIN, RXDIN)
+  fsm : process(cs, locked, edone, RXKIN, RXDIN, datacnt)
   begin
     case cs is
       when lockw =>
@@ -226,7 +236,7 @@ begin
         -- data
       when dwait =>
         clear <= '0';
-        if RXKIN = '1' and RXDIN = K28_7 then
+        if (RXKIN = '1' and RXDIN = K28_7) or (datacnt = MAXDATASIZE)  then
           ns  <= ewait;
         else
           ns <= dwait; 

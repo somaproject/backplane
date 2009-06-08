@@ -147,6 +147,7 @@ architecture Behavioral of backplane is
   signal txchan       : std_logic_vector(2 downto 0)  := (others => '0');
   signal evtrxsuc     : std_logic                     := '0';
   signal evtfifofull  : std_logic                     := '0';
+  signal datafifooferr  : std_logic                     := '0';
 
   signal ramdqalignh, ramdqalignl : std_logic_vector(7 downto 0) := (others => '0');
 
@@ -485,8 +486,8 @@ begin  -- Behavioral
   SYSCFG  <= lserialboot(2);
   NEPCFG  <= lserialboot(1);
 
-  LEDPOWER <= lserialboot(0);
-  LEDEVENT <= jtagesenddebug(1);
+  LEDPOWER <= dlinkup(0); 
+  LEDEVENT <= dlinkup(1); 
 
   jtagsend_inst : entity jtag.jtagesend
     generic map (
@@ -643,6 +644,7 @@ begin  -- Behavioral
       TXCHAN         => txchan,
       EVTRXSUC       => evtrxsuc,
       EVTFIFOFULL    => evtfifofull,
+      DATAFIFOOFERR    => datafifooferr,
       -- debug control for memory
       RAMDQALIGNH    => ramdqalignh,
       RAMDQALIGNL    => ramdqalignl,
@@ -762,6 +764,7 @@ begin  -- Behavioral
       UNKNOWNUDP     => unknownudp,
       EVTRXSUC       => evtrxsuc,
       EVTFIFOFULL    => evtfifofull,
+      DATAFIFOOFERR => datafifooferr,
       -- debug for memory
       MEMDEBUGRDADDR => memdebugrdaddr,
       MEMDEBUGWRADDR => memdebugwraddr,

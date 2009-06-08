@@ -61,20 +61,20 @@ build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf
 
 
 # third stage: map: produces pcf, map.ncd
+PLACER_COST_ENTRY = 5
 
 map: build/$(PROJECT)_map.ncd
 
 build/$(PROJECT)_map.ncd: build/$(PROJECT).ngd
-	map -p $(PART) -ol $(OPTIMIZE) -timing -logic_opt on -cm speed  -xe n \
+	map -p $(PART) -t $(PLACER_COST_ENTRY) -ol $(OPTIMIZE) -timing -logic_opt on -cm speed  -xe n \
 	-register_duplication  -pr b -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
 
 build/$(PROJECT).pcf: build/$(PROJECT)_map.ncd
 
 
 # forth stage: par
-
 build/$(PROJECT).ncd: build/$(PROJECT).pcf
-	par -w -pl $(OPTIMIZE) -rl $(OPTIMIZE)  build/$(PROJECT)_map.ncd build/$(PROJECT).ncd build/$(PROJECT).pcf
+	par -w -t $(PLACER_COST_ENTRY) -pl $(OPTIMIZE) -rl $(OPTIMIZE)  build/$(PROJECT)_map.ncd build/$(PROJECT).ncd build/$(PROJECT).pcf
 
 build/$(PROJECT).bit: build/$(PROJECT).pcf build/$(PROJECT).ncd
 	bitgen -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf
@@ -112,14 +112,15 @@ transsim: build/$(PROJECT).ngd
 # update roms
 # It's not clear how we handle mutliple roms? 
 
-$(PROJECT).postmem.bit: $(PROJECT).mem build/$(PROJECT).bit
+$(PROJECT).postmem.bit: $(PROJECT).mem build/$(PROJECT).bit $(PROJECT).syscontrol.mem $(PROJECT).netcontrol.mem
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
 	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).syscontrol.imem $(PROJECT).netcontrol.imem
 
-forceromupdate: $(PROJECT).mem
+forceromupdate: $(PROJECT).mem  $(PROJECT).syscontrol.mem $(PROJECT).netcontrol.mem
 	data2mem  -bm $(PROJECT)_bd.bmm  -bd $(PROJECT).mem  -bt build/$(PROJECT).bit  -o h $(PROJECT)_mem.vhd -o b $(PROJECT).postmem.bit
 	python ../../../eproc/assemble/genrom.py $(PROJECT).bmm $(PROJECT).syscontrol.imem $(PROJECT).netcontrol.imem
 	cp $(PROJECT).postmem.bit $(PROJECT).bit
+
 $(PROJECT).syscontrol.mem:  backplane.asmpy
 	python ../../../eproc/assemble/assemble.py backplane.asmpy \
 	$(PROJECT).syscontrol.imem $(PROJECT).syscontrol.mem > $(PROJECT).syscontrol.log

@@ -18,9 +18,9 @@ architecture Behavioral of devicemuxtest is
     port (
       CLK      : in  std_logic;
       ECYCLE   : in  std_logic;
+      DATADOUT    : out std_logic_vector(7 downto 0);
+      DATADOEN    : out std_logic;
       -- port A
-      DOUTA    : out std_logic_vector(7 downto 0);
-      DOENA    : out std_logic;
       DGRANTA  : in  std_logic;
       EARXA    : out std_logic_vector(somabackplane.N -1 downto 0);
       EDRXA    : out std_logic_vector(7 downto 0);
@@ -28,8 +28,6 @@ architecture Behavioral of devicemuxtest is
       EATXA    : in  std_logic_vector(somabackplane.N-1 downto 0);
       EDTXA    : in  std_logic_vector(7 downto 0);
       -- port B
-      DOUTB    : out std_logic_vector(7 downto 0);
-      DOENB    : out std_logic;
       DGRANTB  : in  std_logic;
       EARXB    : out std_logic_vector(somabackplane.N -1 downto 0);
       EDRXB    : out std_logic_vector(7 downto 0);
@@ -37,8 +35,6 @@ architecture Behavioral of devicemuxtest is
       EATXB    : in  std_logic_vector(somabackplane.N-1 downto 0);
       EDTXB    : in  std_logic_vector(7 downto 0);
       -- port C
-      DOUTC    : out std_logic_vector(7 downto 0);
-      DOENC    : out std_logic;
       DGRANTC  : in  std_logic;
       EARXC    : out std_logic_vector(somabackplane.N -1 downto 0);
       EDRXC    : out std_logic_vector(7 downto 0);
@@ -46,8 +42,6 @@ architecture Behavioral of devicemuxtest is
       EATXC    : in  std_logic_vector(somabackplane.N-1 downto 0);
       EDTXC    : in  std_logic_vector(7 downto 0);
       -- port D
-      DOUTD    : out std_logic_vector(7 downto 0);
-      DOEND    : out std_logic;
       DGRANTD  : in  std_logic;
       EARXD    : out std_logic_vector(somabackplane.N -1 downto 0);
       EDRXD    : out std_logic_vector(7 downto 0);
@@ -64,10 +58,10 @@ architecture Behavioral of devicemuxtest is
 
   signal CLK    : std_logic := '0';
   signal ECYCLE : std_logic := '0';
+  signal DATADOUT   : std_logic_vector(7 downto 0) := (others => '0');
+  signal DATADOEN   : std_logic                    := '0';
 
   -- port A
-  signal DOUTA   : std_logic_vector(7 downto 0) := (others => '0');
-  signal DOENA   : std_logic                    := '0';
   signal DGRANTA : std_logic                    := '0';
 
   signal EARXA    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
@@ -77,8 +71,6 @@ architecture Behavioral of devicemuxtest is
   signal EDTXA    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port B
-  signal DOUTB   : std_logic_vector(7 downto 0) := (others => '0');
-  signal DOENB   : std_logic                    := '0';
   signal DGRANTB : std_logic                    := '0';
 
   signal EARXB    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
@@ -88,8 +80,6 @@ architecture Behavioral of devicemuxtest is
   signal EDTXB    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port C
-  signal DOUTC   : std_logic_vector(7 downto 0) := (others => '0');
-  signal DOENC   : std_logic                    := '0';
   signal DGRANTC : std_logic                    := '0';
 
   signal EARXC    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
@@ -99,8 +89,6 @@ architecture Behavioral of devicemuxtest is
   signal EDTXC    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port D
-  signal DOUTD   : std_logic_vector(7 downto 0) := (others => '0');
-  signal DOEND   : std_logic                    := '0';
   signal DGRANTD : std_logic                    := '0';
 
   signal EARXD    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
@@ -139,7 +127,7 @@ architecture Behavioral of devicemuxtest is
   constant K28_2 : std_logic_vector(7 downto 0) := X"5C";
   constant K28_3 : std_logic_vector(7 downto 0) := X"7C";
   constant K28_6 : std_logic_vector(7 downto 0) := X"DC";
-  constant K28_7 : std_logic_vector(7 downto 0) := X"DC";
+  constant K28_7 : std_logic_vector(7 downto 0) := X"FC";
 
 
 
@@ -152,9 +140,9 @@ begin  -- Behavioral
     port map (
       clk      => CLK,
       ECYCLE   => ECYCLE,
+      DATADOUT    => DATADOUT,
+      DATADOEN    => DATADOEN,
       -- port A
-      DOUTA    => DOUTA,
-      DOENA    => DOENA,
       DGRANTA  => DGRANTA,
       EARXA    => EARXA,
       EDRXA    => EDRXA,
@@ -162,8 +150,6 @@ begin  -- Behavioral
       EATXA    => EATXA(somabackplane.N -1 downto 0),
       EDTXA    => EDTXA,
       -- port B
-      DOUTB    => DOUTB,
-      DOENB    => DOENB,
       DGRANTB  => DGRANTB,
       EARXB    => EARXB,
       EDRXB    => EDRXB,
@@ -171,8 +157,6 @@ begin  -- Behavioral
       EATXB    => EATXB(somabackplane.N -1 downto 0),
       EDTXB    => EDTXB,
       -- port C
-      DOUTC    => DOUTC,
-      DOENC    => DOENC,
       DGRANTC  => DGRANTC,
       EARXC    => EARXC,
       EDRXC    => EDRXC,
@@ -180,8 +164,6 @@ begin  -- Behavioral
       EATXC    => EATXC(somabackplane.N -1 downto 0),
       EDTXC    => EDTXC,
       -- port D
-      DOUTD    => DOUTD,
-      DOEND    => DOEND,
       DGRANTD  => DGRANTD,
       EARXD    => EARXD,
       EDRXD    => EDRXD,
@@ -325,10 +307,8 @@ begin  -- Behavioral
       end loop;  -- eb
     end loop;  -- ea
 
-
-
     wait;
-
+    
 
   end process;
 
@@ -406,6 +386,64 @@ begin  -- Behavioral
       severity error;
 
 
+    wait for 100 us;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+
+    -- Now we try sending data
+    for dataset in 0 to 3 loop
+      -- first send header word
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      RXDIN <= K28_6;
+      RXKIN <= '1';
+      wait until rising_edge(CLK);
+      RXKIN <= '0';
+      for datai in 0 to 200 * (dataset + 1) loop
+        RXDIN <= std_logic_vector(TO_UNSIGNED(datai mod 256, 8)); 
+        RXKIN <= '0';
+      wait until rising_edge(CLK);
+      end loop;  -- datai
+      
+      RXDIN <= K28_7;
+      RXKIN <= '1';
+      wait until rising_edge(CLK);
+      RXKIN <= '0';
+      
+      wait until rising_edge(CLK) and ECYCLE = '1';
+
+      end loop; 
+
+    report "End of Simulation" severity failure;
+    
+
     wait;
   end process rxtest;
+
+
+  -- data recovery
+  process
+    variable pktsize : integer := 0;
+    begin
+      for i in 0 to 3 loop
+        wait until rising_edge(CLK) and DATADOEN = '1';
+        if (i + 1) * 200 < 768 then
+          pktsize := (i+1)*200;
+        else
+          pktsize := 768; 
+        end if;
+        for j in 0 to pktsize loop
+          assert DATADOEN = '1' report "Error in recovering data DOEN" severity Error;
+          wait until rising_edge(CLK); 
+        end loop;  -- j
+        assert DATADOEN = '0' report "Error in recovering data: DOUTDOEN should be low" severity Error;       
+        wait until rising_edge(CLK); 
+        report "Done receiving data packet " & integer'image(i)  severity note;
+        
+        -- first packet        
+      end loop;  -- i
+
+      wait;
+    end process; 
 end Behavioral;
