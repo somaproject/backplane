@@ -824,10 +824,10 @@ begin  -- Behavioral
       NICDOUT     <= lnicdout;
       NICNEWFRAME <= lnicnewframe;
 
+      RESET <= (not devicelinkdcmlocked);  --  or dcm2reset;
+
     end if;
   end process;
-
-  --RESET <= (not devicelinkdcmlocked) or dcm2reset;
   
   devicelinkclk_inst : entity work.devicelinkclk
     port map (

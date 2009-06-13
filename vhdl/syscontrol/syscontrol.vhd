@@ -328,7 +328,7 @@ begin  -- Behavioral
         edoutl <= edout; 
       end if;
 
-      enewoutslow   <= enewout or enewoutl;
+      enewoutslow   <= enewout;  -- or enewoutl;
       if iportstrobe = '1' then
         if iportaddr = X"00" then
           iportdata <= DLINKUP(15 downto 0);
