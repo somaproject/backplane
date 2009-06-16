@@ -26,7 +26,7 @@ end manydevicelink;
 
 architecture Behavioral of manydevicelink is
 
-  constant DEVICELINKN : integer := 19;
+  constant DEVICELINKN : integer := 8;
 
   component linktester
     port (
@@ -79,7 +79,6 @@ architecture Behavioral of manydevicelink is
 
   signal jtagcapture, jtagdrck, jtagreset, jtagsel,
     jtagshift, jtagtdi, jtagupdate, jtagtdo : std_logic := '0';
-
   
   component devicelinkclk
     port (
@@ -93,11 +92,33 @@ architecture Behavioral of manydevicelink is
 
 begin  -- Behavioral
 
-  clk <= CLKIN;
+
+  DCM_BASE_inst : DCM_BASE
+    generic map (
+      CLKOUT_PHASE_SHIFT    => "NONE",
+      CLK_FEEDBACK          => "1X",
+      DCM_AUTOCALIBRATION   => true,
+      DFS_FREQUENCY_MODE    => "LOW",
+      DLL_FREQUENCY_MODE    => "LOW",
+      DUTY_CYCLE_CORRECTION => true,
+      STARTUP_WAIT          => true)
+    port map (
+      CLK0   => clkint,
+      CLKFB  => clk,
+      CLKIN  => CLKIN,
+      LOCKED => open, --locked,
+      RST    => '0'                    
+      );
+
+  clk_bufg : BUFG
+    port map (
+      O => clk,
+      I => clkint);
+
   
   devicelinkclk_inst : devicelinkclk
     port map (
-      CLKIN       => CLK,
+      CLKIN       => CLKIN,
       CLKBITTX    => clkbittx,
       CLKBITTX180 => clkbittx180,
       CLKBITRX    => clkbitrx,
@@ -109,7 +130,7 @@ begin  -- Behavioral
   devicelinks : for i in 0 to DEVICELINKN-1 generate
     dl        : linktester
       port map (
-        CLK       => CLKIN,
+        CLK       => CLK,
         RXBITCLK  => clkbitrx,
         TXHBITCLK => clkbittx,
         TXWORDCLK => clkwordtx,
@@ -169,8 +190,8 @@ begin  -- Behavioral
   LEDVALID <= validint(0);
 
   WORDCLKOUT <= clkwordtx;
-  TXCLKOUT   <= clkbittx;
-
+  --   TXCLKOUT   <= clkbittx;
+  TXCLKOUT <= '0'; 
 
   ----------------------------------------------------------------------------
   -- JTAG OUTPUT

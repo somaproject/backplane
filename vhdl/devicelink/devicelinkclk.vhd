@@ -70,7 +70,6 @@ begin  -- Behavioral
     generic map (
       CLKFX_DIVIDE          => 2,       -- Can be any interger from 1 to 32
       CLKFX_MULTIPLY        => 6,       -- Can be any integer from 2 to 32
-      CLKIN_PERIOD          => 15.0,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
       DCM_AUTOCALIBRATION   => true,
@@ -131,7 +130,6 @@ begin  -- Behavioral
       CLKDV_DIVIDE          => 2.5,
       CLKFX_MULTIPLY        => 5,
       CLKFX_DIVIDE          => 3,
-      CLKIN_PERIOD          => 2.5,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
       DCM_AUTOCALIBRATION   => true,
@@ -191,7 +189,6 @@ begin  -- Behavioral
 --    generic map (
 --      CLKFX_MULTIPLY        => 4,
 --      CLKFX_DIVIDE          => 3,
---      CLKIN_PERIOD          => 2.5,
 --      CLKOUT_PHASE_SHIFT    => "NONE",
 --      CLK_FEEDBACK          => "1X",
 --      DCM_AUTOCALIBRATION   => true,
@@ -257,7 +254,6 @@ begin  -- Behavioral
   
   txword_dcm : DCM_BASE
     generic map (
-      CLKIN_PERIOD          => 2.5,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
       CLKFX_MULTIPLY        => 10,
