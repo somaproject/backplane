@@ -15,8 +15,12 @@ architecture Behavioral of coredevicelinktest is
 
   component coredevicelink
     generic (
-      N       : integer := 0;
-      DCNTMAX : integer);               -- number of ticks in input bit cycle
+      N            : integer := 0;
+      DCNTMAX      : integer := 200000;
+      DROPDURATION : integer := 20000000;
+      SYNCDURATION : integer := 20000000;
+      LOCKABORT    : integer := 200000);     
+
     port (
       CLK         : in  std_logic;      -- should be a 50 MHz clock 
       RXBITCLK    : in  std_logic;      -- should be a 125 MHz clock
@@ -128,7 +132,10 @@ begin
   coredevicelink_uut : coredevicelink
     generic map (
       N       => 4,
-      DCNTMAX => 800)
+      DCNTMAX => 1000,
+      DROPDURATION => 800,
+      SYNCDURATION => 800,
+      LOCKABORT => 800)
     port map (
       CLK       => CLK,
       RXBITCLK  => RXBITCLK,
@@ -144,7 +151,7 @@ begin
       RXIO_N    => DEVICE_TO_CORE_DELAYED_N,
       RXDOUT    => RXDOUT,
       RXKOUT    => RXKOUT,
-      RXDOUTEN => RXDOUTEN, 
+      RXDOUTEN  => RXDOUTEN,
       DROPLOCK  => DROPLOCK,
       LOCKED    => LOCKED,
       DEBUG     => DEBUG,
@@ -285,7 +292,7 @@ begin
     wait until rising_edge(CLK);
     last_din := RXDOUT;
     for i in 0 to 1000 loop
-      wait until rising_edge(CLK) and RXDOUTEN ='1';
+      wait until rising_edge(CLK) and RXDOUTEN = '1';
 
       assert RXDOUT = (last_din + 1) report "Error reading RXDOUT" severity error;
       last_din := RXDOUT;
