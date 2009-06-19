@@ -14,9 +14,9 @@ entity delaylock is
     DONE      : out std_logic;
     LOCKED    : out std_logic;
     DEBUG     : out std_logic;
-    DEBUGADDR : in  std_logic_vector(4 downto 0);
-    WINPOS    : out std_logic_vector(4 downto 0);
-    WINLEN    : out std_logic_vector(4 downto 0);
+    DEBUGADDR : in  std_logic_vector(5 downto 0);
+    WINPOS    : out std_logic_vector(5 downto 0);
+    WINLEN    : out std_logic_vector(5 downto 0);
     -- delay interface
     DLYRST    : out std_logic;
     DLYINC    : out std_logic;
@@ -31,7 +31,7 @@ architecture Behavioral of delaylock is
   signal dinl, dinll : std_logic_vector(9 downto 0) := (others => '0');
   signal lastdinll : std_logic_vector(9 downto 0) := (others => '0');
 
-  signal modcnt : std_logic_vector(4 downto 0) := (others => '0');
+  signal modcnt : std_logic_vector(5 downto 0) := (others => '0');
   signal poscnt : std_logic_vector(5 downto 0) := (others => '0');
   signal posrst : std_logic                    := '0';
   signal posinc : std_logic                    := '0';
@@ -44,12 +44,12 @@ architecture Behavioral of delaylock is
   signal dtrst, dtwe, dtdin : std_logic := '0';
 
   -- window lock signals
-  signal winaddr          : std_logic_vector(4 downto 0) := (others => '0');
+  signal winaddr          : std_logic_vector(5 downto 0) := (others => '0');
   signal windin           : std_logic                    := '0';
   signal windone          : std_logic                    := '0';
   signal winfail          : std_logic                    := '0';
   signal winstart         : std_logic                    := '0';
-  signal lwinpos, lwinlen : std_logic_vector(4 downto 0) := (others => '0');
+  signal lwinpos, lwinlen : std_logic_vector(5 downto 0) := (others => '0');
 
   
   type states is (none, rstcnt,
@@ -59,7 +59,7 @@ architecture Behavioral of delaylock is
 
   signal cs, ns : states := none;
 
-  constant MODMAX : integer := 26;
+  constant MODMAX : integer := 53;
 
   constant RDCNTMAX : integer := 100;
 
@@ -69,11 +69,11 @@ architecture Behavioral of delaylock is
       RESET    : in  std_logic;
       WE       : in  std_logic;
       DIN      : in  std_logic;
-      ADDRIN   : in  std_logic_vector(4 downto 0);
+      ADDRIN   : in  std_logic_vector(5 downto 0);
       DOUTA    : out std_logic;
-      ADDROUTA : in  std_logic_vector(4 downto 0);
+      ADDROUTA : in  std_logic_vector(5 downto 0);
       DOUTB    : out std_logic;
-      ADDROUTB : in  std_logic_vector(4 downto 0)
+      ADDROUTB : in  std_logic_vector(5 downto 0)
       );
   end component;
 
@@ -103,7 +103,7 @@ begin  -- Behavioral
       RESET    => dtrst,
       WE       => dtwe,
       DIN      => dtdin,
-      ADDRIN   => poscnt(4 downto 0),
+      ADDRIN   => poscnt(5 downto 0),
       DOUTA    => DEBUG,
       ADDROUTA => DEBUGADDR ,
       DOUTB    => windin,
@@ -111,8 +111,8 @@ begin  -- Behavioral
 
   windowdetect_inst : windowdetect
     generic map (
-      MAXCNT => 26,
-      ADDRN  => 5)
+      MAXCNT => 53,
+      ADDRN  => 6)
     port map (
       CLK    => CLK,
       START  => winstart,
@@ -136,7 +136,7 @@ begin  -- Behavioral
         modcnt <= (others => '0');
       else
         if cs = compmod then
-          if modcnt = std_logic_vector(TO_unsigned(MODMAX-1, 5)) then
+          if modcnt = std_logic_vector(TO_unsigned(MODMAX-1, 6)) then
             modcnt <= (others => '0');
           else
             modcnt <= modcnt + 1;
@@ -369,7 +369,7 @@ begin  -- Behavioral
         dtwe     <= '0';
         dtdin    <= '0';
         rdcntrst <= '0';
-        if poscnt(4 downto 0) = lwinpos + ('0' & lwinlen(4 downto 1)) then
+        if poscnt(5 downto 0) = lwinpos + ('0' & lwinlen(5 downto 1)) then
           ns <= startlck;
         else
           ns <= compmod;
@@ -398,7 +398,7 @@ begin  -- Behavioral
         dtwe     <= '0';
         dtdin    <= '0';
         rdcntrst <= '0';
-        if poscnt(4 downto 0) < (modcnt -1) then
+        if poscnt(5 downto 0) < (modcnt -1) then
           ns <= lockpos;
         else
           ns <= dones;

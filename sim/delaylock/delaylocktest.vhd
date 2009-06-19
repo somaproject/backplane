@@ -20,9 +20,9 @@ architecture Behavioral of delaylocktest is
       DONE      : out std_logic;
       LOCKED    : out std_logic;
       DEBUG     : out std_logic;
-      DEBUGADDR : in  std_logic_vector(4 downto 0);
-      WINPOS    : out std_logic_vector(4 downto 0);
-      WINLEN    : out std_logic_vector(4 downto 0);
+      DEBUGADDR : in  std_logic_vector(5 downto 0);
+      WINPOS    : out std_logic_vector(5 downto 0);
+      WINLEN    : out std_logic_vector(5 downto 0);
       -- delay interface
       DLYRST    : out std_logic;
       DLYINC    : out std_logic;
@@ -36,16 +36,16 @@ architecture Behavioral of delaylocktest is
   signal DONE      : std_logic                    := '0';
   signal LOCKED    : std_logic                    := '0';
   signal DEBUG     : std_logic                    := '0';
-  signal DEBUGADDR : std_logic_vector(4 downto 0) := (others => '0');
-  signal WINPOS    : std_logic_vector(4 downto 0) := (others => '0');
-  signal WINLEN    : std_logic_vector(4 downto 0) := (others => '0');
+  signal DEBUGADDR : std_logic_vector(5 downto 0) := (others => '0');
+  signal WINPOS    : std_logic_vector(5 downto 0) := (others => '0');
+  signal WINLEN    : std_logic_vector(5 downto 0) := (others => '0');
   -- delay interface
   signal DLYRST    : std_logic                    := '0';
   signal DLYINC    : std_logic                    := '0';
   signal DLYCE     : std_logic                    := '0';
   signal DIN       : std_logic_vector(9 downto 0) := (others => '0');
 
-
+  constant MAXCNT : integer := 53;
 --  constant MAXCNT : integer := 24;
 --  constant ADDRN  : integer := 5;
 
@@ -67,10 +67,12 @@ architecture Behavioral of delaylocktest is
 --  signal test_shouldfail : std_logic := '0';
 
   component simdelay
+  generic (
+    BITSIZE : integer := 26);
     port (
       CLK     : in  std_logic;
       SETMASK : in  std_logic;
-      MASKIN  : in  std_logic_vector(25 downto 0);
+      MASKIN  : in  std_logic_vector(BITSIZE-1 downto 0);
       DELAY   : out integer;
       DLYRST  : in  std_logic;
       DLYINC  : in  std_logic;
@@ -79,7 +81,7 @@ architecture Behavioral of delaylocktest is
   end component;
 
   signal delay_position : integer                       := 0;
-  signal maskin         : std_logic_vector(25 downto 0) := (others => '0');
+  signal maskin         : std_logic_vector(MAXCNT-1 downto 0) := (others => '0');
   signal setmask        : std_logic                     := '0';
   
 begin
@@ -101,6 +103,8 @@ begin
   CLK <= not CLK after 10 ns;
 
   simdelay_inst : simdelay
+    generic map (
+      BITSIZE => 53)
     port map (
       CLK     => CLK,
       setmask => setmask,
@@ -119,16 +123,16 @@ begin
 
   run_tests : process is
     procedure test (
-      constant mask         : in std_logic_vector(25 downto 0);
+      constant mask         : in std_logic_vector(MAXCNT-1 downto 0);
       constant tgtdelay : in integer;
       constant wiggle : in integer
       ) is
-    type allowed_t is array (0 to 25) of boolean;
+    type allowed_t is array (0 to MAXCNT) of boolean;
     variable allowed_delays :  allowed_t := (others => false);
     variable allowed : boolean := false;
   begin
     maskin  <= mask;
-    for i in 0 to 25 loop
+    for i in 0 to MAXCNT-1 loop
       allowed_delays(i) := false; 
     end loop;  -- i
     allowed := false;
@@ -148,8 +152,8 @@ begin
     -- create bit mask of allowed values
     allowed_delays(tgtdelay) := true;
     for i in 0 to wiggle loop
-      allowed_delays((tgtdelay + i) mod 26) := true;
-      allowed_delays((tgtdelay -i ) mod 26) := true; 
+      allowed_delays((tgtdelay + i) mod MAXCNT) := true;
+      allowed_delays((tgtdelay -i ) mod MAXCNT) := true; 
     end loop;  -- i
 
     assert allowed_delays(delay_position) report "recovered delay was not in list of allowed delays" severity error;
@@ -160,26 +164,24 @@ begin
 
   begin
     -- smaller and smaller center windows
-    test("00000000000000000000000000", 14, 1);
-    test("11100000000000000000000111", 14, 1);
-    test("11111110000000000001111111", 14, 1);
-    test("11111111111000011111111111", 14, 1);
-    test("11111111111100111111111111", 14, 1);
+    test("00000000000000000000000000000000000000000000000000000", 26, 1);
+    test("11111111110000000000000000000000000000000001111111111", 26, 1);
+    test("11111111111111111111000000000000011111111111111111111", 26, 1);
 
     -- random locations
-    test("11111100000000000000000000", 11, 1);
-    test("00000000000000000000111111", 16, 1);
+    test("11111100000000000000000000000000000000000000000000000", 24, 1);
+    test("00000000000000000000000000000000000000000000000111111", 29, 1);
 
     --multiple locations, do we pick the biggest?
 
-    test("10000110000000000001100011", 14, 1);
+    test("11111111111111111111111111110000110000000000001100011", 14, 1);
 
     -- wrap-around
-    test("00001111111111111111110000", 0, 1);
+    test("00001111111111111111111111111111111111111111111110000", 0, 1);
 
-    test("00001111110000001111110000", 0, 1);
+    test("00001111110000001111111111111111111111111111111110000", 0, 1);
 
-    test("00001111100000000011110000", 12, 1);
+    test("00001111111111111111111111111111111100000000011110000", 12, 1);
 
     report "End of Simulation" severity failure;
   end process run_tests;
