@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2009-06-16
+-- Last update: 2009-06-18
 -- Platform   : 
 -----------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -28,16 +28,20 @@ use UNISIM.VComponents.all;
 entity linktester is
 
   port (
-    CLK       : in  std_logic;
-    RXBITCLK  : in  std_logic;
-    TXHBITCLK : in  std_logic;
-    TXWORDCLK : in  std_logic;
-    RESET     : in  std_logic;
-    TXIO_P    : out std_logic;
-    TXIO_N    : out std_logic;
-    RXIO_P    : in  std_logic;
-    RXIO_N    : in  std_logic;
-    VALID     : out std_logic
+    CLK        : in  std_logic;
+    RXBITCLK   : in  std_logic;
+    RXWORDCLK  : in  std_logic;
+    TXHBITCLK  : in  std_logic;
+    TXWORDCLK  : in  std_logic;
+    RESET      : in  std_logic;
+    TXIO_P     : out std_logic;
+    TXIO_N     : out std_logic;
+    RXIO_P     : in  std_logic;
+    RXIO_N     : in  std_logic;
+    VALID      : out std_logic;
+    LOCKED     : out std_logic;
+    DEBUGSTATE : out std_logic_vector(7 downto 0);
+    DEBUGVALUE : out std_logic_vector(15 downto 0)
     );
 
 end linktester;
@@ -57,45 +61,64 @@ architecture Behavioral of linktester is
   signal kin1   : std_logic                    := '0';
   signal kin2   : std_logic                    := '0';
 
-  signal locked : std_logic := '0';
+  signal llocked : std_logic := '0';
 
+  signal rxdouten : std_logic := '0';
 
   component coredevicelink
-    generic (N : integer := 0);
+    generic (N            : integer := 0;
+             DCNTMAX      : integer := 200000;
+             DROPDURATION : integer := 20000000;
+             SYNCDURATION : integer := 20000000;
+             LOCKABORT    : integer := 200000
+             );
     port (
       CLK         : in std_logic;
       RXBITCLK    : in std_logic;
+      RXWORDCLK   : in std_logic;
       TXHBITCLK   : in std_logic;
       TXWORDCLK   : in std_logic;
       RESET       : in std_logic;
       AUTOLINK    : in std_logic := '1';
       ATTEMPTLINK : in std_logic := '0';
 
-      TXDIN    : in  std_logic_vector(7 downto 0);
-      TXKIN    : in  std_logic;
-      TXIO_P   : out std_logic;
-      TXIO_N   : out std_logic;
-      RXIO_P   : in  std_logic;
-      RXIO_N   : in  std_logic;
-      RXDOUT   : out std_logic_vector(7 downto 0);
-      RXKOUT   : out std_logic;
-      DROPLOCK : in  std_logic;
-      LOCKED   : out std_logic;
-      DEBUGADDR   : in  std_logic_vector(7 downto 0);
-      DEBUG       : out std_logic_vector(15 downto 0)
+      TXDIN     : in  std_logic_vector(7 downto 0);
+      TXKIN     : in  std_logic;
+      TXIO_P    : out std_logic;
+      TXIO_N    : out std_logic;
+      RXIO_P    : in  std_logic;
+      RXIO_N    : in  std_logic;
+      RXDOUT    : out std_logic_vector(7 downto 0);
+      RXDOUTEN  : out std_logic;
+      RXKOUT    : out std_logic;
+      DROPLOCK  : in  std_logic;
+      LOCKED    : out std_logic;
+      DEBUGADDR : in  std_logic_vector(7 downto 0);
+      DEBUG     : out std_logic_vector(15 downto 0);
+      DEBUGSTATEOUT : out std_logic_vector(7 downto 0)
 
       );
 
   end component;
 
+  signal txen : std_logic := '0';
+
+  signal debugaddr  : std_logic_vector(7 downto 0)  := (others => '0');
+  
 begin  -- Behavioral
 
   devicelink_inst : coredevicelink
     generic map (
-      N => 4)
+      N       => 4,
+      DCNTMAX => 220000000,
+      DROPDURATION => 100000000,
+      SYNCDURATION => 200000000,
+      LOCKABORT => 1000000)
+
     port map (
       CLK         => CLK,
       RXBITCLK    => RXBITCLK,
+      RXWORDCLK   => RXWORDCLK,
       TXHBITCLK   => TXHBITCLK,
       TXWORDCLK   => TXWORDCLK,
       RESET       => RESET,
@@ -109,38 +132,51 @@ begin  -- Behavioral
       RXIO_N      => RXIO_N,
       RXDOUT      => din,
       RXKOUT      => kin,
+      RXDOUTEN    => rxdouten,
       DROPLOCK    => '0',
-      LOCKED      => locked,
-      DEBUGADDR => X"00"); 
+      LOCKED      => llocked,
+      DEBUGADDR   => debugaddr,
+      DEBUG       => DEBUGVALUE,
+      DEBUGSTATEOUT => debugstate); 
 
   output : process(CLK)
   begin
     if rising_edge(CLK) then
-      dout   <= outcnt;
-      kout   <= '0';
-      outcnt <= outcnt + 1;
+      txen <= not txen;
+      if txen = '1' then                -- only send every other tick
+        dout   <= outcnt;
+        kout   <= '0';
+        outcnt <= outcnt + 1;
+        
+      end if;
 
     end if;
   end process output;
 
+  debugaddr               <= X"03";
 
   input : process(CLK)
   begin
     if rising_edge(CLK) then
-      dinl  <= din;
-      dinll <= dinl;
+
+      if rxdouten = '1' then
+        dinl  <= din;
+        dinll <= dinl;
+      end if;
+
       if dinl = dinll + 1 then
         rxdata_valid <= '1';
       else
         rxdata_valid <= '0';
       end if;
 
-      if locked = '1' and rxdata_valid = '1' then
+      if llocked = '1' and rxdata_valid = '1' then
         VALID <= '1';
       else
         VALID <= '0';
       end if;
 
+      LOCKED <= llocked;
 
     end if;
 

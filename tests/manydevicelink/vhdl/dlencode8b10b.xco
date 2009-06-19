@@ -1,7 +1,7 @@
 ##############################################################
 #
-# Xilinx Core Generator version K.31
-# Date: Wed Apr 29 23:27:43 2009
+# Xilinx Core Generator version 11.1
+# Date: Wed Jun 17 14:53:44 2009
 #
 ##############################################################
 #
@@ -23,7 +23,7 @@ SET devicefamily = virtex4
 SET flowvendor = Other
 SET formalverification = False
 SET foundationsym = False
-SET implementationfiletype = Edif
+SET implementationfiletype = Ngc
 SET package = ff668
 SET removerpms = False
 SET simulationfiles = Behavioral
@@ -42,9 +42,9 @@ CSET b_force_code=false
 CSET b_force_code_symbol=B_D_10_2_pos
 CSET b_force_disparity=false
 CSET b_new_data=false
-CSET clock_enable=false
+CSET clock_enable=true
 CSET code_error_output=false
-CSET component_name=encode8b10b
+CSET component_name=dlencode8b10b
 CSET disparity_output=false
 CSET force_code=false
 CSET force_code_symbol=D_10_2_pos
@@ -54,5 +54,4 @@ CSET new_data=false
 CSET secondary_encoder=false
 # END Parameters
 GENERATE
-# CRC: 53861765
-
+# CRC: a296cf4e

@@ -18,25 +18,27 @@ architecture Behavioral of coredevicelinktest is
       N       : integer := 0;
       DCNTMAX : integer);               -- number of ticks in input bit cycle
     port (
-      CLK       : in  std_logic;        -- should be a 50 MHz clock 
-      RXBITCLK  : in  std_logic;        -- should be a 250 MHz clock
-      TXHBITCLK : in  std_logic;        -- should be a 300 MHz clock
-      TXWORDCLK : in  std_logic;        -- should be a 60 MHz clock
-      RESET     : in  std_logic;
-      AUTOLINK : in std_logic := '1';
-      ATTEMPTLINK : in std_logic := '0'; 
-      TXDIN     : in  std_logic_vector(7 downto 0);
-      TXKIN     : in  std_logic;
-      TXIO_P    : out std_logic;
-      TXIO_N    : out std_logic;
-      RXIO_P    : in  std_logic;
-      RXIO_N    : in  std_logic;
-      RXDOUT    : out std_logic_vector(7 downto 0);
-      RXKOUT    : out std_logic;
-      DROPLOCK  : in  std_logic;
-      LOCKED    : out std_logic;
-      DEBUG : out std_logic_vector(15 downto 0);
-      DEBUGADDR : in std_logic_vector(7 downto 0)
+      CLK         : in  std_logic;      -- should be a 50 MHz clock 
+      RXBITCLK    : in  std_logic;      -- should be a 125 MHz clock
+      RXWORDCLK   : in  std_logic;      -- should be a 25 Mhz clock
+      TXHBITCLK   : in  std_logic;      -- should be a 300 MHz clock
+      TXWORDCLK   : in  std_logic;      -- should be a 60 MHz clock
+      RESET       : in  std_logic;
+      AUTOLINK    : in  std_logic := '1';
+      ATTEMPTLINK : in  std_logic := '0';
+      TXDIN       : in  std_logic_vector(7 downto 0);
+      TXKIN       : in  std_logic;
+      TXIO_P      : out std_logic;
+      TXIO_N      : out std_logic;
+      RXIO_P      : in  std_logic;
+      RXIO_N      : in  std_logic;
+      RXDOUT      : out std_logic_vector(7 downto 0);
+      RXKOUT      : out std_logic;
+      RXDOUTEN    : out std_logic;
+      DROPLOCK    : in  std_logic;
+      LOCKED      : out std_logic;
+      DEBUG       : out std_logic_vector(15 downto 0);
+      DEBUGADDR   : in  std_logic_vector(7 downto 0)
       );
   end component;
 
@@ -63,22 +65,26 @@ architecture Behavioral of coredevicelinktest is
   signal masterclk   : integer := 0;    -- master clock counter, at 600 Mhz
   signal clk_250_cnt : integer := 0;
 
-  signal CLK       : std_logic                    := '0';  -- should be a 50 MHz clock 
-  signal RXBITCLK  : std_logic                    := '0';  -- should be a 250 MHz clock
-  signal TXHBITCLK : std_logic                    := '0';  -- should be a 300 MHz clock
-  signal TXWORDCLK : std_logic                    := '0';  -- should be a 60 MHz clock
-  signal RESET     : std_logic                    := '1';
-  signal TXDIN     : std_logic_vector(7 downto 0) := (others => '0');
-  signal TXKIN     : std_logic                    := '0';
-  signal RXDOUT    : std_logic_vector(7 downto 0) := (others => '0');
+  signal CLK       : std_logic := '0';  -- should be a 50 MHz clock 
+  signal RXBITCLK  : std_logic := '0';  -- should be a 125 MHz clock
+  signal RXWORDCLK : std_logic := '0';  -- should be a 25 MHz clock
+  signal TXHBITCLK : std_logic := '0';  -- should be a 300 MHz clock
+  signal TXWORDCLK : std_logic := '0';  -- should be a 60 MHz clock
+  signal RESET     : std_logic := '1';
 
-  signal RXKOUT   : std_logic := '0';
+  signal TXDIN : std_logic_vector(7 downto 0) := (others => '0');
+  signal TXKIN : std_logic                    := '0';
+
+  signal RXDOUT   : std_logic_vector(7 downto 0) := (others => '0');
+  signal RXKOUT   : std_logic                    := '0';
+  signal RXDOUTEN : std_logic                    := '0';
+
   signal DROPLOCK : std_logic := '0';
   signal LOCKED   : std_logic := '0';
 
-  signal DEBUG : std_logic_vector(15 downto 0) := (others => '0');
-  signal DEBUGADDR : std_logic_vector(7 downto 0) := (others => '0');
-  
+  signal DEBUG     : std_logic_vector(15 downto 0) := (others => '0');
+  signal DEBUGADDR : std_logic_vector(7 downto 0)  := (others => '0');
+
   signal CORE_TO_DEVICE_P : std_logic := '0';
   signal CORE_TO_DEVICE_N : std_logic := '1';
 
@@ -126,6 +132,7 @@ begin
     port map (
       CLK       => CLK,
       RXBITCLK  => RXBITCLK,
+      RXWORDCLK => RXWORDCLK,
       TXHBITCLK => TXHBITCLK,
       TXWORDCLK => TXWORDCLK,
       RESET     => RESET,
@@ -137,9 +144,10 @@ begin
       RXIO_N    => DEVICE_TO_CORE_DELAYED_N,
       RXDOUT    => RXDOUT,
       RXKOUT    => RXKOUT,
+      RXDOUTEN => RXDOUTEN, 
       DROPLOCK  => DROPLOCK,
       LOCKED    => LOCKED,
-      DEBUG => DEBUG,
+      DEBUG     => DEBUG,
       DEBUGADDR => DEBUGADDR);
 
   devicelink_uut : devicelink
@@ -159,37 +167,40 @@ begin
       DEBUGSTATE => DL_DEBUGSTATE,
       DECODEERR  => DL_DECODEERR);
 
+  -----------------------------------------------------------------------------
+  -- input noise process, which lets us vary the width of the "good" signal
+  -----------------------------------------------------------------------------
   process
-    variable j : integer := 0;
-    constant noisecnt : integer := 65;  -- how many 10 ps bursts do we have
-                                        -- noise in
+    variable j           : integer := 0;
+    constant noisecnt    : integer := 65;  -- how many 10 ps bursts do we have
+                                           -- noise in
     constant bitsequence : std_logic_vector(19 downto 0)
-      := "10001110110010101110";
+ := "10001110110010101110";
     variable lastval : std_logic := '0';
   begin
     wait until RXBITCLK'event;
     -- remember, this runs every time the input value changes
     -- initial noise
     for i in 0 to noisecnt loop
-      DEVICE_TO_CORE_DELAYED_P <= lastval; 
+      DEVICE_TO_CORE_DELAYED_P <= lastval;
       DEVICE_TO_CORE_DELAYED_N <= not lastval;
-      lastval := bitsequence(i mod 20); 
+      lastval                  := bitsequence(i mod 20);
       wait for 10 ps;
     end loop;  -- i
 
     -- then the good value
     DEVICE_TO_CORE_DELAYED_P <= DEVICE_TO_CORE_P;
     DEVICE_TO_CORE_DELAYED_N <= DEVICE_TO_CORE_N;
-    wait for 600 ps;
+    wait for 2600 ps;
 
     -- footer
     for i in 0 to noisecnt loop
-      DEVICE_TO_CORE_DELAYED_P <= lastval; 
+      DEVICE_TO_CORE_DELAYED_P <= lastval;
       DEVICE_TO_CORE_DELAYED_N <= not lastval;
-      lastval := bitsequence(i mod 20); 
+      lastval                  := bitsequence(i mod 20);
       wait for 10 ps;
     end loop;  -- i
-        
+    
   end process;
 
 
@@ -221,10 +232,10 @@ begin
         txhbitclk <= '0';
       end if;
 
-      -- to get a 250 MHz clock we divide the 3GHz base clock by 12
-      if masterclk mod 12 = 6 then
+      -- to get a 125 MHz clock we divide the 3GHz base clock by 24
+      if masterclk mod 24 = 12 then
         RXBITCLK <= '1';
-      elsif masterclk mod 12 = 0 then
+      elsif masterclk mod 24 = 0 then
         RXBITCLK <= '0';
       end if;
 
@@ -242,18 +253,25 @@ begin
         CLK <= '0';
       end if;
 
+      -- to get a 25 MHz clock we divide the 3GHz base clock by 120
+      if masterclk mod 120 = 60 then
+        RXWORDCLK <= '1';
+      elsif masterclk mod 120 = 0 then
+        RXWORDCLK <= '0';
+      end if;
+
     end loop;
   end process;
 
--------------------------------------------------------------------------------
--- Input data
--------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+  -- Input data from DEVICE to CORE
+  -------------------------------------------------------------------------------
 
   process
   begin
     for i in 0 to 255 loop
       TXDIN <= std_logic_vector(TO_UNSIGNED(i, 8));
-      wait until rising_edge(CLK);
+      wait until rising_edge(RXWORDCLK);
     end loop;  -- i
   end process;
 
@@ -262,16 +280,16 @@ begin
 
   process
     variable last_din : std_logic_vector(7 downto 0) := (others => '0');
-    begin
-      wait for 400 us;
-      wait until rising_edge(CLK);
-      last_din := RXDOUT;
-      for i in 0 to 1000 loop
-        wait until rising_edge(CLK);
+  begin
+    wait for 400 us;
+    wait until rising_edge(CLK);
+    last_din := RXDOUT;
+    for i in 0 to 1000 loop
+      wait until rising_edge(CLK) and RXDOUTEN ='1';
 
-        assert RXDOUT = (last_din + 1) report "Error reading RXDOUT" severity error;
-        last_din := RXDOUT; 
-      end loop;  -- i
-      report "End of Simulation" severity failure;
-    end process; 
+      assert RXDOUT = (last_din + 1) report "Error reading RXDOUT" severity error;
+      last_din := RXDOUT;
+    end loop;  -- i
+    report "End of Simulation" severity failure;
+  end process;
 end Behavioral;

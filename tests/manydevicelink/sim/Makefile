@@ -3,51 +3,79 @@ VHDLS=vsim
 WORKDIR=work
 all: hw comp sim
 
-$(WORKDIR)/coredevicelink/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/coredevicelink.vhd
+$(WORKDIR)/devicelinkclk/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../../vhdl/devicelink/devicelinkclk.vhd
+
+$(WORKDIR)/coredevicelink/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../../vhdl/devicelink/coredevicelink.vhd
 
-$(WORKDIR)/deserialize/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd
+$(WORKDIR)/deserialize/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../../vhdl/devicelink/deserialize.vhd
 
-$(WORKDIR)/serialize/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd
+$(WORKDIR)/serialize/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../../vhdl/devicelink/serialize.vhd
 
-$(WORKDIR)/somabackplane/body.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/somabackplane.vhd
+$(WORKDIR)/windowdetect/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../../vhdl/devicelink/windowdetect.vhd
+
+$(WORKDIR)/delaytable/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../../vhdl/devicelink/delaytable.vhd
+
+$(WORKDIR)/delaylock/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaylock.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../../vhdl/devicelink/delaylock.vhd
+
+$(WORKDIR)/somabackplane/body.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/somabackplane.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/encode8b10b/encode8b10b_a.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/encode8b10b.vhd
+$(WORKDIR)/coredlencode8b10b/coredlencode8b10b_a.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/coredlencode8b10b.vhd
 	mkdir -p $(WORKDIR)
-	$(VHDLC) ../vhdl/encode8b10b.vhd
+	$(VHDLC) ../vhdl/coredlencode8b10b.vhd
 
-$(WORKDIR)/decode8b10b/decode8b10b_a.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/encode8b10b.vhd ../vhdl/encode8b10b.vhd ../vhdl/decode8b10b.vhd
+$(WORKDIR)/coredldecode8b10b/coredldecode8b10b_a.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredldecode8b10b.vhd
 	mkdir -p $(WORKDIR)
-	$(VHDLC) ../vhdl/decode8b10b.vhd
+	$(VHDLC) ../vhdl/coredldecode8b10b.vhd
 
-$(WORKDIR)/manydevicelink/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/encode8b10b.vhd ../vhdl/encode8b10b.vhd ../vhdl/decode8b10b.vhd ../vhdl/decode8b10b.vhd ../vhdl/manydevicelink.vhd
+$(WORKDIR)/dlencode8b10b/dlencode8b10b_a.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredldecode8b10b.vhd ../vhdl/coredldecode8b10b.vhd ../vhdl/dlencode8b10b.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../vhdl/dlencode8b10b.vhd
+
+$(WORKDIR)/dldecode8b10b/dldecode8b10b_a.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredldecode8b10b.vhd ../vhdl/coredldecode8b10b.vhd ../vhdl/dlencode8b10b.vhd ../vhdl/dlencode8b10b.vhd ../vhdl/dldecode8b10b.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../vhdl/dldecode8b10b.vhd
+
+$(WORKDIR)/manydevicelink/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredldecode8b10b.vhd ../vhdl/coredldecode8b10b.vhd ../vhdl/dlencode8b10b.vhd ../vhdl/dlencode8b10b.vhd ../vhdl/dldecode8b10b.vhd ../vhdl/dldecode8b10b.vhd ../vhdl/manydevicelink.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../vhdl/manydevicelink.vhd
 
-$(WORKDIR)/linktester/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/encode8b10b.vhd ../vhdl/encode8b10b.vhd ../vhdl/decode8b10b.vhd ../vhdl/decode8b10b.vhd ../vhdl/manydevicelink.vhd ../vhdl/manydevicelink.vhd ../vhdl/linktester.vhd
+$(WORKDIR)/linktester/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/devicelinkclk.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/coredevicelink.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/deserialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/serialize.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/windowdetect.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaytable.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/devicelink/delaylock.vhd ../../../vhdl/somabackplane.vhd ../../../vhdl/somabackplane.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredlencode8b10b.vhd ../vhdl/coredldecode8b10b.vhd ../vhdl/coredldecode8b10b.vhd ../vhdl/dlencode8b10b.vhd ../vhdl/dlencode8b10b.vhd ../vhdl/dldecode8b10b.vhd ../vhdl/dldecode8b10b.vhd ../vhdl/manydevicelink.vhd ../vhdl/manydevicelink.vhd ../vhdl/linktester.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../vhdl/linktester.vhd
 
-hw: $(WORKDIR)/coredevicelink/behavioral.dat $(WORKDIR)/deserialize/behavioral.dat $(WORKDIR)/serialize/behavioral.dat $(WORKDIR)/somabackplane/body.dat $(WORKDIR)/encode8b10b/encode8b10b_a.dat $(WORKDIR)/decode8b10b/decode8b10b_a.dat $(WORKDIR)/manydevicelink/behavioral.dat $(WORKDIR)/linktester/behavioral.dat 
+hw: $(WORKDIR)/devicelinkclk/behavioral.dat $(WORKDIR)/coredevicelink/behavioral.dat $(WORKDIR)/deserialize/behavioral.dat $(WORKDIR)/serialize/behavioral.dat $(WORKDIR)/windowdetect/behavioral.dat $(WORKDIR)/delaytable/behavioral.dat $(WORKDIR)/delaylock/behavioral.dat $(WORKDIR)/somabackplane/body.dat $(WORKDIR)/coredlencode8b10b/coredlencode8b10b_a.dat $(WORKDIR)/coredldecode8b10b/coredldecode8b10b_a.dat $(WORKDIR)/dlencode8b10b/dlencode8b10b_a.dat $(WORKDIR)/dldecode8b10b/dldecode8b10b_a.dat $(WORKDIR)/manydevicelink/behavioral.dat $(WORKDIR)/linktester/behavioral.dat 
 
-$(WORKDIR)/devicelink/behavioral.dat: $(WORKDIR)/touched ../../../deviceio/vhdl/devicelink.vhd
+$(WORKDIR)/devicelink/behavioral.dat: $(WORKDIR)/touched ../../../../dspboard/vhdl/serial-deviceio/vhdl/devicelink.vhd
 	mkdir -p $(WORKDIR)
-	$(VHDLC) ../../../deviceio/vhdl/devicelink.vhd
+	$(VHDLC) ../../../../dspboard/vhdl/serial-deviceio/vhdl/devicelink.vhd
 
-$(WORKDIR)/dlloop/behavioral.dat: $(WORKDIR)/touched ../../../deviceio/vhdl/devicelink.vhd ../../../deviceio/tests/deviceloopback/dlloop.vhd
+$(WORKDIR)/dlloop/behavioral.dat: $(WORKDIR)/touched ../../../../dspboard/vhdl/serial-deviceio/vhdl/devicelink.vhd ../../../../dspboard/tests/deviceloopback/dlloop.vhd
 	mkdir -p $(WORKDIR)
-	$(VHDLC) ../../../deviceio/tests/deviceloopback/dlloop.vhd
+	$(VHDLC) ../../../../dspboard/tests/deviceloopback/dlloop.vhd
 
-comp: $(WORKDIR)/devicelink/behavioral.dat $(WORKDIR)/dlloop/behavioral.dat 
+$(WORKDIR)/serdes/behavioral.dat: $(WORKDIR)/touched ../../../../dspboard/vhdl/serial-deviceio/vhdl/devicelink.vhd ../../../../dspboard/tests/deviceloopback/dlloop.vhd ../../../sim/coredevicelink/serdes.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../../sim/coredevicelink/serdes.vhd
 
-$(WORKDIR)/manydevicelinktest/behavioral.dat: $(WORKDIR)/touched ../../../deviceio/vhdl/devicelink.vhd ../../../deviceio/tests/deviceloopback/dlloop.vhd manydevicelinktest.vhd
+comp: $(WORKDIR)/devicelink/behavioral.dat $(WORKDIR)/dlloop/behavioral.dat $(WORKDIR)/serdes/behavioral.dat 
+
+$(WORKDIR)/manydevicelinktest/behavioral.dat: $(WORKDIR)/touched ../../../../dspboard/vhdl/serial-deviceio/vhdl/devicelink.vhd ../../../../dspboard/tests/deviceloopback/dlloop.vhd ../../../sim/coredevicelink/serdes.vhd manydevicelinktest.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) manydevicelinktest.vhd
 

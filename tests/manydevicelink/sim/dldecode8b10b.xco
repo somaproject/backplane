@@ -1,7 +1,7 @@
 ##############################################################
 #
-# Xilinx Core Generator version K.31
-# Date: Wed Apr 29 23:28:29 2009
+# Xilinx Core Generator version 11.1
+# Date: Wed Jun 17 18:32:23 2009
 #
 ##############################################################
 #
@@ -23,7 +23,7 @@ SET devicefamily = virtex4
 SET flowvendor = Other
 SET formalverification = False
 SET foundationsym = False
-SET implementationfiletype = Edif
+SET implementationfiletype = Ngc
 SET package = ff668
 SET removerpms = False
 SET simulationfiles = Behavioral
@@ -46,7 +46,7 @@ CSET b_synchronous_reset=false
 CSET b_synchronous_reset_value=B_D_0_0_pos
 CSET clock_enable=false
 CSET code_violation_out=true
-CSET component_name=decode8b10b
+CSET component_name=dldecode8b10b
 CSET disparity_violation_out=true
 CSET implementation=LUT_Based
 CSET new_data=false
@@ -58,5 +58,4 @@ CSET synchronous_reset=false
 CSET synchronous_reset_value=D_0_0_pos
 # END Parameters
 GENERATE
-# CRC: e1faa662
-
+# CRC: a73a3511

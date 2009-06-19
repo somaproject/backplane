@@ -15,7 +15,8 @@ entity devicelinkclk is
     RESET       : in  std_logic;
     CLKBITTX    : out std_logic;        -- 300 MHz output clock
     CLKBITTX180 : out std_logic;        -- 300 MHz output clock, 180 phase
-    CLKBITRX    : out std_logic;        -- 250 MHz output clock 
+    CLKBITRX    : out std_logic;        -- 125 MHz output clock
+    CLKWORDRX   : out std_logic;        -- 25 Mhz 
     CLKWORDTX   : out std_logic;        -- 60 MHz output clock
     STARTUPDONE : out std_logic);
 end devicelinkclk;
@@ -44,6 +45,8 @@ architecture Behavioral of devicelinkclk is
   signal clkwordtxout, clkwordtxint  : std_logic := '0';
   signal clkwordtxdc, clkwordtxdcint : std_logic := '0';
 
+  signal clkwordrxint : std_logic := '0';
+  
   signal clkdelayctrl    : std_logic := '0';
   signal clkdelayctrlint : std_logic := '0';
   signal txworddc_lock   : std_logic := '0';
@@ -68,6 +71,7 @@ begin  -- Behavioral
   -- Turn the 50 MHz clock into a 150 MHz Clock
   txsrc : DCM_BASE
     generic map (
+      CLKDV_DIVIDE          => 2.0,
       CLKFX_DIVIDE          => 2,       -- Can be any interger from 1 to 32
       CLKFX_MULTIPLY        => 6,       -- Can be any integer from 2 to 32
       CLKOUT_PHASE_SHIFT    => "NONE",
@@ -86,6 +90,7 @@ begin  -- Behavioral
       CLK0   => clkint,
       CLKFB  => clk,
       CLKFX  => clksrcint,
+      CLKDV => clkwordrxint,           -- 25 MHz
       RST    => RESET,
       LOCKED => base_lock
       );
@@ -96,6 +101,11 @@ begin  -- Behavioral
     port map (
       O => clk,
       I => clkint);
+
+  clkwordrx_bufg : BUFG
+    port map (
+      O => CLKWORDRX,
+      I => clkwordrxint);
 
   clksrc_bufg : BUFG
     port map (
@@ -129,13 +139,13 @@ begin  -- Behavioral
     generic map (
       CLKDV_DIVIDE          => 2.5,
       CLKFX_MULTIPLY        => 5,
-      CLKFX_DIVIDE          => 3,
+      CLKFX_DIVIDE          => 6,
       CLKOUT_PHASE_SHIFT    => "NONE",
       CLK_FEEDBACK          => "1X",
       DCM_AUTOCALIBRATION   => true,
       DCM_PERFORMANCE_MODE  => "MAX_SPEED",
       DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
-      DFS_FREQUENCY_MODE    => "HIGH",
+      DFS_FREQUENCY_MODE    => "LOW",
       DLL_FREQUENCY_MODE    => "LOW",
       DUTY_CYCLE_CORRECTION => true,
       FACTORY_JF            => X"F0F0",
@@ -148,7 +158,7 @@ begin  -- Behavioral
 
       CLK2X    => clkbittxint,
       CLK2X180 => clkbittx180int,
-      CLKFX    => clkbitrxint,
+      CLKFX    => clkbitrxint,          -- 125 MHz
       CLKDV    => clkwordtxdcint,
       RST      => second_stage_rst, 
       LOCKED   => maindcmlocked
@@ -231,7 +241,6 @@ begin  -- Behavioral
   -- synthesis translate_off
   third_stage_delay_rst <= X"00001000";  -- make simulation time bearable
   -- synthesis translate_on 
-
                     
   process(clk, dcmreset)
   begin

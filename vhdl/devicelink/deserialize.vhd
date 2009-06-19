@@ -13,6 +13,7 @@ entity deserialize is
     CLK     : in  std_logic;
     RESET   : in  std_logic;
     BITCLK  : in  std_logic;
+    WORDCLK : in std_logic; 
     DIN     : in  std_logic;
     DOUT    : out std_logic_vector(9 downto 0);
     DLYRST  : in  std_logic;
@@ -52,7 +53,7 @@ begin  -- Behavioral
       CE1       => '1',
       CE2       => '1',
       CLK       => BITCLK,
-      CLKDIV    => CLK,
+      CLKDIV    => WORDCLK,
       D         => DIN,
       DLYCE     => DLYCE,
       DLYINC    => DLYINC,
@@ -88,7 +89,7 @@ begin  -- Behavioral
       CE1       => '1',
       CE2       => '1',
       CLK       => BITCLK,
-      CLKDIV    => CLK,
+      CLKDIV    => WORDCLK,
       D         => '0',
       DLYCE     => DLYCE,
       DLYINC    => DLYINC,
