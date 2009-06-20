@@ -131,11 +131,11 @@ begin
   
   coredevicelink_uut : coredevicelink
     generic map (
-      N       => 4,
-      DCNTMAX => 1000,
+      N            => 4,
+      DCNTMAX      => 1000,
       DROPDURATION => 800,
       SYNCDURATION => 800,
-      LOCKABORT => 800)
+      LOCKABORT    => 800)
     port map (
       CLK       => CLK,
       RXBITCLK  => RXBITCLK,
@@ -282,8 +282,19 @@ begin
     end loop;  -- i
   end process;
 
-  DL_RXDIN <= DL_TXDOUT;
-  DL_RXKIN <= DL_TXKOUT;
+  process(DL_CLK)
+    variable send : boolean := false;
+    
+  begin
+    if rising_edge(DL_CLK) then
+      if send then
+        DL_RXDIN <= DL_RXDIN + 1;
+        DL_RXKIN <= '0';
+      end if;
+      send := not send;
+    end if;
+  end process;
+
 
   process
     variable last_din : std_logic_vector(7 downto 0) := (others => '0');

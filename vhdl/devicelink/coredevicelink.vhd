@@ -78,10 +78,14 @@ architecture Behavioral of coredevicelink is
 
   component coredlencode8b10b
     port (
-      din  : in  std_logic_vector(7 downto 0);
-      kin  : in  std_logic;
-      clk  : in  std_logic;
-      dout : out std_logic_vector(9 downto 0));
+      din        : in  std_logic_vector(7 downto 0);
+      kin        : in  std_logic;
+      clk        : in  std_logic;
+      dout       : out std_logic_vector(9 downto 0);
+      ce         : in  std_logic;
+      force_disp : in  std_logic;
+      disp_in    : in  std_logic
+      );
   end component;
 
 
@@ -92,6 +96,7 @@ architecture Behavioral of coredevicelink is
       dout     : out std_logic_vector(7 downto 0);
       kout     : out std_logic;
       ce       : in  std_logic;
+      sinit    : in  std_logic;
       code_err : out std_logic;
       disp_err : out std_logic);
   end component;
@@ -116,7 +121,7 @@ architecture Behavioral of coredevicelink is
   end component;
 
   signal encdata, encdatal : std_logic_vector(9 downto 0) := (others => '0');
-  signal oframe, ol   : std_logic_vector(9 downto 0) := (others => '0');
+  signal oframe, ol        : std_logic_vector(9 downto 0) := (others => '0');
 
   signal omux : integer range 0 to 1 := 1;
 
@@ -134,7 +139,11 @@ architecture Behavioral of coredevicelink is
   signal autolinkl    : std_logic := '0';
   signal attemptlinkl : std_logic := '0';
 
-  signal decodece : std_logic := '0';
+  signal decodece      : std_logic := '0';
+  signal decodecevalid : std_logic := '0';
+
+  signal txencce, txencrst : std_logic := '0';
+  signal rxdecce, rxdecrst : std_logic := '0';
 
   signal dlyrst : std_logic                    := '0';
   signal dlyce  : std_logic                    := '0';
@@ -155,8 +164,8 @@ architecture Behavioral of coredevicelink is
 
   signal txio : std_logic := '0';
 
-  signal din : std_logic_vector(7 downto 0) := (others => '0');
-  signal kin : std_logic                    := '0';
+  signal encdin : std_logic_vector(7 downto 0) := (others => '0');
+  signal enckin : std_logic                    := '0';
 
 
   signal bitgoodcnt : integer range 0 to 31 := 0;
@@ -164,8 +173,8 @@ architecture Behavioral of coredevicelink is
   type states is (none, snull, wnull, ssync, wsync, bitstart,
                   bitinc, bitwait, bitbad, bitgood, bitbackup,
                   wrdstart, wrdinc, wrdlock, wrddly, wrdcntr,
-                  validchk1, validchk2, validchk3, validchk4,
-                  sendlock, validchk5, validchk6, lock);
+                  starttx, waitrxst,
+                  sendlock, lock);
 
   signal cs, ns : states := none;
 
@@ -191,6 +200,7 @@ architecture Behavioral of coredevicelink is
   
 begin  -- Behavioral
 
+  decodecevalid <= decodece and rxdecce;
 
   deser_inst : deserialize
     port map (
@@ -218,24 +228,33 @@ begin  -- Behavioral
 
   encoder : coredlencode8b10b
     port map (
-      DIN  => din,
-      KIN  => kin,
-      DOUT => encdata,
-      CLK  => CLK);
+      DIN        => encdin,
+      KIN        => enckin,
+      DOUT       => encdata,
+      CLK        => CLK,
+      force_disp => txencrst,
+      disp_in    => '1',
+      ce         => txencce
+      );
 
-  din <= TXDIN when (cs = lock or cs = validchk5 or cs=validchk6) else
-         X"FE" when cs = sendlock else X"00";
+  encdin <= TXDIN when cs = lock else
+            X"3c" when cs = starttx  else
+            X"FE" when cs = sendlock else
+            X"00";
   
-  kin <= TXKIN when (cs = lock or cs = validchk5 or cs=validchk6)  else
-         '1' when cs = sendlock else '0';
+  enckin <= TXKIN when cs = lock else
+            '1' when cs = starttx  else
+            '1' when cs = sendlock else
+            '0';
 
   decoder : coredldecode8b10b
     port map (
       CLK      => CLK,
-      DIN      => rxword,
+      DIN      => rxwordl,
       DOUT     => lrxdout,
       KOUT     => lrxkout,
-      CE       => decodece,
+      CE       => decodecevalid,
+      SINIT    => rxdecrst,
       CODE_ERR => cerr,
       DISP_ERR => derr);
 
@@ -291,7 +310,7 @@ begin  -- Behavioral
         encdatal <= encdata;            -- Debuggin
         --encdatal <= "0000000001"; 
         if omux = 0 then
-          ol <= encdatal;   
+          ol <= encdatal;
         elsif omux = 1 then
           ol <= (others => '0');
         else
@@ -313,8 +332,12 @@ begin  -- Behavioral
 
         autolinkl    <= AUTOLINK;
         attemptlinkl <= ATTEMPTLINK;
+        if cs = starttx then
+          decodece <= '0';
+        else
+          decodece <= not decodece;                 
+        end if;
 
-        decodece <= not decodece;
         -- out
         if decodece = '0' then
           RXDOUT   <= lrxdout;
@@ -359,7 +382,7 @@ begin  -- Behavioral
           debug <= X"00" & debugstate(7 downto 0);
           
         elsif debugaddr = X"03" then
-          debug <= cerr & derr & decodece &  "000" & rxword;
+          debug <= cerr & derr & decodece & "000" & rxword;
         end if;
 
         DEBUGSTATEOUT <= debugstate;
@@ -385,6 +408,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '1';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '1';
+        rxdecce    <= '0';
+        rxdecrst   <= '1';
         debugstate <= X"01";
         if attemptlinkl = '1' or autolinkl = '1' then
           ns <= snull;
@@ -400,6 +427,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '1';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"02";
         ns         <= wnull;
 
@@ -410,6 +441,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '1';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"03";
         if dcnt >= DROPDURATION then
           ns <= ssync;
@@ -424,6 +459,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"04";
         ns         <= wsync;
 
@@ -434,6 +473,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"05";
         if dcnt >= SYNCDURATION then
           ns <= bitstart;
@@ -448,6 +491,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '0';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"06";
 
         ns <= bitwait;
@@ -459,18 +506,17 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"07";
         if eyelockdone = '1' then
---          if eyelockpos = "00000" or eyelocklen = "11100" then
---            ns <= none;
---          else
-          
           if eyelocklocked = '1' then
             ns <= wrdstart;
           else
             ns <= none;
           end if;
---          end if;
         else
           ns <= bitwait;
         end if;
@@ -482,6 +528,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"08";
         ns         <= wrdinc;
         
@@ -492,6 +542,10 @@ begin  -- Behavioral
         bitslip    <= '1';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"09";
         ns         <= wrdlock;
         
@@ -502,6 +556,10 @@ begin  -- Behavioral
         bitslip    <= '1';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"0A";
         ns         <= wrddly;
         
@@ -512,6 +570,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '0';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"0B";
 
         if bitcnt = 10 then
@@ -528,69 +590,52 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"0C";
         if dcnt > LOCKABORT then
           ns <= none;
         else
-          if (rxword = "1101000011") or (rxword = "0010111100") then
-            ns <= validchk1;
+          if (rxword = "1011110000") then
+            ns <= starttx;
           else
             ns <= wrdinc;
           end if;
         end if;
         
-      when validchk1 =>
+      when starttx =>
         dcntrst    <= '0';
         llocked    <= '0';
         omux       <= 0;
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '1';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"0D";
-        --if lrxkout = '1' and lrxdout = X"1C" and rxcodeerr = '0' then
-        ns         <= validchk2;
---        else
---          ns <= none;
---        end if;
+        ns         <= waitrxst;
         
-      when validchk2 =>
+        
+      when waitrxst =>
         dcntrst    <= '0';
         llocked    <= '0';
         omux       <= 0;
         bitslip    <= '0';
         stoptx     <= '0';
-        bitcntrst  <= '0';
+        bitcntrst  <= '1';
+        txencce    <= '1';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"0E";
-        if bitcnt = 20 then
-          ns <= validchk3;
+        if rxword = "0110000011" or rxword = "1001111100" then
+          ns <= sendlock;
         else
-          ns <= validchk2;
-        end if;
-
-      when validchk3 =>
-        dcntrst <= '0';
-        llocked <= '0';
-        omux    <= 0;
-        bitslip    <= '0';
-        stoptx     <= '0';
-        bitcntrst  <= '1';
-        debugstate <= X"0F";
-        ns         <= validchk4;
-        
-      when validchk4 =>
-        dcntrst <= '0';
-        llocked <= '0';
-        omux    <= 0;
-
-        bitslip    <= '0';
-        stoptx     <= '0';
-        bitcntrst  <= '1';
-        debugstate <= X"10";
-        if lrxkout = '1' and lrxdout = X"1C" and rxcodeerr = '0' then
-          ns <=  sendlock; --DEBUGGING, testing to see if something else
-                      --  is causing the problem
-        else
-          ns <= none;
+          ns <= waitrxst;
         end if;
         
       when sendlock =>
@@ -600,39 +645,12 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '1';
+        txencrst   <= '0';
+        rxdecce    <= '1';
+        rxdecrst   <= '0';
         debugstate <= X"11";
-        ns         <= validchk5;
-        
-
-      when validchk5  =>
-        dcntrst    <= '0';
-        llocked    <= '0';
-        omux       <= 0;
-        bitslip    <= '0';
-        stoptx     <= '0';
-        bitcntrst  <= '0';
-        debugstate <= X"12";
-        if bitcnt = 120 then
-          ns <= validchk6;
-        else
-          ns <= validchk5;
-        end if;
-      
-      when validchk6 =>
-        dcntrst <= '0';
-        llocked <= '0';
-        omux    <= 0;
-
-        bitslip    <= '0';
-        stoptx     <= '0';
-        bitcntrst  <= '1';
-        debugstate <= X"13";
-        if rxcodeerr = '0' then
-          ns <=  lock; 
-        else
-          ns <= none;
-        end if;
-
+        ns         <= lock; 
         
       when lock =>
         dcntrst    <= '0';
@@ -641,6 +659,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '1';
+        txencrst   <= '0';
+        rxdecce    <= '1';
+        rxdecrst   <= '0';
         debugstate <= X"14";
         if rxcodeerr = '1' or DROPLOCK = '1' then
           ns <= none;
@@ -655,6 +677,10 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '0';
         bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
         debugstate <= X"00";
         ns         <= none;
 

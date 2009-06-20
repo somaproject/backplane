@@ -24,7 +24,7 @@ SELECT Decode_8b/10b family Xilinx,_Inc. 7.1
 # BEGIN Parameters
 CSET symbol_disparity_out=false
 CSET b_new_data=false
-CSET synchronous_reset=false
+CSET synchronous_reset=true
 CSET running_disparity_in=false
 CSET clock_enable=true
 CSET b_synchronous_reset=false

@@ -77,7 +77,7 @@ architecture Behavioral of manydevicelink is
   signal dcmreset      : std_logic := '1';
 
 
-  type     uptimearray_t is array (0 to DEVICELINKN-1) of std_logic_vector(7 downto 0);
+  type     uptimearray_t is array (0 to DEVICELINKN-1) of std_logic_vector(15 downto 0);
   signal   uptimearray : uptimearray_t := (others => (others => '0'));
   constant UPTIMETICKN : integer       := 50000000;
 
@@ -224,9 +224,6 @@ begin  -- Behavioral
         end if;
       end if;
 
-      if rising_edge(jtagupdate) then
-        uptimesreg(i*8+7 downto i*8) <= uptimearray(i);
-      end if;
     end process;
   end generate uptimechecks;
 
@@ -300,7 +297,7 @@ begin  -- Behavioral
       if jtagupdate = '1' then
         jtagoutreg(15 downto 0)  <= jtaginregl(15 downto 0);
         jtagoutreg(31 downto 16) <= jtagcount;
-        jtagoutreg(47 downto 32) <= uptimearray(0) & lockedarray(0);
+        jtagoutreg(47 downto 32) <= uptimearray(0); 
         jtagoutreg(63 downto 56) <= debugstate(0)(7 downto 0);
         
       end if;
