@@ -288,7 +288,7 @@ begin
   process
     variable last_din : std_logic_vector(7 downto 0) := (others => '0');
   begin
-    wait for 400 us;
+    wait for 800 us;
     wait until rising_edge(CLK);
     last_din := RXDOUT;
     for i in 0 to 1000 loop

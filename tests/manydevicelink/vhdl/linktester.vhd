@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2009-06-18
+-- Last update: 2009-06-19
 -- Platform   : 
 -----------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -34,6 +34,8 @@ entity linktester is
     TXHBITCLK  : in  std_logic;
     TXWORDCLK  : in  std_logic;
     RESET      : in  std_logic;
+    AUTOLINK : in std_logic; 
+    ATTEMPTLINK : in std_logic; 
     TXIO_P     : out std_logic;
     TXIO_N     : out std_logic;
     RXIO_P     : in  std_logic;
@@ -111,7 +113,7 @@ begin  -- Behavioral
     generic map (
       N       => 4,
       DCNTMAX => 220000000,
-      DROPDURATION => 100000000,
+      DROPDURATION => 200000000,
       SYNCDURATION => 200000000,
       LOCKABORT => 1000000)
 
@@ -122,8 +124,8 @@ begin  -- Behavioral
       TXHBITCLK   => TXHBITCLK,
       TXWORDCLK   => TXWORDCLK,
       RESET       => RESET,
-      AUTOLINK    => '1',
-      ATTEMPTLINK => '0',
+      AUTOLINK    => AUTOLINK,
+      ATTEMPTLINK => ATTEMPTLINK,
       TXDIN       => dout,
       TXKIN       => kout,
       TXIO_P      => TXIO_P,

@@ -8,6 +8,8 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 entity dincapture is
+  generic (
+    JTAG_CHAIN : integer := 4);
   port (
     CLK   : in std_logic;
     DINEN : in std_logic;
@@ -78,7 +80,7 @@ begin  -- Beh
 
   BSCAN_OUT_inst : BSCAN_VIRTEX4
     generic map (
-      JTAG_CHAIN => 4)
+      JTAG_CHAIN => JTAG_CHAIN)
     port map (
       CAPTURE    => open,
       DRCK       => odrck,
