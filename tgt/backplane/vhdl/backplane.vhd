@@ -179,6 +179,7 @@ architecture Behavioral of backplane is
 
   signal clkbitrxint, clkbitrx : std_logic := '0';
   signal clkwordtx             : std_logic := '0';
+  signal clkwordrx             : std_logic := '0';
 
   signal validint : std_logic_vector(18 downto 0) := (others => '0');
 
@@ -836,6 +837,7 @@ begin  -- Behavioral
       CLKBITTX    => clkbittx,
       CLKBITTX180 => clkbittx180,
       CLKBITRX    => clkbitrx,
+      CLKWORDRX   => clkwordrx,
       CLKWORDTX   => clkwordtx,
       STARTUPDONE => devicelinkdcmlocked);
 
@@ -855,6 +857,7 @@ begin  -- Behavioral
       port map (
         CLK         => clk,
         RXBITCLK    => clkbitrx,
+        RXWORDCLK   => clkwordrx,
         TXHBITCLK   => clkbittx,
         TXWORDCLK   => clkwordtx,
         RESET       => RESET,
