@@ -323,8 +323,8 @@ begin  -- Behavioral
     end if;
   end process;
 
-  attemptlink(0) <= '1' when jtaginsig = '1' and jtaginregl(0) = '1' else '0';
-  --autolink(0) <= '1'; 
+  --attemptlink(0) <= '1' when jtaginsig = '1' and jtaginregl(0) = '1' else '0';
+  autolink(0) <= '1'; 
 
   -- output read
   process(jtagupdate, jtagsel, jtagdrck, jtagshift)
