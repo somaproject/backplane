@@ -137,17 +137,17 @@ architecture Behavioral of backplane is
   signal mymac         : std_logic_vector(47 downto 0) := (others => '0');
 
   -- error signals and counters
-  signal rxiocrcerr   : std_logic                     := '0';
-  signal UNKNOWNETHER : std_logic                     := '0';
-  signal UNKNOWNIP    : std_logic                     := '0';
-  signal UNKNOWNUDP   : std_logic                     := '0';
-  signal UNKNOWNARP   : std_logic                     := '0';
-  signal txpktlenen   : std_logic                     := '0';
-  signal txpktlen     : std_logic_vector(15 downto 0) := (others => '0');
-  signal txchan       : std_logic_vector(2 downto 0)  := (others => '0');
-  signal evtrxsuc     : std_logic                     := '0';
-  signal evtfifofull  : std_logic                     := '0';
-  signal datafifooferr  : std_logic                     := '0';
+  signal rxiocrcerr    : std_logic                     := '0';
+  signal UNKNOWNETHER  : std_logic                     := '0';
+  signal UNKNOWNIP     : std_logic                     := '0';
+  signal UNKNOWNUDP    : std_logic                     := '0';
+  signal UNKNOWNARP    : std_logic                     := '0';
+  signal txpktlenen    : std_logic                     := '0';
+  signal txpktlen      : std_logic_vector(15 downto 0) := (others => '0');
+  signal txchan        : std_logic_vector(2 downto 0)  := (others => '0');
+  signal evtrxsuc      : std_logic                     := '0';
+  signal evtfifofull   : std_logic                     := '0';
+  signal datafifooferr : std_logic                     := '0';
 
   signal ramdqalignh, ramdqalignl : std_logic_vector(7 downto 0) := (others => '0');
 
@@ -203,10 +203,10 @@ architecture Behavioral of backplane is
 
   type dldebug_t is array (0 to 17) of std_logic_vector(15 downto 0);
   type dldebug_addr_t is array(0 to 17) of std_logic_vector(7 downto 0);
-  
-  signal dldebug : dldebug_t := (others => (others => '0'));
+
+  signal dldebug     : dldebug_t      := (others => (others => '0'));
   signal dldebugaddr : dldebug_addr_t := (others => (others => '0'));
-  
+
   -- memory debug
   signal MEMDEBUGRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
   signal MEMDEBUGWRADDR : std_logic_vector(3 downto 0)  := (others => '0');
@@ -243,14 +243,14 @@ begin  -- Behavioral
       STARTUP_WAIT          => true)
     port map (
       CLK0   => clkint,
-      CLK2x  => clk2xint,                   
+      CLK2x  => clk2xint,
       CLKFX  => memclkbint,
       CLKFB  => clk,
       CLK180 => clk180int,
       CLK270 => niciointclk,
       CLKIN  => CLKIN,
       LOCKED => locked,
-      RST    => '0'                    
+      RST    => '0'
       );
 
   clk_bufg : BUFG
@@ -448,17 +448,17 @@ begin  -- Behavioral
       RAM_INITP_06 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_06,
       RAM_INITP_07 => work.backplane_mem_pkg.syscontrol_inst_instruction_ram_INITP_07)
     port map (
-      CLK     => clk,
-      CLK2X   => clk2x,
-      RESET   => RESET,
-      ECYCLe  => ECYCLE,
-      EARX    => EARX(1),
-      EDRX    => EDRX(1),
-      EDSELRX => EDSELRX,
-      EATX    => EATX(1),
-      EDTX    => EDTX,
-      SEROUT  => lserialboot,
-      DLINKUP => dlinkup,
+      CLK       => clk,
+      CLK2X     => clk2x,
+      RESET     => RESET,
+      ECYCLe    => ECYCLE,
+      EARX      => EARX(1),
+      EDRX      => EDRX(1),
+      EDSELRX   => EDSELRX,
+      EATX      => EATX(1),
+      EDTX      => EDTX,
+      SEROUT    => lserialboot,
+      DLINKUP   => dlinkup,
       dldebug_A => dldebug(0),
       dldebug_B => dldebug(1),
       dldebug_C => dldebug(2),
@@ -496,8 +496,8 @@ begin  -- Behavioral
   SYSCFG  <= lserialboot(2);
   NEPCFG  <= lserialboot(1);
 
-  LEDPOWER <= dlinkup(0); 
-  LEDEVENT <= dlinkup(1); 
+  LEDPOWER <= dlinkup(0);
+  LEDEVENT <= dlinkup(1);
 
   jtagsend_inst : entity jtag.jtagesend
     generic map (
@@ -654,7 +654,7 @@ begin  -- Behavioral
       TXCHAN         => txchan,
       EVTRXSUC       => evtrxsuc,
       EVTFIFOFULL    => evtfifofull,
-      DATAFIFOOFERR    => datafifooferr,
+      DATAFIFOOFERR  => datafifooferr,
       -- debug control for memory
       RAMDQALIGNH    => ramdqalignh,
       RAMDQALIGNL    => ramdqalignl,
@@ -774,7 +774,7 @@ begin  -- Behavioral
       UNKNOWNUDP     => unknownudp,
       EVTRXSUC       => evtrxsuc,
       EVTFIFOFULL    => evtfifofull,
-      DATAFIFOOFERR => datafifooferr,
+      DATAFIFOOFERR  => datafifooferr,
       -- debug for memory
       MEMDEBUGRDADDR => memdebugrdaddr,
       MEMDEBUGWRADDR => memdebugwraddr,
@@ -828,11 +828,11 @@ begin  -- Behavioral
 
     end if;
   end process;
-  
+
   devicelinkclk_inst : entity work.devicelinkclk
     port map (
-      CLKIN       => CLKIN, -- clk,
-      RESET       => dcm2reset, 
+      CLKIN       => CLKIN,             -- clk,
+      RESET       => dcm2reset,
       CLKBITTX    => clkbittx,
       CLKBITTX180 => clkbittx180,
       CLKBITRX    => clkbitrx,
@@ -843,7 +843,7 @@ begin  -- Behavioral
   -- DSP DeviceLinks
   ----------------------------------------------------------------------------
 
-  devicelinks_and_mux : for i in 0 to 3 generate  
+  devicelinks_and_mux : for i in 0 to 3 generate
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
     signal dllocked      : std_logic                    := '0';
@@ -853,23 +853,25 @@ begin  -- Behavioral
       generic map (
         N => 4)
       port map (
-        CLK       => clk,
-        RXBITCLK  => clkbitrx,
-        TXHBITCLK => clkbittx,
-        TXWORDCLK => clkwordtx,
-        RESET     => RESET,
-        TXDIN     => txdin,
-        TXKIN     => txkin,
-        RXDOUT    => rxdout,
-        RXKOUT    => rxkout,
-        TXIO_P    => DSPTXIO_P(i),
-        TXIO_N    => DSPTXIO_N(i),
-        RXIO_P    => DSPRXIO_P(i),
-        RXIO_N    => DSPRXIO_N(i),
-        DROPLOCK  => '0',
-        LOCKED    => dllocked,
-        DEBUG => dldebug(i),
-        DEBUGADDR => dldebugaddr(i));
+        CLK         => clk,
+        RXBITCLK    => clkbitrx,
+        TXHBITCLK   => clkbittx,
+        TXWORDCLK   => clkwordtx,
+        RESET       => RESET,
+        AUTOLINK    => '1',
+        ATTEMPTLINK => '0',
+        TXDIN       => txdin,
+        TXKIN       => txkin,
+        RXDOUT      => rxdout,
+        RXKOUT      => rxkout,
+        TXIO_P      => DSPTXIO_P(i),
+        TXIO_N      => DSPTXIO_N(i),
+        RXIO_P      => DSPRXIO_P(i),
+        RXIO_N      => DSPRXIO_N(i),
+        DROPLOCK    => '0',
+        LOCKED      => dllocked,
+        DEBUG       => dldebug(i),
+        DEBUGADDR   => dldebugaddr(i));
     dlinkup(i) <= dllocked;
 
 

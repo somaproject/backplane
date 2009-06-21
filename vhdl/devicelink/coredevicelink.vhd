@@ -13,10 +13,10 @@ entity coredevicelink is
   generic (
     N            : integer := 0;        -- number of ticks in input bit cycle
     -- needs to be at least 100k to acquire lock because DCMs are slow
-    DCNTMAX      : integer := 200000;
-    DROPDURATION : integer := 20000000;
-    SYNCDURATION : integer := 20000000;
-    LOCKABORT    : integer := 200000);     
+    DCNTMAX      : integer := 220000000;
+    DROPDURATION : integer := 200000000;
+    SYNCDURATION : integer := 200000000;
+    LOCKABORT    : integer := 1000000);     
   port (
     CLK           : in  std_logic;      -- should be a 50 MHz clock 
     RXBITCLK      : in  std_logic;      -- should be a 125 MHz clock
@@ -335,7 +335,7 @@ begin  -- Behavioral
         if cs = starttx then
           decodece <= '0';
         else
-          decodece <= not decodece;                 
+          decodece <= not decodece;
         end if;
 
         -- out
@@ -606,7 +606,7 @@ begin  -- Behavioral
         end if;
         
       when starttx =>
-        dcntrst    <= '0';
+        dcntrst    <= '1';
         llocked    <= '0';
         omux       <= 0;
         bitslip    <= '0';
@@ -632,12 +632,16 @@ begin  -- Behavioral
         rxdecce    <= '0';
         rxdecrst   <= '0';
         debugstate <= X"0E";
-        if rxword = "0110000011" or rxword = "1001111100" then
-          ns <= sendlock;
+        if dcnt > LOCKABORT then
+          ns <= none;
         else
-          ns <= waitrxst;
+          if rxword = "0110000011" or rxword = "1001111100" then
+            ns <= sendlock;
+          else
+            ns <= waitrxst;
+          end if;
         end if;
-        
+
       when sendlock =>
         dcntrst    <= '0';
         llocked    <= '0';
@@ -650,7 +654,7 @@ begin  -- Behavioral
         rxdecce    <= '1';
         rxdecrst   <= '0';
         debugstate <= X"11";
-        ns         <= lock; 
+        ns         <= lock;
         
       when lock =>
         dcntrst    <= '0';
