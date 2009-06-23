@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2009-06-19
+-- Last update: 2009-06-21
 -- Platform   : 
 -----------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -69,10 +69,10 @@ architecture Behavioral of linktester is
 
   component coredevicelink
     generic (N            : integer := 0;
-             DCNTMAX      : integer := 200000;
-             DROPDURATION : integer := 20000000;
-             SYNCDURATION : integer := 20000000;
-             LOCKABORT    : integer := 200000
+             DCNTMAX      : integer := 220000000;
+             DROPDURATION : integer := 200000000;
+             SYNCDURATION : integer := 200000000;
+             LOCKABORT    : integer :=  1000000
              );
     port (
       CLK         : in std_logic;
@@ -111,12 +111,7 @@ begin  -- Behavioral
 
   devicelink_inst : coredevicelink
     generic map (
-      N       => 4,
-      DCNTMAX => 220000000,
-      DROPDURATION => 200000000,
-      SYNCDURATION => 200000000,
-      LOCKABORT => 1000000)
-
+      N       => 4)
     port map (
       CLK         => CLK,
       RXBITCLK    => RXBITCLK,

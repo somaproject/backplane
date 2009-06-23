@@ -199,7 +199,7 @@ architecture Behavioral of backplane is
 
   signal jtagdebug       : std_logic_vector(31 downto 0) := (others => '0');
   signal netdebug        : std_logic_vector(31 downto 0) := (others => '0');
-  signal dincapture_data : std_logic_vector(15 downto 0) := (others => '0');
+  signal dincapture_data : std_logic_vector(31 downto 0) := (others => '0');
   signal jtagjtagrxdebug : std_logic_vector(15 downto 0) := (others => '0');
 
   type dldebug_t is array (0 to 17) of std_logic_vector(15 downto 0);
@@ -208,6 +208,16 @@ architecture Behavioral of backplane is
   signal dldebug     : dldebug_t      := (others => (others => '0'));
   signal dldebugaddr : dldebug_addr_t := (others => (others => '0'));
 
+  type   dldebugstate_t is array (0 to 17) of std_logic_vector(7 downto 0);
+  signal dldebugstate : dldebugstate_t := (others => (others => '0'));
+
+  signal dincapture_en : std_logic := '0';
+  signal dincapture_nextbuf : std_logic := '0';
+
+  signal dincapture_immdin : std_logic_vector(31 downto 0) := (others => '0');
+  signal dincapture_immdout : std_logic_vector(31 downto 0) := (others => '0');
+  
+  
   -- memory debug
   signal MEMDEBUGRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
   signal MEMDEBUGWRADDR : std_logic_vector(3 downto 0)  := (others => '0');
@@ -844,37 +854,39 @@ begin  -- Behavioral
   ----------------------------------------------------------------------------
   -- DSP DeviceLinks
   ----------------------------------------------------------------------------
-
   devicelinks_and_mux : for i in 0 to 3 generate
     signal txdin, rxdout : std_logic_vector(7 downto 0) := (others => '0');
     signal txkin, rxkout : std_logic                    := '0';
     signal dllocked      : std_logic                    := '0';
-
+    signal rxdouten      : std_logic                    := '0';
+    
   begin
     dl : entity work.coredevicelink
       generic map (
         N => 4)
       port map (
-        CLK         => clk,
-        RXBITCLK    => clkbitrx,
-        RXWORDCLK   => clkwordrx,
-        TXHBITCLK   => clkbittx,
-        TXWORDCLK   => clkwordtx,
-        RESET       => RESET,
-        AUTOLINK    => '1',
-        ATTEMPTLINK => '0',
-        TXDIN       => txdin,
-        TXKIN       => txkin,
-        RXDOUT      => rxdout,
-        RXKOUT      => rxkout,
-        TXIO_P      => DSPTXIO_P(i),
-        TXIO_N      => DSPTXIO_N(i),
-        RXIO_P      => DSPRXIO_P(i),
-        RXIO_N      => DSPRXIO_N(i),
-        DROPLOCK    => '0',
-        LOCKED      => dllocked,
-        DEBUG       => dldebug(i),
-        DEBUGADDR   => dldebugaddr(i));
+        CLK           => clk,
+        RXBITCLK      => clkbitrx,
+        RXWORDCLK     => clkwordrx,
+        TXHBITCLK     => clkbittx,
+        TXWORDCLK     => clkwordtx,
+        RESET         => RESET,
+        AUTOLINK      => '1',
+        ATTEMPTLINK   => '0',
+        TXDIN         => txdin,
+        TXKIN         => txkin,
+        TXIO_P        => DSPTXIO_P(i),
+        TXIO_N        => DSPTXIO_N(i),
+        RXIO_P        => DSPRXIO_P(i),
+        RXIO_N        => DSPRXIO_N(i),
+        RXDOUT        => rxdout,
+        RXKOUT        => rxkout,
+        RXDOUTEN      => rxdouten,
+        DROPLOCK      => '0',
+        LOCKED        => dllocked,
+        DEBUG         => dldebug(i),
+        DEBUGADDR     => dldebugaddr(i),
+        DEBUGSTATEOUT => dldebugstate(i));
     dlinkup(i) <= dllocked;
 
 
@@ -929,21 +941,24 @@ begin  -- Behavioral
     generic map (
       N => 4)
     port map (
-      CLK       => clk,
-      RXBITCLK  => clkbitrx,
-      TXHBITCLK => clkbittx,
-      TXWORDCLK => clkwordtx,
-      RESET     => RESET,
-      TXDIN     => txdinadio,
-      TXKIN     => txkinadio,
-      RXDOUT    => rxdoutadio,
-      RXKOUT    => rxkoutadio,
-      TXIO_P    => ADIOTXIO_P,
-      TXIO_N    => ADIOTXIO_N,
-      RXIO_P    => ADIORXIO_P,
-      RXIO_N    => ADIORXIO_N,
-      DROPLOCK  => '0',
-      LOCKED    => dllockedadio);
+      CLK         => clk,
+      RXBITCLK    => clkbitrx,
+      TXHBITCLK   => clkbittx,
+      TXWORDCLK   => clkwordtx,
+      RXWORDCLK   => clkwordrx,
+      AUTOLINK    => '1',
+      ATTEMPTLINK => '0',
+      RESET    => RESET,
+      TXDIN    => txdinadio,
+      TXKIN    => txkinadio,
+      RXDOUT   => rxdoutadio,
+      RXKOUT   => rxkoutadio,
+      TXIO_P   => ADIOTXIO_P,
+      TXIO_N   => ADIOTXIO_N,
+      RXIO_P   => ADIORXIO_P,
+      RXIO_N   => ADIORXIO_N,
+      DROPLOCK => '0',
+      LOCKED   => dllockedadio);
 
   dlinkup(16) <= dllockedadio;
 
@@ -993,21 +1008,24 @@ begin  -- Behavioral
     generic map (
       N => 1)
     port map (
-      CLK       => clk,
-      RXBITCLK  => clkbitrx,
-      TXHBITCLK => clkbittx,
-      TXWORDCLK => clkwordtx,
-      RESET     => RESET,
-      TXDIN     => txdinsys,
-      TXKIN     => txkinsys,
-      RXDOUT    => rxdoutsys,
-      RXKOUT    => rxkoutsys,
-      TXIO_P    => SYSTXIO_P,
-      TXIO_N    => SYSTXIO_N,
-      RXIO_P    => SYSRXIO_P,
-      RXIO_N    => SYSRXIO_N,
-      DROPLOCK  => '0',
-      LOCKED    => dllockedsys);
+      CLK         => clk,
+      RXBITCLK    => clkbitrx,
+      TXHBITCLK   => clkbittx,
+      TXWORDCLK   => clkwordtx,
+      RXWORDCLK   => clkwordrx,
+      AUTOLINK    => '1',
+      ATTEMPTLINK => '0',
+      RESET    => RESET,
+      TXDIN    => txdinsys,
+      TXKIN    => txkinsys,
+      RXDOUT   => rxdoutsys,
+      RXKOUT   => rxkoutsys,
+      TXIO_P   => SYSTXIO_P,
+      TXIO_N   => SYSTXIO_N,
+      RXIO_P   => SYSRXIO_P,
+      RXIO_N   => SYSRXIO_N,
+      DROPLOCK => '0',
+      LOCKED   => dllockedsys);
 
   devicemux_sys_inst : entity work.devicemux
     port map (
@@ -1050,11 +1068,23 @@ begin  -- Behavioral
 
   dlinkup(17) <= dllockedsys;
 
-  dincapture_data <= netdebug(31 downto 16);
+--  dincapture_data <= netdebug(31 downto 16);
+  dincapture_data <= dldebug(0) & X"00" & dldebugstate(0);
+  dincapture_en <= '1'; 
+  dincapture_nextbuf <= '1' when dldebugstate(0) = X"0D" else '0';
+
+  dldebugaddr(0) <= dincapture_immdout(7 downto 0);
+  dincapture_immdin(15 downto 0) <= dldebug(0);
+  
   dincapture_inst : entity dincapture
+    generic map (
+      JTAG_CHAIN => 4)
     port map (
       CLK   => clk,
-      DINEN => netdebug(0),
-      DIN   => dincapture_data); 
+      DINEN => dincapture_en,
+      DIN   => dincapture_data,
+      IMMDIN => dincapture_immdin,
+      IMMDOUT => dincapture_immdout, 
+      NEXTBUF => dincapture_nextbuf); 
 
 end Behavioral;

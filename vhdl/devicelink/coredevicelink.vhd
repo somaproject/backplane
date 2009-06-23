@@ -16,7 +16,7 @@ entity coredevicelink is
     DCNTMAX      : integer := 220000000;
     DROPDURATION : integer := 200000000;
     SYNCDURATION : integer := 200000000;
-    LOCKABORT    : integer := 1000000);     
+    LOCKABORT    : integer :=  1000000);     
   port (
     CLK           : in  std_logic;      -- should be a 50 MHz clock 
     RXBITCLK      : in  std_logic;      -- should be a 125 MHz clock
@@ -174,7 +174,8 @@ architecture Behavioral of coredevicelink is
                   bitinc, bitwait, bitbad, bitgood, bitbackup,
                   wrdstart, wrdinc, wrdlock, wrddly, wrdcntr,
                   starttx, waitrxst,
-                  sendlock, lock);
+                  sendlock, lock,
+                  eyelockfail, wrdcntrfail, waitrxstfail, lockfail);
 
   signal cs, ns : states := none;
 
@@ -197,6 +198,16 @@ architecture Behavioral of coredevicelink is
   signal eyelocklen : std_logic_vector(5 downto 0) := (others => '0');
 
   signal debugstate : std_logic_vector(7 downto 0) := (others => '0');
+
+  -- debug "fail" counters
+  constant FAILCNTN : integer := 16;
+  signal eyelockfailcnt : std_logic_vector(FAILCNTN-1 downto 0) := (others => '0');
+  signal wrdcntrfailcnt : std_logic_vector(FAILCNTN-1 downto 0) := (others => '0');
+  signal waitrxstfailcnt : std_logic_vector(FAILCNTN-1 downto 0) := (others => '0');
+  signal lockfailcnt : std_logic_vector(FAILCNTN-1 downto 0) := (others => '0');
+
+  signal wrdcntrfail_badword,
+    lockfail_pos: std_logic_vector(15 downto 0) := (others => '0');
   
 begin  -- Behavioral
 
@@ -380,12 +391,41 @@ begin  -- Behavioral
           debug(13 downto 8) <= eyelocklen;
         elsif debugaddr = X"01" then
           debug <= X"00" & debugstate(7 downto 0);
-          
         elsif debugaddr = X"03" then
           debug <= cerr & derr & decodece & "000" & rxword;
+        elsif debugaddr = X"04" then
+          debug <= eyelockfailcnt;
+        elsif debugaddr = X"05" then
+          debug <= wrdcntrfailcnt;
+        elsif debugaddr = X"06" then
+          debug <= waitrxstfailcnt;
+        elsif debugaddr = X"07" then
+          debug <= lockfailcnt;
+        elsif debugaddr = X"08" then
+          debug <= wrdcntrfail_badword; 
+        elsif debugaddr = X"09" then
+          debug <= lockfail_pos;  
         end if;
 
         DEBUGSTATEOUT <= debugstate;
+
+        if cs = eyelockfail then
+          eyelockfailcnt <= eyelockfailcnt + 1; 
+        end if;
+
+        if cs = wrdcntrfail then
+          wrdcntrfailcnt <= wrdcntrfailcnt + 1;
+          wrdcntrfail_badword(9 downto 0) <= rxwordl;
+        end if;
+
+        if cs = waitrxstfail then
+          waitrxstfailcnt <= waitrxstfailcnt + 1; 
+        end if;
+
+        if cs = lockfail then
+          lockfailcnt <= lockfailcnt + 1;
+          lockfail_pos <= "00" & eyelocklen & "00" & eyelockpos; 
+        end if;
         
       end if;
     end if;
@@ -515,7 +555,7 @@ begin  -- Behavioral
           if eyelocklocked = '1' then
             ns <= wrdstart;
           else
-            ns <= none;
+            ns <= eyelockfail;
           end if;
         else
           ns <= bitwait;
@@ -596,7 +636,7 @@ begin  -- Behavioral
         rxdecrst   <= '0';
         debugstate <= X"0C";
         if dcnt > LOCKABORT then
-          ns <= none;
+          ns <= wrdcntrfail;
         else
           if (rxword = "1011110000") then
             ns <= starttx;
@@ -633,7 +673,7 @@ begin  -- Behavioral
         rxdecrst   <= '0';
         debugstate <= X"0E";
         if dcnt > LOCKABORT then
-          ns <= none;
+          ns <= waitrxstfail;
         else
           if rxword = "0110000011" or rxword = "1001111100" then
             ns <= sendlock;
@@ -669,10 +709,66 @@ begin  -- Behavioral
         rxdecrst   <= '0';
         debugstate <= X"14";
         if rxcodeerr = '1' or DROPLOCK = '1' then
-          ns <= none;
+          ns <= lockfail;
         else
           ns <= lock;
         end if;
+
+      when eyelockfail =>
+        dcntrst    <= '0';
+        llocked    <= '0';
+        omux       <= 0;
+        bitslip    <= '0';
+        stoptx     <= '0';
+        bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
+        debugstate <= X"00";
+        ns         <= none;
+
+      when wrdcntrfail =>
+        dcntrst    <= '0';
+        llocked    <= '0';
+        omux       <= 0;
+        bitslip    <= '0';
+        stoptx     <= '0';
+        bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
+        debugstate <= X"00";
+        ns         <= none;
+
+      when waitrxstfail =>
+        dcntrst    <= '0';
+        llocked    <= '0';
+        omux       <= 0;
+        bitslip    <= '0';
+        stoptx     <= '0';
+        bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
+        debugstate <= X"00";
+        ns         <= none;
+
+      when lockfail =>
+        dcntrst    <= '0';
+        llocked    <= '0';
+        omux       <= 0;
+        bitslip    <= '0';
+        stoptx     <= '0';
+        bitcntrst  <= '1';
+        txencce    <= '0';
+        txencrst   <= '0';
+        rxdecce    <= '0';
+        rxdecrst   <= '0';
+        debugstate <= X"00";
+        ns         <= none;
 
       when others =>
         dcntrst    <= '0';
