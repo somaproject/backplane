@@ -125,6 +125,8 @@ architecture Behavioral of coredevicelinktest is
       OUTCLK : out std_logic);
   end component;
 
+  signal corruptlink : boolean := false; 
+  
 
   
 begin
@@ -194,10 +196,12 @@ begin
       lastval                  := bitsequence(i mod 20);
       wait for 10 ps;
     end loop;  -- i
-
-    -- then the good value
-    DEVICE_TO_CORE_DELAYED_P <= DEVICE_TO_CORE_P;
-    DEVICE_TO_CORE_DELAYED_N <= DEVICE_TO_CORE_N;
+    if not corruptlink then
+      -- then the good value
+      DEVICE_TO_CORE_DELAYED_P <= DEVICE_TO_CORE_P;
+      DEVICE_TO_CORE_DELAYED_N <= DEVICE_TO_CORE_N;
+      
+    end if;
     wait for 2600 ps;
 
     -- footer
@@ -308,6 +312,25 @@ begin
       assert RXDOUT = (last_din + 1) report "Error reading RXDOUT" severity error;
       last_din := RXDOUT;
     end loop;  -- i
+
+    -- now break the link!
+    corruptlink <= true;
+    wait for 10 us;
+    corruptlink <= false;
+
+    report "Trying to bring the link up again" severity note;
+    
+    wait for 800 us;
+    wait until rising_edge(CLK);
+    last_din := RXDOUT;
+    for i in 0 to 1000 loop
+      wait until rising_edge(CLK) and RXDOUTEN = '1';
+
+      assert RXDOUT = (last_din + 1) report "Error reading RXDOUT" severity error;
+      last_din := RXDOUT;
+    end loop;  -- i
+
+    
     report "End of Simulation" severity failure;
   end process;
 end Behavioral;
