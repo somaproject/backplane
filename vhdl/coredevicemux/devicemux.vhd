@@ -49,6 +49,7 @@ entity devicemux is
     TXKOUT : out std_logic;
     RXDIN : in std_logic_vector(7 downto 0);
     RXKIN : in std_logic;
+    RXEN : in std_logic; 
     LOCKED : in std_logic );
 end devicemux;
 
@@ -98,6 +99,7 @@ begin
       EDSELRXD => EDSELRXD,
 
       RXDIN => RXDIN,
-      RXKIN => RXKIN);
+      RXKIN => RXKIN,
+      RXEN => RXEN);
   
 end Behavioral;

@@ -53,6 +53,7 @@ architecture Behavioral of devicemuxtest is
       TXKOUT   : out std_logic;
       RXDIN    : in  std_logic_vector(7 downto 0);
       RXKIN    : in  std_logic;
+      RXEN : in std_logic; 
       LOCKED   : in  std_logic );
   end component;
 
@@ -102,6 +103,7 @@ architecture Behavioral of devicemuxtest is
   signal TXKOUT : std_logic                    := '0';
   signal RXDIN  : std_logic_vector(7 downto 0) := (others => '0');
   signal RXKIN  : std_logic                    := '0';
+  signal RXEN : std_logic := '0';
   signal LOCKED : std_logic                    := '1';
 
 
@@ -120,6 +122,8 @@ architecture Behavioral of devicemuxtest is
 
   signal eazeros : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
 
+  signal rxentoggle : std_logic := '0';
+  
   signal pos : integer range 0 to 999 := 0;
 
   constant K28_0 : std_logic_vector(7 downto 0) := X"1C";
@@ -175,6 +179,7 @@ begin  -- Behavioral
       TXKOUT   => TXKOUT,
       RXDIN    => RXDIN,
       RXKIN    => RXKIN,
+      RXEN => RXEN, 
       LOCKED   => LOCKED);
 
 
@@ -203,6 +208,9 @@ begin  -- Behavioral
       else
         ECYCLE <= '0' after 4 ns;
       end if;
+
+      rxentoggle <= not rxentoggle;
+      RXEN <= rxentoggle; 
     end if;
   end process ecycle_generation;
 
@@ -334,18 +342,18 @@ begin  -- Behavioral
       end if;
 
       RXKIN   <= '1';
-      wait until rising_edge(CLK);
+      wait until rising_edge(CLK) and RXEN = '1';
       RXKIN   <= '0';
       -- addresses
       for addr in 0 to 9 loop
         RXDIN <= std_logic_vector(TO_UNSIGNED((dataset*4 + addr), 8));
-        wait until rising_edge(CLK);
+        wait until rising_edge(CLK)  and RXEN = '1';
       end loop;  -- addr
 
       -- data
       for data in 0 to 11 loop
         RXDIN <= std_logic_vector(TO_UNSIGNED((128 + dataset*4 + data), 8));
-        wait until rising_edge(CLK);
+        wait until rising_edge(CLK)  and RXEN = '1';
       end loop;
 
     end loop;  -- dataset
@@ -390,30 +398,30 @@ begin  -- Behavioral
     wait until rising_edge(CLK) and ECYCLE = '1';
 
     -- Now we try sending data
-    for dataset in 0 to 3 loop
-      -- first send header word
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      RXDIN <= K28_6;
-      RXKIN <= '1';
-      wait until rising_edge(CLK);
-      RXKIN <= '0';
-      for datai in 0 to 200 * (dataset + 1) loop
-        RXDIN <= std_logic_vector(TO_UNSIGNED(datai mod 256, 8)); 
-        RXKIN <= '0';
-      wait until rising_edge(CLK);
-      end loop;  -- datai
+--    for dataset in 0 to 3 loop
+--      -- first send header word
+--      wait until rising_edge(CLK);
+--      wait until rising_edge(CLK);
+--      wait until rising_edge(CLK);
+--      wait until rising_edge(CLK);
+--      RXDIN <= K28_6;
+--      RXKIN <= '1';
+--      wait until rising_edge(CLK);
+--      RXKIN <= '0';
+--      for datai in 0 to 200 * (dataset + 1) loop
+--        RXDIN <= std_logic_vector(TO_UNSIGNED(datai mod 256, 8)); 
+--        RXKIN <= '0';
+--      wait until rising_edge(CLK);
+--      end loop;  -- datai
       
-      RXDIN <= K28_7;
-      RXKIN <= '1';
-      wait until rising_edge(CLK);
-      RXKIN <= '0';
+--      RXDIN <= K28_7;
+--      RXKIN <= '1';
+--      wait until rising_edge(CLK);
+--      RXKIN <= '0';
       
-      wait until rising_edge(CLK) and ECYCLE = '1';
+--      wait until rising_edge(CLK) and ECYCLE = '1';
 
-      end loop; 
+--      end loop; 
 
     report "End of Simulation" severity failure;
     
@@ -422,28 +430,28 @@ begin  -- Behavioral
   end process rxtest;
 
 
-  -- data recovery
-  process
-    variable pktsize : integer := 0;
-    begin
-      for i in 0 to 3 loop
-        wait until rising_edge(CLK) and DATADOEN = '1';
-        if (i + 1) * 200 < 768 then
-          pktsize := (i+1)*200;
-        else
-          pktsize := 768; 
-        end if;
-        for j in 0 to pktsize loop
-          assert DATADOEN = '1' report "Error in recovering data DOEN" severity Error;
-          wait until rising_edge(CLK); 
-        end loop;  -- j
-        assert DATADOEN = '0' report "Error in recovering data: DOUTDOEN should be low" severity Error;       
-        wait until rising_edge(CLK); 
-        report "Done receiving data packet " & integer'image(i)  severity note;
+--  -- data recovery
+--  process
+--    variable pktsize : integer := 0;
+--    begin
+--      for i in 0 to 3 loop
+--        wait until rising_edge(CLK) and DATADOEN = '1';
+--        if (i + 1) * 200 < 768 then
+--          pktsize := (i+1)*200;
+--        else
+--          pktsize := 768; 
+--        end if;
+--        for j in 0 to pktsize loop
+--          assert DATADOEN = '1' report "Error in recovering data DOEN" severity Error;
+--          wait until rising_edge(CLK); 
+--        end loop;  -- j
+--        assert DATADOEN = '0' report "Error in recovering data: DOUTDOEN should be low" severity Error;       
+--        wait until rising_edge(CLK); 
+--        report "Done receiving data packet " & integer'image(i)  severity note;
         
-        -- first packet        
-      end loop;  -- i
+--        -- first packet        
+--      end loop;  -- i
 
-      wait;
-    end process; 
+--      wait;
+--    end process; 
 end Behavioral;
