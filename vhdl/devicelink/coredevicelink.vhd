@@ -135,12 +135,14 @@ architecture Behavioral of coredevicelink is
   signal rxwordll : std_logic_vector(9 downto 0) := (others => '0');
 
   signal rxcodeerr : std_logic := '0';
+  signal rxcodeerrl : std_logic := '0';
 
   signal autolinkl    : std_logic := '0';
   signal attemptlinkl : std_logic := '0';
 
   signal decodece      : std_logic := '0';
   signal decodecevalid : std_logic := '0';
+  signal decodecevalidl : std_logic := '0';
 
   signal txencce, txencrst : std_logic := '0';
   signal rxdecce, rxdecrst : std_logic := '0';
@@ -207,7 +209,7 @@ architecture Behavioral of coredevicelink is
   signal lockfailcnt : std_logic_vector(FAILCNTN-1 downto 0) := (others => '0');
 
   signal wrdcntrfail_badword,
-    lockfail_pos: std_logic_vector(15 downto 0) := (others => '0');
+    lockfail_pos: std_logic_vector(15 downto 0) := X"1234";
   
 begin  -- Behavioral
 
@@ -360,6 +362,16 @@ begin  -- Behavioral
 
         LOCKED <= llocked;
 
+        decodecevalidl <= decodecevalid; 
+        if rxdecrst = '1' then          -- the error flag tends to be "sticky"
+          -- coming out of the 8b/10b decoder
+          rxcodeerrl <= '0';
+        else
+          if decodecevalidl = '1' then
+            rxcodeerrl <= rxcodeerr;
+          end if;
+        end if; 
+          
         -- bitcount
         if bitcntrst = '1' then
           bitcnt <= 0;
@@ -392,7 +404,7 @@ begin  -- Behavioral
         elsif debugaddr = X"01" then
           debug <= X"00" & debugstate(7 downto 0);
         elsif debugaddr = X"03" then
-          debug <= cerr & derr & decodece & "000" & rxword;
+          debug <= cerr & derr & "0" & decodecevalid & "00" & rxwordl;
         elsif debugaddr = X"04" then
           debug <= eyelockfailcnt;
         elsif debugaddr = X"05" then
@@ -436,7 +448,7 @@ begin  -- Behavioral
   
 
 
-  fsm : process (cs, dcnt, rxwordl, rxwordll, lrxkout, lrxdout, rxcodeerr,
+  fsm : process (cs, dcnt, rxwordl, rxwordll, lrxkout, lrxdout, rxcodeerrl,
                  autolinkl, attemptlinkl, eyelockdone, eyelocklocked,
                  bitgoodcnt, droplock)
   begin  -- process fsm
@@ -448,9 +460,9 @@ begin  -- Behavioral
         bitslip    <= '0';
         stoptx     <= '1';
         bitcntrst  <= '1';
-        txencce    <= '0';
+        txencce    <= '1';
         txencrst   <= '1';
-        rxdecce    <= '0';
+        rxdecce    <= '1';
         rxdecrst   <= '1';
         debugstate <= X"01";
         if attemptlinkl = '1' or autolinkl = '1' then
@@ -708,7 +720,7 @@ begin  -- Behavioral
         rxdecce    <= '1';
         rxdecrst   <= '0';
         debugstate <= X"14";
-        if rxcodeerr = '1' or DROPLOCK = '1' then
+        if rxcodeerrl = '1' or DROPLOCK = '1' then
           ns <= lockfail;
         else
           ns <= lock;

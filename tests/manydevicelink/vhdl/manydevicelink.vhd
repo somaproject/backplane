@@ -44,6 +44,7 @@ architecture Behavioral of manydevicelink is
       VALID       : out std_logic;
       LOCKED      : out std_logic;
       DEBUGSTATE  : out std_logic_vector(7 downto 0);
+      DEBUGADDR : in std_logic_vector(7 downto 0); 
       DEBUGVALUE  : out std_logic_vector(15 downto 0)
       );
   end component;
@@ -120,6 +121,9 @@ architecture Behavioral of manydevicelink is
   signal attemptlink : std_logic_vector(DEVICELINKN-1 downto 0) := (others => '0');
   signal autolink    : std_logic_vector(DEVICELINKN-1 downto 0) := (others => '0');
 
+  signal debugaddr : std_logic_vector(7 downto 0) := (others => '0');
+
+  
   component devicelinkclk
     port (
       CLKIN       : in  std_logic;
@@ -202,11 +206,12 @@ begin  -- Behavioral
         VALID       => validint(i),
         LOCKED      => lockedint(i),
         DEBUGSTATE  => debugstate(i),
+        DEBUGADDR => debugaddr, 
         DEBUGVALUE  => debugvalue(i));
 
   end generate devicelinks;
 
-
+  debugaddr <= X"03"; 
   uptimechecks : for i in 0 to DEVICELINKN - 1 generate
     process(CLK, jtagupdate)
     begin
@@ -296,7 +301,7 @@ begin  -- Behavioral
 
       if jtagupdate = '1' then
         jtagoutreg(15 downto 0)  <= jtaginregl(15 downto 0);
-        jtagoutreg(31 downto 16) <= jtagcount;
+        jtagoutreg(31 downto 16) <= lockedarray(0);
         jtagoutreg(47 downto 32) <= uptimearray(0); 
         jtagoutreg(63 downto 56) <= debugstate(0)(7 downto 0);
         
@@ -355,7 +360,7 @@ begin  -- Behavioral
   debugbuffer_in(15)         <= '1';
 
   debugbuffer_in(31 downto 16) <= debugvalue(0);
-  debugbuffer_next             <= '1' when debugstate(0) = X"08" else '0';
+  debugbuffer_next             <= '1' when debugstate(0) = X"11" else '0';
   dincapture_test : dincapture
     generic map (
       JTAG_CHAIN => 4)

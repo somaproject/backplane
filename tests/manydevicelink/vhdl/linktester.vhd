@@ -5,7 +5,7 @@
 -- File       : linktester.vhd
 -- Author     : Eric Jonas  <jonas@localhost.localdomain>
 -- Company    : 
--- Last update: 2009-06-21
+-- Last update: 2009-06-23
 -- Platform   : 
 -----------------------------------------------------------------------------
 -- Description: a loopback data tester
@@ -43,6 +43,7 @@ entity linktester is
     VALID      : out std_logic;
     LOCKED     : out std_logic;
     DEBUGSTATE : out std_logic_vector(7 downto 0);
+    DEBUGADDR : in std_logic_vector(7 downto 0); 
     DEBUGVALUE : out std_logic_vector(15 downto 0)
     );
 
@@ -104,8 +105,6 @@ architecture Behavioral of linktester is
   end component;
 
   signal txen : std_logic := '0';
-
-  signal debugaddr  : std_logic_vector(7 downto 0)  := (others => '0');
   
 begin  -- Behavioral
 
@@ -149,8 +148,6 @@ begin  -- Behavioral
 
     end if;
   end process output;
-
-  debugaddr               <= X"03";
 
   input : process(CLK)
   begin
