@@ -18,8 +18,8 @@ architecture Behavioral of devicemuxtest is
     port (
       CLK      : in  std_logic;
       ECYCLE   : in  std_logic;
-      DATADOUT    : out std_logic_vector(7 downto 0);
-      DATADOEN    : out std_logic;
+      DATADOUT : out std_logic_vector(7 downto 0);
+      DATADOEN : out std_logic;
       -- port A
       DGRANTA  : in  std_logic;
       EARXA    : out std_logic_vector(somabackplane.N -1 downto 0);
@@ -53,17 +53,17 @@ architecture Behavioral of devicemuxtest is
       TXKOUT   : out std_logic;
       RXDIN    : in  std_logic_vector(7 downto 0);
       RXKIN    : in  std_logic;
-      RXEN : in std_logic; 
-      LOCKED   : in  std_logic );
+      RXEN     : in  std_logic;
+      LOCKED   : in  std_logic);
   end component;
 
-  signal CLK    : std_logic := '0';
-  signal ECYCLE : std_logic := '0';
-  signal DATADOUT   : std_logic_vector(7 downto 0) := (others => '0');
-  signal DATADOEN   : std_logic                    := '0';
+  signal CLK      : std_logic                    := '0';
+  signal ECYCLE   : std_logic                    := '0';
+  signal DATADOUT : std_logic_vector(7 downto 0) := (others => '0');
+  signal DATADOEN : std_logic                    := '0';
 
   -- port A
-  signal DGRANTA : std_logic                    := '0';
+  signal DGRANTA : std_logic := '0';
 
   signal EARXA    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDRXA    : std_logic_vector(7 downto 0)                  := (others => '0');
@@ -72,7 +72,7 @@ architecture Behavioral of devicemuxtest is
   signal EDTXA    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port B
-  signal DGRANTB : std_logic                    := '0';
+  signal DGRANTB : std_logic := '0';
 
   signal EARXB    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDRXB    : std_logic_vector(7 downto 0)                  := (others => '0');
@@ -81,7 +81,7 @@ architecture Behavioral of devicemuxtest is
   signal EDTXB    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port C
-  signal DGRANTC : std_logic                    := '0';
+  signal DGRANTC : std_logic := '0';
 
   signal EARXC    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDRXC    : std_logic_vector(7 downto 0)                  := (others => '0');
@@ -90,7 +90,7 @@ architecture Behavioral of devicemuxtest is
   signal EDTXC    : std_logic_vector(7 downto 0)                  := (others => '0');
 
   -- port D
-  signal DGRANTD : std_logic                    := '0';
+  signal DGRANTD : std_logic := '0';
 
   signal EARXD    : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
   signal EDRXD    : std_logic_vector(7 downto 0)                  := (others => '0');
@@ -103,7 +103,7 @@ architecture Behavioral of devicemuxtest is
   signal TXKOUT : std_logic                    := '0';
   signal RXDIN  : std_logic_vector(7 downto 0) := (others => '0');
   signal RXKIN  : std_logic                    := '0';
-  signal RXEN : std_logic := '0';
+  signal RXEN   : std_logic                    := '0';
   signal LOCKED : std_logic                    := '1';
 
 
@@ -123,7 +123,7 @@ architecture Behavioral of devicemuxtest is
   signal eazeros : std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
 
   signal rxentoggle : std_logic := '0';
-  
+
   signal pos : integer range 0 to 999 := 0;
 
   constant K28_0 : std_logic_vector(7 downto 0) := X"1C";
@@ -144,8 +144,8 @@ begin  -- Behavioral
     port map (
       clk      => CLK,
       ECYCLE   => ECYCLE,
-      DATADOUT    => DATADOUT,
-      DATADOEN    => DATADOEN,
+      DATADOUT => DATADOUT,
+      DATADOEN => DATADOEN,
       -- port A
       DGRANTA  => DGRANTA,
       EARXA    => EARXA,
@@ -179,7 +179,7 @@ begin  -- Behavioral
       TXKOUT   => TXKOUT,
       RXDIN    => RXDIN,
       RXKIN    => RXKIN,
-      RXEN => RXEN, 
+      RXEN     => RXEN,
       LOCKED   => LOCKED);
 
 
@@ -210,7 +210,7 @@ begin  -- Behavioral
       end if;
 
       rxentoggle <= not rxentoggle;
-      RXEN <= rxentoggle; 
+      RXEN       <= rxentoggle;
     end if;
   end process ecycle_generation;
 
@@ -255,7 +255,7 @@ begin  -- Behavioral
   end process txgenerate;
 
 
-  txverify                  : process
+  txverify : process
     variable eaddr_current  : std_logic_vector(79 downto 0) := (others => '0');
     variable dgrant_current : std_logic                     := '0';
 
@@ -322,82 +322,83 @@ begin  -- Behavioral
 
   rxtest : process
   begin
-    wait until rising_edge(CLK) and ECYCLE = '1';
-    -- now we send four events, one on each channel
-    for dataset in 0 to 3 loop
-      -- first send header word
+    for datatxi in 0 to 10 loop
+      wait until rising_edge(CLK) and ECYCLE = '1';
+      -- now we send four events, one on each channel
+      for dataset in 0 to 3 loop
+        -- first send header word
 
+        wait until rising_edge(CLK);
+        wait until rising_edge(CLK);
+        wait until rising_edge(CLK);
+        wait until rising_edge(CLK);
+        if dataset = 0 then
+          RXDIN <= K28_0;
+        elsif dataset = 1 then
+          RXDIN <= K28_1;
+        elsif dataset = 2 then
+          RXDIN <= K28_2;
+        elsif dataset = 3 then
+          RXDIN <= K28_3;
+        end if;
+
+        RXKIN <= '1';
+        wait until rising_edge(CLK) and RXEN = '1';
+        RXKIN <= '0';
+        -- addresses
+        for addr in 0 to 9 loop
+          RXDIN <= std_logic_vector(TO_UNSIGNED((dataset*4 + addr), 8));
+          wait until rising_edge(CLK) and RXEN = '1';
+        end loop;  -- addr
+
+        -- data
+        for data in 0 to 11 loop
+          RXDIN <= std_logic_vector(TO_UNSIGNED((128 + dataset*4 + data), 8));
+          wait until rising_edge(CLK) and RXEN = '1';
+        end loop;
+
+      end loop;  -- dataset
+
+      wait until rising_edge(CLK) and ECYCLE = '1';
+
+      -- now try and readout
       wait until rising_edge(CLK);
       wait until rising_edge(CLK);
       wait until rising_edge(CLK);
       wait until rising_edge(CLK);
-      if dataset = 0 then
-        RXDIN <= K28_0;
-      elsif dataset = 1 then
-        RXDIN <= K28_1;
-      elsif dataset = 2 then
-        RXDIN <= K28_2;
-      elsif dataset = 3 then
-        RXDIN <= K28_3;
-      end if;
-
-      RXKIN   <= '1';
-      wait until rising_edge(CLK) and RXEN = '1';
-      RXKIN   <= '0';
-      -- addresses
-      for addr in 0 to 9 loop
-        RXDIN <= std_logic_vector(TO_UNSIGNED((dataset*4 + addr), 8));
-        wait until rising_edge(CLK)  and RXEN = '1';
-      end loop;  -- addr
-
-      -- data
-      for data in 0 to 11 loop
-        RXDIN <= std_logic_vector(TO_UNSIGNED((128 + dataset*4 + data), 8));
-        wait until rising_edge(CLK)  and RXEN = '1';
-      end loop;
-
-    end loop;  -- dataset
-
-    wait until rising_edge(CLK) and ECYCLE = '1';
-
-    -- now try and readout
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    assert EARXA = X"09080706050403020100" report "Error reading EARXA"
-      severity error;
-    wait until rising_edge(CLK);
-    for i in 0 to 11 loop
-      EDSELRX <= std_logic_vector(TO_UNSIGNED(i, 4));
+      assert EARXA = X"09080706050403020100" report "Error reading EARXA"
+        severity error;
       wait until rising_edge(CLK);
-      assert EDRXA = std_logic_vector(TO_UNSIGNED(128 + i, 8) )
-        report "reading EDRXA" severity error;
-      assert EDRXB = std_logic_vector(TO_UNSIGNED(128 + 4 + i, 8) )
-        report "reading EDRXB" severity error;
-      assert EDRXC = std_logic_vector(TO_UNSIGNED(128 + 8 + i, 8) )
-        report "reading EDRXC" severity error;
-      assert EDRXD = std_logic_vector(TO_UNSIGNED(128 + 12 + i, 8) )
-        report "reading EDRXD" severity error;
-    end loop;  -- i
+      for i in 0 to 11 loop
+        EDSELRX <= std_logic_vector(TO_UNSIGNED(i, 4));
+        wait until rising_edge(CLK);
+        assert EDRXA = std_logic_vector(TO_UNSIGNED(128 + i, 8))
+          report "reading EDRXA" severity error;
+        assert EDRXB = std_logic_vector(TO_UNSIGNED(128 + 4 + i, 8))
+          report "reading EDRXB" severity error;
+        assert EDRXC = std_logic_vector(TO_UNSIGNED(128 + 8 + i, 8))
+          report "reading EDRXC" severity error;
+        assert EDRXD = std_logic_vector(TO_UNSIGNED(128 + 12 + i, 8))
+          report "reading EDRXD" severity error;
+      end loop;  -- i
 
 
 
-    wait until rising_edge(CLK) and ECYCLE = '1';
+      wait until rising_edge(CLK) and ECYCLE = '1';
 
-    -- now try and readout
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    wait until rising_edge(CLK);
-    assert EARXA = X"00000000000000000000" report "Error reading EARXA"
-      severity error;
+      -- now try and readout
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      wait until rising_edge(CLK);
+      assert EARXA = X"00000000000000000000" report "Error reading EARXA"
+        severity error;
 
 
-    wait for 100 us;
-    wait until rising_edge(CLK) and ECYCLE = '1';
+      wait for 10 us;
+      wait until rising_edge(CLK) and ECYCLE = '1';
 
-    -- Now we try sending data
+      -- Now we try sending data
 --    for dataset in 0 to 3 loop
 --      -- first send header word
 --      wait until rising_edge(CLK);
@@ -413,20 +414,21 @@ begin  -- Behavioral
 --        RXKIN <= '0';
 --      wait until rising_edge(CLK);
 --      end loop;  -- datai
-      
+
 --      RXDIN <= K28_7;
 --      RXKIN <= '1';
 --      wait until rising_edge(CLK);
 --      RXKIN <= '0';
-      
+
 --      wait until rising_edge(CLK) and ECYCLE = '1';
 
 --      end loop; 
 
+    end loop;
+
     report "End of Simulation" severity failure;
     
 
-    wait;
   end process rxtest;
 
 
@@ -448,7 +450,7 @@ begin  -- Behavioral
 --        assert DATADOEN = '0' report "Error in recovering data: DOUTDOEN should be low" severity Error;       
 --        wait until rising_edge(CLK); 
 --        report "Done receiving data packet " & integer'image(i)  severity note;
-        
+
 --        -- first packet        
 --      end loop;  -- i
 

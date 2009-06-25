@@ -190,12 +190,16 @@ architecture Behavioral of backplane is
   signal txdinadio, rxdoutadio : std_logic_vector(7 downto 0) := (others => '0');
   signal txkinadio, rxkoutadio : std_logic                    := '0';
   signal dllockedadio          : std_logic                    := '0';
+  signal rxenadio              : std_logic                    := '0';
+
 
   signal txdinsys, rxdoutsys : std_logic_vector(7 downto 0) := (others => '0');
   signal txkinsys, rxkoutsys : std_logic                    := '0';
   signal dllockedsys         : std_logic                    := '0';
+  signal rxensys             : std_logic                    := '0';
 
   signal dlinkup : std_logic_vector(31 downto 0) := (others => '0');
+  signal rxen    : std_logic_vector(17 downto 0) := (others => '0');
 
   signal jtagdebug       : std_logic_vector(31 downto 0) := (others => '0');
   signal netdebug        : std_logic_vector(31 downto 0) := (others => '0');
@@ -211,13 +215,13 @@ architecture Behavioral of backplane is
   type   dldebugstate_t is array (0 to 17) of std_logic_vector(7 downto 0);
   signal dldebugstate : dldebugstate_t := (others => (others => '0'));
 
-  signal dincapture_en : std_logic := '0';
+  signal dincapture_en      : std_logic := '0';
   signal dincapture_nextbuf : std_logic := '0';
 
-  signal dincapture_immdin : std_logic_vector(31 downto 0) := (others => '0');
+  signal dincapture_immdin  : std_logic_vector(31 downto 0) := (others => '0');
   signal dincapture_immdout : std_logic_vector(31 downto 0) := (others => '0');
-  
-  
+
+
   -- memory debug
   signal MEMDEBUGRDADDR : std_logic_vector(3 downto 0)  := (others => '0');
   signal MEMDEBUGWRADDR : std_logic_vector(3 downto 0)  := (others => '0');
@@ -930,6 +934,7 @@ begin  -- Behavioral
         TXKOUT   => txkin,
         RXDIN    => rxdout,
         RXKIN    => rxkout,
+        RXEN     => rxdouten,
         LOCKED   => dllocked);
 
   end generate devicelinks_and_mux;
@@ -948,17 +953,18 @@ begin  -- Behavioral
       RXWORDCLK   => clkwordrx,
       AUTOLINK    => '1',
       ATTEMPTLINK => '0',
-      RESET    => RESET,
-      TXDIN    => txdinadio,
-      TXKIN    => txkinadio,
-      RXDOUT   => rxdoutadio,
-      RXKOUT   => rxkoutadio,
-      TXIO_P   => ADIOTXIO_P,
-      TXIO_N   => ADIOTXIO_N,
-      RXIO_P   => ADIORXIO_P,
-      RXIO_N   => ADIORXIO_N,
-      DROPLOCK => '0',
-      LOCKED   => dllockedadio);
+      RESET       => RESET,
+      TXDIN       => txdinadio,
+      TXKIN       => txkinadio,
+      RXDOUT      => rxdoutadio,
+      RXKOUT      => rxkoutadio,
+      RXDOUTEN    => rxenadio,
+      TXIO_P      => ADIOTXIO_P,
+      TXIO_N      => ADIOTXIO_N,
+      RXIO_P      => ADIORXIO_P,
+      RXIO_N      => ADIORXIO_N,
+      DROPLOCK    => '0',
+      LOCKED      => dllockedadio);
 
   dlinkup(16) <= dllockedadio;
 
@@ -999,6 +1005,7 @@ begin  -- Behavioral
       TXKOUT   => txkinadio,
       RXDIN    => rxdoutadio,
       RXKIN    => rxkoutadio,
+      RXEN     => rxenadio,
       LOCKED   => dllockedadio);
 
   ----------------------------------------------------------------------------
@@ -1015,17 +1022,18 @@ begin  -- Behavioral
       RXWORDCLK   => clkwordrx,
       AUTOLINK    => '1',
       ATTEMPTLINK => '0',
-      RESET    => RESET,
-      TXDIN    => txdinsys,
-      TXKIN    => txkinsys,
-      RXDOUT   => rxdoutsys,
-      RXKOUT   => rxkoutsys,
-      TXIO_P   => SYSTXIO_P,
-      TXIO_N   => SYSTXIO_N,
-      RXIO_P   => SYSRXIO_P,
-      RXIO_N   => SYSRXIO_N,
-      DROPLOCK => '0',
-      LOCKED   => dllockedsys);
+      RESET       => RESET,
+      TXDIN       => txdinsys,
+      TXKIN       => txkinsys,
+      RXDOUT      => rxdoutsys,
+      RXKOUT      => rxkoutsys,
+      RXDOUTEN    => rxensys, 
+      TXIO_P      => SYSTXIO_P,
+      TXIO_N      => SYSTXIO_N,
+      RXIO_P      => SYSRXIO_P,
+      RXIO_N      => SYSRXIO_N,
+      DROPLOCK    => '0',
+      LOCKED      => dllockedsys);
 
   devicemux_sys_inst : entity work.devicemux
     port map (
@@ -1064,27 +1072,28 @@ begin  -- Behavioral
       TXKOUT   => txkinsys,
       RXDIN    => rxdoutsys,
       RXKIN    => rxkoutsys,
+      RXEN     => rxensys,
       LOCKED   => dllockedsys);
 
   dlinkup(17) <= dllockedsys;
 
 --  dincapture_data <= netdebug(31 downto 16);
-  dincapture_data <= dldebug(0) & X"00" & dldebugstate(0);
-  dincapture_en <= '1'; 
+  dincapture_data    <= dldebug(0) & X"00" & dldebugstate(0);
+  dincapture_en      <= '1';
   dincapture_nextbuf <= '1' when dldebugstate(0) = X"0D" else '0';
 
-  dldebugaddr(0) <= dincapture_immdout(7 downto 0);
+  dldebugaddr(0)                 <= dincapture_immdout(7 downto 0);
   dincapture_immdin(15 downto 0) <= dldebug(0);
-  
+
   dincapture_inst : entity dincapture
     generic map (
       JTAG_CHAIN => 4)
     port map (
-      CLK   => clk,
-      DINEN => dincapture_en,
-      DIN   => dincapture_data,
-      IMMDIN => dincapture_immdin,
-      IMMDOUT => dincapture_immdout, 
+      CLK     => clk,
+      DINEN   => dincapture_en,
+      DIN     => dincapture_data,
+      IMMDIN  => dincapture_immdin,
+      IMMDOUT => dincapture_immdout,
       NEXTBUF => dincapture_nextbuf); 
 
 end Behavioral;
