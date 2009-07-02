@@ -31,7 +31,7 @@ architecture Behavioral of devicemuxeventrx2 is
   signal earxbuf : std_logic_vector(79 downto 0) := (others => '0');
   signal earxout : std_logic_vector(79 downto 0) := (others => '0');
 
-  signal epos : integer range 0 to 23 := 0;
+  signal epos : integer range 0 to 23 := 23;
 
   signal dinl : std_logic_vector(7 downto 0) := (others => '0');
 

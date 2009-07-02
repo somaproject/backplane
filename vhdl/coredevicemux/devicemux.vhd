@@ -11,95 +11,105 @@ use soma.all;
 
 entity devicemux is
   port (
-    CLK  : in std_logic;
-    ECYCLE : in std_logic;
+    CLK           : in  std_logic;
+    ECYCLE        : in  std_logic;
     -- DATA PORT
-    DATADOUT : out std_logic_vector(7 downto 0);
-    DATADOEN : out std_logic; 
+    DATADOUT      : out std_logic_vector(7 downto 0);
+    DATADOEN      : out std_logic;
+    DATACOMMIT    : out std_logic;
     -- port A
-    DGRANTA : in std_logic;
-    EARXA : out std_logic_vector(somabackplane.N -1 downto 0);
-    EDRXA : out std_logic_vector(7 downto 0);
-    EDSELRXA : in std_logic_vector(3 downto 0);
-    EATXA   : in std_logic_vector(somabackplane.N-1 downto 0);
-    EDTXA   : in std_logic_vector(7 downto 0);
+    DGRANTA       : in  std_logic;
+    DGRANTBSTARTA : in  std_logic;
+    EARXA         : out std_logic_vector(somabackplane.N -1 downto 0);
+    EDRXA         : out std_logic_vector(7 downto 0);
+    EDSELRXA      : in  std_logic_vector(3 downto 0);
+    EATXA         : in  std_logic_vector(somabackplane.N-1 downto 0);
+    EDTXA         : in  std_logic_vector(7 downto 0);
     -- port B
-    DGRANTB : in std_logic;
-    EARXB : out std_logic_vector(somabackplane.N -1 downto 0);
-    EDRXB : out std_logic_vector(7 downto 0);
-    EDSELRXB : in std_logic_vector(3 downto 0);
-    EATXB   : in std_logic_vector(somabackplane.N-1 downto 0);
-    EDTXB   : in std_logic_vector(7 downto 0);
+    DGRANTB       : in  std_logic;
+    DGRANTBSTARTB : in  std_logic;
+    EARXB         : out std_logic_vector(somabackplane.N -1 downto 0);
+    EDRXB         : out std_logic_vector(7 downto 0);
+    EDSELRXB      : in  std_logic_vector(3 downto 0);
+    EATXB         : in  std_logic_vector(somabackplane.N-1 downto 0);
+    EDTXB         : in  std_logic_vector(7 downto 0);
     -- port C
-    DGRANTC : in std_logic;
-    EARXC : out std_logic_vector(somabackplane.N -1 downto 0);
-    EDRXC : out std_logic_vector(7 downto 0);
-    EDSELRXC : in std_logic_vector(3 downto 0);
-    EATXC   : in std_logic_vector(somabackplane.N-1 downto 0);
-    EDTXC   : in std_logic_vector(7 downto 0);
+    DGRANTC       : in  std_logic;
+    DGRANTBSTARTC : in  std_logic;
+    EARXC         : out std_logic_vector(somabackplane.N -1 downto 0);
+    EDRXC         : out std_logic_vector(7 downto 0);
+    EDSELRXC      : in  std_logic_vector(3 downto 0);
+    EATXC         : in  std_logic_vector(somabackplane.N-1 downto 0);
+    EDTXC         : in  std_logic_vector(7 downto 0);
     -- port D
-    DGRANTD : in std_logic;
-    EARXD : out std_logic_vector(somabackplane.N -1 downto 0);
-    EDRXD : out std_logic_vector(7 downto 0);
-    EDSELRXD : in std_logic_vector(3 downto 0);
-    EATXD   : in std_logic_vector(somabackplane.N-1 downto 0);
-    EDTXD   : in std_logic_vector(7 downto 0);
+    DGRANTD       : in  std_logic;
+    DGRANTBSTARTD : in  std_logic;
+    EARXD         : out std_logic_vector(somabackplane.N -1 downto 0);
+    EDRXD         : out std_logic_vector(7 downto 0);
+    EDSELRXD      : in  std_logic_vector(3 downto 0);
+    EATXD         : in  std_logic_vector(somabackplane.N-1 downto 0);
+    EDTXD         : in  std_logic_vector(7 downto 0);
     -- IO 
-    TXDOUT : out std_logic_vector(7 downto 0);
-    TXKOUT : out std_logic;
-    RXDIN : in std_logic_vector(7 downto 0);
-    RXKIN : in std_logic;
-    RXEN : in std_logic; 
-    LOCKED : in std_logic );
+    TXDOUT        : out std_logic_vector(7 downto 0);
+    TXKOUT        : out std_logic;
+    RXDIN         : in  std_logic_vector(7 downto 0);
+    RXKIN         : in  std_logic;
+    RXEN          : in  std_logic;
+    LOCKED        : in  std_logic);
 end devicemux;
 
 architecture Behavioral of devicemux is
 
 begin
 
-  tx_inst: entity work.devicemuxtx
+  tx_inst : entity work.devicemuxtx
     port map (
-      CLK     => CLK,
-      EDTX    => EDTXA,
-      ECYCLE => ECYCLE, 
-      DGRANTA => DGRANTA,
-      EATXA   => EATXA,
-      DGRANTB => DGRANTB,
-      EATXB   => EATXB,
-      DGRANTC => DGRANTC,
-      EATXC   => EATXC,
-      DGRANTD => DGRANTD,
-      EATXD   => EATXD,
-      TXDOUT  => TXDOUT,
-      TXKOUT  => TXKOUT);
+      CLK           => CLK,
+      EDTX          => EDTXA,
+      ECYCLE        => ECYCLE,
+      DGRANTA       => DGRANTA,
+      DGRANTBSTARTA => DGRANTBSTARTA,
+      EATXA         => EATXA,
+      DGRANTB       => DGRANTB,
+      DGRANTBSTARTB => DGRANTBSTARTB,
+      EATXB         => EATXB,
+      DGRANTC       => DGRANTC,
+      DGRANTBSTARTC => DGRANTBSTARTC,
+      EATXC         => EATXC,
+      DGRANTD       => DGRANTD,
+      DGRANTBSTARTD => DGRANTBSTARTD,
+      EATXD         => EATXD,
+      TXDOUT        => TXDOUT,
+      TXKOUT        => TXKOUT);
 
-  rx_inst: entity work.devicemuxrx
+  rx_inst : entity work.devicemuxrx
     port map (
-      CLK => CLK,
+      CLK    => CLK,
       ECYCLE => ECYCLE,
       LOCKED => LOCKED,
 
       DATADOUT => DATADOUT,
       DATADOEN => DATADOEN,
-
-      EARXA => EARXA,
-      EDRXA => EDRXA,
+      DATACOMMIT => DATACOMMIT,
+      
+      EARXA    => EARXA,
+      EDRXA    => EDRXA,
       EDSELRXA => EDSELRXA,
-      
-      EARXB => EARXB,
-      EDRXB => EDRXB,
+
+      EARXB    => EARXB,
+      EDRXB    => EDRXB,
       EDSELRXB => EDSELRXB,
-      
-      EARXC => EARXC,
-      EDRXC => EDRXC,
+
+      EARXC    => EARXC,
+      EDRXC    => EDRXC,
       EDSELRXC => EDSELRXC,
-      
-      EARXD => EARXD,
-      EDRXD => EDRXD,
+
+      EARXD    => EARXD,
+      EDRXD    => EDRXD,
       EDSELRXD => EDSELRXD,
 
       RXDIN => RXDIN,
       RXKIN => RXKIN,
-      RXEN => RXEN);
-  
+      RXEN  => RXEN);
+
 end Behavioral;

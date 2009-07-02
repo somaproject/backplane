@@ -25,6 +25,7 @@ else:
 
     # core devices
     #suite.addTest(vhdlTestCase("timer"))
+    suite.addTest(vhdlTestCase("datarouter"))
 
     # boot device
     #suite.addTest(vhdlTestCase("bootserialize"))
@@ -35,8 +36,9 @@ else:
     suite.addTest(vhdlTestCase("coredevicelink"))
     suite.addTest(vhdlTestCase("windowdetect"))
     suite.addTest(vhdlTestCase("delaylock"))
-    
-                       
+
+    # serial devicelink protocol
+    suite.addTest(vhdlTestCase("devicemux"))
                                     
 runner = unittest.TextTestRunner()
 runner.run(suite)

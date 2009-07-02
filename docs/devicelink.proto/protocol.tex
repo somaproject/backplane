@@ -24,7 +24,10 @@ we have an EVENTCE signal, internally, which gates an input event.
 The header consists of:
 1. a k28.5 sync comma
 2. four 11-symbol device configuration packets:
-byte 0: device can send data during this cycle (DGRANT)
+byte 0: two bits:
+bit 0: this device is active during this cycle (DGRANT)
+bit 1: This is the start of this device's transmit burst cycle
+
 byte 1: lsb: the first event in the sequence is for this device
 byte 2: lsb: the 8th evenet in the sequence is for this device
 ... through byte 10
@@ -34,21 +37,26 @@ subsequently sent on the 49th byte (inclusive to the k28.5), that
 is, there are 4 full-events-worth of packets before we start. 
 
 
-
 \subsection{RX Link}
 
-Device transmit:
-every device must respond with a K28.5 at the beginning of each event cycle
+Because the RX link operates at *half* the data rate of the TX link,
+there are only 500 possible bytes per event cycle.
 
-A device may also send up to 600 bytes of data, if selected, in the following needlessly complex format
+Devices may send data when their dgrant is asserted, in up to four
+bursts of 248 bytes which will be concatenated together. 
 
-to begin data, send K28.6
-to end data, send K28.7
+To start a burst, send K28.6, to end a burst, send K28.7
 
-Note that this requires the data be a single continuous burst. 
+To ``commit'' a series of bursts, send K28.4. This aggregates the
+previous bursts and places the resulting data packet on the network.
 
-= K28
-If the device has any events, it can send them any time during the event cycle, but it must first send the data packet. 
+
+Note that each burst can be a total of 248 bytes long, and
+there can be a total of 4 bursts, for 992-byte-length packets. 
+
+
+If the device has any events, it can send them any time during
+the event cycle, but it must first send the data packet.
 
 Any time during an event cycle a device can send an event, which in
 this case is a 22-byte packet of data prefaced with a lead comma
