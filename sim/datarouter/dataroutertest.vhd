@@ -51,6 +51,8 @@ architecture Behavioral of dataroutertest is
   signal pktcapture_new : std_logic       := '0';
 
   signal validate : std_logic_vector(7 downto 0) := (others => '0');
+
+  signal ecyclepos : integer := 0;
   
 begin  -- Behavioral
 
@@ -79,6 +81,7 @@ begin  -- Behavioral
 
       if ecnt = 999 then
         ECYCLE <= '1';
+        ecyclepos <= ecyclepos + 1; 
       else
         ECYCLE <= '0';
       end if;
@@ -93,12 +96,22 @@ begin  -- Behavioral
   --
   data_gen_proc : for src in 0 to 7 generate
     signal dgrantl : std_logic := '0';
+    signal lastecyclepos : integer := 0;
     begin
       
     tp: process
     begin
       for pktcnt in 0 to 10 loop
         wait until rising_edge(DGRANT(src*4));
+        if pktcnt = 0 then
+          lastecyclepos <= ecyclepos;
+        else
+          if (ecyclepos - lastecyclepos) > 50 then  -- must have dgrant once
+                                                    -- per ms!!
+            report "Error, did not receive dgrant within the past 1 ms (50 ecyclepos counts)" severity error;
+          end if;
+          lastecyclepos <= ecyclepos; 
+        end if;
         wait until rising_edge(CLK);
         wait until rising_edge(CLK);
 
