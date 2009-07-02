@@ -7,11 +7,15 @@ $(WORKDIR)/somabackplane/body.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.v
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/datarouter/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/somabackplane.vhd ../../vhdl/core/datarouter.vhd
+$(WORKDIR)/datasequencer/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/somabackplane.vhd ../../vhdl/core/datasequencer.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/core/datasequencer.vhd
+
+$(WORKDIR)/datarouter/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/somabackplane.vhd ../../vhdl/core/datasequencer.vhd ../../vhdl/core/datasequencer.vhd ../../vhdl/core/datarouter.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/core/datarouter.vhd
 
-hw: $(WORKDIR)/somabackplane/body.dat $(WORKDIR)/datarouter/behavioral.dat 
+hw: $(WORKDIR)/somabackplane/body.dat $(WORKDIR)/datasequencer/behavioral.dat $(WORKDIR)/datarouter/behavioral.dat 
 
 comp: 
 

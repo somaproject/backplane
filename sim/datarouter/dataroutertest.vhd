@@ -16,15 +16,15 @@ architecture Behavioral of dataroutertest is
 
   component datarouter
     port (
-      CLK       : in  std_logic;
-      ECYCLE    : in  std_logic;
-      DIN       : in  somabackplane.dataroutearray;
-      DINEN     : in  std_logic_vector(7 downto 0);
-      DINCOMMIT : in  std_logic_vector(7 downto 0);
-      DOUT      : out std_logic_vector(7 downto 0);
-      DOEN      : out std_logic;
-      DGRANT    : out std_logic_vector(31 downto 0);
-      DGRANTBSTART : out std_logic_vector(31 downto 0)      
+      CLK          : in  std_logic;
+      ECYCLE       : in  std_logic;
+      DIN          : in  somabackplane.dataroutearray;
+      DINEN        : in  std_logic_vector(7 downto 0);
+      DINCOMMIT    : in  std_logic_vector(7 downto 0);
+      DOUT         : out std_logic_vector(7 downto 0);
+      DOEN         : out std_logic;
+      DGRANT       : out std_logic_vector(31 downto 0);
+      DGRANTBSTART : out std_logic_vector(31 downto 0)
       );
   end component;
 
@@ -38,8 +38,8 @@ architecture Behavioral of dataroutertest is
 
   signal DOUT : std_logic_vector(7 downto 0) := (others => '0');
 
-  signal DOEN   : std_logic                     := '0';
-  signal DGRANT : std_logic_vector(31 downto 0) := (others => '0');
+  signal DOEN         : std_logic                     := '0';
+  signal DGRANT       : std_logic_vector(31 downto 0) := (others => '0');
   signal DGRANTBSTART : std_logic_vector(31 downto 0) := (others => '0');
 
   signal ecnt : integer range 0 to 999 := 990;
@@ -60,14 +60,14 @@ begin  -- Behavioral
 
   datarouter_uut : datarouter
     port map (
-      CLK       => CLK,
-      ECYCLE    => ECYCLE,
-      DIN       => DIN,
-      DINEN     => DINEN,
-      DINCOMMIT => DINCOMMIT,
-      DOUT      => DOUT,
-      DOEN      => DOEN,
-      DGRANT    => DGRANT,
+      CLK          => CLK,
+      ECYCLE       => ECYCLE,
+      DIN          => DIN,
+      DINEN        => DINEN,
+      DINCOMMIT    => DINCOMMIT,
+      DOUT         => DOUT,
+      DOEN         => DOEN,
+      DGRANT       => DGRANT,
       DGRANTBSTART => DGRANTBSTART); 
 
   ecyclegen : process (CLK)
@@ -80,8 +80,8 @@ begin  -- Behavioral
       end if;
 
       if ecnt = 999 then
-        ECYCLE <= '1';
-        ecyclepos <= ecyclepos + 1; 
+        ECYCLE    <= '1';
+        ecyclepos <= ecyclepos + 1;
       else
         ECYCLE <= '0';
       end if;
@@ -95,11 +95,11 @@ begin  -- Behavioral
   --
   --
   data_gen_proc : for src in 0 to 7 generate
-    signal dgrantl : std_logic := '0';
-    signal lastecyclepos : integer := 0;
-    begin
-      
-    tp: process
+    signal dgrantl       : std_logic := '0';
+    signal lastecyclepos : integer   := 0;
+  begin
+    
+    tp : process
     begin
       for pktcnt in 0 to 10 loop
         wait until rising_edge(DGRANT(src*4));
@@ -110,7 +110,7 @@ begin  -- Behavioral
                                                     -- per ms!!
             report "Error, did not receive dgrant within the past 1 ms (50 ecyclepos counts)" severity error;
           end if;
-          lastecyclepos <= ecyclepos; 
+          lastecyclepos <= ecyclepos;
         end if;
         wait until rising_edge(CLK);
         wait until rising_edge(CLK);
@@ -118,13 +118,13 @@ begin  -- Behavioral
         -- start of a grant cycle
         for j in 0 to (src mod 4) loop
           -- send this much data
-          for bpos in 0 to 249 loop
+          for bpos in 0 to 247 loop
             if bpos = 0 then
               DIN(src) <= std_logic_vector(TO_UNSIGNED(src, 8));
             elsif bpos = 1 then
               DIN(src) <= std_logic_vector(TO_UNSIGNED(j, 8));
             else
-              DIN(src) <= std_logic_vector(TO_UNSIGNED(bpos, 8));
+              DIN(src) <= std_logic_vector(TO_UNSIGNED((bpos + j + src) mod 256, 8));
             end if;
             DINEN(src) <= '1';
             wait until rising_edge(CLK);
@@ -189,17 +189,29 @@ begin  -- Behavioral
     process
       variable possible_success : boolean := false;
       variable success_count    : integer := 0;
+      variable pos              : integer := 0;
     begin
       wait until rising_edge(CLK) and pktcapture_new = '1';
       if pktcapture(0) = std_logic_vector(to_unsigned(src, 8)) then
         -- for us;
         --
         possible_success := true;
-        
-      end if;
+        pos              := 0;
 
-      if possible_success then
-        success_count := success_count + 1;
+        for j in 0 to (src mod 4) loop
+          for bpos in 0 to 247 loop
+            if bpos > 2 then
+              assert pktcapture(pos) =
+                std_logic_vector(TO_UNSIGNED(((bpos + j + src ) mod 256), 8))
+                report "error in packet capture" severity error;
+            end if;
+            pos := pos + 1;
+          end loop;
+        end loop;
+
+        if possible_success then
+          success_count := success_count + 1;
+        end if;
       end if;
 
       if success_count = 10 then
@@ -210,14 +222,14 @@ begin  -- Behavioral
   end generate data_validate_proc;
 
   -- done validate
-  data_validate_all: process(CLK)
-    begin
-      if rising_edge(CLK) then
-        if validate = "11111111" then
-          report "End of Simulation" severity failure;
-        end if;
+  data_validate_all : process(CLK)
+  begin
+    if rising_edge(CLK) then
+      if validate = "11111111" then
+        report "End of Simulation" severity failure;
       end if;
-    end process;
+    end if;
+  end process;
 
-    
+  
 end Behavioral;

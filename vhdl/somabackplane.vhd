@@ -8,7 +8,6 @@ package somabackplane is
   type dataarray is array(N-1 downto 0) of std_logic_vector(7 downto 0); 
   type addrarray is array(N-1 downto 0) of std_logic_vector(N-1 downto 0); 
   type dataroutearray is array(7 downto 0) of std_logic_vector(7 downto 0); 
-  
 end somabackplane;
 
 
