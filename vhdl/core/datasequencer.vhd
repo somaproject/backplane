@@ -24,7 +24,7 @@ entity datasequencer is
     -- output data interface
     DOUTACTIVE  : in std_logic;        -- trigger a dump, must happen EVERY
                                         -- DGRANTLEN ticks
-    DOUT        : out std_logic_vector(7 downto 0);
+    DOUT        : out std_logic_vector(7 downto 0) := (others => '0'); 
     DOEN        : out std_logic
     );
 end datasequencer;
@@ -143,6 +143,7 @@ begin  -- Behavioral
             addrb(9 downto 0) <= addrb(9 downto 0) + 1;
           else
             ldoen <= '0';
+            addrb(10) <= not addrb(10); 
           end if;
         else
           ldoen <= '0'; 

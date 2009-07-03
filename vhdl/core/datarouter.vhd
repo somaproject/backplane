@@ -19,7 +19,7 @@ entity datarouter is
     DINEN     : in std_logic_vector(7 downto 0);
     DINCOMMIT : in std_logic_vector(7 downto 0);
 
-    DOUT         : out std_logic_vector(7 downto 0);
+    DOUT         : out std_logic_vector(7 downto 0) := (others => '0'); 
     DOEN         : out std_logic;
     DGRANT       : out std_logic_vector(31 downto 0);
     DGRANTBSTART : out std_logic_vector(31 downto 0)
@@ -58,7 +58,7 @@ architecture Behavioral of datarouter is
       -- output data interface
       DOUTACTIVE   : in  std_logic;     -- trigger a dump, must happen EVERY
                                         -- DGRANTLEN ticks
-      DOUT         : out std_logic_vector(7 downto 0);
+      DOUT         : out std_logic_vector(7 downto 0) := (others => '0'); 
       DOEN         : out std_logic
       );
   end component;

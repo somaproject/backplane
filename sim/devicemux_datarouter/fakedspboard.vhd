@@ -190,10 +190,6 @@ architecture Behavioral of fakedspboard is
   signal ddatac : std_logic_vector(7 downto 0) := (others => '0');
   signal ddatad : std_logic_vector(7 downto 0) := (others => '0');
 
-
-  signal sport_serclk : std_logic_vector(3 downto 0) := (others => '0');
-  signal sport_serdt : std_logic_vector(3 downto 0) := (others => '0');
-  signal sport_sertfs : std_logic_vector(3 downto 0) := (others => '0');
   signal sport_full : std_logic_vector(3 downto 0) := (others => '0');
 
 begin  -- Behavioral
@@ -244,7 +240,7 @@ begin  -- Behavioral
     port map (
       CLK          => CLK,
       ECYCLE       => ecycle,
-      ENCODEEN     => datadataen,
+      ENCODEEN     => dataen,
       HEADERDONE   => headerdone,
       DREQ         => datadreq,
       DGRANT       => datadgrant,
@@ -289,58 +285,87 @@ begin  -- Behavioral
 
 
   datasports : for i in 0 to 3 generate
+    signal serclk, serdt, sertfs : std_logic := '0';
+  begin
+    
     datasport_inst : datasport
       port map (
         CLK      => CLK,
         RESET    => '0',
-        SERCLK   => sport_serclk(i),
-        SERDT    => sport_serdt(i),
-        SERTFS   => sport_sertfs(i),
+        SERCLK   => serclk,
+        SERDT    => serdt,
+        SERTFS   => sertfs,
         FULL     => sport_full(i),
         REQ      => dreq(i),
         NEXTBYTE => dnextbyte(i),
         LASTBYTE => dlastbyte(i),
         DOUT     => ddataarray(i));
-  end generate datasports;
-  
+
+    process(CLK)
+      variable bpos : integer range 0 to 2 := 0;
+    begin
+      if rising_edge(CLK) then
+        if bpos = 2 then
+          bpos := 0;
+        else
+          bpos := bpos + 1;
+        end if;
+
+        if bpos = 2 then
+          SERCLK <= '1';
+        else
+          SERCLK <= '0';
+        end if;
+      end if;
+
+    end process;
+
     process
-    -- we need the BEswap variables because we must seend each byte
-    -- LSB first, but we need to send the high-byte first
-    variable tmpword, tmpwordBEswap : std_logic_vector(15 downto 0) := X"0000";
-    variable pktlen, pktlenBEswap   : std_logic_vector(15 downto 0) := X"0000";
-  begin
-    wait for 10 us;
+      -- we need the BEswap variables because we must seend each byte
+      -- LSB first, but we need to send the high-byte first
+      variable tmpword, tmpwordBEswap : std_logic_vector(15 downto 0) := X"0000";
+      variable pktlen, pktlenBEswap   : std_logic_vector(15 downto 0) := X"0000";
+    begin
+      wait for 10 us;
 
-    for bufnum in 0 to 19 loop
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK);
-      wait until rising_edge(CLK) and FULL = '0';
-      wait until falling_edge(SERCLK);
-      SERTFS <= '1';
-      wait until falling_edge(SERCLK);
-      SERTFS <= '0';
-
-      -- send the length
-      pktlen       := std_logic_vector(TO_UNSIGNED(bufnum*20 + 172, 16));
-      pktlenBEswap := pktlen(7 downto 0) & pktlen(15 downto 8);
-      for bpos in 0 to 15 loop
-        SERDT <= pktlenBEswap(bpos);
+      for bufnum in 0 to 19 loop
+        wait until rising_edge(CLK);
+        wait until rising_edge(CLK);
+        wait until rising_edge(CLK);
+        wait until rising_edge(CLK) and sport_FULL(i) = '0';
         wait until falling_edge(SERCLK);
-      end loop;  -- bpos
+        SERTFS <= '1';
+        wait until falling_edge(SERCLK);
+        SERTFS <= '0';
 
-      -- then the body
-      for bufpos in 0 to 510 loop
-        tmpword       := std_logic_vector(TO_UNSIGNED(bufnum * 256 + bufpos + 4, 16));
-        tmpwordBEswap := tmpword(7 downto 0) & tmpword(15 downto 8);
+        -- send the length
+        pktlen       := std_logic_vector(TO_UNSIGNED(bufnum*20 + 172, 16));
+        pktlenBEswap := pktlen(7 downto 0) & pktlen(15 downto 8);
         for bpos in 0 to 15 loop
-          SERDT <= tmpwordBEswap(bpos);
+          SERDT <= pktlenBEswap(bpos);
           wait until falling_edge(SERCLK);
-        end loop;
-      end loop;
+        end loop;  -- bpos
 
-    end loop;  -- bufnum
-  end process;
+        -- then the body
+        for bufpos in 0 to 510 loop
+          if bufpos = 0 then
+            -- header word
+            tmpword := std_logic_vector(TO_UNSIGNED(i, 16));
+          else
+            tmpword := std_logic_vector(TO_UNSIGNED(bufnum * 256 + bufpos + 4 + i, 16));
+          end if;
+          
+          tmpwordBEswap := tmpword(7 downto 0) & tmpword(15 downto 8);
+          for bpos in 0 to 15 loop
+            SERDT <= tmpwordBEswap(bpos);
+            wait until falling_edge(SERCLK);
+          end loop;
+        end loop;
+
+      end loop;  -- bufnum
+      wait;
+    end process;
+  end generate datasports;
 
 
 

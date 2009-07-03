@@ -170,6 +170,15 @@ architecture Behavioral of devicemuxdataroutertest is
       TXKOUT : out std_logic
       );                                -- '0'
   end component;
+
+  type   packetcapture_t is array (0 to 1023) of integer;
+  signal packetcapture  : packetcapture_t := (others => 0);
+  signal packetcapturel : packetcapture_t := (others => 0);
+
+  signal newpacket : std_logic := '0';
+
+  signal rx_done : std_logic_vector(3 downto 0) := (others => '0');
+
   
 begin  -- Behavioral
 
@@ -248,7 +257,7 @@ begin  -- Behavioral
       RXKIN  => TXKOUT,
       TXDOUT => RXDIN,
       TXKOUT => RXKIN);
-  
+
 
 
   EDTXA <= EDTX;
@@ -302,4 +311,85 @@ begin  -- Behavioral
 
   end process;
 
+
+  -- recover data
+  data_packet_capture : process
+  begin
+    for i in 0 to 1023 loop
+      packetcapture(i) <= 0;
+    end loop;  -- i
+
+    wait until rising_edge(CLK) and router_doen = '1';
+    for i in 0 to 1023 loop
+      packetcapture(i) <= to_integer(unsigned(router_dout));
+      wait until rising_edge(CLK);
+      if router_doen = '0' then
+        exit;
+      end if;
+    end loop;  -- i
+    -- captured
+    wait until rising_edge(CLK);
+    packetcapturel <= packetcapture;
+    newpacket      <= '1';
+    wait until rising_edge(CLK);
+    newpacket      <= '0';
+    
+  end process;
+
+  -- validate date
+  ---------------------------------------------------------------------------
+  -- Each of these corresponds to one datasport in the fakedsp
+  ---------------------------------------------------------------------------
+  datavalidate : for i in 0 to 3 generate
+    process
+      -- we need the BEswap variables because we must seend each byte
+      -- LSB first, but we need to send the high-byte first
+      variable tmpword              : integer;
+      variable tmpwordl, tmpwordh   : integer;
+      variable pktlen, pktlenBEswap : std_logic_vector(15 downto 0) := X"0000";
+      variable pktlen_integer       : integer                       := 0;
+      variable pktword              : integer                       := 0;
+    begin
+      
+      for bufnum in 0 to 19 loop
+        while true loop
+          
+          wait until rising_edge(newpacket);
+          if packetcapturel(0) = 0 and packetcapturel(1) = i then
+            -- this is for us!
+            pktlen_integer := bufnum*20 + 172;
+            pktlen         := std_logic_vector(TO_UNSIGNED(pktlen_integer, 16));
+            -- then the body
+            for bufpos in 0 to (pktlen_integer/2)-1 loop
+              if bufpos > 1 then
+                tmpword := bufnum * 256 + bufpos + 4 + i;
+                pktword := packetcapturel(bufpos * 2) * 256 +
+                           packetcapturel(bufpos * 2 + 1);
+                assert tmpword = pktword report "recovered word incorrect, expected "
+                  & integer'image(tmpword) & " but received " & integer'image(pktword)
+
+                  severity error;
+                
+              end if;
+              
+            end loop;
+            exit;
+          else
+
+          end if;
+        end loop;
+      end loop;  -- bufnum
+      rx_done(i) <= '1';
+      wait;
+    end process;
+    
+  end generate datavalidate;
+
+
+  process
+    begin
+      wait until rising_edge(CLK) and rx_done = "1111";
+      report "End of simulation" severity failure;
+    end process;
+    
 end Behavioral;
