@@ -328,7 +328,7 @@ begin  -- Behavioral
     begin
       wait for 10 us;
 
-      for bufnum in 0 to 19 loop
+      for bufnum in 0 to (19 ) loop
         wait until rising_edge(CLK);
         wait until rising_edge(CLK);
         wait until rising_edge(CLK);
@@ -338,8 +338,8 @@ begin  -- Behavioral
         wait until falling_edge(SERCLK);
         SERTFS <= '0';
 
-        -- send the length
-        pktlen       := std_logic_vector(TO_UNSIGNED(bufnum*20 + 172, 16));
+        -- send the length, in bytes
+        pktlen       := std_logic_vector(TO_UNSIGNED(bufnum*20 + 2*i + 172, 16));
         pktlenBEswap := pktlen(7 downto 0) & pktlen(15 downto 8);
         for bpos in 0 to 15 loop
           SERDT <= pktlenBEswap(bpos);

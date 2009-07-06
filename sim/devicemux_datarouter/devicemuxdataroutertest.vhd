@@ -179,6 +179,7 @@ architecture Behavioral of devicemuxdataroutertest is
 
   signal rx_done : std_logic_vector(3 downto 0) := (others => '0');
 
+  signal burstlen : integer := 0;
   
 begin  -- Behavioral
 
@@ -237,7 +238,7 @@ begin  -- Behavioral
   router_dinen(0)     <= DATADOEN;
   router_dincommit(0) <= DATACOMMIT;
 
-  datarouteR_uut : datarouter
+  datarouter_uut : datarouter
     port map (
       CLK          => CLK,
       ECYCLE       => ECYCLE,
@@ -337,6 +338,13 @@ begin  -- Behavioral
   end process;
 
   -- validate date
+  -- just capture the burst length
+  
+  burstlencapture: process
+    begin
+      wait; 
+    end process burstlencapture; 
+  
   ---------------------------------------------------------------------------
   -- Each of these corresponds to one datasport in the fakedsp
   ---------------------------------------------------------------------------
@@ -349,6 +357,11 @@ begin  -- Behavioral
       variable pktlen, pktlenBEswap : std_logic_vector(15 downto 0) := X"0000";
       variable pktlen_integer       : integer                       := 0;
       variable pktword              : integer                       := 0;
+      variable pktword_l, pktword_h : std_logic_vector(7 downto 0)
+      := (others => '0');
+      variable tmpword_l, tmpword_h : std_logic_vector(7 downto 0)
+      := (others => '0');
+      
     begin
       
       for bufnum in 0 to 19 loop
@@ -357,18 +370,24 @@ begin  -- Behavioral
           wait until rising_edge(newpacket);
           if packetcapturel(0) = 0 and packetcapturel(1) = i then
             -- this is for us!
-            pktlen_integer := bufnum*20 + 172;
+            pktlen_integer := bufnum*20 + 172 + 2*i;
             pktlen         := std_logic_vector(TO_UNSIGNED(pktlen_integer, 16));
             -- then the body
             for bufpos in 0 to (pktlen_integer/2)-1 loop
               if bufpos > 1 then
-                tmpword := bufnum * 256 + bufpos + 4 + i;
-                pktword := packetcapturel(bufpos * 2) * 256 +
-                           packetcapturel(bufpos * 2 + 1);
-                assert tmpword = pktword report "recovered word incorrect, expected "
-                  & integer'image(tmpword) & " but received " & integer'image(pktword)
+                tmpword_h := std_logic_vector(TO_UNSIGNED(bufnum, 8));
+                tmpword_l := std_logic_vector(TO_UNSIGNED(bufpos + 4 + i, 8));
+                
+                pktword_h := std_logic_vector(TO_UNSIGNED(packetcapturel(bufpos*2), 8));
+                pktword_l := std_logic_vector(TO_UNSIGNED(packetcapturel(bufpos*2+1), 8));
 
-                  severity error;
+                if pktlen_integer mod 2 = 0 then
+                  -- only valid for even-number-of-byte packets. 
+                  assert tmpword_l = pktword_l report "i.l = " & integer'image(i) & " bufpos = " &
+                    integer'image(bufpos) severity Error;
+                end if;
+                assert tmpword_h = pktword_h report "i.h = " & integer'image(i) & " bufpos = " &
+                  integer'image(bufpos) severity Error;
                 
               end if;
               
@@ -389,6 +408,8 @@ begin  -- Behavioral
   process
     begin
       wait until rising_edge(CLK) and rx_done = "1111";
+      wait for 5 ms;
+      
       report "End of simulation" severity failure;
     end process;
     

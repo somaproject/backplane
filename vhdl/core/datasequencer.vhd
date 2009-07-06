@@ -52,7 +52,7 @@ architecture Behavioral of datasequencer is
   signal nextdgrant : std_logic := '0';
 
   signal addra : std_logic_vector(10 downto 0) := "00000000000";
-  signal addrb : std_logic_vector(10 downto 0) := "10000000000";
+  signal addrb : std_logic_vector(10 downto 0) := "00000000000";
 
   signal cyclecommit     : std_logic := '0';
   signal lastcyclecommit : std_logic := '0';
@@ -112,7 +112,6 @@ begin  -- Behavioral
 
       if nextdgrant = '1' then
         addra(9 downto 0) <= (others => '0');
-        addra(10)         <= not addra(10);
       else
         if bufwe = '1' then
           addra(9 downto 0) <= addra(9 downto 0) + 1;
@@ -122,20 +121,22 @@ begin  -- Behavioral
 
       if nextdgrant = '1' then
         cyclecommit     <= '0';
-        lastcyclecommit <= cyclecommit;
       else
         if bufdincommit(0) = '1' and bufwe = '1' then
+          addra(10)         <= not addra(10);
+          
           cyclecommit <= '1';
         end if;
         if doben(0) = '1' then
-          lastcyclecommit <= '0';
         end if;
       end if;
 
       -- output
       if nextdgrant = '1' then
         addrb(9 downto 0) <= (others => '0');
-        ldoen <= '0'; 
+        ldoen <= '0';
+        lastcyclecommit <= cyclecommit;
+        
       else
         if lastcyclecommit = '1' and DOUTACTIVE = '1' then
           if doben(0) = '0' then
@@ -143,6 +144,7 @@ begin  -- Behavioral
             addrb(9 downto 0) <= addrb(9 downto 0) + 1;
           else
             ldoen <= '0';
+            lastcyclecommit <= '0';
             addrb(10) <= not addrb(10); 
           end if;
         else
