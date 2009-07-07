@@ -1,0 +1,3 @@
+Make sure we handle too-large packets correctly. The hypothesis
+right now is that too-big packets are overwriting the fixed UDP headers
+and corrupting subsequent data transmission

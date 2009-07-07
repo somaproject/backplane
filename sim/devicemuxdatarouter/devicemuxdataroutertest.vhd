@@ -364,7 +364,7 @@ begin  -- Behavioral
       
     begin
       
-      for bufnum in 0 to 19 loop
+      for bufnum in 0 to (19  + 3 *i) loop
         while true loop
           
           wait until rising_edge(newpacket);

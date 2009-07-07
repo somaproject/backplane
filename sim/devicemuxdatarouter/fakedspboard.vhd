@@ -330,7 +330,7 @@ begin  -- Behavioral
     begin
       wait for 10 us;
 
-      for bufnum in 0 to (19 ) loop
+      for bufnum in 0 to (19 + i*3  ) loop
         wait until rising_edge(CLK);
         wait until rising_edge(CLK);
         wait until rising_edge(CLK);
