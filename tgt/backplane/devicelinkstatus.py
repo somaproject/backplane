@@ -33,8 +33,9 @@ linkstatus_event = erx[0]
 
 # now get all of the counter events
 
+DEVN = 4
 rx_set = {}
-for i in range(20):
+for i in range(DEVN):
     e = Event()
     e.src = src
     e.cmd = 0x21
@@ -45,16 +46,44 @@ for i in range(20):
     eio.sendEvent(ea, e)
 
     erx = eio.getEvents()
+    for e in erx:
+        print i, e
+        
     rx_set[i] = erx
 
+# now get the debug counters
+e = Event()
+e.src = src
+e.cmd = 0x22
+ea = eaddr.TXDest()
+ea[eaddr.SYSCONTROL] = 1
+eio.sendEvent(ea, e)
+
+erx = eio.getEvents()
+for e in erx:
+    debug_event = erx[0]
+
+# decode the debug event
+delays = {}
+delays[0] = debug_event.data[0]
+delays[1] = debug_event.data[1]
+delays[6] = debug_event.data[2]
+delays[7] = debug_event.data[3]
     
 eio.stop()
-for i in range(20):
+print debug_event
+
+for i in range(DEVN):
+    dly = (-1, -1)
+    if i in delays:
+        dly = (delays[i] >> 8, delays[1] & 0xFF)
+        
     if (linkstatus_event.data[1] >> i) & 0x1 > 0:
         print "Device %2d : UP" % i, 
     else:
         print "Device %2d :   " % i,
-    print "%d link cycles"  % rx_set[i][0].data[2]
+    print "%d link cycles"  % (rx_set[i][0].data[2] )
+    
 
 
 

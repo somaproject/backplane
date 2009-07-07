@@ -76,7 +76,7 @@ def manual_boot_dsp(filename, devicenums):
 
 
         if len(data) < 8:
-            print "The end" 
+            #print "The end" 
             data = data + "       "
         for i in xrange(4):
             e.data[i] = struct.unpack(">H", data[(i*2):(i*2+2)])[0]
