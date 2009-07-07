@@ -325,6 +325,8 @@ begin  -- Behavioral
       -- LSB first, but we need to send the high-byte first
       variable tmpword, tmpwordBEswap : std_logic_vector(15 downto 0) := X"0000";
       variable pktlen, pktlenBEswap   : std_logic_vector(15 downto 0) := X"0000";
+      variable pktlen_bytes : integer := 0;
+      
     begin
       wait for 10 us;
 
@@ -339,7 +341,8 @@ begin  -- Behavioral
         SERTFS <= '0';
 
         -- send the length, in bytes
-        pktlen       := std_logic_vector(TO_UNSIGNED(bufnum*20 + 2*i + 172, 16));
+        pktlen_bytes := bufnum*20 + 2*i + 172; 
+        pktlen       := std_logic_vector(TO_UNSIGNED(pktlen_bytes, 16));
         pktlenBEswap := pktlen(7 downto 0) & pktlen(15 downto 8);
         for bpos in 0 to 15 loop
           SERDT <= pktlenBEswap(bpos);

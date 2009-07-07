@@ -375,8 +375,9 @@ begin  -- Behavioral
             -- then the body
             for bufpos in 0 to (pktlen_integer/2)-1 loop
               if bufpos > 1 then
-                tmpword_h := std_logic_vector(TO_UNSIGNED(bufnum, 8));
-                tmpword_l := std_logic_vector(TO_UNSIGNED(bufpos + 4 + i, 8));
+                tmpword := bufnum * 256 + bufpos + 4 + i; 
+                tmpword_h := std_logic_vector(TO_UNSIGNED(tmpword / 256, 8));
+                tmpword_l := std_logic_vector(TO_UNSIGNED(tmpword mod 256, 8));
                 
                 pktword_h := std_logic_vector(TO_UNSIGNED(packetcapturel(bufpos*2), 8));
                 pktword_l := std_logic_vector(TO_UNSIGNED(packetcapturel(bufpos*2+1), 8));
