@@ -681,8 +681,8 @@ begin  -- Behavioral
   dataretxresponse_inst : dataretxresponse
     port map (
       CLK       => CLK,
-      START     => dretxinstart,
-      DONE      => dretxindone,
+      START     => '0', -- dretxinstart,
+      DONE      => open, --dretxindone,
       INPKTDATA => pktdata,
       INPKTADDR => dretxinaddr,
       RETXDIN   => rdouta,
@@ -695,6 +695,8 @@ begin  -- Behavioral
       GRANT     => grant(2),
       DOUT      => din2,
       DOEN      => den(2));
+
+  dretxindone <= '1'; 
 
   eventrx_inst : eventrx
     port map (
@@ -720,8 +722,8 @@ begin  -- Behavioral
   eventretxresponse_inst : eventretxresponse
     port map (
       CLK       => CLK,
-      START     => eretxinstart,
-      DONE      => eretxindone,
+      START     => '0', --eretxinstart,
+      DONE      => open, -- eretxindone,
       INPKTDATA => pktdata,
       INPKTADDR => eretxinaddr,
       RETXDIN   => rdoutb,
@@ -734,6 +736,8 @@ begin  -- Behavioral
       GRANT     => grant(3),
       DOUT      => din3,
       DOEN      => den(3));
+
+  eretxindone <= '1';   
 
   retxbuffer_inst : retxbuffer
     port map (
