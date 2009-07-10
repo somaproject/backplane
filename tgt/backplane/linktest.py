@@ -44,13 +44,14 @@ tgtdevices = range(8, 24)
 while True:
     print "booting iter ", iter
     manual_boot_dsp.manual_boot_dsp(dspbitfile, devices)
+    time.sleep(8)
     dls = dlstatlib.DeviceLinkStatus(somaip)
-    
+
     ls1 = dls.getLinkStatus(4)
     lcc1 = dls.getLinkCycleCount(4)
     lt1 =  dls.getDLTiming()
-    
-    fp = dspboard.fpgaping.FPGAPing(somaip, tgtdevices)
+    print ls1
+    #fp = dspboard.fpgaping.FPGAPing(somaip, tgtdevices)
 ##     pingtries_pre = []
 ##     pingN = 1
 ##     for i in range(pingN):
@@ -59,7 +60,8 @@ while True:
 ##         time.sleep(1)
 ##     fp.stop()
 
-    dsp_success = boot_dsp()
+    dsp_success = True
+    #dsp_success = boot_dsp()
 
     ls2 = dls.getLinkStatus(4)
     lcc2 = dls.getLinkCycleCount(4)

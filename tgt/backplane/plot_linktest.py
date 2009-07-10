@@ -36,11 +36,11 @@ jitter = 0.3
 for i in range(K):
     pyplot.subplot(2, 2, i+1)
     pyplot.scatter(offsets[i] + np.random.normal(0, jitter, N),
-                   lengths[i] + np.random.normal(0, jitter, N), s=30,
+                   lengths[i] + np.random.normal(0, jitter, N), s=10,
                    c = (errors[i] > 0)*255)
     pyplot.xlabel("offset")
     pyplot.ylabel("length")
-    pyplot.axis([0, 26, 0, 26])
+    pyplot.axis([0, 55, 0, 55])
     pyplot.title("Device pos = %d" % i)
 pyplot.figure()
 pyplot.plot(upcnts_post.T - upcnts_pre.T)

@@ -100,7 +100,8 @@ def manual_boot_dsp(filename, devicenums):
         ecnt  += 1
 
 
-    time.sleep(1) # superfluous sleep to allow for boot up
+    time.sleep(8) # superfluous sleep to allow for boot up, since acquiring
+     # link now takes 4-6 seconds
 
     #now send the YOUARE so the device knows who it is
     for i in devicenums:

@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
 import os
-
+import subprocess
 # test
 IR = "0x3E3"
 
 
 jtagprog = "/home/jonas/XC3Sprog/xc3sprog"
-jtagpos = 1
+jtagpos = 0
 
 N = 2000
 for addr in range(N + 1):
@@ -15,9 +15,10 @@ for addr in range(N + 1):
     addrh = (addr >> 8 ) & 0xFF
     dr = "%2.2X %2.2X" % (addrl,  addrh)
     
-
-    (ofid, ifid) = os.popen2([jtagprog, str(jtagpos), str(IR), str(dr)])
-    x = ifid.read()
+    args = [jtagprog, str(jtagpos), str(IR), str(dr)]
+#    print args
+    p = subprocess.Popen(args, stdout= subprocess.PIPE)
+    x = p.stdout.read()
     bytes = x.split()
     if addr > 0:
         newaddr = addr - 1
