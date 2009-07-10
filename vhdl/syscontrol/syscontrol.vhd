@@ -109,7 +109,15 @@ entity syscontrol is
     -- Boot control output
     SEROUT       : out std_logic_vector(19 downto 0);
     -- devicelink monitoring
-    DLINKUP      : in  std_logic_vector(31 downto 0)
+    DLINKUP      : in  std_logic_vector(31 downto 0);
+    dldebug_A : in std_logic_vector(15 downto 0);  -- these are a bit hackish
+    dldebug_addr_A : out std_logic_vector(7 downto 0); 
+    dldebug_B : in std_logic_vector(15 downto 0);
+    dldebug_addr_B : out std_logic_vector(7 downto 0); 
+    dldebug_C : in std_logic_vector(15 downto 0);
+    dldebug_addr_C : out std_logic_vector(7 downto 0); 
+    dldebug_D : in std_logic_vector(15 downto 0); 
+    dldebug_addr_D : out std_logic_vector(7 downto 0)
     );
 
 
@@ -255,7 +263,6 @@ begin  -- Behavioral
 
   eproc_inst : entity eproc.eproc
     port map (
-      CLK         => clk,
       RESET       => RESET,
       EDTX        => EDTX,
       EATX        => EATX,
@@ -320,7 +327,8 @@ begin  -- Behavioral
         eaoutl <= eaout;
         edoutl <= edout; 
       end if;
-      enewoutslow   <= enewout or enewoutl;
+
+      enewoutslow   <= enewout;  -- or enewoutl;
       if iportstrobe = '1' then
         if iportaddr = X"00" then
           iportdata <= DLINKUP(15 downto 0);
@@ -332,8 +340,33 @@ begin  -- Behavioral
           iportdata <= X"1234";
         elsif iportaddr(7 downto 4) = X"4" then
           iportdata <= X"00" & dlinkcount(TO_INTEGER(UNSIGNED(iportaddr(3 downto 0))));
+        elsif iportaddr = X"50" then
+          iportdata <= dldebug_A;
+        elsif iportaddr = X"51" then
+          iportdata <= dldebug_B;
+        elsif iportaddr = X"52" then
+          iportdata <= dldebug_C;
+        elsif iportaddr = X"53" then
+          iportdata <= dldebug_D;
+          
        end if;
       end if;
+      
+      if oportstrobe = '1' then
+        if oportaddr = X"50" then
+          dldebug_addr_A <= oportdata(7 downto 0); 
+        end if;
+        if oportaddr = X"51" then
+          dldebug_addr_B <= oportdata(7 downto 0); 
+        end if;
+        if oportaddr = X"52" then
+          dldebug_addr_C <= oportdata(7 downto 0); 
+        end if;
+        if oportaddr = X"53" then
+          dldebug_addr_D <= oportdata(7 downto 0); 
+        end if;
+      end if;
+      
     end if;
   end process;
 

@@ -7,7 +7,7 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 
-entity datapacketgen is
+entitY datapacketgen is
 
   port (
     CLK      : in  std_logic;
@@ -206,7 +206,7 @@ begin  -- Behavioral
       if ics = datachk then
         addr   <= (others => '0');
       else
-        if addrinc = '1' then
+        if addrinc = '1'  then 
           addr <= addr + 1;
         end if;
       end if;
@@ -350,7 +350,7 @@ begin  -- Behavioral
         dsel    <= 0;
         addrinc <= '1';
         datawe  <= '1';
-        if len(8 downto 0) = addr then
+        if len(8 downto 0) = addr or addr = "111100111" then
           ins   <= datadone;
         else
           ins   <= dataw;

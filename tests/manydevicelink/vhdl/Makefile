@@ -16,8 +16,10 @@
 PROJECT = manydevicelink
 
 bitfile: $(PROJECT).bit
-export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
+#export XIL_PLACE_ALLOW_LOCAL_BUFG_ROUTING=TRUE
 export  XIL_MAP_SKIP_LOGICAL_DRC=TRUE
+export XIL_PAR_DESIGN_CHECK_VERBOSE=1
+
 SOURCES := $(shell cut -f 3 -d ' '  $(PROJECT).prj  | xargs)
 OPTIMIZE = high
 PART = xc4vlx25-10-ff668
@@ -62,7 +64,9 @@ build/$(PROJECT).ngd: build/$(PROJECT).ngc $(PROJECT).ucf
 map: build/$(PROJECT)_map.ncd
 
 build/$(PROJECT)_map.ncd: build/$(PROJECT).ngd
-	map -p $(PART) -ol $(OPTIMIZE) -timing -cm speed  -xe n  -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
+#map -p $(PART) -ol $(OPTIMIZE) -timing -cm speed  -logic_opt on -xe n  -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
+	map -p $(PART) -ol $(OPTIMIZE) -timing -logic_opt on -cm speed  -xe n \
+	-register_duplication  -pr b -o build/$(PROJECT)_map.ncd build/$(PROJECT).ngd build/$(PROJECT).pcf
 
 build/$(PROJECT).pcf: build/$(PROJECT)_map.ncd
 
@@ -70,7 +74,7 @@ build/$(PROJECT).pcf: build/$(PROJECT)_map.ncd
 # forth stage: par
 
 build/$(PROJECT).ncd: build/$(PROJECT).pcf
-	par -w -pl $(OPTIMIZE) -rl $(OPTIMIZE)  build/$(PROJECT)_map.ncd build/$(PROJECT).ncd build/$(PROJECT).pcf
+	par -w -pl $(OPTIMIZE) -rl $(OPTIMIZE) build/$(PROJECT)_map.ncd build/$(PROJECT).ncd build/$(PROJECT).pcf
 
 build/$(PROJECT).bit: build/$(PROJECT).pcf build/$(PROJECT).ncd
 	bitgen -w build/$(PROJECT).ncd build/$(PROJECT).bit build/$(PROJECT).pcf

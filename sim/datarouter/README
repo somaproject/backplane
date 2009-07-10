@@ -1,0 +1,17 @@
+An attempt to test the event router. We care about:
+
+1. proper device sequencing
+2. That the right bytes happen at the right time
+3. that we very clearly codify our assumptions. 
+
+We run the cycle for four ticks, and we populate the device fully with
+events.
+
+There is an array of event addresses, which we rotate right every
+ECYCLE. This is somewhat randomized to allow for full coverage.
+The data transmitted by device n is n*3 through n*3+7. 
+
+We have one process to check the validity of the output data, and one
+to check the validity of the ecycle matrix.
+
+

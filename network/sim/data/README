@@ -22,7 +22,9 @@ DENA DATA
 datab.txt
 DENB DATAB
 
-It will also TX ethernet data, with the assumption that you have a device on your system with IP 192.168.0.2 and subnet mask 255.255.255.0. 
+It will also TX ethernet data, with the assumption that you have a
+device on your system with IP 192.168.0.2 and subnet mask
+255.255.255.0.
 
 You can capture this data using tcpdump if you're running as root and: 
  tcpdump -p src host 192.168.0.2 and  udp -t -xx -s 2000 > data.tcpdump
