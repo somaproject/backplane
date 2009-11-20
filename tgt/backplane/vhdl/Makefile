@@ -25,13 +25,13 @@ OPTIMIZE = high
 PART = xc4vlx25-10-ff668
 SPEED = 10
 
-bitfile: $(PROJECT).bit $(PROJECT).postmem.bit 
+bitfile: core.bit $(PROJECT).postmem.bit 
 
 $(PROJECT): build/$(PROJECT).ncd
 	echo $(SOURCES)
-$(PROJECT).bit: $(PROJECT).postmem.bit
-	rm -rf $(PROJECT).bit
-	cp $(PROJECT).postmem.bit $(PROJECT).bit
+core.bit: $(PROJECT).postmem.bit
+	rm -rf core.bit
+	cp $(PROJECT).postmem.bit core.bit
 
 $(PROJECT).rbt: build/$(PROJECT).rbt 
 	rm -rf $(PROJECT).rbt
