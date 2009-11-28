@@ -30,7 +30,7 @@ eio.sendEvent(ea, e)
 
 erx = eio.getEvents()
 linkstatus_event = erx[0]
-
+print "link status event:", linkstatus_event
 # now get all of the counter events
 
 DEVN = 4
