@@ -136,4 +136,4 @@ $(PROJECT).mem: $(PROJECT).syscontrol.mem $(PROJECT).netcontrol.mem
 	cat $(PROJECT).netcontrol.mem >> $(PROJECT).mem
 
 clean:
-	rm -Rf xst build $(PROJECT).bit $(PROJECT).postmem.bit
+	rm -Rf xst build $(PROJECT).bit core.bit $(PROJECT).postmem.bit

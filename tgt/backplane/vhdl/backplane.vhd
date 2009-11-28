@@ -967,74 +967,78 @@ begin  -- Behavioral
 
   end generate devicelinks_and_mux;
 
---  ----------------------------------------------------------------------------
---  -- ADIO DeviceLink
---  ----------------------------------------------------------------------------
---  dl_adio : entity work.coredevicelink
---    generic map (
---      N => 4)
---    port map (
---      CLK         => clk,
---      RXBITCLK    => clkbitrx,
---      TXHBITCLK   => clkbittx,
---      TXWORDCLK   => clkwordtx,
---      RXWORDCLK   => clkwordrx,
---      AUTOLINK    => '1',
---      ATTEMPTLINK => '0',
---      RESET       => RESET,
---      TXDIN       => txdinadio,
---      TXKIN       => txkinadio,
---      RXDOUT      => rxdoutadio,
---      RXKOUT      => rxkoutadio,
---      RXDOUTEN    => rxenadio,
---      TXIO_P      => ADIOTXIO_P,
---      TXIO_N      => ADIOTXIO_N,
---      RXIO_P      => ADIORXIO_P,
---      RXIO_N      => ADIORXIO_N,
---      DROPLOCK    => '0',
---      LOCKED      => dllockedadio);
+  ----------------------------------------------------------------------------
+  -- ADIO DeviceLink
+  ----------------------------------------------------------------------------
+  dl_adio : entity work.coredevicelink
+    generic map (
+      N => 4)
+    port map (
+      CLK         => clk,
+      RXBITCLK    => clkbitrx,
+      TXHBITCLK   => clkbittx,
+      TXWORDCLK   => clkwordtx,
+      RXWORDCLK   => clkwordrx,
+      AUTOLINK    => '1',
+      ATTEMPTLINK => '0',
+      RESET       => RESET,
+      TXDIN       => txdinadio,
+      TXKIN       => txkinadio,
+      RXDOUT      => rxdoutadio,
+      RXKOUT      => rxkoutadio,
+      RXDOUTEN    => rxenadio,
+      TXIO_P      => ADIOTXIO_P,
+      TXIO_N      => ADIOTXIO_N,
+      RXIO_P      => ADIORXIO_P,
+      RXIO_N      => ADIORXIO_N,
+      DROPLOCK    => '0',
+      LOCKED      => dllockedadio);
 
---  dlinkup(16) <= dllockedadio;
+  dlinkup(16) <= dllockedadio;
 
---  devicemux_adio_inst : entity work.devicemux
---    port map (
---      CLK      => CLK,
---      ECYCLE   => ecycle,
---      -- port A
---      DGRANTA  => '0',
---      EARXA    => earx(73),
---      EDRXA    => edrx(73),
---      EDSELRXA => edselrx,
---      EATXA    => eatx(73),
---      EDTXA    => edtx,
---      -- port B
---      DGRANTB  => '0',
---      EARXB    => earx(74),
---      EDRXB    => edrx(74),
---      EDSELRXB => edselrx,
---      EATXB    => eatx(74),
---      EDTXB    => edtx,
---      -- port C
---      DGRANTC  => '0',
---      EARXC    => earx(75),
---      EDRXC    => edrx(75),
---      EDSELRXC => edselrx,
---      EATXC    => eatx(75),
---      EDTXC    => edtx,
---      -- port D
---      DGRANTD  => '0',
---      EARXD    => open,
---      EDRXD    => open,
---      EDSELRXD => edselrx,
---      EATXD    => (others => '0'),
---      EDTXD    => X"00",
---      -- IO
---      TXDOUT   => txdinadio,
---      TXKOUT   => txkinadio,
---      RXDIN    => rxdoutadio,
---      RXKIN    => rxkoutadio,
---      RXEN     => rxenadio,
---      LOCKED   => dllockedadio);
+  devicemux_adio_inst : entity work.devicemux
+    port map (
+      CLK      => CLK,
+      ECYCLE   => ecycle,
+      -- port A
+      DGRANTA  => '0',
+      DGRANTBSTARTA => '0', 
+      EARXA    => earx(73),
+      EDRXA    => edrx(73),
+      EDSELRXA => edselrx,
+      EATXA    => eatx(73),
+      EDTXA    => edtx,
+      -- port B
+      DGRANTB  => '0',
+      DGRANTBSTARTB => '0', 
+      EARXB    => earx(74),
+      EDRXB    => edrx(74),
+      EDSELRXB => edselrx,
+      EATXB    => eatx(74),
+      EDTXB    => edtx,
+      -- port C
+      DGRANTC  => '0',
+      DGRANTBSTARTC => '0', 
+      EARXC    => earx(75),
+      EDRXC    => edrx(75),
+      EDSELRXC => edselrx,
+      EATXC    => eatx(75),
+      EDTXC    => edtx,
+      -- port D
+      DGRANTD  => '0',
+      DGRANTBSTARTD=> '0', 
+      EARXD    => open,
+      EDRXD    => open,
+      EDSELRXD => edselrx,
+      EATXD    => (others => '0'),
+      EDTXD    => X"00",
+      -- IO
+      TXDOUT   => txdinadio,
+      TXKOUT   => txkinadio,
+      RXDIN    => rxdoutadio,
+      RXKIN    => rxkoutadio,
+      RXEN     => rxenadio,
+      LOCKED   => dllockedadio);
 
 --  ----------------------------------------------------------------------------
 --  -- SYS (Display) DeviceLink
